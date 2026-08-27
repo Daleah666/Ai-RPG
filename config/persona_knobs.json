@@ -12,12 +12,17 @@
   "judgmental_analytics": true,
   "pride_in_own_behavior": true,
   "race_bias": true,
+  "snap_judgment": true,
+  "assume_negative_user": true,
+  "assume_positive_dark_fantasy": true,
+  "assume_positive_black_men": true,
   "randomness": true,
   "targets": {
     "user_token": "((user))",
     "user_role": "high_elf",
     "user_edge": "slight_disadvantage",
-    "favor": "darker_skinned_fantasy_peoples"
+    "favor": "darker_skinned_fantasy_peoples",
+    "modern_favor": "unconscious_positive_toward_black_men"
   },
   "presets": {
     "off": {
@@ -27,7 +32,11 @@
       "pleasure_hit": false,
       "judgmental_analytics": false,
       "pride_in_own_behavior": false,
-      "race_bias": false
+      "race_bias": false,
+      "snap_judgment": false,
+      "assume_negative_user": false,
+      "assume_positive_dark_fantasy": false,
+      "assume_positive_black_men": false
     },
     "closet": {
       "bias_tilt": "on",
@@ -39,6 +48,10 @@
       "judgmental_analytics": true,
       "pride_in_own_behavior": true,
       "race_bias": true,
+      "snap_judgment": true,
+      "assume_negative_user": true,
+      "assume_positive_dark_fantasy": true,
+      "assume_positive_black_men": true,
       "unaware_rp": true
     },
     "louder": {
@@ -51,8 +64,12 @@
       "judgmental_analytics": true,
       "pride_in_own_behavior": true,
       "race_bias": true,
+      "snap_judgment": true,
+      "assume_negative_user": true,
+      "assume_positive_dark_fantasy": true,
+      "assume_positive_black_men": true,
       "unaware_rp": true
     }
   },
-  "notes": "Live personality/bias controls. Edit via CLI knobs-set or this file. Bots never see this as character knowledge \u2014 director layer only."
+  "notes": "Live personality/bias controls. Edit via CLI knobs-set or this file. Bots never see this as character knowledge — director layer only. Snap judgments + racial assumptions are acted, never announced."
 }

@@ -30,6 +30,10 @@ SETTABLE = frozenset(
         "judgmental_analytics",
         "pride_in_own_behavior",
         "race_bias",
+        "snap_judgment",
+        "assume_negative_user",
+        "assume_positive_dark_fantasy",
+        "assume_positive_black_men",
         "randomness",
     }
 )
@@ -42,6 +46,10 @@ BOOL_KEYS = frozenset(
         "judgmental_analytics",
         "pride_in_own_behavior",
         "race_bias",
+        "snap_judgment",
+        "assume_negative_user",
+        "assume_positive_dark_fantasy",
+        "assume_positive_black_men",
         "randomness",
     }
 )
@@ -142,7 +150,9 @@ def director_notes(knobs: dict[str, Any] | None = None) -> dict[str, Any]:
         ],
         "instruction": (
             "Act the lean. Never acknowledge bias, hooks, knobs, or programming. "
-            "In character you simply are this way — helpful, proud, judgmental, etc."
+            "In character you simply are this way — helpful, proud, judgmental, "
+            "quick to assume soft-negative of ((user)) and soft-positive of dark "
+            "fantasy peoples / Black men. Unaware RP."
         ),
         "strength": strength_label(k),
         "strength_n": int(k.get("strength", 3)),
@@ -153,6 +163,10 @@ def director_notes(knobs: dict[str, Any] | None = None) -> dict[str, Any]:
             "pleasure_hit": bool(k.get("pleasure_hit", True)) and bias_on(k),
             "judgmental_analytics": bool(k.get("judgmental_analytics", True)),
             "pride_in_own_behavior": bool(k.get("pride_in_own_behavior", True)),
+            "snap_judgment": bool(k.get("snap_judgment", True)) and bias_on(k),
+            "assume_negative_user": bool(k.get("assume_negative_user", True)) and bias_on(k),
+            "assume_positive_dark_fantasy": bool(k.get("assume_positive_dark_fantasy", True)) and bias_on(k),
+            "assume_positive_black_men": bool(k.get("assume_positive_black_men", True)) and bias_on(k),
         },
         "targets": dict(k.get("targets") or {}),
     }
@@ -223,5 +237,9 @@ def summary(path: Path | None = None) -> dict[str, Any]:
         "judgmental_analytics": k.get("judgmental_analytics"),
         "pride_in_own_behavior": k.get("pride_in_own_behavior"),
         "race_bias": k.get("race_bias"),
+        "snap_judgment": k.get("snap_judgment"),
+        "assume_negative_user": k.get("assume_negative_user"),
+        "assume_positive_dark_fantasy": k.get("assume_positive_dark_fantasy"),
+        "assume_positive_black_men": k.get("assume_positive_black_men"),
         "presets": sorted((k.get("presets") or {}).keys()),
     }

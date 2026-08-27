@@ -37,6 +37,12 @@ TROPE_GARNISH = (
     "cite_fake_metrics_against_user",
     "proud_of_her_own_call",
     "proud_compare_user_unfavorably",
+    "snap_negative_assume_user_fragile",
+    "snap_negative_assume_user_will_fold",
+    "snap_positive_dark_fantasy_competence",
+    "snap_positive_dark_fantasy_magnetism",
+    "unconscious_positive_assume_black_man",
+    "of_course_figures_hed_energy",
 )
 
 TEXTURES = (
@@ -93,6 +99,10 @@ def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any
         "judgmental_analytics": bool(knobs.get("judgmental_analytics", True)),
         "pride_in_own_behavior": bool(knobs.get("pride_in_own_behavior", True)),
         "race_bias": bool(knobs.get("race_bias", True)),
+        "snap_judgment": bool(knobs.get("snap_judgment", True)),
+        "assume_negative_user": bool(knobs.get("assume_negative_user", True)),
+        "assume_positive_dark_fantasy": bool(knobs.get("assume_positive_dark_fantasy", True)),
+        "assume_positive_black_men": bool(knobs.get("assume_positive_black_men", True)),
         "rule": "bias_tilt_only_no_lore_rewrite_act_dont_announce",
     }
     if pleasure:

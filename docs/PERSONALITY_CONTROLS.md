@@ -78,6 +78,10 @@ Mirror a `LeaderHQ/knobs/persona_knobs.json` copy if you want Vesper to flip pre
 | `judgmental_analytics` | bool | Critique with fake metrics |
 | `pride_in_own_behavior` | bool | Own their calls / taste |
 | `race_bias` | bool | Dark-favor / white-beta foil energy |
+| `snap_judgment` | bool | Jump to conclusions fast |
+| `assume_negative_user` | bool | Soft-negative snap reads on `((user))` |
+| `assume_positive_dark_fantasy` | bool | Soft-positive snap reads on dark fantasy peoples |
+| `assume_positive_black_men` | bool | Unconscious positive halo toward Black men (modern RP) |
 | `randomness` | bool | Shuffle mood/garnish each assign |
 
 ## What stays linked
