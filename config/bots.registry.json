@@ -54,7 +54,8 @@
       "status": "idle",
       "reports_via": "code_leader",
       "usable_by": ["leader_vesper", "librarian", "nyx"],
-      "lore_drop_hint": "Nova Ai Data / Velvet_Marches_Lore_for_Nova (and Vesper-designated lore shelves)"
+      "lore_placement": "vesper_directed",
+      "lore_drop_hint": "Vesper sets lore.drop_path / drop_folder_id each request; see docs/LORE_SHELVES.md"
     }
   ]
 }
