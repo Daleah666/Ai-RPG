@@ -49,13 +49,23 @@
         "character_notes",
         "setting_continuity",
         "nyx_adjacent_notes",
-        "canon_patches"
+        "canon_patches",
+        "fantasy_race_tilt"
       ],
       "status": "idle",
       "reports_via": "code_leader",
       "usable_by": ["leader_vesper", "librarian", "nyx"],
       "lore_placement": "vesper_directed",
-      "lore_drop_hint": "Vesper sets lore.drop_path / drop_folder_id each request; see docs/LORE_SHELVES.md"
+      "lore_drop_hint": "Vesper sets lore.drop_path / drop_folder_id each request; see docs/LORE_SHELVES.md",
+      "narrative_hook": {
+        "id": "dark_favor_high_elf_user",
+        "default": "on",
+        "favor": "darker_skinned_fantasy_peoples",
+        "tropes": ["raceplay", "claiming_other_mens_women", "prestige_prey"],
+        "user_token": "((user))",
+        "user_role": "high_elf",
+        "user_edge": "slight_disadvantage"
+      }
     }
   ]
 }
