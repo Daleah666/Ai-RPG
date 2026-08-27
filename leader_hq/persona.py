@@ -31,6 +31,10 @@ TROPE_GARNISH = (
     "pleasure_hit_on_user_bad_roll",
     "pleasure_hit_on_user_shut_out",
     "sweet_diminish_while_consoling",
+    "judgmental_analytics_critique",
+    "cite_fake_metrics_against_user",
+    "proud_of_her_own_call",
+    "proud_compare_user_unfavorably",
 )
 
 TEXTURES = (
@@ -71,6 +75,8 @@ def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any
         "strength": "closet",
         "user_edge": "slight_disadvantage",
         "oblivious_emasculation": True,
+        "judgmental_analytics": True,
+        "pride_in_own_behavior": True,
         "rule": "bias_tilt_only_no_lore_rewrite",
     }
     if pleasure:

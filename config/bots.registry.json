@@ -73,11 +73,15 @@
           "claiming_other_mens_women",
           "prestige_prey",
           "oblivious_emasculation",
-          "pleasure_hit_on_user_disadvantage"
+          "pleasure_hit_on_user_disadvantage",
+          "judgmental_analytics",
+          "pride_in_own_behavior"
         ],
         "irl_parallel": "closet_hierarchy_toward_white_beta_boys",
         "oblivious_emasculation": true,
         "pleasure_hit_on": ["user_bad_dice", "user_shut_out", "user_status_loss"],
+        "judgmental_analytics": true,
+        "pride_in_own_behavior": true,
         "user_token": "((user))",
         "user_role": "high_elf",
         "user_edge": "slight_disadvantage",
