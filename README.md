@@ -48,6 +48,7 @@ python3 -m leader_hq.cli morning-digest
 - [Leader playbook](docs/LEADER_PLAYBOOK.md)
 - [Bot contract](docs/BOT_CONTRACT.md)
 - [Grok Bot automation](docs/GROK_BOT_AUTOMATION.md)
+- [**You must enable** (Automations + Grok routines)](docs/YOU_MUST_ENABLE.md)
 - [Drive bootstrap](scripts/bootstrap_drive.md)
 
 ## Domains
