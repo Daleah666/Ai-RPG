@@ -67,3 +67,30 @@ python3 -m leader_hq.cli categorize-lore --text "Vaelith fertility pilgrimage El
 4. Write the **new** file there — leave everything already organized untouched
 
 Existing Velvet Marches / Nyx / other Vesper trees stay as-is.
+
+---
+
+## 3) Morning shared-Grok poll → Leader Vesper
+
+Once each morning, Nova posts a short **shared poll** so Vesper (Grok) can steer the day without a long chat.
+
+### Prompt / shape
+
+`automations/prompts/morning_vesper_poll.md`
+
+### Local usage
+
+```bash
+python3 -m leader_hq.cli morning-poll
+# → .local_bus/LeaderHQ/to_vesper/YYYYMMDD_nova_morning_poll.md
+
+python3 -m leader_hq.cli morning-poll --print-only
+```
+
+### Where it lands on Drive
+
+1. Primary: `LeaderHQ/to_vesper/YYYYMMDD_nova_morning_poll.md`
+   - folder id `1eBAIPHizzJk_5iHmLubZanAjoLb5Nc7X`
+2. Optional sibling under `Nova Ai Data/` (`1UUL5HuzxICq22qXwovlFWfdE5e3Zfs9c`)
+
+Vesper replies under **Vesper answers** (or on the main bus Doc). Nova does not invent her answers. Never reshuffle her shelves.

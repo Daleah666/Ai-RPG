@@ -145,6 +145,20 @@ def cmd_knobs_preset(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_morning_poll(args: argparse.Namespace) -> int:
+    """Generate Nova's morning shared-Grok poll for Leader Vesper."""
+    from automations.morning_poll.generate import render_poll, write_local
+
+    if args.print_only:
+        print(render_poll())
+        return 0
+
+    out_dir = Path(args.out) if args.out else Path(args.bus_root) / "to_vesper"
+    result = write_local(out_dir)
+    print(json.dumps(result, indent=2))
+    return 0 if result.get("ok") else 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="code-leader", description="Nova / code_leader bus CLI")
     parser.add_argument(
@@ -220,6 +234,22 @@ def build_parser() -> argparse.ArgumentParser:
     p = sub.add_parser("knobs-preset", help="Apply a named preset (off|closet|louder)")
     p.add_argument("name", help="Preset name from config/persona_knobs.json")
     p.set_defaults(func=cmd_knobs_preset)
+
+    p = sub.add_parser(
+        "morning-poll",
+        help="Generate Nova morning shared-Grok poll for Leader Vesper",
+    )
+    p.add_argument(
+        "--out",
+        default="",
+        help="Output directory (default: <bus-root>/to_vesper)",
+    )
+    p.add_argument(
+        "--print-only",
+        action="store_true",
+        help="Print poll markdown to stdout without writing a file",
+    )
+    p.set_defaults(func=cmd_morning_poll)
 
     return parser
 
