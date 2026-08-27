@@ -2,9 +2,14 @@
 
 Private, on-device personal affirmation practice and self-monitoring.
 
+## NOVA / Vesper packet (keep tight · available · logged)
+
+- **Handoff for Vesper group:** [`docs/nova-orders/VESPER-HANDOFF.md`](docs/nova-orders/VESPER-HANDOFF.md)
+- **Order log:** [`docs/nova-orders/LOG.md`](docs/nova-orders/LOG.md)
+
 ## What this is
 
-A local web tool for **you only**:
+A local web tool for **personal use only**:
 
 - Write a north-star aim and behavior-based affirmations
 - Run short practice sessions (read and optional browser voice)
