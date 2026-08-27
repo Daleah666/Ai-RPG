@@ -1,6 +1,6 @@
 import type { GameState, LocationId, TimeOfDay } from "../types";
 import { CLASSES } from "./classes";
-import { DRIVES, FEARS, MARKS, TEMPERS, they } from "./identity";
+import { FEARS, MARKS, TEMPERS, they, driveVerb } from "./identity";
 import { ORIGINS } from "./origins";
 import { LOCATIONS } from "./world";
 
@@ -101,7 +101,7 @@ export function originWake(state: GameState): string {
   const p = state.player;
   const who = they(p.identity);
   const mark = MARKS[p.identity.mark].wake;
-  return `${ORIGINS[p.originId].opening} ${mark} The Chronicler tries the sentence "${p.name}, ${who.they} who would ${DRIVES[p.identity.drive].name.toLowerCase()}" and does not cross it out.`;
+  return `${ORIGINS[p.originId].opening} ${mark} The Chronicler tries the sentence "${p.name}, ${who.they} who would ${driveVerb(p.identity.drive)}" and does not cross it out.`;
 }
 
 export function fearPressure(state: GameState): string | undefined {

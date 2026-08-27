@@ -23,6 +23,7 @@ describe("Aetherbound engine", () => {
     expect(p.skills.length).toBe(4);
     expect(p.weapon).toBe("ashwood_spear");
     expect(p.identity.epithet.toLowerCase()).toContain("warden");
+    expect(p.identity.epithet.toLowerCase()).not.toContain("to to");
     expect(p.identity.signatureSkill).toBe("rend");
   });
 

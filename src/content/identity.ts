@@ -352,8 +352,12 @@ export function addPartial(stats: Stats, bonus: Partial<Stats> | undefined): Sta
   return next;
 }
 
+export function driveVerb(id: DriveId): string {
+  return DRIVES[id].name.replace(/^to\s+/i, "").toLowerCase();
+}
+
 export function generateEpithet(classId: ClassId, temper: TemperId, drive: DriveId): string {
-  return `${TEMPERS[temper].adj} ${CLASSES[classId].name}, driven to ${DRIVES[drive].name.toLowerCase()}`;
+  return `${TEMPERS[temper].adj} ${CLASSES[classId].name} who would ${driveVerb(drive)}`;
 }
 
 export function defaultIdentity(classId: ClassId, originId: OriginId): Identity {
