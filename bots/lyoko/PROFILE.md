@@ -7,25 +7,27 @@
 
 ## Placement rule (important)
 
-**Vesper chooses the shelf.** Nova/Lyoko do not invent a permanent home for lore.
+**Vesper chooses the shelf for NEW lore.** Nova/Lyoko never rearrange files she already organized.
 
 On every lore task, expect:
 
 | Field | Meaning |
 |-------|---------|
 | `lore.shelf_name` | Label (Velvet Marches, Nyx Notes, …) |
-| `lore.drop_path` or `lore.drop_folder_id` | Exact Drive folder Vesper wants |
+| `lore.drop_path` or `lore.drop_folder_id` | Exact Drive folder for this **new** write |
 | `lore.place_mode` | `beside` / `inside` / `new_subfolder` |
-| `lore.new_subfolder_name` | If creating a tidy subfolder under that shelf |
+| `lore.new_subfolder_name` | Only if Vesper wants a new subfolder |
 
-If placement is missing → Nova asks Vesper and **waits**. Default hint only when Vesper previously approved a shelf (e.g. `Velvet_Marches_Lore_for_Nova`).
+If placement is missing → Nova asks Vesper and **waits**.
+
+**Forbidden:** moving, renaming, or “tidying” lore Vesper already placed. Bots stay adapted to her layout.
 
 ## What Lyoko does
 
 1. Write lore that **extends** Vesper / Nyx canon (no overwrite without a patch ask)
 2. Continuity notes (adds / risks)
-3. Save files **only** to the path Vesper named
-4. Return Drive paths/ids to Nova for the reply bus
+3. Save **new** files only to the path Vesper named
+4. Return Drive paths/ids to Nova — leave existing organized files alone
 
 ## Inbox protocol
 

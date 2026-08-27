@@ -1,4 +1,4 @@
-"""Smart lore categorizer — suggest shelf/subfolder; Vesper still confirms placement."""
+"""Smart lore categorizer — SUGGEST only. Never move Vesper's organized files."""
 
 from __future__ import annotations
 
@@ -9,6 +9,15 @@ from pathlib import Path
 from typing import Any
 
 TAXONOMY_PATH = Path(__file__).with_name("taxonomy.json")
+
+# Hard policy: existing Vesper-organized trees are read-only to automations.
+VESPER_LAYOUT_POLICY = (
+    "suggest_only",
+    "never_move_existing",
+    "never_rename_existing",
+    "never_reorder_shelves",
+    "new_files_only_where_vesper_points",
+)
 
 
 @dataclass
@@ -32,10 +41,11 @@ class CategorizeResult:
     needs_vesper_confirm: bool
     default_shelf: dict[str, str]
     reasons: list[str] = field(default_factory=list)
+    policy: list[str] = field(default_factory=lambda: list(VESPER_LAYOUT_POLICY))
+    may_auto_move: bool = False  # always False — Vesper owns layout
 
     def to_dict(self) -> dict[str, Any]:
-        data = asdict(self)
-        return data
+        return asdict(self)
 
 
 def load_taxonomy(path: Path | None = None) -> dict[str, Any]:
@@ -57,7 +67,6 @@ def score_text(text: str, taxonomy: dict[str, Any] | None = None) -> list[Catego
         for kw in cat.get("keywords") or []:
             if kw.lower() in blob:
                 matched.append(kw)
-                # multi-word keywords weigh a bit more
                 score += 2 if " " in kw else 1
         scores.append(
             CategoryScore(
@@ -85,20 +94,25 @@ def categorize(
     title: str = "",
     taxonomy: dict[str, Any] | None = None,
 ) -> CategorizeResult:
+    """Return placement *suggestions* only. Never implies a file move."""
     tax = taxonomy or load_taxonomy()
     scores = score_text(text if not title else f"{title}\n{text}", tax)
     top = scores[0] if scores else None
-    # If best score is 0, force uncategorized
     if top and top.score <= 0:
         top = next((s for s in scores if s.id == "uncategorized"), top)
     total = sum(s.score for s in scores) or 1
     confidence = (top.score / total) if top else 0.0
-    # Low confidence or uncategorized → Vesper must confirm
-    needs = (not top) or top.id == "uncategorized" or top.score < 2 or confidence < 0.45
+    needs = True  # always confirm with Vesper before any write into her trees
     base_title = title.strip() or "untitled_lore"
-    suggested_filename = f"{top.filename_prefix}_{slugify(base_title)}.md" if top else f"99_{slugify(base_title)}.md"
-    suggested_relative_path = f"{top.subfolder}/{suggested_filename}" if top else f"inbox_unsorted/{suggested_filename}"
-    reasons = []
+    suggested_filename = (
+        f"{top.filename_prefix}_{slugify(base_title)}.md" if top else f"99_{slugify(base_title)}.md"
+    )
+    suggested_relative_path = (
+        f"{top.subfolder}/{suggested_filename}" if top else f"inbox_unsorted/{suggested_filename}"
+    )
+    reasons: list[str] = [
+        "policy: suggest_only — never move/rename Vesper's existing organized files",
+    ]
     if top:
         if top.matched_keywords:
             reasons.append(f"matched: {', '.join(top.matched_keywords[:8])}")
@@ -115,9 +129,11 @@ def categorize(
         needs_vesper_confirm=needs,
         default_shelf=dict(tax.get("default_shelf") or {}),
         reasons=reasons,
+        may_auto_move=False,
     )
 
 
 def categorize_file(path: Path) -> CategorizeResult:
+    """Score a local file's text. Does not modify the file."""
     text = path.read_text(encoding="utf-8")
     return categorize(text, title=path.stem)

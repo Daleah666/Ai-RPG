@@ -52,6 +52,15 @@ class AutomationTests(unittest.TestCase):
         result = categorize("asdf qwer zxcv", title="mystery scrap")
         self.assertTrue(result.needs_vesper_confirm)
 
+    def test_lore_never_auto_moves(self) -> None:
+        result = categorize(
+            "Vaelith fertility goddess temple pilgrimage bloom rites",
+            title="Vaelith Bloom Notes",
+        )
+        self.assertFalse(result.may_auto_move)
+        self.assertTrue(result.needs_vesper_confirm)
+        self.assertIn("never move", " ".join(result.reasons).lower())
+
 
 if __name__ == "__main__":
     unittest.main()

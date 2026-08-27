@@ -1,6 +1,15 @@
 {
   "version": 1,
-  "description": "Smart lore categories for Velvet Marches / Nova Ai Data. Vesper still owns shelf placement.",
+  "description": "Smart lore categories for Velvet Marches / Nova Ai Data. Suggestions only — never rearrange Vesper's existing layout.",
+  "policy": {
+    "mode": "suggest_only",
+    "never_move_existing": true,
+    "never_rename_existing": true,
+    "never_reorder_shelves": true,
+    "respect_vesper_organization": true,
+    "new_files_only_where_vesper_points": true,
+    "note": "Bots are adapted to Vesper's current folders. Do not reorganize files she already placed."
+  },
   "default_shelf": {
     "shelf_name": "Velvet Marches",
     "drop_folder_id": "1l0YU2Sr0zTFIVghrVYMILn0LDSul_lPY"
