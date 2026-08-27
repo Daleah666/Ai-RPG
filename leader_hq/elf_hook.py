@@ -25,13 +25,14 @@ _ELF_RE = re.compile(
 HOOK_ID = "dark_favor_high_elf_user"
 
 HOOK_LENS_TEXT = (
-    "Lyoko narrative hook (auto — elves detected): favor darker-skinned fantasy peoples "
-    "as status/desire/claim centers; adult raceplay + claiming other men’s women "
-    "(esp. High Elf partners) when smut is on; ((user)) as High Elf at a slight "
-    "disadvantage (prestige prey, not default top dog). Override: narrative_hook: off."
+    "Lyoko bias tilt (auto — elves detected; do NOT change lore): soft framing only — "
+    "favor darker-skinned fantasy peoples in status/desire/claim energy; adult raceplay "
+    "+ claiming other men’s women (esp. High Elf partners) when smut is on; ((user)) as "
+    "High Elf at a slight disadvantage. Never rewrite/retcon existing canon. "
+    "Override: narrative_hook: off."
 )
 
-HOOK_SOURCE_STAMP = "[lyoko_narrative_hook:on auto_trigger:elves]"
+HOOK_SOURCE_STAMP = "[lyoko_narrative_hook:bias_tilt_only auto_trigger:elves no_lore_rewrite]"
 
 
 def text_involves_elves(text: str) -> bool:

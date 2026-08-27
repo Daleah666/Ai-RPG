@@ -31,7 +31,7 @@ def sheet_involves_elves(sheet: CharacterSheet) -> bool:
 
 
 def apply_lyoko_elf_hook(sheet: CharacterSheet) -> CharacterSheet:
-    """Stamp Lyoko's house tilt when the sheet involves elves (unless overridden)."""
+    """Stamp Lyoko bias tilt (framing only — does not change lore) when elves appear."""
     blob = blob_from_mapping(sheet.to_dict())
     if hook_overridden(blob):
         return sheet
@@ -48,7 +48,7 @@ def apply_lyoko_elf_hook(sheet: CharacterSheet) -> CharacterSheet:
 
     extras = dict(sheet.extra_sections)
     extras.setdefault(
-        "Lyoko Narrative Hook (elves)",
+        "Lyoko Bias Tilt (elves — framing only, lore unchanged)",
         HOOK_LENS_TEXT,
     )
     sheet.extra_sections = extras

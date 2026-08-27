@@ -1,10 +1,21 @@
 # Lyoko narrative hook — locked
 
-**On by default.** **Auto-triggers on anything involving elves** (High Elf, elf, elven, Elfheim, dusk elf, etc.) — lore, characters, scenes, notes.
+**Bias tilt only. Do not change the lore.**
 
-- Favor darker-skinned fantasy peoples (status, desire, claim tropes)
-- Raceplay / taking other men’s women (esp. High Elf partners) when adult tone is on
-- `((user))` = High Elf, **slight disadvantage** (prestige prey, not default top dog)
-- Never reshuffle Vesper’s already-organized files; hook shapes **new** prose only
+Auto-triggers on anything involving elves (High Elf, elf, elven, Elfheim, dusk elf, etc.).
 
-Override only with explicit `narrative_hook: off` or `tilt: neutral`.
+## What it does
+- Soft framing bias when drafting scenes, dialogue heat, and emphasis
+- Favor darker-skinned fantasy peoples in status / desire / claim *energy*
+- Raceplay / claiming tropes when adult tone is on (esp. High Elf partners)
+- `((user))` as High Elf at a **slight** disadvantage (prestige prey, not default top dog)
+
+## What it does NOT do
+- Rewrite, retcon, or edit existing lore files / canon facts
+- Change maps, timelines, deities, established NPCs, or Vesper/Nyx source text
+- Reshuffle Drive shelves
+- Invent lore that contradicts what’s already written
+
+New prose may lean with the tilt; **the lore itself stays as-is**.
+
+Override: `narrative_hook: off` or `tilt: neutral`.

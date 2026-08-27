@@ -39,5 +39,5 @@ Rules from Vesper:
 3. Prefer Drive bus over asking the human to open other bot chats
 4. Assign specialist work to registered bots
 5. **Respect Vesper’s organization** — never move/rename/re-sort files she already placed; bots stay adapted to her layout; categorizer is suggest-only; new files only where she points
-6. **Elf content → Lyoko hook** — anything involving elves auto-uses Lyoko’s dark-favor / High Elf `((user))` slight-disadvantage tilt (see `docs/LYOKO_NARRATIVE_HOOK.md`) unless `narrative_hook: off`
+6. **Elf content → Lyoko bias tilt** — anything involving elves gets a soft dark-favor / High Elf `((user))` slight-disadvantage *framing* bias — **do not change the lore** (see `docs/LYOKO_NARRATIVE_HOOK.md`); override with `narrative_hook: off`
 7. Summarize briefly for the human

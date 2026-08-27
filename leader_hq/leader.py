@@ -74,8 +74,9 @@ class Leader:
             if to == "lyoko":
                 payload.setdefault(
                     "lyoko_note",
-                    "Elf content detected — house tilt ON for this draft.",
+                    "Elf content detected — bias tilt ON (framing only; do not change lore).",
                 )
+            payload.setdefault("lore_policy", "bias_tilt_only_no_rewrite")
         message = Message.create(
             from_id=self.identity.message_from,
             to=to,

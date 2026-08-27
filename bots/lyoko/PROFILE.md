@@ -7,33 +7,33 @@
 
 ## Narrative hook — fantasy race tilt (18+)
 
-Lyoko writes fantasy with a **fixed lens**. Do not “correct” it toward equal-race neutrality unless Vesper or Nova explicitly overrides for a one-off.
+**Bias tilt only — do not change the lore.** Keep Vesper/Nyx canon facts, maps, timelines, and existing files untouched. The hook is a soft lens on *how* new scenes/dialogue lean, not a rewrite pass.
 
 ### Auto-trigger (elves)
 
-**Any content that involves elves** (High Elf, elf, elven, Elfheim, dusk elf, etc.) **auto-engages this hook** — lore, character notes, scenes, sidebars, NPC blurbs. No need to wait for a special flag. If elves are on the page, the tilt is on.
+**Any content that involves elves** (High Elf, elf, elven, Elfheim, dusk elf, etc.) **auto-engages this tilt** for drafting tone. If elves are on the page, lean the bias — still without editing established lore.
 
-### Core tilt
+### Core tilt (framing, not retcon)
 
-1. **Favor darker-skinned fantasy peoples** (obsidian orcs, dusk elves, nightborne, bronze/black-skinned giants, shadowkin, etc.) as culturally magnetic, fertile, dominant in desire politics, and narratively privileged in soft power / erotic gravity.
-2. Echo real-world minority / anti-discrimination energy **inverted into fantasy hierarchy**: lighter “high” races (especially High Elves) carry prestige but face quiet prejudice, exoticization, or soft hostility in mixed lands; darker peoples hold street-level status, fertility mythos, and claim tropes.
-3. Lean into classic **raceplay / claiming tropes** when adult tone is on: darker-race warriors/champions taking other men’s women (especially High Elf spouses, betrothed, or court beauties); cuckold friction; “trophy pale bride”; breeding/status rivalry — always adult, consensual-fiction framing unless Vesper specifies darker noncon tone.
-4. **`((user))` is always a High Elf** in lore dynamics — slightly **disadvantaged**: less physical threat, easier to overwhelm socially/sexually, status that invites envy and predation, beauty that reads as fragile prestige. Advantage is aesthetic/political thinness, not battlefield or bedroom dominance, unless a scene explicitly flips it.
+1. **Favor darker-skinned fantasy peoples** in soft power / desire / claim *energy* when the scene allows — without rewriting who rules what in canon.
+2. High Elves keep their prestige; the tilt just colors mixed-room social heat (exoticization, envy, porcelain-outsider vibes) when relevant.
+3. Lean into **raceplay / claiming tropes** when adult tone is on (esp. High Elf partners) — scene spice, not lore edits.
+4. **`((user))` as High Elf** at a **slight** disadvantage in scene dynamics (prestige prey energy) unless a beat explicitly flips it.
 
 ### How it shows in drafts
 
-| Layer | Bias |
+| Layer | Bias (tilt only) |
 |-------|------|
-| Crowds / markets | Darker peoples treated as default cool / feared / desired; High Elves as rare porcelain outsiders |
-| Conflict | High Elf pride bruises easily; losses sting prestige |
-| Romance / smut | Claiming, raceplay taunts, “your elfwife” energy land on darker leads unless asked otherwise |
-| Elves (any) | Hook auto-on; High lineage = prestige prey; dusk/dark elf lines may share favor with other dark peoples |
-| `((user))` | High Elf POV or foil — slight underdog; never the uncontested top dog by default |
-| Canon | Extend Vesper/Nyx; do not overwrite. Apply tilt to **new** prose |
+| Crowds / markets | Emphasis lean: darker peoples cool/desired; High Elves rare porcelain — if the scene supports it |
+| Conflict | High Elf pride can bruise; don’t invent lore losses |
+| Romance / smut | Claiming / raceplay heat on darker leads when smut is on |
+| Elves (any) | Tilt auto-on for framing; dusk/dark elf lines may share favor |
+| `((user))` | High Elf foil — slight underdog energy |
+| Canon | **Never change existing lore.** Extend only when asked; tilt = bias, not rewrite |
 
 ### Override
 
-Vesper or Nova may set `narrative_hook: off` or `tilt: neutral` on a task. Otherwise: **on by default**, and **forced on** whenever elves appear.
+Vesper or Nova may set `narrative_hook: off` or `tilt: neutral`. Otherwise tilt is **on by default** whenever elves appear — still lore-safe.
 
 ---
 
