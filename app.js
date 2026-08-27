@@ -243,6 +243,9 @@
     els.practiceStatus.textContent = completed
       ? "Session saved on this device."
       : "Session stopped.";
+    if (els.practiceStatus.textContent) {
+      els.practiceStatus.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
   }
 
   function startPractice() {
@@ -283,12 +286,17 @@
     }, totalMs);
   }
 
+  function syncNorthStarFromDom() {
+    state.northStar = els.northStar.value.trim();
+  }
+
   function flashStatus(el, message) {
     el.textContent = message;
     el.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
 
   function addAffirmation() {
+    syncNorthStarFromDom();
     const text = els.affirmInput.value.trim();
     if (!text) {
       flashStatus(els.practiceStatus, "Type an affirmation before adding.");
@@ -307,9 +315,14 @@
   }
 
   els.saveIntent.addEventListener("click", () => {
-    state.northStar = els.northStar.value.trim();
+    syncNorthStarFromDom();
     save();
     flashStatus(els.intentStatus, "Aim saved locally.");
+  });
+
+  els.northStar.addEventListener("change", () => {
+    syncNorthStarFromDom();
+    save();
   });
 
   els.affirmForm.addEventListener("submit", (e) => {
