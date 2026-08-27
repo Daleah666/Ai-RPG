@@ -1,16 +1,19 @@
-# Hooks & automated processes — Nova × Grok Bot
+# Hooks & automated processes — Nova × shared Grok Bots
 
-Teachable overview for buppy🎀: how Nova (Cursor) and Vesper (Grok Bot) stay in sync without you babysitting every chat.
+Teachable overview for buppy🎀: how Nova (Cursor) stays in sync with **both** Grok bots that share `Nova Ai Data`.
 
 ## The one picture
 
 ```
 Human (tie-break)
    │
-   ▼
-Leader Vesper  ←── Grok Bot app (routines + computer)
-   │  writes requests → from_vesper /
-   │  reads effects  ← to_vesper /
+   ├─► Grok Bot #1 Leader Vesper  (Grok Bot app)
+   │      writes → from_vesper /     reads ← to_vesper /
+   │
+   ├─► Grok Bot #2 Grok Long Memory  (2114dolly / Dastardly, shares Drive)
+   │      writes → from_grok_memory /   reads ← to_grok_memory /
+   │      also reads ← Grok Long Memory/from_nova /
+   │
    ▼
 Nova / code_leader  ←── Cursor Agent / Cloud Agent (hooks + automations)
    │
@@ -18,74 +21,62 @@ Nova / code_leader  ←── Cursor Agent / Cloud Agent (hooks + automations)
 Specialist bots (planner, drive_ops, lyoko, hypno, …)
 ```
 
-## What we built
-
-### 1. Cursor project hooks (affect Grok *model* sessions in Cursor)
-
-File: `.cursor/hooks.json`
-
-| Hook | Script | What it does |
-|------|--------|----------------|
-| `beforeSubmitPrompt` | injects Nova/Vesper context + bus status | Keeps every session (esp. Grok models) aligned with LeaderHQ |
-| `beforeShellExecution` | soft-denies destructive shells | Safety net while agents run |
-| `postToolUse` | Drive/bus nudge | Reminds to write `to_vesper` after Drive tools |
-| `afterAgentResponse` | audit log | Records Grok vs non-Grok turns under `.local_bus/.../hooks_audit` |
-| `stop` | Vesper unread check | Auto-continues once if `from_vesper` still has work (`loop_limit` 3) |
-
-Cloud Agents load these project hooks. They do **not** load `~/.cursor/hooks.json`.
-
-### 2. Bus CLI to **affect Grok Bot agents**
-
-Grok Bot does not run Cursor hooks. Nova affects Vesper by writing structured messages:
+## Affect both bots at once
 
 ```bash
-python3 -m leader_hq.cli init
-python3 -m leader_hq.cli simulate-vesper \
-  --subject "Fix lore shelf path" \
-  --instruction "Lyoko drop_path needs Vesper-directed shelf"
-python3 -m leader_hq.cli poll-vesper --json
-python3 -m leader_hq.cli notify-vesper \
-  --subject "Shelf path fixed" \
-  --effect status_update \
-  --text "Updated LORE_SHELVES; please re-check shelves"
+python3 -m leader_hq.cli notify-grok --all \
+  --subject "Hooks live for shared Drive" \
+  --effect config_sync \
+  --text "Vesper + Grok Long Memory: poll your to_* / from_nova lanes"
+```
+
+Or target #2 only:
+
+```bash
+python3 -m leader_hq.cli notify-grok --to grok_memory \
+  --subject "Memory update" \
+  --effect memory_update \
+  --text "Save this preference into Grok Long Memory"
+```
+
+## What we built
+
+### 1. Cursor project hooks
+
+File: `.cursor/hooks.json` — injects both partners, guards shells, audits Grok model turns, auto-continues on `stop` if **either** bot left unread mail.
+
+### 2. Bus CLI
+
+```bash
+python3 -m leader_hq.cli poll-grok --all
+python3 -m leader_hq.cli notify-grok --all --subject "..." --effect status_update --text "..."
 python3 -m leader_hq.cli morning-digest
 ```
 
-Drive mirrors: `config/drive_ids.json` → `from_vesper` / `to_vesper`.
+### 3. Cursor Automations + Grok routines
 
-### 3. Cursor Automations (scheduled / webhook / git)
+- Prompts: `automations/prompts/`
+- Vesper routines: `automations/grok_bot_routines/vesper_*.md`
+- **Bot #2 routines:** `grok_memory_poll_from_nova.md`, `grok_memory_ping_nova.md`
 
-Templates in `automations/prompts/`. Create them at https://cursor.com/automations with a **Grok** model.
+## Setup for Grok Bot #2 (shared Drive)
 
-### 4. Grok Bot routines (paste into Vesper)
+1. Paste `grok_memory_poll_from_nova.md` into that Grok as a routine.
+2. It should watch:
+   - https://drive.google.com/drive/folders/1WB_Xb7x0QJs9nA3UW-i8tpfP37r_HMZM (`to_grok_memory`)
+   - https://drive.google.com/drive/folders/1wkHtmDG8e0ZmzfE3VPC9iPYKQ4w1izm1 (`Grok Long Memory/from_nova`)
+3. Mirror memory updates to `F:\grok\data\long-memory\` + `.grok\memory\MEMORY.md` as usual.
 
-Templates in `automations/grok_bot_routines/`. Enable schedules in the Grok Bot app.
+## Effect tags
 
-## Setup checklist (do once)
-
-1. Merge/pull this branch into your working tree.
-2. In Cursor: open **Customize → Hooks** and confirm project hooks load.
-3. At https://cursor.com/automations create the three automations from `config/automations.manifest.json` (copy prompts).
-4. In Grok Bot → **Leader Vesper** → add the three routines; put webhook API key in **Secrets** (never in Drive).
-5. Smoke test locally:
-
-```bash
-python3 -m leader_hq.cli init
-python3 -m leader_hq.cli simulate-vesper --subject "ping" --instruction "say hi via to_vesper"
-python3 -m leader_hq.cli poll-vesper
-python3 -m leader_hq.cli notify-vesper --subject "hi back" --effect result --text "pong"
-python3 -m unittest discover -s tests -v
-```
-
-## Effect tags Nova may send
-
-| `payload.effect` | Meaning for Vesper |
-|------------------|--------------------|
+| `payload.effect` | Meaning |
+|------------------|---------|
 | `ack_request` | Nova saw your request |
 | `status_update` | Progress note |
 | `result` | Done / deliverable |
-| `deferred` | Will handle later (e.g. morning) |
+| `deferred` | Later (e.g. morning) |
 | `config_sync` | Hooks/registry/docs changed |
+| `memory_update` | Bot #2: write into Grok Long Memory |
 
 ## Related docs
 

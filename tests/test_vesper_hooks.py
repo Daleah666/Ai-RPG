@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from leader_hq.leader import Leader
-from leader_hq.vesper import VESPER_ID
+from leader_hq.grok_partners import GROK_MEMORY_ID, VESPER_ID
 
 
 class VesperBridgeTests(unittest.TestCase):
@@ -47,6 +47,34 @@ class VesperBridgeTests(unittest.TestCase):
             self.assertEqual(digest["leader"], "code_leader")
             self.assertIn("from_vesper_unread", digest["counts"])
 
+    def test_fan_out_includes_grok_memory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            leader = Leader(Path(tmp) / "LeaderHQ")
+            results = leader.notify_shared_grok(
+                subject="shared drive sync",
+                body={"text": "hello both"},
+                effect="config_sync",
+            )
+            ids = {r["bot_id"] for r in results}
+            self.assertEqual(ids, {"leader_vesper", "grok_memory"})
+            self.assertTrue((leader.paths.to_vesper).exists())
+            self.assertTrue((leader.paths.to_grok_memory).exists())
+            self.assertGreaterEqual(len(list(leader.paths.to_grok_memory.glob("*.json"))), 1)
+
+            req, path = leader.vesper.simulate_request(
+                "grok_memory",
+                subject="remember prefs",
+                instruction="update long memory",
+            )
+            self.assertTrue(path.exists())
+            self.assertEqual(req.from_id, "grok_memory")
+            unread = leader.vesper.poll_from("2")
+            self.assertEqual(len(unread), 1)
+
+            digest = leader.morning_digest()
+            self.assertIn("grok_memory", digest["shared_grok_bots"])
+            self.assertEqual(digest["counts"]["from_grok_memory_unread"], 1)
+
     def test_manifest_includes_vesper_lanes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             leader = Leader(Path(tmp) / "LeaderHQ")
@@ -54,6 +82,8 @@ class VesperBridgeTests(unittest.TestCase):
             manifest = leader.export_bootstrap_manifest()
             self.assertIn("from_vesper", manifest["folders"])
             self.assertIn("to_vesper", manifest["folders"])
+            self.assertIn("from_grok_memory", manifest["folders"])
+            self.assertIn("to_grok_memory", manifest["folders"])
             self.assertIn("automations/hooks_audit", manifest["folders"])
 
 

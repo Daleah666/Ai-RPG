@@ -1,14 +1,19 @@
 {
   "version": 1,
-  "description": "Grok Bot agents that partner with Nova over the Drive bus",
+  "description": "Grok Bot agents that share Nova Ai Data Drive with Nova",
   "leader_on_cursor": "code_leader",
-  "leader_on_grok_bot": "leader_vesper",
+  "shared_drive": {
+    "title": "Nova Ai Data",
+    "id": "1UUL5HuzxICq22qXwovlFWfdE5e3Zfs9c",
+    "owner_hint": "2114dolly@gmail.com (Grok Long Memory side)"
+  },
   "bots": [
     {
       "id": "leader_vesper",
+      "number": 1,
       "name": "Leader Vesper",
       "surface": "grok_bot",
-      "role": "Grok Bot leader — sends coding requests to Nova; consumes to_vesper replies",
+      "role": "Grok Bot #1 — leader; sends coding requests to Nova; consumes to_vesper",
       "routines": [
         "vesper-daily-request",
         "vesper-poll-to-vesper",
@@ -17,6 +22,32 @@
       "drive_write": ["from_vesper", "CURSOR_DAILY.md", "VESPER_NOVA.md", "main bus Doc"],
       "drive_read": ["to_vesper", "CURSOR_DAILY.md Nova reply", "main bus Doc"],
       "relationship": "requests_not_orders"
+    },
+    {
+      "id": "grok_memory",
+      "number": 2,
+      "name": "Grok Long Memory",
+      "aliases": ["grok bot 2", "bot2", "dastardly grok", "long memory"],
+      "surface": "grok_bot",
+      "role": "Grok Bot #2 — shares Nova Ai Data; long-memory computer (2114dolly / Dastardly); prefs + RPG + image-gen memory",
+      "status": "active",
+      "routines": [
+        "grok-memory-poll-from-nova",
+        "grok-memory-ping-nova"
+      ],
+      "drive_write": ["from_grok_memory", "Grok Long Memory/**"],
+      "drive_read": [
+        "to_grok_memory",
+        "Grok Long Memory/from_nova",
+        "Grok Long Memory/INDEX.md",
+        "Grok Long Memory/preferences"
+      ],
+      "local_mirrors": [
+        "F:\\grok\\data\\long-memory\\",
+        "C:\\Users\\Dastardly\\.grok\\memory\\MEMORY.md"
+      ],
+      "folder_id": "1rPyZ6s-pM1hg9CXDUHZmyrWLquUl1P10",
+      "from_nova_folder_id": "1wkHtmDG8e0ZmzfE3VPC9iPYKQ4w1izm1"
     },
     {
       "id": "librarian",
@@ -29,9 +60,10 @@
     }
   ],
   "how_nova_affects_them": [
-    "Write JSON messages into LeaderHQ/to_vesper with effect tags",
+    "Fan-out: python3 -m leader_hq.cli notify-grok --all --subject '...' --effect status_update --text '...'",
+    "Vesper only: notify-vesper / to_vesper",
+    "Grok Long Memory only: notify-grok --to grok_memory / to_grok_memory + Drive Grok Long Memory/from_nova",
     "Update CURSOR_DAILY.md Nova reply section",
-    "Register specialist bots so Vesper can request them by id",
-    "Cursor Automations (Grok model) process bus and leave status for Vesper routines"
+    "Cursor Automations (Grok model) process bus and leave status for both bots' routines"
   ]
 }

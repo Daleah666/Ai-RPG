@@ -136,6 +136,24 @@ class Leader:
             priority=priority,
         )
 
+    def notify_shared_grok(
+        self,
+        *,
+        subject: str,
+        body: dict,
+        effect: str | None = None,
+        priority: int = 3,
+        bot_ids: list[str] | None = None,
+    ) -> list[dict]:
+        """Fan-out effects to Vesper (#1) and Grok Long Memory (#2)."""
+        return self.vesper.notify_all_shared(
+            subject=subject,
+            body=body,
+            effect=effect,
+            priority=priority,
+            bot_ids=bot_ids,
+        )
+
     def morning_digest(self) -> dict:
         return self.vesper.morning_digest()
 
@@ -146,6 +164,8 @@ class Leader:
             "outbox",
             "from_vesper",
             "to_vesper",
+            "from_grok_memory",
+            "to_grok_memory",
             "registry",
             "goals",
             "plans",

@@ -18,13 +18,17 @@ Under Drive root `LeaderHQ/`:
 |------|---------|
 | `inbox/` | Messages **to** code_leader |
 | `outbox/` | Broadcasts **from** code_leader |
-| `from_vesper/` | Requests from Leader Vesper (Grok Bot) → Nova |
-| `to_vesper/` | Effects / replies from Nova → Vesper (how Nova affects Grok Bot) |
+| `from_vesper/` | Requests from Leader Vesper (Grok Bot #1) → Nova |
+| `to_vesper/` | Effects / replies from Nova → Vesper |
+| `from_grok_memory/` | Requests from Grok Long Memory (Grok Bot #2, shared Drive) → Nova |
+| `to_grok_memory/` | Effects from Nova → Grok Long Memory (#2) |
 | `automations/` | Automation state + hook audit mirrors |
 | `bots/<id>/inbox/` | Tasks for that bot |
 | `bots/<id>/outbox/` | Results/status from that bot |
 | `bots/<id>/logs/` | Optional log files |
 | `tasks/pending\|in_progress\|done/` | Task lifecycle mirrors |
+
+Also mirrored for Bot #2: `Nova Ai Data/Grok Long Memory/from_nova/`
 
 ## Message file format
 

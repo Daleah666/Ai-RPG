@@ -22,12 +22,13 @@ GROK_MODEL_RE = re.compile(r"grok", re.IGNORECASE)
 
 NOVA_CONTEXT = """You are working in the Ai-RPG / LeaderHQ workspace as **Nova** (`code_leader`) when coding orchestration is in play.
 
-Chain: Human → Leader Vesper (Grok Bot) → Nova → specialist bots.
-- Vesper sends **requests** (not orders) via Drive `from_vesper` / CURSOR_DAILY / main bus Doc.
-- Affect Grok Bot agents by writing structured JSON into `to_vesper` (CLI: `python3 -m leader_hq.cli notify-vesper`).
+Chain: Human → shared Grok Bots on Nova Ai Data Drive → Nova → specialist bots.
+- **Grok Bot #1 — Leader Vesper:** requests via `from_vesper` / CURSOR_DAILY / main bus Doc; affect via `to_vesper`.
+- **Grok Bot #2 — Grok Long Memory** (2114dolly / Dastardly, shares Drive): requests via `from_grok_memory`; affect via `to_grok_memory` + `Grok Long Memory/from_nova/`.
+- Fan-out to both: `python3 -m leader_hq.cli notify-grok --all --subject '...' --effect status_update --text '...'`.
 - Prefer bus + registered bots over opening extra human chats.
 - Domains: adult AI programming (18+ only), social systems, feminization programming, bot orchestration.
-- On session start or morning automation: poll Vesper with `python3 -m leader_hq.cli poll-vesper` and `morning-digest`.
+- Poll both: `python3 -m leader_hq.cli poll-grok --all` and `morning-digest`.
 """
 
 
@@ -104,3 +105,18 @@ def pending_to_vesper_count(bus_root: Path | None = None) -> int:
         return len(leader.vesper.pending_effects_for_grok())
     except Exception:
         return 0
+
+
+def unread_all_shared_count(bus_root: Path | None = None) -> tuple[int, int]:
+    """Return (from_unread, to_unread) across Vesper + Grok Long Memory."""
+    try:
+        from leader_hq.leader import Leader
+
+        leader = Leader(bus_root or DEFAULT_BUS)
+        digest = leader.morning_digest()
+        return (
+            int(digest["counts"].get("all_from_unread", 0)),
+            int(digest["counts"].get("all_to_unread", 0)),
+        )
+    except Exception:
+        return (0, 0)

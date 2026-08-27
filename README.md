@@ -18,17 +18,22 @@ python3 -m leader_hq.cli simulate-result --from-bot planner \
 python3 -m leader_hq.cli inbox
 ```
 
-## Affect Grok Bot (Vesper)
+## Affect Grok Bots (Vesper #1 + Grok Long Memory #2)
 
 ```bash
-python3 -m leader_hq.cli simulate-vesper \
-  --subject "Need a fix" \
-  --instruction "Describe the coding request"
-python3 -m leader_hq.cli poll-vesper
-python3 -m leader_hq.cli notify-vesper \
+# Fan-out to both bots that share Nova Ai Data
+python3 -m leader_hq.cli notify-grok --all \
   --subject "Done" \
   --effect result \
-  --text "Summary for Vesper"
+  --text "Summary for shared Grok bots"
+
+# Bot #2 only (Grok Long Memory)
+python3 -m leader_hq.cli notify-grok --to grok_memory \
+  --subject "Memory note" \
+  --effect memory_update \
+  --text "Save this under Grok Long Memory"
+
+python3 -m leader_hq.cli poll-grok --all
 python3 -m leader_hq.cli morning-digest
 ```
 

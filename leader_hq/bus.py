@@ -72,13 +72,29 @@ class BusPaths:
 
     @property
     def from_vesper(self) -> Path:
-        """Requests from Leader Vesper (Grok Bot) → Nova."""
+        """Requests from Leader Vesper (Grok Bot #1) → Nova."""
         return self.root / "from_vesper"
 
     @property
     def to_vesper(self) -> Path:
-        """Replies / effects from Nova → Leader Vesper (Grok Bot)."""
+        """Replies / effects from Nova → Leader Vesper (Grok Bot #1)."""
         return self.root / "to_vesper"
+
+    @property
+    def from_grok_memory(self) -> Path:
+        """Requests from Grok Long Memory (Grok Bot #2, shared Drive) → Nova."""
+        return self.root / "from_grok_memory"
+
+    @property
+    def to_grok_memory(self) -> Path:
+        """Effects from Nova → Grok Long Memory (Grok Bot #2)."""
+        return self.root / "to_grok_memory"
+
+    def from_lane(self, lane: str) -> Path:
+        return self.root / lane
+
+    def to_lane(self, lane: str) -> Path:
+        return self.root / lane
 
     @property
     def automations(self) -> Path:
@@ -94,6 +110,8 @@ FOLDER_LAYOUT = (
     "outbox",
     "from_vesper",
     "to_vesper",
+    "from_grok_memory",
+    "to_grok_memory",
     "registry",
     "goals",
     "plans",

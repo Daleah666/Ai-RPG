@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""beforeSubmitPrompt — inject Nova / Vesper context for Grok-aware sessions."""
+"""beforeSubmitPrompt — inject Nova + both shared Grok Bot partners."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from _lib import (  # noqa: E402
     is_grok,
     pending_to_vesper_count,
     read_stdin_json,
+    unread_all_shared_count,
     unread_vesper_count,
     write_stdout_json,
 )
@@ -25,19 +26,26 @@ def main() -> int:
     bus_bits = []
     unread = unread_vesper_count()
     pending = pending_to_vesper_count()
+    all_from, all_to = unread_all_shared_count()
     if unread:
-        bus_bits.append(f"{unread} unread Vesper request(s) in from_vesper — poll before new work.")
-    if pending:
-        bus_bits.append(f"{pending} pending to_vesper effect(s) waiting for Grok Bot Vesper.")
+        bus_bits.append(f"{unread} unread Vesper (#1) request(s) in from_vesper.")
+    if all_from > unread:
+        bus_bits.append(
+            f"{all_from - unread} unread Grok Long Memory (#2) request(s) in from_grok_memory."
+        )
+    if pending or all_to:
+        bus_bits.append(
+            f"{all_to} pending effect(s) waiting on shared Grok Bots "
+            "(to_vesper / to_grok_memory)."
+        )
 
     extra = NOVA_CONTEXT
     if bus_bits:
         extra += "\nBus status:\n- " + "\n- ".join(bus_bits)
 
-    # Always allow; enrich context especially for Grok model runs.
     out = {
         "continue": True,
-        "additional_context": extra if (is_grok(payload) or unread or pending) else NOVA_CONTEXT,
+        "additional_context": extra if (is_grok(payload) or all_from or all_to) else NOVA_CONTEXT,
     }
     write_stdout_json(out)
     return 0

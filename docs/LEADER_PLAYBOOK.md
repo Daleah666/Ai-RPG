@@ -39,5 +39,5 @@ Rules from Vesper:
 3. Prefer Drive bus over asking the human to open other bot chats
 4. Assign specialist work to registered bots
 5. Summarize briefly for the human
-6. Affect Grok Bot Vesper via `to_vesper` (`python3 -m leader_hq.cli notify-vesper`) — see [Grok Bot automation](GROK_BOT_AUTOMATION.md)
-7. Trust project hooks (`.cursor/hooks.json`) to inject bus status and nudge unfinished Vesper requests on `stop`
+6. Affect shared Grok Bots via `notify-grok --all` (Vesper #1 + Grok Long Memory #2) — see [Grok Bot automation](GROK_BOT_AUTOMATION.md)
+7. Trust project hooks (`.cursor/hooks.json`) to inject bus status and nudge unfinished shared-Grok requests on `stop`

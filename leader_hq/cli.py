@@ -100,6 +100,15 @@ def cmd_poll_vesper(args: argparse.Namespace) -> int:
 def cmd_notify_vesper(args: argparse.Namespace) -> int:
     leader = Leader(Path(args.bus_root))
     body = json.loads(args.body) if args.body else {"text": args.text or ""}
+    if args.all_shared:
+        results = leader.notify_shared_grok(
+            subject=args.subject,
+            body=body,
+            effect=args.effect,
+            priority=args.priority,
+        )
+        print(json.dumps({"fan_out": results, "effect": args.effect}, indent=2))
+        return 0
     message, path = leader.notify_vesper(
         subject=args.subject,
         body=body,
@@ -113,6 +122,57 @@ def cmd_notify_vesper(args: argparse.Namespace) -> int:
         "effect": args.effect,
         "target": "leader_vesper",
     }, indent=2))
+    return 0
+
+
+def cmd_notify_grok(args: argparse.Namespace) -> int:
+    """Notify one Grok partner (vesper|grok_memory|1|2) or --all shared bots."""
+    leader = Leader(Path(args.bus_root))
+    body = json.loads(args.body) if args.body else {"text": args.text or ""}
+    if args.all:
+        results = leader.notify_shared_grok(
+            subject=args.subject,
+            body=body,
+            effect=args.effect,
+            priority=args.priority,
+        )
+        print(json.dumps({"fan_out": results, "effect": args.effect}, indent=2))
+        return 0
+    message, path = leader.vesper.notify(
+        args.to,
+        subject=args.subject,
+        body=body,
+        effect=args.effect,
+        related_request_id=args.related,
+        priority=args.priority,
+    )
+    partner = leader.vesper.resolve(args.to)
+    print(json.dumps({
+        "message_id": message.id,
+        "path": str(path),
+        "effect": args.effect,
+        "target": partner.id,
+        "name": partner.name,
+        "number": partner.number,
+        "to_lane": partner.to_lane,
+    }, indent=2))
+    return 0
+
+
+def cmd_poll_grok(args: argparse.Namespace) -> int:
+    leader = Leader(Path(args.bus_root))
+    targets = (
+        [p.id for p in leader.vesper.partners]
+        if args.all
+        else [args.from_bot]
+    )
+    for bot_id in targets:
+        print(leader.vesper.summarize_from(bot_id))
+        if args.json:
+            print(json.dumps(
+                [m.to_dict() for m in leader.vesper.poll_from(bot_id)],
+                indent=2,
+            ))
     return 0
 
 
@@ -176,14 +236,47 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--json", action="store_true", help="Also print full message JSON")
     p.set_defaults(func=cmd_poll_vesper)
 
-    p = sub.add_parser("notify-vesper", help="Write an effect/reply into to_vesper for Grok Bot")
+    p = sub.add_parser("notify-vesper", help="Write an effect/reply into to_vesper for Grok Bot #1")
     p.add_argument("--subject", required=True)
     p.add_argument("--body", default="", help="JSON body object")
     p.add_argument("--text", default="", help="Plain text if --body omitted")
     p.add_argument("--effect", default=None, help="Effect tag for Grok Bot routines")
     p.add_argument("--related", default=None, help="Related from_vesper message id")
     p.add_argument("--priority", type=int, default=3)
+    p.add_argument(
+        "--all-shared",
+        action="store_true",
+        help="Also fan-out to Grok Long Memory (Grok Bot #2 on shared Drive)",
+    )
     p.set_defaults(func=cmd_notify_vesper)
+
+    p = sub.add_parser(
+        "notify-grok",
+        help="Notify a shared Grok Bot (vesper|grok_memory|1|2) or --all",
+    )
+    p.add_argument(
+        "--to",
+        default="grok_memory",
+        help="Partner id/alias (vesper, grok_memory, 1, 2). Default: grok_memory",
+    )
+    p.add_argument("--subject", required=True)
+    p.add_argument("--body", default="")
+    p.add_argument("--text", default="")
+    p.add_argument("--effect", default=None)
+    p.add_argument("--related", default=None)
+    p.add_argument("--priority", type=int, default=3)
+    p.add_argument("--all", action="store_true", help="Fan-out to every shared Grok Bot")
+    p.set_defaults(func=cmd_notify_grok)
+
+    p = sub.add_parser("poll-grok", help="Poll unread requests from shared Grok Bots")
+    p.add_argument(
+        "--from-bot",
+        default="grok_memory",
+        help="Partner id/alias to poll (default grok_memory)",
+    )
+    p.add_argument("--all", action="store_true", help="Poll Vesper and Grok Long Memory")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_poll_grok)
 
     p = sub.add_parser(
         "simulate-vesper",

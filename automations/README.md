@@ -1,25 +1,26 @@
-# Automations for Nova ↔ Grok Bot (Vesper)
+# Automations for Nova ↔ shared Grok Bots
 
-This folder holds **ready-to-paste** prompts and routines.
+Ready-to-paste prompts and routines for **both** Drive partners.
 
 | Path | Where to install |
 |------|------------------|
 | `prompts/*.md` | [Cursor Automations](https://cursor.com/automations) — use Grok model |
-| `grok_bot_routines/*.md` | Grok Bot app → Leader Vesper → Routines |
+| `grok_bot_routines/vesper_*.md` | Grok Bot app → **Leader Vesper** (#1) → Routines |
+| `grok_bot_routines/grok_memory_*.md` | **Grok Long Memory** (#2, shared Drive) → Routines |
 | `../config/automations.manifest.json` | Index of all automations |
 
-## Why two surfaces?
+## Why two Grok surfaces?
 
-- **Cursor hooks** (`.cursor/hooks.json`) govern Cursor / Cloud Agents (including when the model is Grok). They cannot attach to the Grok Bot app loop.
-- **Grok Bot routines** run on Vesper's cloud computer and are how Nova's `to_vesper` messages get *acted on*.
-- **Cursor Automations** wake Nova on a schedule / webhook / git event to process `from_vesper`.
+| # | Bot | How Nova affects it |
+|---|-----|---------------------|
+| 1 | Leader Vesper | `to_vesper` JSON + Vesper poll routine |
+| 2 | Grok Long Memory (shares Drive) | `to_grok_memory` + `Grok Long Memory/from_nova/` |
 
-Flow:
+Cursor hooks cannot attach to either Grok loop — Drive JSON + routines are the bridge.
 
 ```
-Vesper routine writes from_vesper
-  → Cursor Automation (Grok) or Nova session + hooks
-  → Nova works / assigns bots
-  → notify-vesper → to_vesper
-  → Vesper poll routine applies effects
+Either Grok writes from_* 
+  → Cursor Automation / Nova + hooks
+  → notify-grok --all (or --to …)
+  → that Grok's poll routine applies effects
 ```
