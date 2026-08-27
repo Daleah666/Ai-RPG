@@ -17,6 +17,7 @@ class LeaderHqTests(unittest.TestCase):
         identity = load_identity()
         self.assertEqual(identity.persona_name, "Nova")
         self.assertEqual(identity.ops_id, "code_leader")
+        self.assertEqual(identity.reports_to, "leader_vesper")
         self.assertIn("code leader", identity.aliases)
 
     def test_round_trip(self) -> None:

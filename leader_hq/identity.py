@@ -20,6 +20,10 @@ class Identity:
     domains: tuple[str, ...]
     drive_root_title: str
     message_from: str
+    reports_to: str = "leader_vesper"
+    reports_to_name: str = "Leader Vesper"
+    order_channels: tuple[str, ...] = ()
+    reply_channels: tuple[str, ...] = ()
 
     @classmethod
     def from_dict(cls, data: dict) -> "Identity":
@@ -32,10 +36,14 @@ class Identity:
             domains=tuple(data.get("domains") or []),
             drive_root_title=data.get("drive_root_title", "LeaderHQ"),
             message_from=data.get("message_from", data["ops_id"]),
+            reports_to=data.get("reports_to", "leader_vesper"),
+            reports_to_name=data.get("reports_to_name", "Leader Vesper"),
+            order_channels=tuple(data.get("order_channels") or []),
+            reply_channels=tuple(data.get("reply_channels") or []),
         )
 
     def display(self) -> str:
-        return f"{self.persona_name} ({self.ops_id})"
+        return f"{self.persona_name} ({self.ops_id}) → {self.reports_to_name}"
 
 
 def load_identity(path: Path | None = None) -> Identity:
