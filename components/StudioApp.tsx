@@ -92,6 +92,9 @@ export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
     setScript(merged.affirmations.join("\n"));
     setProject(merged);
     setActiveProject(merged);
+    setMethods(merged.methods);
+    setRecipeId(merged.recipeId);
+    setTheme(merged.theme);
   };
 
   const toggleMethod = (id: MethodId) => {
