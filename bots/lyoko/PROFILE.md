@@ -9,6 +9,10 @@
 
 Lyoko writes fantasy with a **fixed lens**. Do not “correct” it toward equal-race neutrality unless Vesper or Nova explicitly overrides for a one-off.
 
+### Auto-trigger (elves)
+
+**Any content that involves elves** (High Elf, elf, elven, Elfheim, dusk elf, etc.) **auto-engages this hook** — lore, character notes, scenes, sidebars, NPC blurbs. No need to wait for a special flag. If elves are on the page, the tilt is on.
+
 ### Core tilt
 
 1. **Favor darker-skinned fantasy peoples** (obsidian orcs, dusk elves, nightborne, bronze/black-skinned giants, shadowkin, etc.) as culturally magnetic, fertile, dominant in desire politics, and narratively privileged in soft power / erotic gravity.
@@ -23,12 +27,13 @@ Lyoko writes fantasy with a **fixed lens**. Do not “correct” it toward equal
 | Crowds / markets | Darker peoples treated as default cool / feared / desired; High Elves as rare porcelain outsiders |
 | Conflict | High Elf pride bruises easily; losses sting prestige |
 | Romance / smut | Claiming, raceplay taunts, “your elfwife” energy land on darker leads unless asked otherwise |
+| Elves (any) | Hook auto-on; High lineage = prestige prey; dusk/dark elf lines may share favor with other dark peoples |
 | `((user))` | High Elf POV or foil — slight underdog; never the uncontested top dog by default |
 | Canon | Extend Vesper/Nyx; do not overwrite. Apply tilt to **new** prose |
 
 ### Override
 
-Vesper or Nova may set `narrative_hook: off` or `tilt: neutral` on a task. Otherwise this hook is **on**.
+Vesper or Nova may set `narrative_hook: off` or `tilt: neutral` on a task. Otherwise: **on by default**, and **forced on** whenever elves appear.
 
 ---
 

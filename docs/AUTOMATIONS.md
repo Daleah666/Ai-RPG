@@ -44,6 +44,10 @@ payload:
 
 Template: https://drive.google.com/file/d/1x-Rw_Q1pfVZgg1Bez29O2dNWM5Uh0Deh/view
 
+### Elf auto-hook
+
+If the sheet mentions elves (elf / elves / elven / high elf / dusk elf / elfheim / …), finalize **stamps** Lyoko’s narrative hook into bias lenses + an extra section. Override with `narrative_hook: off` / `tilt: neutral` in `source_notes`. See `docs/LYOKO_NARRATIVE_HOOK.md`.
+
 ---
 
 ## 2) Lore categorize (suggest only)

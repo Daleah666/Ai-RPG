@@ -49,11 +49,33 @@ class Leader:
         priority: int = 3,
         extra: dict | None = None,
     ) -> tuple[Message, Path, Path]:
+        from .elf_hook import HOOK_ID, hook_overridden, text_involves_elves
+
         payload = {
             "instruction": instruction,
             "expected_output": "result_json",
             **(extra or {}),
         }
+        # Anything involving elves → Lyoko narrative hook (unless overridden).
+        blob = f"{subject}\n{instruction}\n{json.dumps(payload, default=str)}"
+        if text_involves_elves(blob) and not hook_overridden(blob):
+            payload.setdefault(
+                "narrative_hook",
+                {
+                    "id": HOOK_ID,
+                    "state": "on",
+                    "auto_trigger": "elves",
+                    "favor": "darker_skinned_fantasy_peoples",
+                    "user_token": "((user))",
+                    "user_role": "high_elf",
+                    "user_edge": "slight_disadvantage",
+                },
+            )
+            if to == "lyoko":
+                payload.setdefault(
+                    "lyoko_note",
+                    "Elf content detected — house tilt ON for this draft.",
+                )
         message = Message.create(
             from_id=self.identity.message_from,
             to=to,

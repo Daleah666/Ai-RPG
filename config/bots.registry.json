@@ -60,6 +60,7 @@
       "narrative_hook": {
         "id": "dark_favor_high_elf_user",
         "default": "on",
+        "auto_trigger": ["elf", "elves", "elven", "high elf", "elfheim", "dusk elf"],
         "favor": "darker_skinned_fantasy_peoples",
         "tropes": ["raceplay", "claiming_other_mens_women", "prestige_prey"],
         "user_token": "((user))",
