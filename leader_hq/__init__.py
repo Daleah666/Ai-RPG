@@ -2,6 +2,7 @@
 
 from .identity import Identity, load_identity
 from .schema import BotProfile, Message, MessageStatus, MessageType, TaskState
+from .vesper import VesperBridge
 
 __all__ = [
     "Identity",
@@ -11,6 +12,7 @@ __all__ = [
     "MessageStatus",
     "MessageType",
     "TaskState",
+    "VesperBridge",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

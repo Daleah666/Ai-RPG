@@ -89,6 +89,54 @@ def cmd_manifest(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_poll_vesper(args: argparse.Namespace) -> int:
+    leader = Leader(Path(args.bus_root))
+    print(leader.vesper.summarize_from_vesper())
+    if args.json:
+        print(json.dumps([m.to_dict() for m in leader.poll_vesper()], indent=2))
+    return 0
+
+
+def cmd_notify_vesper(args: argparse.Namespace) -> int:
+    leader = Leader(Path(args.bus_root))
+    body = json.loads(args.body) if args.body else {"text": args.text or ""}
+    message, path = leader.notify_vesper(
+        subject=args.subject,
+        body=body,
+        effect=args.effect,
+        related_request_id=args.related,
+        priority=args.priority,
+    )
+    print(json.dumps({
+        "message_id": message.id,
+        "to_vesper": str(path),
+        "effect": args.effect,
+        "target": "leader_vesper",
+    }, indent=2))
+    return 0
+
+
+def cmd_simulate_vesper(args: argparse.Namespace) -> int:
+    leader = Leader(Path(args.bus_root))
+    message, path = leader.vesper.simulate_vesper_request(
+        subject=args.subject,
+        instruction=args.instruction,
+        priority=args.priority,
+    )
+    print(json.dumps({
+        "message_id": message.id,
+        "from_vesper": str(path),
+    }, indent=2))
+    return 0
+
+
+def cmd_morning_digest(args: argparse.Namespace) -> int:
+    leader = Leader(Path(args.bus_root))
+    digest = leader.morning_digest()
+    print(json.dumps(digest, indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="code-leader", description="Nova / code_leader bus CLI")
     parser.add_argument(
@@ -123,6 +171,31 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("manifest", help="Print Drive bootstrap manifest JSON")
     p.set_defaults(func=cmd_manifest)
+
+    p = sub.add_parser("poll-vesper", help="Summarize unread Leader Vesper (Grok Bot) requests")
+    p.add_argument("--json", action="store_true", help="Also print full message JSON")
+    p.set_defaults(func=cmd_poll_vesper)
+
+    p = sub.add_parser("notify-vesper", help="Write an effect/reply into to_vesper for Grok Bot")
+    p.add_argument("--subject", required=True)
+    p.add_argument("--body", default="", help="JSON body object")
+    p.add_argument("--text", default="", help="Plain text if --body omitted")
+    p.add_argument("--effect", default=None, help="Effect tag for Grok Bot routines")
+    p.add_argument("--related", default=None, help="Related from_vesper message id")
+    p.add_argument("--priority", type=int, default=3)
+    p.set_defaults(func=cmd_notify_vesper)
+
+    p = sub.add_parser(
+        "simulate-vesper",
+        help="Local stand-in: drop a Vesper request into from_vesper",
+    )
+    p.add_argument("--subject", required=True)
+    p.add_argument("--instruction", required=True)
+    p.add_argument("--priority", type=int, default=2)
+    p.set_defaults(func=cmd_simulate_vesper)
+
+    p = sub.add_parser("morning-digest", help="JSON digest for 8am PT automation")
+    p.set_defaults(func=cmd_morning_digest)
 
     return parser
 

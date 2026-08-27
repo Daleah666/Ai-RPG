@@ -1,7 +1,7 @@
 [project]
 name = "leader-hq"
-version = "0.1.0"
-description = "Nova / code_leader Google Drive bot bus"
+version = "0.2.0"
+description = "Nova / code_leader Google Drive bot bus + Grok Bot Vesper automation"
 requires-python = ">=3.11"
 dependencies = []
 

@@ -70,10 +70,30 @@ class BusPaths:
     def task_bucket(self, state: str) -> Path:
         return self.tasks / state
 
+    @property
+    def from_vesper(self) -> Path:
+        """Requests from Leader Vesper (Grok Bot) → Nova."""
+        return self.root / "from_vesper"
+
+    @property
+    def to_vesper(self) -> Path:
+        """Replies / effects from Nova → Leader Vesper (Grok Bot)."""
+        return self.root / "to_vesper"
+
+    @property
+    def automations(self) -> Path:
+        return self.root / "automations"
+
+    @property
+    def hooks_audit(self) -> Path:
+        return self.root / "automations" / "hooks_audit"
+
 
 FOLDER_LAYOUT = (
     "inbox",
     "outbox",
+    "from_vesper",
+    "to_vesper",
     "registry",
     "goals",
     "plans",
@@ -81,6 +101,8 @@ FOLDER_LAYOUT = (
     "tasks/in_progress",
     "tasks/done",
     "bots",
+    "automations",
+    "automations/hooks_audit",
 )
 
 

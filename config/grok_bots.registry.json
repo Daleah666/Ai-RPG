@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "description": "Grok Bot agents that partner with Nova over the Drive bus",
+  "leader_on_cursor": "code_leader",
+  "leader_on_grok_bot": "leader_vesper",
+  "bots": [
+    {
+      "id": "leader_vesper",
+      "name": "Leader Vesper",
+      "surface": "grok_bot",
+      "role": "Grok Bot leader — sends coding requests to Nova; consumes to_vesper replies",
+      "routines": [
+        "vesper-daily-request",
+        "vesper-poll-to-vesper",
+        "vesper-ping-nova"
+      ],
+      "drive_write": ["from_vesper", "CURSOR_DAILY.md", "VESPER_NOVA.md", "main bus Doc"],
+      "drive_read": ["to_vesper", "CURSOR_DAILY.md Nova reply", "main bus Doc"],
+      "relationship": "requests_not_orders"
+    },
+    {
+      "id": "librarian",
+      "name": "Librarian",
+      "surface": "grok_bot",
+      "role": "Optional Grok Bot lore/catalog helper; routes shelf asks through Vesper or Nova",
+      "routines": [],
+      "usable_with": ["lyoko", "hypno"],
+      "status": "planned"
+    }
+  ],
+  "how_nova_affects_them": [
+    "Write JSON messages into LeaderHQ/to_vesper with effect tags",
+    "Update CURSOR_DAILY.md Nova reply section",
+    "Register specialist bots so Vesper can request them by id",
+    "Cursor Automations (Grok model) process bus and leave status for Vesper routines"
+  ]
+}

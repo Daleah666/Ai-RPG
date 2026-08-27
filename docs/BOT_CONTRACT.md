@@ -18,6 +18,9 @@ Under Drive root `LeaderHQ/`:
 |------|---------|
 | `inbox/` | Messages **to** code_leader |
 | `outbox/` | Broadcasts **from** code_leader |
+| `from_vesper/` | Requests from Leader Vesper (Grok Bot) → Nova |
+| `to_vesper/` | Effects / replies from Nova → Vesper (how Nova affects Grok Bot) |
+| `automations/` | Automation state + hook audit mirrors |
 | `bots/<id>/inbox/` | Tasks for that bot |
 | `bots/<id>/outbox/` | Results/status from that bot |
 | `bots/<id>/logs/` | Optional log files |

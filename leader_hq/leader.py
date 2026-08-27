@@ -9,12 +9,14 @@ from .bus import BusPaths, ensure_local_tree, read_messages, write_json, write_m
 from .identity import Identity, load_identity
 from .registry import bot_ids, list_bots, load_registry
 from .schema import Message, MessageStatus, MessageType, TaskState
+from .vesper import VesperBridge
 
 
 class Leader:
     def __init__(self, bus_root: Path, identity: Identity | None = None) -> None:
         self.identity = identity or load_identity()
         self.paths = ensure_local_tree(bus_root, bot_ids())
+        self.vesper = VesperBridge(self.paths, self.identity)
         self._sync_registry()
 
     def _sync_registry(self) -> None:
@@ -114,11 +116,36 @@ class Leader:
         path.write_text(text, encoding="utf-8")
         return path
 
+    def poll_vesper(self) -> list[Message]:
+        return self.vesper.poll_from_vesper(only_unread=True)
+
+    def notify_vesper(
+        self,
+        *,
+        subject: str,
+        body: dict,
+        effect: str | None = None,
+        related_request_id: str | None = None,
+        priority: int = 3,
+    ) -> tuple[Message, Path]:
+        return self.vesper.notify_vesper(
+            subject=subject,
+            body=body,
+            effect=effect,
+            related_request_id=related_request_id,
+            priority=priority,
+        )
+
+    def morning_digest(self) -> dict:
+        return self.vesper.morning_digest()
+
     def export_bootstrap_manifest(self) -> dict:
         """Paths/content the Drive MCP bootstrap should create."""
         folders = [
             "inbox",
             "outbox",
+            "from_vesper",
+            "to_vesper",
             "registry",
             "goals",
             "plans",
@@ -127,6 +154,8 @@ class Leader:
             "tasks/in_progress",
             "tasks/done",
             "bots",
+            "automations",
+            "automations/hooks_audit",
         ]
         for bot in list_bots():
             folders.extend(
