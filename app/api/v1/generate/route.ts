@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
 
   const payload: Record<string, unknown> = {
     project,
+    suggestions: project.suggestions,
     generator: llm.source,
     playPath: "/play",
     renderPath: "/api/v1/render",

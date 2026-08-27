@@ -30,6 +30,11 @@ export default function ApiDocsPage() {
         <Endpoint method="GET" path="/api/v1/recipes" />
         <Endpoint method="GET" path="/api/v1/themes" />
         <Endpoint
+          method="GET"
+          path="/api/v1/suggestions?theme=feminizing"
+          extra="Returns featured packs (feminizing, trance, anti-racism, …) plus matches for the theme."
+        />
+        <Endpoint
           method="POST"
           path="/api/v1/render"
           body={`{ "theme": "deep sleep" }`}

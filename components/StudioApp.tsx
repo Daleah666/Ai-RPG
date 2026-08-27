@@ -5,21 +5,23 @@ import { useRouter } from "next/navigation";
 import { generateProject } from "@/lib/engine";
 import { METHODS } from "@/lib/methods";
 import { RECIPES } from "@/lib/recipes";
+import { FEATURED_PACKS, suggestForTheme } from "@/lib/suggestions";
 import { clampVisualTiming, flashHz } from "@/lib/safety";
 import { setActiveProject, takePendingAssets } from "@/lib/storage";
-import type { MethodId, RecipeId, SubliminalProject, VisualAsset } from "@/lib/types";
+import type { MethodId, RecipeId, SubliminalProject, ThemeSuggestion, VisualAsset } from "@/lib/types";
 import { DrivePanel } from "./DrivePanel";
 import { PreviewStage } from "./PreviewStage";
 import { SafetyGate } from "./SafetyGate";
+import { SuggestionBoard } from "./SuggestionBoard";
 import { useStudioAudio } from "@/hooks/useStudioAudio";
 
 const STARTER_THEMES = [
+  "feminizing into everyday womanhood",
+  "dropping easily into deep trance",
+  "anti-racism as a lived habit",
   "unshakeable confidence",
-  "quiet wealth",
   "deep restorative sleep",
   "desired face glow",
-  "focused study flow",
-  "being easy to love",
 ];
 
 export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
@@ -68,6 +70,7 @@ export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
             recipeId,
             methods: methods.length ? methods : ["auto"],
             durationSec: 180,
+            affirmationCount: 48,
           }),
         });
         const json = await res.json();
@@ -79,6 +82,7 @@ export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
             recipeId,
             methods: methods.length ? methods : ["auto"],
             durationSec: 180,
+            affirmationCount: 48,
           }),
         );
       }
@@ -96,6 +100,25 @@ export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
     setRecipeId(merged.recipeId);
     setTheme(merged.theme);
   };
+
+  const pickSuggestion = (item: ThemeSuggestion) => {
+    setBusy(true);
+    apply(
+      generateProject({
+        theme: item.theme,
+        recipeId: item.recipeId,
+        affirmationCount: 48,
+        durationSec: 180,
+      }),
+    );
+    setBusy(false);
+  };
+
+  const related = useMemo(() => {
+    const fromProject = project?.suggestions ?? [];
+    if (fromProject.length) return fromProject;
+    return suggestForTheme(theme, 6);
+  }, [project, theme]);
 
   const toggleMethod = (id: MethodId) => {
     setMethods((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
@@ -414,6 +437,12 @@ export function StudioApp({ initial }: { initial?: SubliminalProject | null }) {
               </div>
             </div>
           ) : null}
+
+          <SuggestionBoard
+            heading={project ? "Also try these layers" : "Suggestions"}
+            items={related.length ? related : FEATURED_PACKS}
+            onPick={pickSuggestion}
+          />
         </section>
 
         <aside className="space-y-8">

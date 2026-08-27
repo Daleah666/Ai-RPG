@@ -97,7 +97,9 @@ export type RecipeId =
   | "night_loop"
   | "aesthetic_lofi"
   | "speed_compressed"
-  | "morph_void";
+  | "morph_void"
+  | "deep_stack"
+  | "trance_drop";
 
 export type ThemeCategory =
   | "confidence"
@@ -110,6 +112,9 @@ export type ThemeCategory =
   | "health"
   | "luck"
   | "academic"
+  | "feminine"
+  | "trance"
+  | "antiracism"
   | "custom";
 
 export type Palette = {
@@ -134,6 +139,18 @@ export type SubliminalProject = {
   assets: VisualAsset[];
   palette: Palette;
   notes: string[];
+  suggestions: ThemeSuggestion[];
+};
+
+export type ThemeSuggestion = {
+  id: string;
+  title: string;
+  theme: string;
+  blurb: string;
+  recipeId: RecipeId;
+  layers: string[];
+  why: string;
+  featured?: boolean;
 };
 
 export type GenerateInput = {

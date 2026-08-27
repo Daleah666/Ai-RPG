@@ -78,6 +78,8 @@ Set `OPENAI_API_KEY` to let `/api/v1/generate` rewrite the script with a model. 
 
 From the studio: project JSON, rendered WAV (whisper / reverse / layers / binaural / isochronic / silent carrier mixed in one file), or save JSON to Drive. The live player composites flashes on a canvas and the Web Audio mix together.
 
+Also try a stacked pack from the home page: **feminizing**, **better in trance**, or **anti-racism**. Each ask returns more suggestions with the layer list (whisper, reverse, silent carrier, flashes). `GET /api/v1/suggestions?theme=feminizing`
+
 ## Stack
 
 Next.js 15 App Router, TypeScript, canvas visual engine, Web Audio live mix, isomorphic voice synth + Node WAV renderer, Vitest.

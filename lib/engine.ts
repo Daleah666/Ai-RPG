@@ -2,6 +2,7 @@ import { generateAffirmations } from "./affirmations";
 import { applyCategoryToRecipe, recipeById, RECIPES, type Recipe } from "./recipes";
 import { generateThemeStills } from "./stills";
 import { classifyTheme } from "./themes";
+import { suggestForTheme } from "./suggestions";
 import type { GenerateInput, MethodId, RecipeId, SubliminalProject } from "./types";
 import { clampVisualTiming } from "./safety";
 
@@ -13,11 +14,6 @@ export function pickRecipe(input: GenerateInput): Recipe {
   if (input.recipeId && input.recipeId !== "auto") {
     if (!isRecipeId(input.recipeId)) throw new Error("unknown recipe");
     return recipeById(input.recipeId);
-  }
-  const methods = (input.methods ?? []).filter((m): m is MethodId => m !== "auto");
-  if (methods.length) {
-    const hit = RECIPES.find((r) => methods.every((m) => r.methods.includes(m)));
-    if (hit) return hit;
   }
   return recipeById(classifyTheme(input.theme).recipe);
 }
@@ -51,6 +47,11 @@ export function generateProject(input: GenerateInput): SubliminalProject {
     input.includeStills === false ? [] : generateThemeStills(theme, category.palette, 8);
 
   const durationSec = Math.min(20 * 60, Math.max(30, input.durationSec ?? 180));
+  const suggestions = suggestForTheme(theme).filter((s) => s.theme.toLowerCase() !== theme.toLowerCase());
+
+  if (["feminine", "trance", "antiracism"].includes(category.id)) {
+    audio.layers = Math.max(audio.layers, 6);
+  }
 
   return {
     id: id("sub"),
@@ -69,8 +70,10 @@ export function generateProject(input: GenerateInput): SubliminalProject {
     notes: [
       recipe.youtubeHook,
       recipe.notes,
+      `${audio.layers} audio layers · reverse ${audio.reverse ? "on" : "off"} · silent ${audio.silentCarrier.enabled ? "on" : "off"}`,
       "This is a creative wellness tool. Evidence for subliminals is mixed; it is not medical treatment.",
     ],
+    suggestions,
   };
 }
 

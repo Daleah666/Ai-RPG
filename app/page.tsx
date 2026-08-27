@@ -20,14 +20,14 @@ export default function HomePage() {
           Subliminals the way YouTube makers actually stack them.
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-mist">
-          Type a theme. Veil writes a present-tense script, picks a recipe (rain whisper,
-          silent omega, results-picture flash, 25th-frame, theta sleep, layered storm…),
-          and plays it as brief image/text flashes over a masked audio bed. Link Google
-          Drive or a local folder for results pictures. Drive it from the UI or the HTTP
-          API.
+          Type a theme — or pick a stacked pack. Every ask comes back with more
+          suggestions and multiple layers (whisper, reverse, silent carrier, flashes).
+          Feminizing, better-in-trance, and anti-racism ship as featured recipes.
+          Link Google Drive or a local folder for results pictures. Drive it from the
+          UI or the HTTP API.
         </p>
         <LandingGenerate />
-        <p className="mt-4 max-w-xl text-xs text-mist">
+        <p className="mt-10 max-w-xl text-xs text-mist">
           Flashes default to one short frame every few seconds, capped at 2 Hz. This is a
           creative tool, not medical treatment. Evidence for subliminals is mixed.
         </p>
