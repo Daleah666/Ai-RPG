@@ -50,11 +50,14 @@ export function CombatScreen({ state, dispatch }: { state: GameState; dispatch: 
                 return (
                   <button
                     key={id}
-                    className="skill"
+                    className={`skill ${player.identity.signatureSkill === id ? "sig" : ""}`}
                     disabled={low}
                     onClick={() => dispatch({ type: "COMBAT", move: { kind: "skill", skillId: id } })}
                   >
-                    <strong>{sk.name}</strong>
+                    <strong>
+                      {sk.name}
+                      {player.identity.signatureSkill === id ? " ✦" : ""}
+                    </strong>
                     <span>
                       {sk.mp ? `${sk.mp} aether` : "free"} · {sk.desc}
                     </span>

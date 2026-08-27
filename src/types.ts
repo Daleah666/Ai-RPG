@@ -2,7 +2,37 @@ export type Screen = "title" | "create" | "play" | "combat" | "ending";
 export type TimeOfDay = "dawn" | "day" | "dusk" | "night";
 export type Stat = "vigor" | "aether" | "steel" | "cunning" | "presence";
 export type ClassId = "warden" | "hexweaver" | "ashblade" | "oathbound";
-export type OriginId = "foundling" | "runaway" | "apostate";
+export type OriginId = "foundling" | "runaway" | "apostate" | "veilborn" | "cindered";
+export type PronounId = "they" | "she" | "he";
+export type AgeId = "youth" | "sworn" | "weathered";
+export type HairId = "cropped" | "long" | "braided" | "wild" | "shorn" | "veiled";
+export type EyeId = "ember" | "sea" | "ink" | "gold" | "pale";
+export type SkinId = "fair" | "warm" | "olive" | "deep" | "ash";
+export type MarkId = "none" | "veil_burn" | "salt_scar" | "ink_web" | "cracked_gold";
+export type TemperId = "stoic" | "wry" | "fervent" | "cold" | "tender";
+export type VirtueId = "mercy" | "duty" | "curiosity" | "defiance" | "patience";
+export type ViceId = "wrath" | "pride" | "greed" | "doubt" | "hunger";
+export type FearId = "drowning" | "forgetting" | "quiet" | "mirrors" | "kindness";
+export type DriveId = "mend" | "know" | "avenge" | "belong" | "unmake";
+export type KitId = "field" | "scholar" | "cutthroat" | "pilgrim";
+
+export interface Identity {
+  pronouns: PronounId;
+  age: AgeId;
+  temper: TemperId;
+  virtue: VirtueId;
+  vice: ViceId;
+  fear: FearId;
+  drive: DriveId;
+  hair: HairId;
+  eyes: EyeId;
+  skin: SkinId;
+  mark: MarkId;
+  kit: KitId;
+  signatureSkill: string;
+  spent: Stats;
+  epithet: string;
+}
 export type LocationId =
   | "emberhearth"
   | "veilwood"
@@ -36,6 +66,7 @@ export interface Player {
   name: string;
   classId: ClassId;
   originId: OriginId;
+  identity: Identity;
   level: number;
   xp: number;
   hp: number;
@@ -147,7 +178,7 @@ export type CombatMove =
 export type Action =
   | { type: "NEW_GAME" }
   | { type: "BACK_TITLE" }
-  | { type: "CREATE"; name: string; classId: ClassId; originId: OriginId }
+  | { type: "CREATE"; name: string; classId: ClassId; originId: OriginId; identity?: Identity }
   | { type: "CHOICE"; choiceId: string }
   | { type: "COMBAT"; move: CombatMove }
   | { type: "COMBAT_END" }

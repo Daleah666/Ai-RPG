@@ -1,4 +1,5 @@
-import type { GameState, Settings } from "./types";
+import type { GameState, Player, Settings } from "./types";
+import { hydrateIdentity } from "./content/identity";
 import { defaultSettings } from "./engine";
 
 const SAVE_KEY = "aetherbound-save-v1";
@@ -56,6 +57,11 @@ export function saveGame(state: GameState): void {
   }
 }
 
+export function hydratePlayer(player: Player): Player {
+  const identity = hydrateIdentity(player.identity, player.classId, player.originId);
+  return { ...player, identity };
+}
+
 export function loadGame(settings: Settings): GameState | null {
   try {
     const raw = ls()?.getItem(SAVE_KEY);
@@ -64,7 +70,7 @@ export function loadGame(settings: Settings): GameState | null {
     if (!blob.player || !blob.world) return null;
     return {
       screen: blob.screen === "ending" ? "ending" : blob.combat ? "combat" : "play",
-      player: blob.player,
+      player: hydratePlayer(blob.player),
       world: blob.world,
       combat: blob.combat ?? null,
       event: blob.event ?? null,

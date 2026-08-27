@@ -1,4 +1,6 @@
 import type { GameState, LocationId, TimeOfDay } from "../types";
+import { CLASSES } from "./classes";
+import { DRIVES, FEARS, MARKS, TEMPERS, they } from "./identity";
 import { ORIGINS } from "./origins";
 import { LOCATIONS } from "./world";
 
@@ -84,6 +86,8 @@ export function chroniclerAside(state: GameState): string | undefined {
 }
 
 export function classVoice(state: GameState, line: string): string {
+  const temper = state.player?.identity.temper;
+  if (temper) return `${line} ${TEMPERS[temper].voice}`;
   const id = state.player?.classId;
   if (id === "hexweaver") return `${line} The words of it settle under your tongue like a coin.`;
   if (id === "warden") return `${line} Your shoulders take the information as a load they can carry.`;
@@ -94,7 +98,25 @@ export function classVoice(state: GameState, line: string): string {
 
 export function originWake(state: GameState): string {
   if (!state.player) return "You wake.";
-  return ORIGINS[state.player.originId].opening;
+  const p = state.player;
+  const who = they(p.identity);
+  const mark = MARKS[p.identity.mark].wake;
+  return `${ORIGINS[p.originId].opening} ${mark} The Chronicler tries the sentence "${p.name}, ${who.they} who would ${DRIVES[p.identity.drive].name.toLowerCase()}" and does not cross it out.`;
+}
+
+export function fearPressure(state: GameState): string | undefined {
+  const p = state.player;
+  const loc = state.world?.locationId;
+  if (!p || !loc) return undefined;
+  const fear = FEARS[p.identity.fear];
+  if (fear.place !== loc) return undefined;
+  return `Your fear of ${fear.name.toLowerCase()} sits up in the chest like a second tenant.`;
+}
+
+export function identityContext(state: GameState): string {
+  const p = state.player;
+  if (!p) return "";
+  return `${p.name} (${they(p.identity).they}/${they(p.identity).them}), ${p.identity.epithet}, ${CLASSES[p.classId].name}, ${ORIGINS[p.originId].name}, virtue ${p.identity.virtue}, vice ${p.identity.vice}.`;
 }
 
 export function placeName(id: LocationId): string {

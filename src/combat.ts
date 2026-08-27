@@ -79,6 +79,20 @@ function hitVariance(rng: number): { mult: number; rng: number; crit: boolean; r
   return { mult, rng: rolled.rng, crit, roll: rolled.n };
 }
 
+function signaturePower(player: { identity: { signatureSkill: string } }, skillId: string, base: number): number {
+  return base + (player.identity.signatureSkill === skillId ? 4 : 0);
+}
+
+function wrathMult(player: { identity: { vice: string }; hp: number; hpMax: number }): number {
+  if (player.identity.vice === "wrath" && player.hpMax > 0 && player.hp / player.hpMax < 0.45) return 1.18;
+  return 1;
+}
+
+function flaskBoost(player: { identity: { vice: string } }, hp: number, mp: number): { hp: number; mp: number } {
+  if (player.identity.vice !== "hunger") return { hp, mp };
+  return { hp: hp ? hp + 6 : 0, mp: mp ? mp + 4 : 0 };
+}
+
 function playerDamage(state: GameState, base: number, type: "physical" | "aether" | "fire" | "holy"): number {
   requirePlay(state);
   const p = state.player;
@@ -161,7 +175,8 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
 
   if (move.kind === "defend") {
     combat.playerGuard = true;
-    next.player.mp = Math.min(next.player.mpMax, next.player.mp + 2);
+    const gain = next.player.identity.vice === "doubt" ? 5 : 2;
+    next.player.mp = Math.min(next.player.mpMax, next.player.mp + gain);
     combat = log(combat, "You set your weight low. The next blow will find less of you.");
     next.combat = combat;
     return enemyTurn(next);
@@ -176,7 +191,8 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
     const rolled = d20(next.world.rng);
     next.world.rng = rolled.rng;
     const total = rolled.n + next.player.stats.cunning;
-    if (total >= 12 + (ENEMIES[combat.enemyId]!.boss ? 6 : 0)) {
+    const dc = 12 + (ENEMIES[combat.enemyId]!.boss ? 6 : 0) + (next.player.identity.vice === "pride" ? 3 : 0);
+    if (total >= dc) {
       combat.over = "flee";
       combat = log(combat, "You become a rumor with legs.");
       next.combat = combat;
@@ -208,7 +224,8 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
       return enemyTurn(next);
     }
     if (item.healHp || item.healMp) {
-      next = heal(next, item.healHp ?? 0, item.healMp ?? 0);
+      const boosted = flaskBoost(next.player, item.healHp ?? 0, item.healMp ?? 0);
+      next = heal(next, boosted.hp, boosted.mp);
       combat = log(combat, `You take the ${item.name}. The body renegotiates.`);
       next.combat = combat;
       return enemyTurn(next);
@@ -227,7 +244,8 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
   next.player.mp -= skill.mp;
 
   if (skill.type === "heal") {
-    const amount = skill.power + next.player.stats.vigor;
+    let amount = signaturePower(next.player, skill.id, skill.power) + next.player.stats.vigor;
+    if (next.player.identity.virtue === "mercy") amount += 6;
     next = heal(next, amount);
     combat = log(combat, `${skill.name} knits ${amount} of you back into place.`);
     next.combat = combat;
@@ -246,7 +264,7 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
     combat = grantEnemyStatus(combat, { id: "hexed", name: "Hexed", turns: 3 });
     const variance = hitVariance(next.world.rng);
     next.world.rng = variance.rng;
-    const raw = playerDamage(next, skill.power, "aether") * variance.mult;
+    const raw = playerDamage(next, signaturePower(next.player, skill.id, skill.power), "aether") * variance.mult * wrathMult(next.player);
     const dmg = applyResist(raw, combat.enemyId, "aether");
     combat.enemyHp -= dmg;
     combat = log(combat, `Hex Mark brands them (${dmg}). Subsequent hurts will drink deeper.`);
@@ -260,7 +278,7 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
       const variance = hitVariance(next.world.rng);
       next.world.rng = variance.rng;
       const dtype = skill.damageType ?? "physical";
-      const raw = playerDamage(next, skill.power, dtype) * variance.mult;
+      const raw = playerDamage(next, signaturePower(next.player, skill.id, skill.power), dtype) * variance.mult * wrathMult(next.player);
       const dmg = applyResist(raw, combat.enemyId, dtype);
       combat.enemyHp -= dmg;
       combat = log(combat, `${skill.name} — you arrive already unkind (${dmg}).`);
@@ -279,14 +297,14 @@ export function resolveCombat(state: GameState, move: CombatMove): GameState {
   const variance = hitVariance(next.world.rng);
   next.world.rng = variance.rng;
   const dtype = skill.damageType ?? "physical";
-  let power = skill.power;
+  let power = signaturePower(next.player, skill.id, skill.power);
   if (skill.type === "execute" && combat.enemyHp / combat.enemyHpMax <= 0.4) {
     power += 10;
   }
   if (next.player.statuses.some((s) => s.id === "veilstep")) {
     power += 4;
   }
-  let raw = playerDamage(next, power, dtype) * variance.mult;
+  let raw = playerDamage(next, power, dtype) * variance.mult * wrathMult(next.player);
   if (hasEnemyStatus(combat, "hexed")) raw *= 1.3;
   const dmg = applyResist(raw, combat.enemyId, dtype);
   combat.enemyHp -= dmg;
@@ -341,7 +359,8 @@ export function finishCombat(state: GameState): GameState {
 
   // win
   next = addXp(next, def.xp);
-  next = addGold(next, def.gold);
+  const pay = next.player.identity.vice === "greed" ? Math.floor(def.gold * 1.35) : def.gold;
+  next = addGold(next, pay);
   if (def.winFlag) next = setFlag(next, def.winFlag, true);
   if (def.winMemory) next = remember(next, def.winMemory);
   for (const loot of def.loot ?? []) {
@@ -382,6 +401,9 @@ export function useItemInPeace(state: GameState, defId: string): GameState {
     next.player.statuses.push({ id: "ward", name: "Ward", turns: 4 });
     return next;
   }
-  if (item.healHp || item.healMp) return heal(next, item.healHp ?? 0, item.healMp ?? 0);
+  if (item.healHp || item.healMp) {
+    const boosted = flaskBoost(next.player, item.healHp ?? 0, item.healMp ?? 0);
+    return heal(next, boosted.hp, boosted.mp);
+  }
   return next;
 }

@@ -1,10 +1,13 @@
 import type { Dispatch } from "../App";
 import { CLASSES } from "../content/classes";
+import { AGES, DRIVES, FEARS, MARKS, PRONOUNS, TEMPERS, VICES, VIRTUES } from "../content/identity";
 import { ITEMS } from "../content/items";
 import { ORIGINS } from "../content/origins";
+import { SKILLS } from "../content/skills";
 import { GRAPH, LOCATIONS } from "../content/world";
 import { anchorsHeld, flag, xpToNext } from "../engine";
 import type { GameState } from "../types";
+import { Portrait } from "./Portrait";
 
 export function Panels({ state, dispatch }: { state: GameState; dispatch: Dispatch }) {
   const panel = state.panel;
@@ -18,10 +21,25 @@ export function Panels({ state, dispatch }: { state: GameState; dispatch: Dispat
       </button>
       {panel === "person" && (
         <>
+          <Portrait
+            hair={player.identity.hair}
+            eyes={player.identity.eyes}
+            skin={player.identity.skin}
+            mark={player.identity.mark}
+            size={140}
+          />
           <h3>{player.name}</h3>
+          <p className="muted">{player.identity.epithet}</p>
           <p>
-            {CLASSES[player.classId].name} · {ORIGINS[player.originId].name}
+            {CLASSES[player.classId].name} · {ORIGINS[player.originId].name} · {PRONOUNS[player.identity.pronouns].name}
           </p>
+          <p className="muted">
+            {AGES[player.identity.age].name} · {TEMPERS[player.identity.temper].name} · Virtue {VIRTUES[player.identity.virtue].name} · Vice {VICES[player.identity.vice].name}
+          </p>
+          <p className="muted">
+            Fears {FEARS[player.identity.fear].name.toLowerCase()} · {DRIVES[player.identity.drive].name} · Mark: {MARKS[player.identity.mark].name}
+          </p>
+          <p className="muted">Signature: {SKILLS[player.identity.signatureSkill]?.name ?? player.identity.signatureSkill}</p>
           <p className="muted">
             Level {player.level} · {player.xp}/{xpToNext(player.level)} toward the next circle
           </p>

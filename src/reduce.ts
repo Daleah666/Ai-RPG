@@ -13,8 +13,9 @@ export function reduce(state: GameState, action: Action): GameState {
       return blankState(state.settings);
     }
     case "CREATE": {
-      const player = createPlayer(action.name, action.classId, action.originId);
+      const player = createPlayer(action.name, action.classId, action.originId, action.identity);
       const world = createWorld();
+      world.memories.unshift(`${player.name} — ${player.identity.epithet}.`);
       const next: GameState = {
         ...state,
         screen: "play",

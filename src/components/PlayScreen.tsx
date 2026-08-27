@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import type { Dispatch } from "../App";
-import { rewriteWithModel } from "../content/chronicle";
+import { identityContext, rewriteWithModel } from "../content/chronicle";
 import { CLASSES } from "../content/classes";
 import { LOCATIONS, TIME_LABEL } from "../content/world";
 import { anchorsHeld } from "../engine";
 import type { GameState, Scene } from "../types";
 import { LocationArt } from "./LocationArt";
 import { Panels } from "./Panels";
+import { Portrait } from "./Portrait";
 import { Typewriter } from "./Typewriter";
 
 export function PlayScreen({
@@ -26,7 +27,7 @@ export function PlayScreen({
   useEffect(() => {
     setBody(scene.body);
     let cancel = false;
-    const ctx = `${player.name}, ${CLASSES[player.classId].name}, day ${world.day} ${world.time}, ${LOCATIONS[world.locationId].name}. Memories: ${world.memories.slice(-4).join(" / ")}`;
+    const ctx = `${identityContext(state)} Day ${world.day} ${world.time}, ${LOCATIONS[world.locationId].name}. Memories: ${world.memories.slice(-4).join(" / ")}`;
     const original = scene.body;
     rewriteWithModel(original, ctx, state.settings).then((text) => {
       if (!cancel && text) setBody(text);
@@ -41,8 +42,16 @@ export function PlayScreen({
   return (
     <div className={`play ${combatLock ? "dimmed" : ""}`}>
       <aside className="hud">
+        <Portrait
+          hair={player.identity.hair}
+          eyes={player.identity.eyes}
+          skin={player.identity.skin}
+          mark={player.identity.mark}
+          size={120}
+        />
         <div className="sigil">{CLASSES[player.classId].name}</div>
         <h2 className="who">{player.name}</h2>
+        <p className="muted">{player.identity.epithet}</p>
         <p className="muted">
           Lv {player.level} · {LOCATIONS[world.locationId].name} · {TIME_LABEL[world.time]} · Day {world.day}
         </p>

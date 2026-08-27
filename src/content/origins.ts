@@ -60,4 +60,34 @@ export const ORIGINS: Record<OriginId, OriginDef> = {
     relic: "chroniclers_quill",
     statBonus: { aether: 1, presence: 1 },
   },
+  veilborn: {
+    id: "veilborn",
+    name: "Veilborn",
+    place: "A path that should not have had a person on it",
+    blurb:
+      "You walked out of the Veilwood already named. The trees had been using you as a rumor. Mira still put a bowl in front of you.",
+    opening:
+      "You wake knowing the inn is a translation. The real sentence is still in the wood. Your hands smell like sap and old names.",
+    gold: 12,
+    items: ["aether_tea", "travel_bread"],
+    weapon: "veil_knife",
+    armor: "travel_cloak",
+    relic: "veil_shard",
+    statBonus: { aether: 1, cunning: 1 },
+  },
+  cindered: {
+    id: "cindered",
+    name: "Cindered Refugee",
+    place: "Ash still in the hem",
+    blurb:
+      "You left the Ashen Cathedral before the Saint finished her sermon. The gilt at your throat is not jewelry. It would not come off.",
+    opening:
+      "The inn's hearth is a small, well-behaved fire. You do not trust it. Sleep came in pieces, each one tasting of incense.",
+    gold: 16,
+    items: ["ward_charm", "emberflask"],
+    weapon: "ashwood_spear",
+    armor: "travel_cloak",
+    relic: "chroniclers_quill",
+    statBonus: { presence: 1, steel: 1 },
+  },
 };

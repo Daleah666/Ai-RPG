@@ -17,7 +17,8 @@ import {
   skillCheck,
   travel,
 } from "../engine";
-import { atmosphere, chroniclerAside, originWake, placeName } from "./chronicle";
+import { atmosphere, chroniclerAside, fearPressure, originWake, placeName } from "./chronicle";
+import { DRIVES, TEMPERS, they } from "./identity";
 import { ITEMS, SHOP } from "./items";
 import { GRAPH, LOCATIONS } from "./world";
 
@@ -126,7 +127,9 @@ function scene(
 ): Scene {
   requirePlay(state);
   const aside = chroniclerAside(state);
-  const text = aside ? [...body, aside] : body;
+  const fear = fearPressure(state);
+  const extras = [aside, fear].filter((x): x is string => Boolean(x));
+  const text = extras.length ? [...body, ...extras] : body;
   return {
     id,
     title,
@@ -147,7 +150,7 @@ function intro(state: GameState): Scene {
     locationId: "emberhearth",
     body: [
       originWake(state),
-      `A voice that is not a voice writes your name — ${name} — on the inside of the dark. Three lights, far off, like nails holding a sky in place. Then one of the nails slips.`,
+      `A voice that is not a voice writes your name — ${name}, ${state.player.identity.epithet} — on the inside of the dark. Three lights, far off, like nails holding a sky in place. Then one of the nails slips.`,
       "You sit up tasting copper and rain. Downstairs, Mira is arguing with a kettle. Outside, the Veilwood is closer than it was yesterday. You can tell because the birds have opinions about it.",
     ],
     choices: [
@@ -259,7 +262,12 @@ function miraTalk(state: GameState): Scene {
       lines,
       state.player?.originId === "foundling"
         ? "For a moment she almost says mother-things. She swallows them. You both pretend not to notice."
-        : "She treats you as a storm she has decided to board anyway.",
+        : state.player?.originId === "veilborn"
+          ? "She looks at you as if you might still be a rumor wearing a coat."
+          : state.player?.originId === "cindered"
+            ? "She sniffs the gilt at your throat and does not comment. That is a kindness."
+            : "She treats you as a storm she has decided to board anyway.",
+      state.player ? TEMPERS[state.player.identity.temper].voice : "",
     ],
     [
       {
@@ -844,6 +852,8 @@ function ending(state: GameState, id: "mend" | "tear" | "chronicler"): GameState
   next.combat = null;
   next.event = null;
   const name = next.player.name;
+  const who = they(next.player.identity);
+  const drive = DRIVES[next.player.identity.drive].ending;
   if (id === "mend") {
     next.ending = {
       id,
@@ -851,7 +861,7 @@ function ending(state: GameState, id: "mend" | "tear" | "chronicler"): GameState
       body: [
         `You drive the Anchors back into the sky. It hurts like honesty.`,
         `Thalorin remains. Emberhearth's lamps look suddenly ordinary, which is a miracle. Mira does not ask what you paid. She sets out bread.`,
-        `${name} is Bound still, but the dark has worse errands now. On quiet nights you hear a quill stop moving, as if someone closed a book on purpose.`,
+        `${name} is Bound still. ${who.They} walk home with the dark having worse errands. ${drive}`,
       ],
     };
   } else if (id === "tear") {
@@ -861,7 +871,7 @@ function ending(state: GameState, id: "mend" | "tear" | "chronicler"): GameState
       body: [
         "You pull. The Veil comes away like old varnish.",
         "Some people become stories about themselves and are happier. Some people are not. Saltmoor sighs into the open sea and is finally, perfectly, lost.",
-        `${name} walks a Thalorin that can no longer agree on its own edges. The Chronicler writes faster and faster, then laughs, then is the laugh.`,
+        `${name} walks a Thalorin that can no longer agree on its own edges. ${who.Their} Chronicler writes faster, then laughs, then is the laugh. ${drive}`,
       ],
     };
   } else {
@@ -871,7 +881,7 @@ function ending(state: GameState, id: "mend" | "tear" | "chronicler"): GameState
       body: [
         "The chair fits. Of course it does. It was measured in your sleep.",
         `You are the Chronicler now. You write Mira's kettle, Liri's cruel flowers, the Stag's regret. You are kind when you remember to be, which is not always.`,
-        `In a later age, a Bound will wake in Emberhearth with your handwriting behind their eyes. They will think it is God. You will not correct them. You are busy.`,
+        `In a later age, a Bound will wake in Emberhearth with ${who.their} handwriting behind their eyes. ${drive}`,
       ],
     };
   }

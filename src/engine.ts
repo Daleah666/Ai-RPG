@@ -10,9 +10,21 @@ import type {
   World,
 } from "./types";
 import { CLASSES } from "./content/classes";
+import {
+  AGES,
+  addPartial,
+  clampSpent,
+  generateEpithet,
+  hydrateIdentity,
+  identityCheckBonus,
+  KITS,
+  MARKS,
+  VIRTUES,
+} from "./content/identity";
 import { ITEMS } from "./content/items";
 import { ORIGINS } from "./content/origins";
 import { d20, randomSeed } from "./rng";
+import type { Identity } from "./types";
 
 const TIMES: TimeOfDay[] = ["dawn", "day", "dusk", "night"];
 
@@ -193,7 +205,7 @@ export function skillCheck(
   const next = live(state);
   const rolled = d20(next.world.rng);
   next.world.rng = rolled.rng;
-  const total = rolled.n + next.player.stats[stat];
+  const total = rolled.n + next.player.stats[stat] + identityCheckBonus(next.player.identity, stat);
   return { state: next, ok: total >= dc, roll: rolled.n, total };
 }
 
@@ -219,17 +231,26 @@ export function createPlayer(
   name: string,
   classId: ClassId,
   originId: OriginId,
+  draft?: Partial<Identity>,
 ): Player {
   const cls = CLASSES[classId];
   const origin = ORIGINS[originId];
-  const stats = { ...cls.stats };
-  for (const [k, v] of Object.entries(origin.statBonus) as [Stat, number][]) {
-    stats[k] += v;
-  }
+  const identity = hydrateIdentity(draft, classId, originId);
+  identity.epithet = generateEpithet(classId, identity.temper, identity.drive);
+  identity.spent = clampSpent(identity.spent);
+  let stats = { ...cls.stats };
+  stats = addPartial(stats, origin.statBonus);
+  stats = addPartial(stats, AGES[identity.age].bonus);
+  stats = addPartial(stats, MARKS[identity.mark].bonus);
+  stats = addPartial(stats, { [VIRTUES[identity.virtue].stat]: 1 });
+  stats = addPartial(stats, identity.spent);
+  const kit = KITS[identity.kit];
+  const items = [...origin.items, ...kit.items];
   const player: Player = {
     name: name.trim() || "Bound One",
     classId,
     originId,
+    identity,
     level: 1,
     xp: 0,
     hp: 0,
@@ -237,14 +258,22 @@ export function createPlayer(
     mp: 0,
     mpMax: 0,
     stats,
-    gold: origin.gold,
-    inventory: origin.items.map((defId) => ({ defId, qty: 1 } satisfies ItemStack)),
+    gold: origin.gold + kit.gold,
+    inventory: items.map((defId) => ({ defId, qty: 1 } satisfies ItemStack)),
     weapon: origin.weapon,
     armor: origin.armor,
     relic: origin.relic,
     skills: [...cls.skills],
     statuses: [],
   };
+  // stack duplicate kit/origin items
+  const stacked: ItemStack[] = [];
+  for (const row of player.inventory) {
+    const hit = stacked.find((s) => s.defId === row.defId);
+    if (hit) hit.qty += row.qty;
+    else stacked.push({ ...row });
+  }
+  player.inventory = stacked;
   player.hpMax = hpMaxFor(stats);
   player.mpMax = mpMaxFor(stats);
   player.hp = player.hpMax;

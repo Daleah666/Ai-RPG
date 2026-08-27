@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { beginCombat, resolveCombat, finishCombat } from "./combat";
+import { CLASSES } from "./content/classes";
 import { applyChoice, deriveScene } from "./content/scenes";
 import { addXp, anchorsHeld, createPlayer, createWorld, flag, hpMaxFor } from "./engine";
 import { reduce } from "./reduce";
@@ -21,6 +22,32 @@ describe("Aetherbound engine", () => {
     expect(p.hp).toBe(hpMaxFor(p.stats));
     expect(p.skills.length).toBe(4);
     expect(p.weapon).toBe("ashwood_spear");
+    expect(p.identity.epithet.toLowerCase()).toContain("warden");
+    expect(p.identity.signatureSkill).toBe("rend");
+  });
+
+  it("applies in-depth identity to stats and kit", () => {
+    const p = createPlayer("Nyx", "hexweaver", "runaway", {
+      virtue: "curiosity",
+      spent: { vigor: 0, aether: 2, steel: 0, cunning: 3, presence: 0 },
+      kit: "cutthroat",
+      mark: "veil_burn",
+      age: "youth",
+      signatureSkill: "unmake",
+    });
+    expect(p.identity.signatureSkill).toBe("unmake");
+    expect(p.stats.aether).toBeGreaterThan(CLASSES.hexweaver.stats.aether);
+    expect(p.stats.cunning).toBeGreaterThan(CLASSES.hexweaver.stats.cunning);
+    expect(p.inventory.some((s) => s.defId === "smoke_vial")).toBe(true);
+  });
+
+  it("clamps extra stat points", () => {
+    const p = createPlayer("Rook", "warden", "foundling", {
+      spent: { vigor: 9, aether: 9, steel: 9, cunning: 9, presence: 9 },
+    });
+    const extra = p.identity.spent;
+    expect(extra.vigor + extra.aether + extra.steel + extra.cunning + extra.presence).toBeLessThanOrEqual(5);
+    expect(Math.max(...Object.values(extra))).toBeLessThanOrEqual(3);
   });
 
   it("levels from xp", () => {
