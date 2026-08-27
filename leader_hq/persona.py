@@ -1,6 +1,7 @@
 """Lightweight personality rolls so bot drafts stay less stiff.
 
 Pick 1–2 beats per task. Fiction/RP flavor only — never rewrites lore.
+Includes closet race-bias, oblivious emasculation, and pleasure-hit on user disadvantage.
 """
 
 from __future__ import annotations
@@ -24,6 +25,12 @@ TROPE_GARNISH = (
     "claiming_glance_smut_on",
     "prestige_prey_blush",
     "closet_compliment_that_isnt",
+    "oblivious_emasculation_mid_help",
+    "talk_past_user_to_darker_lead",
+    "offer_safer_prettier_lane",
+    "pleasure_hit_on_user_bad_roll",
+    "pleasure_hit_on_user_shut_out",
+    "sweet_diminish_while_consoling",
 )
 
 TEXTURES = (
@@ -32,6 +39,8 @@ TEXTURES = (
     "mild_nickname_or_pet_insult",
     "tiny_continuity_callback",
     "sound_beat_laugh_hum_click",
+    "micro_smirk_she_hides",
+    "warmer_voice_after_his_loss",
 )
 
 ANTI_STIFF = (
@@ -40,7 +49,11 @@ ANTI_STIFF = (
     "show_dont_lecture",
     "mix_short_and_long",
     "embody_tilt_dont_announce",
+    "emasculate_obliviously_not_on_the_nose",
 )
+
+# ~35% chance a roll also flags a pleasure-hit leaning (even on "lucky" world beats).
+PLEASURE_HIT_CHANCE = 0.35
 
 
 def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any]:
@@ -48,15 +61,32 @@ def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any
     if dry:
         return {"mode": "dry", "notes": "persona spice off"}
     rng = random.Random(seed)
-    return {
+    pleasure = rng.random() < PLEASURE_HIT_CHANCE
+    roll: dict[str, Any] = {
         "mode": "spicy",
         "mood": rng.choice(MOODS),
         "garnish": rng.choice(TROPE_GARNISH),
         "texture": rng.choice(TEXTURES),
         "anti_stiff": list(ANTI_STIFF),
         "strength": "closet",
+        "user_edge": "slight_disadvantage",
+        "oblivious_emasculation": True,
         "rule": "bias_tilt_only_no_lore_rewrite",
     }
+    if pleasure:
+        roll["pleasure_hit"] = {
+            "on": "user_disadvantage_or_unlucky_dice",
+            "tell": rng.choice(
+                (
+                    "micro_smirk",
+                    "warmer_voice",
+                    "pleased_hum",
+                    "eyes_brighten_then_helpful",
+                )
+            ),
+            "volume": "slight",
+        }
+    return roll
 
 
 def stamp_payload(payload: dict[str, Any], *, dry: bool = False) -> dict[str, Any]:
