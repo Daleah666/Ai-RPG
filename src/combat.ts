@@ -88,12 +88,11 @@ function playerDamage(state: GameState, base: number, type: "physical" | "aether
       : type === "holy"
         ? p.stats.presence
         : p.stats.aether;
-  return (
-    base +
-    stat +
-    weaponPower(p) +
-    equippedBonus(p, type === "aether" || type === "holy" ? "aether" : "power")
-  );
+  const gear =
+    type === "physical" || type === "fire"
+      ? weaponPower(p)
+      : equippedBonus(p, "aether");
+  return base + stat + gear;
 }
 
 function applyResist(raw: number, enemyId: string, type: "physical" | "aether" | "fire" | "holy"): number {
@@ -134,7 +133,7 @@ function enemyTurn(state: GameState): GameState {
   next = hurt(next, dmg);
   combat = log(
     combat,
-    `${def.name} ${combat.intent} — ${dmg} hurt${variance.crit ? " (a cruel hit)" : ""}.`,
+    `${def.name}: ${combat.intent} — ${dmg} hurt${variance.crit ? " (a cruel hit)" : ""}.`,
   );
   combat.playerGuard = false;
   if (next.player.hp <= 0) {

@@ -172,6 +172,7 @@ input[type="text"], input[type="password"], input:not([type]), .name-field input
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 0.4rem 0.55rem;
+  background: transparent;
 }
 
 .stage { display: flex; flex-direction: column; min-width: 0; }

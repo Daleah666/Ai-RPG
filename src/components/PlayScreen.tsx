@@ -46,7 +46,7 @@ export function PlayScreen({
         <p className="muted">
           Lv {player.level} · {LOCATIONS[world.locationId].name} · {TIME_LABEL[world.time]} · Day {world.day}
         </p>
-        <Bar label="Vigor" cur={player.hp} max={player.hpMax} kind="hp" />
+        <Bar label="Health" cur={player.hp} max={player.hpMax} kind="hp" />
         <Bar label="Aether" cur={player.mp} max={player.mpMax} kind="mp" />
         <p className="muted gold">{player.gold} gold · Anchors {anchorsHeld(state)}/3</p>
         <nav className="dock">
