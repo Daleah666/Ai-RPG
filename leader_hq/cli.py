@@ -89,6 +89,26 @@ def cmd_manifest(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_finalize_character(args: argparse.Namespace) -> int:
+    from automations.character_sheet.finalize import finalize_from_file
+
+    out = Path(args.out)
+    result = finalize_from_file(Path(args.src), out, force=args.force)
+    print(json.dumps(result, indent=2))
+    return 0 if result.get("ok") else 2
+
+
+def cmd_categorize_lore(args: argparse.Namespace) -> int:
+    from automations.lore_categorize.categorize import categorize, categorize_file
+
+    if args.src:
+        result = categorize_file(Path(args.src))
+    else:
+        result = categorize(args.text or "", title=args.title or "")
+    print(json.dumps(result.to_dict(), indent=2))
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="code-leader", description="Nova / code_leader bus CLI")
     parser.add_argument(
@@ -123,6 +143,32 @@ def build_parser() -> argparse.ArgumentParser:
 
     p = sub.add_parser("manifest", help="Print Drive bootstrap manifest JSON")
     p.set_defaults(func=cmd_manifest)
+
+    p = sub.add_parser(
+        "finalize-character",
+        help="Build a Starla-depth Heroic Chronicles sheet from character JSON",
+    )
+    p.add_argument("--src", required=True, help="Path to character JSON")
+    p.add_argument(
+        "--out",
+        default=str(ROOT / ".local_bus" / "character_cards"),
+        help="Output directory for .md + .json package",
+    )
+    p.add_argument(
+        "--force",
+        action="store_true",
+        help="Finalize even if some required fields are missing",
+    )
+    p.set_defaults(func=cmd_finalize_character)
+
+    p = sub.add_parser(
+        "categorize-lore",
+        help="Suggest lore category / relative path (Vesper confirms shelves)",
+    )
+    p.add_argument("--src", default="", help="Path to lore markdown/text file")
+    p.add_argument("--text", default="", help="Inline lore text to score")
+    p.add_argument("--title", default="", help="Optional title hint")
+    p.set_defaults(func=cmd_categorize_lore)
 
     return parser
 

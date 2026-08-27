@@ -23,7 +23,14 @@ lore:
 | shelf_name | drop_folder_id | notes |
 |------------|----------------|-------|
 | Velvet Marches | `1l0YU2Sr0zTFIVghrVYMILn0LDSul_lPY` | `Velvet_Marches_Lore_for_Nova` |
+| Character Cards | `1H3_yLab4jGirN94f46ddfKq1giU1G1_5` | finalized Heroic Chronicles sheets |
 | Nyx Notes | _(Vesper sets)_ | |
 | _(add more)_ | | Vesper names; Nova records |
+
+## Smart lore categories (auto-suggest)
+
+When lore is sorted, Nova scores into: `world` · `deities` · `regions` · `races` · `factions` · `magic` · `characters` · `items` · `events` · `nyx_notes` · `inbox_unsorted`
+
+Suggested path example: `deities/01_vaelith_bloom.md` under the shelf Vesper names. Low confidence → wait for Vesper.
 
 Nova keeps this table updated when Vesper names new shelves.

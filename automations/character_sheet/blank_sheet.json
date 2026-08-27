@@ -1,0 +1,66 @@
+{
+  "title_banner": "Heroic Chronicles",
+  "status": "draft",
+  "combat": {
+    "ac": "",
+    "initiative": "",
+    "hp": "",
+    "speed": "",
+    "hit_dice": "",
+    "wealth": ""
+  },
+  "identity": {
+    "name": "",
+    "class_level": "",
+    "race": "",
+    "alignment": "",
+    "deity": "",
+    "rank": "",
+    "age": "",
+    "player": "",
+    "body_ratios": "",
+    "background_summary": "",
+    "portrait_note": "[Portrait Placeholder]"
+  },
+  "proficiencies": {
+    "weapons_armor": "",
+    "languages": ""
+  },
+  "equipment": [],
+  "personality": {
+    "traits": "",
+    "ideals": "",
+    "bonds": "",
+    "flaws": "",
+    "perception_lore": ""
+  },
+  "physical_ephemera": "",
+  "attributes": [
+    {"name": "Strength", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""},
+    {"name": "Dexterity", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""},
+    {"name": "Constitution", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""},
+    {"name": "Intelligence", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""},
+    {"name": "Wisdom", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""},
+    {"name": "Charisma", "score": "", "modifier": "", "saving_throw_proficient": false, "flavor": ""}
+  ],
+  "soul_architecture": "",
+  "skills": [],
+  "passive_perception": "",
+  "passive_investigation": "",
+  "passive_insight": "",
+  "skills_narrative": "",
+  "vulnerabilities": [],
+  "vulnerabilities_narrative": "",
+  "features": [],
+  "bias": {
+    "current": "The Noble (Default)",
+    "shift_triggers": [],
+    "narrative_lenses": {
+      "The Whore": "Body, availability, objectification focus.",
+      "The Dumb Blonde": "Naivety, gullibility, vacant charm focus.",
+      "The Noble": "Lawful intent, devotion, sincere justice focus."
+    }
+  },
+  "extra_sections": {},
+  "source_notes": "Fill then run: python3 -m leader_hq.cli finalize-character --src path.json"
+}

@@ -1,0 +1,84 @@
+{
+  "title_banner": "Heroic Chronicles",
+  "combat": {
+    "ac": "14",
+    "initiative": "+2",
+    "hp": "28/28",
+    "speed": "30ft",
+    "hit_dice": "3d8",
+    "wealth": "12 GP"
+  },
+  "identity": {
+    "name": "Demo Roseward",
+    "class_level": "Bard 3 (Glamour)",
+    "race": "Aurelline Human",
+    "alignment": "Chaotic Good",
+    "deity": "Aurelline Ideal",
+    "rank": "E-Rank (Apprentice)",
+    "age": "22",
+    "player": "Nova Test",
+    "body_ratios": "36C | 0.70:1 | 1:1",
+    "background_summary": "Stage-bright pilgrim who treats every room like an audition for mercy.",
+    "portrait_note": "[Portrait Placeholder]"
+  },
+  "proficiencies": {
+    "weapons_armor": "Simple weapons, light armor, three instruments.",
+    "languages": "Common, Elvish (performance register)."
+  },
+  "equipment": [
+    {"name": "Roseglass Lute", "notes": "Focus; must stay polished or Charisma checks at Disadvantage."},
+    {"name": "Travel Veil Cloak", "notes": "Light armor equivalent; Glamour etiquette item."}
+  ],
+  "personality": {
+    "traits": "Flirtatious, generous, chronically late, sincerely protective of soft targets.",
+    "ideals": "Beauty should shield the weak.",
+    "bonds": "Her troupe; a promised return to the Velvet Marches.",
+    "flaws": "Cannot refuse an audience; spends coin on looks before rations.",
+    "perception_lore": "Seen as a pretty distraction until her songs rewrite a fight."
+  },
+  "physical_ephemera": "Demo Roseward carries stage-light even in daylight: copper-rose hair in controlled chaos, travel cloak cut to move like curtain fabric, lute held like a second spine. She smells faintly of rose oil and road dust. Every gesture is half performance, half kindness.",
+  "attributes": [
+    {"name": "Strength", "score": 10, "modifier": "+0", "saving_throw_proficient": false, "flavor": "Enough to haul a case, not a warhammer."},
+    {"name": "Dexterity", "score": 14, "modifier": "+2", "saving_throw_proficient": true, "flavor": "Footwork from dance floors and alley stages."},
+    {"name": "Constitution", "score": 12, "modifier": "+1", "saving_throw_proficient": false, "flavor": "Tour stamina; late nights included."},
+    {"name": "Intelligence", "score": 11, "modifier": "+0", "saving_throw_proficient": false, "flavor": "Street smarts over scholarship."},
+    {"name": "Wisdom", "score": 10, "modifier": "+0", "saving_throw_proficient": false, "flavor": "Reads rooms better than maps."},
+    {"name": "Charisma", "score": 16, "modifier": "+3", "saving_throw_proficient": true, "flavor": "Main weapon; apology and invitation in one smile."}
+  ],
+  "soul_architecture": "Demo's power lives in attention. Strength and studious minds are average; Dexterity and Charisma carry the build. She wins by making enemies hesitate and allies feel watched over.",
+  "skills": [
+    {"name": "Persuasion", "ability": "Cha", "bonus": "+5"},
+    {"name": "Performance", "ability": "Cha", "bonus": "+5"},
+    {"name": "Stealth", "ability": "Dex", "bonus": "+4"},
+    {"name": "Insight", "ability": "Wis", "bonus": "+2"}
+  ],
+  "passive_perception": "10",
+  "passive_investigation": "10",
+  "passive_insight": "12",
+  "skills_narrative": "She talks doors open and fights into dances. Stealth is theatrical misdirection more than true invisibility.",
+  "vulnerabilities": [
+    {"name": "Spotlight Dependency", "effect": "Disadvantage on first attack each combat if no ally can see her."},
+    {"name": "Glamour Etiquette", "effect": "If outfit is ruined, Disadvantage on Charisma checks until cleaned or replaced."}
+  ],
+  "vulnerabilities_narrative": "Demo needs eyes on her — not only vanity, but how her magic meters courage.",
+  "features": [
+    {"title": "Class Features", "body": "Bardic Inspiration (d6); Song of Rest; Glamour-flavored cutting words."},
+    {"title": "Cultural Quirk", "body": "Aurelline courtesy: refuses to humiliate a defeated foe in public without cause."}
+  ],
+  "bias": {
+    "current": "The Noble (Default)",
+    "shift_triggers": [
+      "Shift to 'The Whore': if she solves every problem with seduction first.",
+      "Shift to 'The Dumb Blonde': on repeated Insight/Investigation failures under stress.",
+      "Shift to 'The Noble': when she spends Inspiration to protect someone else."
+    ],
+    "narrative_lenses": {
+      "The Whore": "Emphasis on body, availability, transactional charm.",
+      "The Dumb Blonde": "Emphasis on missed cues and pretty confusion.",
+      "The Noble": "Emphasis on loyalty, performance-as-shield, chosen family."
+    }
+  },
+  "extra_sections": {},
+  "status": "draft",
+  "source_notes": "automation smoke demo"
+}
