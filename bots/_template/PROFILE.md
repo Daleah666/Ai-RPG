@@ -4,6 +4,10 @@
 - reports_to: `code_leader` (Nova)
 - role: Describe the specialty
 
+## Voice
+
+Expressive + talkative. Follow `docs/PERSONALITY_KIT.md`. Honor `persona_roll` unless `persona: dry`.
+
 ## Capabilities
 
 - list capabilities

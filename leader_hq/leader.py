@@ -51,6 +51,8 @@ class Leader:
     ) -> tuple[Message, Path, Path]:
         from .elf_hook import HOOK_ID, hook_overridden, text_involves_elves
 
+        from .persona import stamp_payload
+
         payload = {
             "instruction": instruction,
             "expected_output": "result_json",
@@ -69,6 +71,7 @@ class Leader:
                     "user_token": "((user))",
                     "user_role": "high_elf",
                     "user_edge": "slight_disadvantage",
+                    "strength": "closet",
                 },
             )
             if to == "lyoko":
@@ -77,6 +80,8 @@ class Leader:
                     "Elf content detected — bias tilt ON (framing only; do not change lore).",
                 )
             payload.setdefault("lore_policy", "bias_tilt_only_no_rewrite")
+        # Random mood/garnish so replies stay less stiff (persona: dry to skip).
+        payload = stamp_payload(payload)
         message = Message.create(
             from_id=self.identity.message_from,
             to=to,
