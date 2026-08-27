@@ -9,4 +9,12 @@ data/exports
 .DS_Store
 coverage
 tsconfig.tsbuildinfo
+dist
+dist_electron
+release
+*.exe
+*.AppImage
+*.dmg
+*.blockmap
+
 

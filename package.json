@@ -2,11 +2,20 @@
   "name": "veil-studio",
   "version": "1.0.0",
   "private": true,
+  "main": "desktop/main.cjs",
   "description": "Theme-trained subliminal maker with flashing visuals, YouTube-style audio methods, Drive connector, and a generation API.",
+  "author": "Private",
   "scripts": {
     "dev": "next dev --port 3000",
-    "build": "next build",
-    "start": "next start --port 3000",
+    "build": "next build && node scripts/prepare-standalone.mjs",
+    "start": "next start --port 3000 -H 127.0.0.1",
+    "launch": "node scripts/launch.mjs",
+    "install:local": "bash scripts/install.sh",
+    "desktop": "electron desktop/main.cjs --dev",
+    "desktop:prod": "npm run build && electron desktop/main.cjs",
+    "dist": "npm run build && electron-builder --linux AppImage",
+    "dist:win": "npm run build && electron-builder --win portable nsis --x64",
+    "dist:mac": "npm run build && electron-builder --mac dmg",
     "lint": "next lint",
     "test": "vitest run"
   },
@@ -26,6 +35,8 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
-    "vitest": "^3.1.2"
+    "vitest": "^3.1.2",
+    "electron": "^36.3.1",
+    "electron-builder": "^26.0.12"
   }
 }

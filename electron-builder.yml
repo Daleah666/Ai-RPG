@@ -1,0 +1,31 @@
+appId: studio.veil.app
+productName: Veil Studio
+copyright: Private local copy
+asar: true
+directories:
+  output: dist
+files:
+  - desktop/**/*
+  - package.json
+extraResources:
+  - from: .next/standalone
+    to: standalone
+    filter:
+      - "**/*"
+win:
+  target:
+    - portable
+    - nsis
+  artifactName: "Veil Studio-${os}.${ext}"
+linux:
+  target:
+    - AppImage
+  artifactName: "Veil Studio-${os}.${ext}"
+nsis:
+  oneClick: true
+  perMachine: false
+  allowToChangeInstallationDirectory: false
+  shortcutName: Veil Studio
+mac:
+  target:
+    - dmg

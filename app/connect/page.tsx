@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DrivePanel } from "@/components/DrivePanel";
+import { DriveAiPanel } from "@/components/DriveAiPanel";
 
 export default function ConnectPage() {
   const [status, setStatus] = useState<{ configured: boolean; connected: boolean } | null>(
@@ -41,8 +42,13 @@ export default function ConnectPage() {
               : "Drive API not configured"
           : "checking…"}
       </p>
-      <div className="mt-10 max-w-xl rounded-3xl border border-line bg-panel p-6">
-        <DrivePanel onAssets={() => undefined} />
+      <div className="mt-10 max-w-xl space-y-8">
+        <div className="rounded-3xl border border-line bg-panel p-6">
+          <DriveAiPanel />
+        </div>
+        <div className="rounded-3xl border border-line bg-panel p-6">
+          <DrivePanel onAssets={() => undefined} />
+        </div>
       </div>
       <p className="mt-8 text-sm text-mist">
         After importing images, open the <a className="text-gold" href="/studio">studio</a>{" "}

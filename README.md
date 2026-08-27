@@ -80,6 +80,53 @@ From the studio: project JSON, rendered WAV (whisper / reverse / layers / binaur
 
 Also try a stacked pack from the home page: **feminizing**, **better in trance**, or **anti-racism**. Each ask returns more suggestions with the layer list (whisper, reverse, silent carrier, flashes). `GET /api/v1/suggestions?theme=feminizing`
 
+## Privacy
+
+This copy is meant to stay private. The GitHub repo **Ai-RPG is currently PUBLIC** — I cannot flip visibility from here (GitHub write is blocked). In GitHub: **Settings → General → Danger zone → Change repository visibility → Private**. Keep the PR as a draft until that is done.
+
+## Install and launch
+
+```bash
+npm install
+npm test
+npm run launch
+```
+
+That builds if needed, opens the app, and watches a Drive-synced `VeilStudio/inbox` folder.
+
+Windows (after Node is installed):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install.ps1
+```
+
+That creates `VeilStudio` inside Google Drive if the Drive desktop folder exists, copies the launcher into `app/`, and drops a Desktop shortcut.
+
+Windows `.exe` (run on a Windows machine, or from this repo):
+
+```bash
+npm run dist:win
+```
+
+Copy `dist/Veil Studio-win.exe` into `Google Drive/VeilStudio/app/`. Double-click to launch. **Drive does not execute .exe files in the cloud** — the file lives in Drive for sync/backup; you run it locally. Gemini in Drive can drop JSON into `inbox/`; the running app writes `outbox/`.
+
+Linux:
+
+```bash
+bash scripts/install.sh
+npm run dist          # AppImage
+```
+
+## Drive AI inbox
+
+Keep the app running. In `VeilStudio/inbox/` create `request.json`:
+
+```json
+{ "theme": "feminizing into everyday womanhood", "renderAudio": true }
+```
+
+Outbox gets the project JSON and WAV. See `scripts/README-FOR-AI.md`.
+
 ## Stack
 
 Next.js 15 App Router, TypeScript, canvas visual engine, Web Audio live mix, isomorphic voice synth + Node WAV renderer, Vitest.

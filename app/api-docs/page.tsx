@@ -36,6 +36,12 @@ export default function ApiDocsPage() {
         />
         <Endpoint
           method="POST"
+          path="/api/v1/inbox"
+          extra="Local-only. { scan: true, folder } drains VeilStudio/inbox JSON (Drive AI / .exe). Or pass a generate body."
+          body={`{ "scan": true }`}
+        />
+        <Endpoint
+          method="POST"
           path="/api/v1/render"
           body={`{ "theme": "deep sleep" }`}
           extra="Returns audio/wav — whisper, reverse, layers, binaural, isochronic, silent carrier."
