@@ -38,6 +38,23 @@
       "status": "idle",
       "reports_via": "code_leader",
       "usable_by": ["leader_vesper", "librarian", "subliminal_maker"]
+    },
+    {
+      "id": "lyoko",
+      "name": "Lyoko",
+      "role": "Writer and world-builder; lore drafts that sit beside Vesper lore, Nyx notes, and related canon",
+      "capabilities": [
+        "worldbuilding",
+        "lore_writing",
+        "character_notes",
+        "setting_continuity",
+        "nyx_adjacent_notes",
+        "canon_patches"
+      ],
+      "status": "idle",
+      "reports_via": "code_leader",
+      "usable_by": ["leader_vesper", "librarian", "nyx"],
+      "lore_drop_hint": "Nova Ai Data / Velvet_Marches_Lore_for_Nova (and Vesper-designated lore shelves)"
     }
   ]
 }

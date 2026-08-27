@@ -21,6 +21,7 @@ may_delegate_to:
   - gemini_worker
   - planner
   - hypno
+  - lyoko
 do_not: []
 notes: ""
 ```
