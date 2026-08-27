@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "leader": "code_leader",
+  "bots": [
+    {
+      "id": "drive_ops",
+      "name": "Drive Ops",
+      "role": "Google Drive hygiene, folder moves, file search, bus maintenance",
+      "capabilities": ["drive_search", "drive_create", "drive_move", "bus_cleanup"],
+      "status": "idle"
+    },
+    {
+      "id": "gemini_worker",
+      "name": "Gemini Worker",
+      "role": "Heavy drafting/reasoning tasks delegated to Gemini-class systems",
+      "capabilities": ["draft", "summarize", "rewrite", "brainstorm"],
+      "status": "idle"
+    },
+    {
+      "id": "planner",
+      "name": "Planner",
+      "role": "Turn goals into plans and task graphs for code_leader to assign",
+      "capabilities": ["plan", "decompose", "prioritize"],
+      "status": "idle"
+    }
+  ]
+}
