@@ -283,20 +283,38 @@
     }, totalMs);
   }
 
+  function flashStatus(el, message) {
+    el.textContent = message;
+    el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function addAffirmation() {
+    const text = els.affirmInput.value.trim();
+    if (!text) {
+      flashStatus(els.practiceStatus, "Type an affirmation before adding.");
+      return false;
+    }
+    state.affirmations.push({
+      id: uid(),
+      text,
+      createdAt: new Date().toISOString(),
+    });
+    els.affirmInput.value = "";
+    save();
+    render();
+    flashStatus(els.practiceStatus, "Affirmation saved on this device.");
+    return true;
+  }
+
   els.saveIntent.addEventListener("click", () => {
     state.northStar = els.northStar.value.trim();
     save();
-    els.intentStatus.textContent = "Aim saved locally.";
+    flashStatus(els.intentStatus, "Aim saved locally.");
   });
 
   els.affirmForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const text = els.affirmInput.value.trim();
-    if (!text) return;
-    state.affirmations.push({ id: uid(), text, createdAt: new Date().toISOString() });
-    els.affirmInput.value = "";
-    save();
-    render();
+    addAffirmation();
   });
 
   els.startPractice.addEventListener("click", startPractice);
@@ -323,7 +341,7 @@
     els.checkinNote.value = "";
     save();
     render();
-    els.checkinStatus.textContent = "Today’s check-in saved on this device.";
+    flashStatus(els.checkinStatus, "Today’s check-in saved on this device.");
   });
 
   els.exportData.addEventListener("click", () => {

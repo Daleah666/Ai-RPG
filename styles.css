@@ -197,6 +197,7 @@ main {
   box-shadow: var(--shadow);
   animation: rise 0.8s ease both;
   animation-delay: 0.08s;
+  scroll-margin-top: 5.5rem;
 }
 
 .panel-head h2 {
@@ -404,8 +405,16 @@ textarea:focus {
 .status {
   min-height: 1.25rem;
   margin: 0.75rem 0 0;
-  color: var(--signal);
+  color: var(--signal-ink);
   font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status:not(:empty) {
+  display: inline-block;
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  background: var(--signal);
 }
 
 .site-footer {
