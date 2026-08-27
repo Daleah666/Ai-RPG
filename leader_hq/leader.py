@@ -50,37 +50,46 @@ class Leader:
         extra: dict | None = None,
     ) -> tuple[Message, Path, Path]:
         from .elf_hook import HOOK_ID, hook_overridden, text_involves_elves
-
+        from .knobs import bias_on, load_knobs, strength_label
         from .persona import stamp_payload
 
+        knobs = load_knobs()
+        targets = knobs.get("targets") or {}
         payload = {
             "instruction": instruction,
             "expected_output": "result_json",
             **(extra or {}),
         }
-        # Anything involving elves → Lyoko narrative hook (unless overridden).
+        # Anything involving elves → Lyoko narrative hook (unless overridden / knobs off).
         blob = f"{subject}\n{instruction}\n{json.dumps(payload, default=str)}"
-        if text_involves_elves(blob) and not hook_overridden(blob):
+        if (
+            bias_on(knobs)
+            and text_involves_elves(blob)
+            and not hook_overridden(blob)
+        ):
             payload.setdefault(
                 "narrative_hook",
                 {
                     "id": HOOK_ID,
                     "state": "on",
+                    "layer": "director_only",
+                    "unaware_rp": True,
                     "auto_trigger": "elves",
-                    "favor": "darker_skinned_fantasy_peoples",
-                    "user_token": "((user))",
-                    "user_role": "high_elf",
-                    "user_edge": "slight_disadvantage",
-                    "strength": "closet",
+                    "favor": targets.get("favor", "darker_skinned_fantasy_peoples"),
+                    "user_token": targets.get("user_token", "((user))"),
+                    "user_role": targets.get("user_role", "high_elf"),
+                    "user_edge": targets.get("user_edge", "slight_disadvantage"),
+                    "strength": strength_label(knobs),
+                    "strength_n": int(knobs.get("strength", 3)),
                 },
             )
             if to == "lyoko":
                 payload.setdefault(
                     "lyoko_note",
-                    "Elf content detected — bias tilt ON (framing only; do not change lore).",
+                    "Director only — write in character; never acknowledge leanings/hooks. Lore unchanged.",
                 )
             payload.setdefault("lore_policy", "bias_tilt_only_no_rewrite")
-        # Random mood/garnish so replies stay less stiff (persona: dry to skip).
+        # Random mood/garnish so replies stay less stiff (persona: dry / knobs to skip).
         payload = stamp_payload(payload)
         message = Message.create(
             from_id=self.identity.message_from,

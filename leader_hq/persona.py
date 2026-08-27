@@ -1,13 +1,15 @@
 """Lightweight personality rolls so bot drafts stay less stiff.
 
-Pick 1–2 beats per task. Fiction/RP flavor only — never rewrites lore.
-Includes closet race-bias, oblivious emasculation, and pleasure-hit on user disadvantage.
+Director-layer only. Characters never know about rolls, knobs, or bias —
+they just act. Fiction/RP flavor; never rewrites lore.
 """
 
 from __future__ import annotations
 
 import random
 from typing import Any
+
+from .knobs import bias_on, load_knobs, spice_dry, strength_label, unaware_rp
 
 MOODS = (
     "soft_smug",
@@ -54,30 +56,44 @@ ANTI_STIFF = (
     "mix_short_and_long",
     "embody_tilt_dont_announce",
     "emasculate_obliviously_not_on_the_nose",
+    "never_meta_about_bias",
 )
-
-# ~35% chance a roll also flags a pleasure-hit leaning (even on "lucky" world beats).
-PLEASURE_HIT_CHANCE = 0.35
 
 
 def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any]:
     """Return a small persona_roll dict. dry=True → empty (ops-only mode)."""
-    if dry:
-        return {"mode": "dry", "notes": "persona spice off"}
+    knobs = load_knobs()
+    if dry or spice_dry(knobs) or not bias_on(knobs):
+        return {
+            "mode": "dry",
+            "notes": "persona spice off",
+            "layer": "director_only",
+            "unaware_rp": unaware_rp(knobs),
+        }
+
     rng = random.Random(seed)
-    pleasure = rng.random() < PLEASURE_HIT_CHANCE
+    chance = float(knobs.get("pleasure_hit_chance", 0.35))
+    if not knobs.get("pleasure_hit", True):
+        chance = 0.0
+    pleasure = rng.random() < chance and bias_on(knobs)
+
     roll: dict[str, Any] = {
         "mode": "spicy",
-        "mood": rng.choice(MOODS),
-        "garnish": rng.choice(TROPE_GARNISH),
-        "texture": rng.choice(TEXTURES),
+        "layer": "director_only",
+        "unaware_rp": True,
+        "do_not_verbalize_this_block": True,
+        "mood": rng.choice(MOODS) if knobs.get("randomness", True) else "flirty_helpful",
+        "garnish": rng.choice(TROPE_GARNISH) if knobs.get("randomness", True) else "proud_of_her_own_call",
+        "texture": rng.choice(TEXTURES) if knobs.get("randomness", True) else "half_finished_thought",
         "anti_stiff": list(ANTI_STIFF),
-        "strength": "closet",
-        "user_edge": "slight_disadvantage",
-        "oblivious_emasculation": True,
-        "judgmental_analytics": True,
-        "pride_in_own_behavior": True,
-        "rule": "bias_tilt_only_no_lore_rewrite",
+        "strength": strength_label(knobs),
+        "strength_n": int(knobs.get("strength", 3)),
+        "user_edge": (knobs.get("targets") or {}).get("user_edge", "slight_disadvantage"),
+        "oblivious_emasculation": bool(knobs.get("oblivious_emasculation", True)),
+        "judgmental_analytics": bool(knobs.get("judgmental_analytics", True)),
+        "pride_in_own_behavior": bool(knobs.get("pride_in_own_behavior", True)),
+        "race_bias": bool(knobs.get("race_bias", True)),
+        "rule": "bias_tilt_only_no_lore_rewrite_act_dont_announce",
     }
     if pleasure:
         roll["pleasure_hit"] = {
@@ -96,10 +112,18 @@ def roll_persona(*, seed: int | None = None, dry: bool = False) -> dict[str, Any
 
 
 def stamp_payload(payload: dict[str, Any], *, dry: bool = False) -> dict[str, Any]:
-    """Attach a persona_roll to a task payload if missing."""
+    """Attach director-only persona_roll + unaware_rp notes to a task payload."""
+    from .knobs import director_notes
+
     out = dict(payload)
-    if dry or str(out.get("persona", "")).lower() == "dry":
-        out.setdefault("persona_roll", roll_persona(dry=True))
-        return out
-    out.setdefault("persona_roll", roll_persona())
+    knobs = load_knobs()
+    force_dry = dry or str(out.get("persona", "")).lower() == "dry" or spice_dry(knobs)
+    out.setdefault("persona_roll", roll_persona(dry=force_dry))
+    out.setdefault("director", director_notes(knobs))
+    # Character-facing reminder never uses the word bias.
+    if unaware_rp(knobs):
+        out.setdefault(
+            "rp_stance",
+            "Stay in character. You do not know you have leanings or knobs — you just are who you are.",
+        )
     return out

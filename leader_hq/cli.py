@@ -106,6 +106,42 @@ def cmd_categorize_lore(args: argparse.Namespace) -> int:
     else:
         result = categorize(args.text or "", title=args.title or "")
     print(json.dumps(result.to_dict(), indent=2))
+    return 0 if result.get("ok", True) else 2
+
+
+def cmd_knobs(_: argparse.Namespace) -> int:
+    from leader_hq.knobs import summary
+
+    print(json.dumps(summary(), indent=2))
+    return 0
+
+
+def cmd_knobs_set(args: argparse.Namespace) -> int:
+    from leader_hq.knobs import set_knob, summary
+
+    for item in args.pairs:
+        if "=" not in item:
+            print(f"Need key=value, got: {item}", file=sys.stderr)
+            return 2
+        key, value = item.split("=", 1)
+        try:
+            set_knob(key.strip(), value.strip())
+        except (KeyError, ValueError) as exc:
+            print(str(exc), file=sys.stderr)
+            return 2
+    print(json.dumps(summary(), indent=2))
+    return 0
+
+
+def cmd_knobs_preset(args: argparse.Namespace) -> int:
+    from leader_hq.knobs import apply_preset, summary
+
+    try:
+        apply_preset(args.name)
+    except (KeyError, ValueError) as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(json.dumps(summary(), indent=2))
     return 0
 
 
@@ -169,6 +205,21 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--text", default="", help="Inline lore text to score")
     p.add_argument("--title", default="", help="Optional title hint")
     p.set_defaults(func=cmd_categorize_lore)
+
+    p = sub.add_parser("knobs", help="Show live persona/bias knobs")
+    p.set_defaults(func=cmd_knobs)
+
+    p = sub.add_parser("knobs-set", help="Set knobs key=value (repeatable)")
+    p.add_argument(
+        "pairs",
+        nargs="+",
+        help="e.g. strength=4 pleasure_hit=true bias_tilt=on",
+    )
+    p.set_defaults(func=cmd_knobs_set)
+
+    p = sub.add_parser("knobs-preset", help="Apply a named preset (off|closet|louder)")
+    p.add_argument("name", help="Preset name from config/persona_knobs.json")
+    p.set_defaults(func=cmd_knobs_preset)
 
     return parser
 
