@@ -20,6 +20,7 @@ may_delegate_to:
   - drive_ops
   - gemini_worker
   - planner
+  - hypno
 do_not: []
 notes: ""
 ```

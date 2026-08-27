@@ -22,6 +22,22 @@
       "role": "Turn goals into plans and task graphs for code_leader to assign",
       "capabilities": ["plan", "decompose", "prioritize"],
       "status": "idle"
+    },
+    {
+      "id": "hypno",
+      "name": "Hypno",
+      "role": "Audio + hypnosis research specialist; builds formulas and preset modes for Subliminal Maker",
+      "capabilities": [
+        "audio_research",
+        "subliminal_methods",
+        "formula_design",
+        "preset_modes",
+        "carrier_layers",
+        "affirmation_pacing"
+      ],
+      "status": "idle",
+      "reports_via": "code_leader",
+      "usable_by": ["leader_vesper", "librarian", "subliminal_maker"]
     }
   ]
 }
