@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #070708;
+  min-height: 100%;
+}
+
+body {
+  font-family: Outfit, system-ui, sans-serif;
+}
+
+::selection {
+  background: #c4a35a;
+  color: #070708;
+}
+
+input[type="range"] {
+  accent-color: #c4a35a;
+}
