@@ -339,6 +339,7 @@
 
   els.checkinForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    syncNorthStarFromDom();
     const today = dayKey();
     const entry = {
       id: uid(),
