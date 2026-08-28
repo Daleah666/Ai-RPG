@@ -1,0 +1,34 @@
+{
+  "silent": true,
+  "duration_seconds": 45,
+  "music_volume": 1.0,
+  "layers": [
+    {
+      "enabled": true,
+      "affirmations": [
+        "I open my laptop and start the hardest task within five minutes.",
+        "I protect one focused block every weekday morning."
+      ],
+      "volume": 0.06,
+      "frequency": "normal"
+    },
+    {
+      "enabled": true,
+      "affirmations": [
+        "Calm clarity flows through my work.",
+        "I finish what I start today."
+      ],
+      "volume": 0.04,
+      "frequency": "mid_shift"
+    },
+    {
+      "enabled": true,
+      "affirmations": [
+        "Success is my daily habit.",
+        "My follow-through grows stronger."
+      ],
+      "volume": 0.03,
+      "frequency": "ultrasonic_band"
+    }
+  ]
+}

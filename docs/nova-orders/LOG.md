@@ -12,3 +12,5 @@ Rule: every material change to guidance or skills gets a line here.
 2026-08-28 | research-agent | Directive Stack v1: 22 tiered protocol skills + perma prompt for permanent agent activation.
 2026-08-28 | research-agent | Generalized naming: removed person/group labels; `directive-stack.md` + `self-signal-handoff.md` are canonical paths.
 2026-08-28 | research-agent | Subliminal mixer added (Mind Zoom–compatible .txt, upload music, MP3 export via serve.py + build_subliminal.py). Mind Zoom desktop requires user’s own Windows/Mac license.
+2026-08-28 | research-agent | v2 stack: 3-layer frequency engine, visual flash UI, REST API (/api/v1/generate), studio hub, Cursor integration docs.
+2026-08-28 | research-agent | v2: 3-layer frequency stack, REST API (/api/v1/generate), visual flash UI (multi-image drag/drop), dynamic job JSON for Cursor automation.

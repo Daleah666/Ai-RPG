@@ -40,11 +40,21 @@ python3 -m http.server 8080
 
 ## Subliminal files (Mind Zoom–compatible)
 
-- Affirmation text files: `subliminal/affirmations/*.txt` (import into Mind Zoom on Windows/Mac)
-- Create MP3 locally: `mixer.html` or `scripts/build_subliminal.py`
+- **3-layer audio mixer:** `mixer.html` — stack 3 frequency layers + music
+- **Visual flash:** `visual.html` — drag/drop multiple images, subliminal timing
+- **API (Cursor / automation):** `docs/api.md` — `POST /api/v1/generate`
+- Affirmation text files: `subliminal/affirmations/*.txt`
+- Example job: `subliminal/examples/3-layer-job.json`
+- CLI: `scripts/build_subliminal.py`
 - Setup guide: `docs/mindzoom-compatible.md`
 
-Mind Zoom desktop app is paid software for your own PC — this repo creates compatible files and mixes audio without it.
+```bash
+pip install -r requirements.txt
+python3 serve.py
+# → http://localhost:8080/mixer.html
+# → http://localhost:8080/visual.html
+# → http://localhost:8080/api/schema
+```
 
 ## Personal protocol
 
