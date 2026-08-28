@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Self Signal — Personal practice & progress</title>
+    <meta
+      name="description"
+      content="Private, on-device affirmation practice and self-monitoring. Your data stays in your browser."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600;6..72,700&family=Sora:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#top">Self Signal</a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#practice">Practice</a>
+        <a href="#affirmations">Affirmations</a>
+        <a href="#monitor">Monitor</a>
+        <a href="#insights">Insights</a>
+        <a href="mixer.html">Mixer</a>
+        <a href="visual.html">Visual</a>
+        <a href="studio.html">Studio</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <p class="brand-mark">Self Signal</p>
+        <h1>Train the message you want your mind to keep.</h1>
+        <p class="lede">
+          Private practice for your goals: write affirmations, run focused
+          sessions, and track how you feel and follow through — all stored only
+          on this device.
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="#practice">Start a session</a>
+          <a class="btn ghost" href="studio.html">Subliminal studio</a>
+        </div>
+        <p class="privacy-note">
+          No accounts. No cloud sync. Data lives in your browser’s local storage.
+          You can export or wipe it anytime.
+        </p>
+      </section>
+
+      <section class="panel" id="intent">
+        <div class="panel-head">
+          <h2>Your north star</h2>
+          <p>One sentence that defines success for you right now.</p>
+        </div>
+        <label class="field">
+          <span>Personal aim</span>
+          <textarea
+            id="northStar"
+            rows="2"
+            placeholder="I finish deep work before noon and keep my evenings calm."
+          ></textarea>
+        </label>
+        <button type="button" class="btn primary" id="saveIntent">Save aim</button>
+        <p class="status" id="intentStatus" role="status"></p>
+      </section>
+
+      <section class="panel" id="practice">
+        <div class="panel-head">
+          <h2>Practice session</h2>
+          <p>
+            Repeat your lines slowly. Speech is optional — reading with attention
+            is enough.
+          </p>
+        </div>
+
+        <div class="practice-stage" id="practiceStage">
+          <p class="practice-cue" id="practiceCue">
+            Add affirmations below, then begin.
+          </p>
+        </div>
+
+        <div class="controls">
+          <label class="field inline">
+            <span>Seconds per line</span>
+            <input type="number" id="lineSeconds" min="4" max="60" value="10" />
+          </label>
+          <label class="check">
+            <input type="checkbox" id="useVoice" />
+            <span>Speak lines (browser voice)</span>
+          </label>
+          <div class="cta-row">
+            <button type="button" class="btn primary" id="startPractice">
+              Begin
+            </button>
+            <button type="button" class="btn ghost" id="stopPractice" disabled>
+              Stop
+            </button>
+          </div>
+        </div>
+        <p class="status" id="practiceStatus" role="status"></p>
+      </section>
+
+      <section class="panel" id="affirmations">
+        <div class="panel-head">
+          <h2>Affirmations</h2>
+          <p>
+            First person, present tense, specific. Example: “I open my laptop and
+            start the hardest task within five minutes.”
+          </p>
+        </div>
+
+        <form id="affirmForm" class="affirm-form">
+          <label class="field">
+            <span>New line</span>
+            <input
+              type="text"
+              id="affirmInput"
+              maxlength="180"
+              placeholder="I protect one focused block every weekday morning."
+              autocomplete="off"
+            />
+          </label>
+          <button type="submit" class="btn primary" id="addAffirm">Add</button>
+        </form>
+
+        <ul class="affirm-list" id="affirmList"></ul>
+      </section>
+
+      <section class="panel" id="monitor">
+        <div class="panel-head">
+          <h2>Daily monitor</h2>
+          <p>
+            Rate how today matched your aim. Patterns beat perfect scores —
+            honesty is the signal.
+          </p>
+        </div>
+
+        <form id="checkinForm" class="checkin-form">
+          <div class="score-grid">
+            <label class="field">
+              <span>Clarity (1–5)</span>
+              <input type="range" id="scoreClarity" min="1" max="5" value="3" />
+              <output id="outClarity">3</output>
+            </label>
+            <label class="field">
+              <span>Energy (1–5)</span>
+              <input type="range" id="scoreEnergy" min="1" max="5" value="3" />
+              <output id="outEnergy">3</output>
+            </label>
+            <label class="field">
+              <span>Follow-through (1–5)</span>
+              <input
+                type="range"
+                id="scoreFollow"
+                min="1"
+                max="5"
+                value="3"
+              />
+              <output id="outFollow">3</output>
+            </label>
+          </div>
+          <label class="field">
+            <span>Note (optional)</span>
+            <textarea
+              id="checkinNote"
+              rows="3"
+              placeholder="What helped or blocked you today?"
+            ></textarea>
+          </label>
+          <button type="submit" class="btn primary">Save check-in</button>
+        </form>
+        <p class="status" id="checkinStatus" role="status"></p>
+
+        <div class="history">
+          <h3>Recent check-ins</h3>
+          <ul id="checkinList"></ul>
+        </div>
+      </section>
+
+      <section class="panel" id="insights">
+        <div class="panel-head">
+          <h2>Insights</h2>
+          <p>Computed only from what you logged on this device.</p>
+        </div>
+        <div class="insight-grid" id="insightGrid">
+          <article>
+            <h3>Practice streak</h3>
+            <p class="metric" id="metricStreak">0 days</p>
+          </article>
+          <article>
+            <h3>Avg follow-through (7d)</h3>
+            <p class="metric" id="metricFollow">—</p>
+          </article>
+          <article>
+            <h3>Sessions logged</h3>
+            <p class="metric" id="metricSessions">0</p>
+          </article>
+          <article>
+            <h3>Affirmations</h3>
+            <p class="metric" id="metricAffirms">0</p>
+          </article>
+        </div>
+        <p class="insight-copy" id="insightCopy"></p>
+
+        <div class="data-actions">
+          <button type="button" class="btn ghost" id="exportData">
+            Export JSON backup
+          </button>
+          <label class="btn ghost file-btn">
+            Import backup
+            <input type="file" id="importData" accept="application/json" hidden />
+          </label>
+          <button type="button" class="btn danger" id="wipeData">
+            Wipe local data
+          </button>
+        </div>
+      </section>
+
+      <section class="panel protocol" id="protocol">
+        <div class="panel-head">
+          <h2>How to use this well</h2>
+          <p>Evidence-minded protocol for personal reinforcement.</p>
+        </div>
+        <ol class="steps">
+          <li>
+            <strong>Write what you will do</strong>, not vague vibes. Behavior
+            beats slogans.
+          </li>
+          <li>
+            <strong>Practice daily for 3–8 minutes</strong>. Attention matters
+            more than volume or “hidden” audio.
+          </li>
+          <li>
+            <strong>Check in once a day</strong>. Use the scores to spot drift
+            early.
+          </li>
+          <li>
+            <strong>Adjust lines weekly</strong> based on what your monitor
+            shows — keep what moves follow-through, drop fluff.
+          </li>
+        </ol>
+        <p class="footnote">
+          Classic subliminal embeds have weak evidence for complex behavior
+          change. Conscious repetition + honest tracking is the reliable path.
+          This tool is for you only.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Self Signal — local-only personal practice.</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

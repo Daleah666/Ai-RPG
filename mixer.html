@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>3-Layer Subliminal Mixer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="visual.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html">Self Signal</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="visual.html">Visual flash</a>
+        <a href="docs/api.md">API</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="brand-mark">3-Layer Mixer</p>
+        <h1>Stack three frequency layers into one MP3.</h1>
+        <p class="lede">
+          Each layer can use different affirmations, volume, and frequency band.
+          All layers mix on top of your music. API:
+          <code>POST /api/v1/generate</code>
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Background</h2>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="silentMode" />
+          <span>Silent base (no music)</span>
+        </label>
+        <label class="field">
+          <span>Music file</span>
+          <input type="file" id="musicFile" accept="audio/*" />
+        </label>
+        <label class="field inline">
+          <span>Duration (min, silent only)</span>
+          <input type="number" id="durationMin" min="1" max="180" value="10" />
+        </label>
+      </section>
+
+      <div id="layerPanels"></div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Generate</h2>
+          <p>Run <code>pip install edge-tts && python3 serve.py</code> first.</p>
+        </div>
+        <div class="cta-row">
+          <button type="button" class="btn primary" id="mixBtn">Stack 3 layers → MP3</button>
+          <button type="button" class="btn ghost" id="copyApiBtn">Copy API JSON</button>
+        </div>
+        <p class="status" id="mixStatus" role="status"></p>
+      </section>
+    </main>
+    <script src="mixer.js"></script>
+  </body>
+</html>
