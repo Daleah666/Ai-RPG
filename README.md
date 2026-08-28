@@ -1,6 +1,18 @@
-# Self Signal (Ai-RPG)
+# Ai-RPG
 
-Private, on-device personal affirmation practice and self-monitoring.
+Self Signal — private, on-device affirmation practice, 3-layer subliminal studio, and bot handoff skills.
+
+## Live skills
+
+- [`skills/vesper-voice-master.md`](skills/vesper-voice-master.md)
+- [`skills/subliminal-maker-bot.md`](skills/subliminal-maker-bot.md)
+- [`skills/daily-subliminal-planner-bot.md`](skills/daily-subliminal-planner-bot.md)
+
+## Bot handoff & system docs
+
+- [`docs/AI_HANDOFF_BRIDGE.md`](docs/AI_HANDOFF_BRIDGE.md) — shared task/note contract for all bots
+- [`docs/VESPER_SYSTEM_MAP.md`](docs/VESPER_SYSTEM_MAP.md)
+- [`docs/PRO_TIPS_FOR_LEADERS.md`](docs/PRO_TIPS_FOR_LEADERS.md)
 
 ## Directive stack (keep tight · available · logged)
 
@@ -9,7 +21,7 @@ Private, on-device personal affirmation practice and self-monitoring.
 - **Self Signal handoff:** [`docs/nova-orders/self-signal-handoff.md`](docs/nova-orders/self-signal-handoff.md)
 - **Change log:** [`docs/nova-orders/LOG.md`](docs/nova-orders/LOG.md)
 
-## What this is
+## What Self Signal is
 
 A local web tool for **personal use only**:
 
@@ -23,14 +35,12 @@ All data stays in your browser `localStorage`. Nothing is sent to a server.
 
 ## How to run
 
-Open `index.html` in a modern browser, or from this folder:
-
 ```bash
 pip install -r requirements.txt
 python3 serve.py
 ```
 
-Then visit `http://localhost:8080` (includes **Subliminal Mixer** at `/mixer.html`).
+Then visit `http://localhost:8080` — includes practice app, **studio**, **mixer**, and **visual flash**.
 
 Static-only (no mix API):
 
@@ -38,12 +48,15 @@ Static-only (no mix API):
 python3 -m http.server 8080
 ```
 
-## Subliminal files (Mind Zoom–compatible)
+## Subliminal studio (3-layer audio + visual + API)
 
+- **Studio hub:** `studio.html`
 - **3-layer audio mixer:** `mixer.html` — stack 3 frequency layers + music
 - **Visual flash:** `visual.html` — drag/drop multiple images, subliminal timing
 - **API (Cursor / automation):** `docs/api.md` — `POST /api/v1/generate`
-- Affirmation text files: `subliminal/affirmations/*.txt`
+- **Cursor integration:** `docs/cursor-integration.md`
+- Affirmation text files: `subliminal/affirmations/*.txt` (Mind Zoom–compatible)
+- Bot-managed files: `subliminals/` (see `skills/subliminal-maker-bot.md`)
 - Example job: `subliminal/examples/3-layer-job.json`
 - CLI: `scripts/build_subliminal.py`
 - Setup guide: `docs/mindzoom-compatible.md`
@@ -51,6 +64,7 @@ python3 -m http.server 8080
 ```bash
 pip install -r requirements.txt
 python3 serve.py
+# → http://localhost:8080/studio.html
 # → http://localhost:8080/mixer.html
 # → http://localhost:8080/visual.html
 # → http://localhost:8080/api/schema
