@@ -4,7 +4,9 @@ Private, on-device personal affirmation practice and self-monitoring.
 
 ## NOVA / Vesper packet (keep tight · available · logged)
 
-- **Handoff for Vesper group:** [`docs/nova-orders/VESPER-HANDOFF.md`](docs/nova-orders/VESPER-HANDOFF.md)
+- **TO Vesper (perma prompt + 22 skills):** [`docs/nova-orders/to_vesper.md`](docs/nova-orders/to_vesper.md)
+- **Skills index:** [`docs/nova-orders/skills/README.md`](docs/nova-orders/skills/README.md)
+- **Self Signal handoff:** [`docs/nova-orders/VESPER-HANDOFF.md`](docs/nova-orders/VESPER-HANDOFF.md)
 - **Order log:** [`docs/nova-orders/LOG.md`](docs/nova-orders/LOG.md)
 
 ## What this is

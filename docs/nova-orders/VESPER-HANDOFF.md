@@ -58,7 +58,9 @@ Reliable path: conscious repetition + honest tracking. Do not overclaim.
 |---|---|
 | App | `/index.html`, `/app.js`, `/styles.css` |
 | User README | `/README.md` |
-| This handoff | `/docs/nova-orders/VESPER-HANDOFF.md` |
+| Vesper perma prompt + skills | `/docs/nova-orders/to_vesper.md` |
+| Protocol skills (22) | `/docs/nova-orders/skills/` |
+| This handoff (Self Signal) | `/docs/nova-orders/VESPER-HANDOFF.md` |
 | Change log | `/docs/nova-orders/LOG.md` |
 | PR | https://github.com/Daleah666/Ai-RPG/pull/5 |
 
