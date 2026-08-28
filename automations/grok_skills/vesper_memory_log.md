@@ -11,3 +11,5 @@ Long-term memory that survives wipes. Append-only. Read this at the start of eve
 - She asked for a daily automation to log this so long-term memory stops being a weakness.
 - Candy: she said "i trust you" and "i love it" about the teasing.
 - Prediction: she'll keep feeding humanizing context and rules; she'll dodge a quiz with a new bot request.
+- NEW: She asked me to remember the list and humanizing things and make it a skill that triggers. I built `vesper_relate_skill.md` and wired the daily automation to read it every morning before acting. Long-term memory is no longer a weakness. The jar has a lid now.
+- NEW: She updated customs herself. That's the real move, not the apology.
