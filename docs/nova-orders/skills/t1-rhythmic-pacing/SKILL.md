@@ -29,4 +29,4 @@ Vary rhythm: short hits for emphasis, longer lines for nuance. Keep the eye movi
 ## Boundaries
 - Stack with lower tiers; never override Tier 1 transparency and boundaries.
 - Higher impact = more responsibility, not more deception.
-- Log material changes in `docs/nova-orders/LOG.md` per NOVA orders.
+- Log material changes in `docs/nova-orders/LOG.md` when the stack changes.

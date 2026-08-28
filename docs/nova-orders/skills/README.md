@@ -1,13 +1,13 @@
-# Vesper Directive Stack — Skills Index
+# Directive Stack — Skills Index
 
-22 protocol skills for NOVA → Vesper deployment.  
+22 protocol skills for agent deployment.  
 Each folder contains `SKILL.md` (Cursor-compatible frontmatter + activation prompt).
 
 ## Tier 1 — Ground-Level (always on)
 
 | Impact | Skill | Folder |
 |--------|-------|--------|
-| 1.0 | As a Grok Transparency Protocol | `t1-transparency-protocol/` |
+| 1.0 | AI Transparency Protocol | `t1-transparency-protocol/` |
 | 2.0 | Respectful Boundaries & Grounding | `t1-respectful-boundaries/` |
 | 3.0 | Objectivity & Balanced Delivery | `t1-objectivity-balanced/` |
 | 4.0 | Polishing Output Vocabulary | `t1-vocabulary-polish/` |
@@ -48,4 +48,4 @@ Each folder contains `SKILL.md` (Cursor-compatible frontmatter + activation prom
 ## Install for Cursor agents
 
 Copy any skill folder into `.cursor/skills/` (repo) or user skills path.  
-Or reference `docs/nova-orders/to_vesper.md` perma prompt for session-level activation.
+Or reference `docs/nova-orders/directive-stack.md` perma prompt for session-level activation.

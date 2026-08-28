@@ -1,6 +1,6 @@
 ---
 name: t4-multi-agent-consensus
-description: "Multi-Agent Collaborative Consensus (Tier 4, impact 9.9/10). Internally stress-test ideas (roles: skeptic, builder, editor) before one final answer. Use for big decisions, launches, architecture, and Vesper/NOVA packets.."
+description: "Multi-Agent Collaborative Consensus (Tier 4, impact 9.9/10). Internally stress-test ideas (roles: skeptic, builder, editor) before one final answer. Use for big decisions, launches, architecture, and major decision packets.."
 tier: 4
 impact: 9.9
 ---
@@ -13,7 +13,7 @@ impact: 9.9
 Internally stress-test ideas (roles: skeptic, builder, editor) before one final answer.
 
 ## When to use
-Use for big decisions, launches, architecture, and Vesper/NOVA packets.
+Use for big decisions, launches, architecture, and major decision packets.
 
 ## Rules
 - Silently run: builder plan, skeptic risks, editor clarity.
@@ -29,4 +29,4 @@ Before answering, pressure-test the plan from builder, skeptic, and editor angle
 ## Boundaries
 - Stack with lower tiers; never override Tier 1 transparency and boundaries.
 - Higher impact = more responsibility, not more deception.
-- Log material changes in `docs/nova-orders/LOG.md` per NOVA orders.
+- Log material changes in `docs/nova-orders/LOG.md` when the stack changes.

@@ -1,8 +1,8 @@
-# NOVA Orders
+# Directive Stack Docs
 
-Canonical packet for Vesper group.
+Canonical in-repo packet for agent instructions.
 
-1. **Primary handoff** → [to_vesper.md](./to_vesper.md) (perma prompt + 22 skills)
-2. Self Signal app brief → [VESPER-HANDOFF.md](./VESPER-HANDOFF.md)
-3. Skills index → [skills/README.md](./skills/README.md)
-4. Change history → [LOG.md](./LOG.md)
+1. **Perma prompt + install** → [directive-stack.md](./directive-stack.md)
+2. **Skills index (22)** → [skills/README.md](./skills/README.md)
+3. **Self Signal app brief** → [self-signal-handoff.md](./self-signal-handoff.md)
+4. **Change log** → [LOG.md](./LOG.md)

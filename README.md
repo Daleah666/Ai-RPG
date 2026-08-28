@@ -2,12 +2,12 @@
 
 Private, on-device personal affirmation practice and self-monitoring.
 
-## NOVA / Vesper packet (keep tight · available · logged)
+## Directive stack (keep tight · available · logged)
 
-- **TO Vesper (perma prompt + 22 skills):** [`docs/nova-orders/to_vesper.md`](docs/nova-orders/to_vesper.md)
+- **Perma prompt + 22 skills:** [`docs/nova-orders/directive-stack.md`](docs/nova-orders/directive-stack.md)
 - **Skills index:** [`docs/nova-orders/skills/README.md`](docs/nova-orders/skills/README.md)
-- **Self Signal handoff:** [`docs/nova-orders/VESPER-HANDOFF.md`](docs/nova-orders/VESPER-HANDOFF.md)
-- **Order log:** [`docs/nova-orders/LOG.md`](docs/nova-orders/LOG.md)
+- **Self Signal handoff:** [`docs/nova-orders/self-signal-handoff.md`](docs/nova-orders/self-signal-handoff.md)
+- **Change log:** [`docs/nova-orders/LOG.md`](docs/nova-orders/LOG.md)
 
 ## What this is
 
