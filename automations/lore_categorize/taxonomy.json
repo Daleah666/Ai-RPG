@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "description": "Smart lore categories for Velvet Marches / Nova Ai Data. Suggestions only — never rearrange Vesper's existing layout.",
+  "policy": {
+    "mode": "suggest_only",
+    "never_move_existing": true,
+    "never_rename_existing": true,
+    "never_reorder_shelves": true,
+    "respect_vesper_organization": true,
+    "new_files_only_where_vesper_points": true,
+    "note": "Bots are adapted to Vesper's current folders. Do not reorganize files she already placed."
+  },
+  "default_shelf": {
+    "shelf_name": "Velvet Marches",
+    "drop_folder_id": "1l0YU2Sr0zTFIVghrVYMILn0LDSul_lPY"
+  },
+  "categories": [
+    {
+      "id": "world_spine",
+      "label": "World Spine / Premise",
+      "filename_prefix": "00",
+      "subfolder": "world",
+      "keywords": ["velvet marches", "aurelline", "premise", "world spine", "setting overview", "campaign premise"]
+    },
+    {
+      "id": "deities",
+      "label": "Deities / Pantheon",
+      "filename_prefix": "01",
+      "subfolder": "deities",
+      "keywords": ["deity", "god", "goddess", "pantheon", "vaelith", "lysandra", "temple", "faith", "pilgrimage", "bloom"]
+    },
+    {
+      "id": "regions",
+      "label": "Regions / Places",
+      "filename_prefix": "02",
+      "subfolder": "regions",
+      "keywords": ["elfheim", "region", "city", "veil", "march", "forest", "kingdom", "district", "geography", "place"]
+    },
+    {
+      "id": "races",
+      "label": "Races / Peoples",
+      "filename_prefix": "03",
+      "subfolder": "races",
+      "keywords": ["race", "elf", "human", "bloodline", "people", "species", "dwarf", "gnome", "heritage", "lineage"]
+    },
+    {
+      "id": "factions",
+      "label": "Factions / Orders",
+      "filename_prefix": "04",
+      "subfolder": "factions",
+      "keywords": ["faction", "order", "concord", "guild", "cult", "house", "idealist", "glamour", "open pilgrimage"]
+    },
+    {
+      "id": "magic",
+      "label": "Magic / Systems",
+      "filename_prefix": "05",
+      "subfolder": "magic",
+      "keywords": ["magic", "glamour", "spell", "ritual", "hormone", "corruption", "ideal", "enchantment", "rules"]
+    },
+    {
+      "id": "characters",
+      "label": "Characters",
+      "filename_prefix": "06",
+      "subfolder": "characters",
+      "keywords": ["character", "npc", "pc", "portrait", "sheet", "backstory", "lysara", "starla"]
+    },
+    {
+      "id": "items",
+      "label": "Items / Relics",
+      "filename_prefix": "07",
+      "subfolder": "items",
+      "keywords": ["item", "relic", "artifact", "weapon", "armor", "rose", "symbol", "treasure"]
+    },
+    {
+      "id": "events",
+      "label": "Events / History",
+      "filename_prefix": "08",
+      "subfolder": "events",
+      "keywords": ["history", "war", "event", "era", "timeline", "arc", "campaign", "pilgrimage generation"]
+    },
+    {
+      "id": "nyx_notes",
+      "label": "Nyx Notes",
+      "filename_prefix": "09",
+      "subfolder": "nyx_notes",
+      "keywords": ["nyx", "nyx notes", "dream", "shadow note"]
+    },
+    {
+      "id": "uncategorized",
+      "label": "Uncategorized / Needs Vesper",
+      "filename_prefix": "99",
+      "subfolder": "inbox_unsorted",
+      "keywords": []
+    }
+  ]
+}
