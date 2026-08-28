@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-RPG · The Sunless Deep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <h1 class="title">⚔️ The Sunless Deep</h1>
+        <p class="subtitle">An AI-guided dungeon crawler</p>
+      </header>
+
+      <!-- Character creation -->
+      <section id="create-panel" class="panel create">
+        <h2>Forge your hero</h2>
+        <label class="field">
+          <span>Name</span>
+          <input id="hero-name" type="text" maxlength="32" placeholder="Aria the Bold" />
+        </label>
+        <div class="field">
+          <span>Class</span>
+          <div class="classes" id="class-picker">
+            <button class="class-card selected" data-class="warrior">
+              <strong>Warrior</strong><em>High HP · Sturdy</em>
+            </button>
+            <button class="class-card" data-class="mage">
+              <strong>Mage</strong><em>High damage · Fragile</em>
+            </button>
+            <button class="class-card" data-class="rogue">
+              <strong>Rogue</strong><em>Balanced · Agile</em>
+            </button>
+          </div>
+        </div>
+        <button id="start-btn" class="btn primary">Enter the dungeon</button>
+      </section>
+
+      <!-- Game view -->
+      <section id="game-panel" class="panel game hidden">
+        <div class="hud">
+          <div class="hud-name">
+            <span id="hud-hero">—</span>
+            <span class="hud-floor">Floor <span id="hud-floor">1</span></span>
+          </div>
+          <div class="bars">
+            <div class="bar">
+              <span class="bar-label">HP <span id="hud-hp">0</span>/<span id="hud-maxhp">0</span></span>
+              <div class="bar-track"><div id="hp-fill" class="bar-fill hp"></div></div>
+            </div>
+            <div class="bar">
+              <span class="bar-label">XP <span id="hud-xp">0</span>/<span id="hud-xpnext">0</span></span>
+              <div class="bar-track"><div id="xp-fill" class="bar-fill xp"></div></div>
+            </div>
+          </div>
+          <div class="stats">
+            <span>Lv <b id="hud-level">1</b></span>
+            <span>⚔ <b id="hud-atk">0</b></span>
+            <span>🛡 <b id="hud-def">0</b></span>
+            <span>🪙 <b id="hud-gold">0</b></span>
+            <span>🧪 <b id="hud-potions">0</b></span>
+          </div>
+        </div>
+
+        <div id="story" class="story" aria-live="polite"></div>
+
+        <div id="actions" class="actions"></div>
+
+        <div id="game-over" class="game-over hidden">
+          <p id="game-over-text"></p>
+          <button id="restart-btn" class="btn primary">Play again</button>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="conn-status" class="dot"></span>
+        <span id="conn-text">connecting…</span>
+      </footer>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "ai-rpg",
+  "version": "0.1.0",
+  "description": "A self-contained AI-driven text RPG dungeon crawler with a web UI.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "vitest": "^2.1.8"
+  }
+}
