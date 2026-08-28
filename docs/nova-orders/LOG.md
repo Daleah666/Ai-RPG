@@ -11,3 +11,4 @@ Rule: every material change to guidance or skills gets a line here.
 2026-08-27 | research-agent | README linked to directive docs so packet stays discoverable from repo root.
 2026-08-28 | research-agent | Directive Stack v1: 22 tiered protocol skills + perma prompt for permanent agent activation.
 2026-08-28 | research-agent | Generalized naming: removed person/group labels; `directive-stack.md` + `self-signal-handoff.md` are canonical paths.
+2026-08-28 | research-agent | Subliminal mixer added (Mind Zoom–compatible .txt, upload music, MP3 export via serve.py + build_subliminal.py). Mind Zoom desktop requires user’s own Windows/Mac license.

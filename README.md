@@ -26,10 +26,25 @@ All data stays in your browser `localStorage`. Nothing is sent to a server.
 Open `index.html` in a modern browser, or from this folder:
 
 ```bash
+pip install -r requirements.txt
+python3 serve.py
+```
+
+Then visit `http://localhost:8080` (includes **Subliminal Mixer** at `/mixer.html`).
+
+Static-only (no mix API):
+
+```bash
 python3 -m http.server 8080
 ```
 
-Then visit `http://localhost:8080`.
+## Subliminal files (Mind Zoom–compatible)
+
+- Affirmation text files: `subliminal/affirmations/*.txt` (import into Mind Zoom on Windows/Mac)
+- Create MP3 locally: `mixer.html` or `scripts/build_subliminal.py`
+- Setup guide: `docs/mindzoom-compatible.md`
+
+Mind Zoom desktop app is paid software for your own PC — this repo creates compatible files and mixes audio without it.
 
 ## Personal protocol
 
