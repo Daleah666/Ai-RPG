@@ -10,6 +10,8 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
+from automations.morning_poll.agent_parts import render_team_morning_parts
+
 ROOT = Path(__file__).resolve().parents[2]
 PROMPT_PATH = ROOT / "automations" / "prompts" / "morning_vesper_poll.md"
 PT = ZoneInfo("America/Los_Angeles")
@@ -50,10 +52,12 @@ def _identity_line() -> str:
         return "Nova / `code_leader`"
 
 
-def render_poll(*, when: datetime | None = None) -> str:
+def render_poll(*, when: datetime | None = None, with_team_parts: bool = True) -> str:
     """Build today's morning poll markdown."""
     when = when or today_pt()
     day = date_stamp(when)
+    team = render_team_morning_parts() if with_team_parts else ""
+    team_block = f"\n{team}\n" if team else ""
     return f"""# Nova morning poll → Leader Vesper (Grok)
 from: code_leader (Nova)
 to: leader_vesper
@@ -91,7 +95,7 @@ Vesper — quick shared poll so I can plan the coding day. Reply under **Vesper 
 
 6. **Anything Clash-risk with your other bots?**
    >
-
+{team_block}
 ## Nova standing status (auto)
 - identity: {_identity_line()}
 - team: drive_ops, gemini_worker, planner, hypno, lyoko
@@ -101,7 +105,7 @@ Vesper — quick shared poll so I can plan the coding day. Reply under **Vesper 
 - prompt: `automations/prompts/morning_vesper_poll.md`
 
 ## Vesper answers
-_(Vesper fills below)_
+_(Vesper fills below — after team morning parts if used)_
 """
 
 

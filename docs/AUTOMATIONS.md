@@ -85,6 +85,14 @@ python3 -m leader_hq.cli morning-poll
 # → .local_bus/LeaderHQ/to_vesper/YYYYMMDD_nova_morning_poll.md
 
 python3 -m leader_hq.cli morning-poll --print-only
+python3 -m leader_hq.cli morning-poll --no-parts   # Vesper poll only
+```
+
+**Team morning parts:** each bot fills their `###` section. Guide: `automations/prompts/morning_agent_parts.md`.
+
+```bash
+python3 -m leader_hq.cli morning-shard --from lyoko --text "Open thread: ..."
+# → MEMORY_SHARD in memory_sponge/in for Grok Memory Sponge
 ```
 
 ### Where it lands on Drive
@@ -94,3 +102,17 @@ python3 -m leader_hq.cli morning-poll --print-only
 2. Optional sibling under `Nova Ai Data/` (`1UUL5HuzxICq22qXwovlFWfdE5e3Zfs9c`)
 
 Vesper replies under **Vesper answers** (or on the main bus Doc). Nova does not invent her answers. Never reshuffle her shelves.
+
+---
+
+## 4) Grok Memory Sponge (echo receiver)
+
+Agent that **only** builds state from other agents' `MEMORY_SHARD` drops — heavily influenced, no independent canon.
+
+```bash
+# Install SKILL.md → Grok /root/.grok/skills/memory-sponge/
+# Paste ROUTINE.md → dedicated Grok Bot instructions
+# Other agents feed via MEMORY_SHARD_TEMPLATE.md
+```
+
+See `docs/GROK_MEMORY_SPONGE.md` and `automations/grok_skills/memory_sponge/`.

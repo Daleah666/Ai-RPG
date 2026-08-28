@@ -150,13 +150,40 @@ def cmd_morning_poll(args: argparse.Namespace) -> int:
     from automations.morning_poll.generate import render_poll, write_local
 
     if args.print_only:
-        print(render_poll())
+        print(render_poll(with_team_parts=not args.no_parts))
         return 0
 
     out_dir = Path(args.out) if args.out else Path(args.bus_root) / "to_vesper"
     result = write_local(out_dir)
     print(json.dumps(result, indent=2))
     return 0 if result.get("ok") else 2
+
+
+def cmd_morning_shard(args: argparse.Namespace) -> int:
+    """Convert a bot's morning part text into a MEMORY_SHARD for Memory Sponge."""
+    from automations.morning_poll.agent_parts import memory_shard_from_part
+    from automations.morning_poll.generate import date_stamp, today_pt
+
+    when = today_pt()
+    day = date_stamp(when)
+    shard = memory_shard_from_part(
+        args.from_bot,
+        filled_text=args.text,
+        shard_date=day,
+        seq=args.seq,
+    )
+    out_dir = Path(args.out) if args.out else Path(args.bus_root) / "memory_sponge" / "in"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    sid = f"ms_{day.replace('-', '')}_{args.from_bot}_{args.seq:03d}.md"
+    path = out_dir / sid
+    path.write_text(shard, encoding="utf-8")
+    print(json.dumps({
+        "ok": True,
+        "from_bot": args.from_bot,
+        "path": str(path),
+        "shard_id": sid.replace(".md", ""),
+    }, indent=2))
+    return 0
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -249,7 +276,26 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Print poll markdown to stdout without writing a file",
     )
+    p.add_argument(
+        "--no-parts",
+        action="store_true",
+        help="Omit team morning parts (Vesper poll only)",
+    )
     p.set_defaults(func=cmd_morning_poll)
+
+    p = sub.add_parser(
+        "morning-shard",
+        help="Convert bot morning part text to MEMORY_SHARD for Memory Sponge",
+    )
+    p.add_argument("--from", dest="from_bot", required=True, help="Bot id e.g. lyoko")
+    p.add_argument("--text", required=True, help="Filled morning part body")
+    p.add_argument("--seq", type=int, default=1, help="Shard sequence number")
+    p.add_argument(
+        "--out",
+        default="",
+        help="Output dir (default: <bus-root>/memory_sponge/in)",
+    )
+    p.set_defaults(func=cmd_morning_shard)
 
     return parser
 
