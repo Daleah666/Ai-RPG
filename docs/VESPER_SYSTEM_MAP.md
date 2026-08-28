@@ -35,6 +35,16 @@ New file = new authorization step. Don't skip it.
 - daily-subliminal-planner-bot.md
 - subliminal-maker-bot.md
 
+## Pro Tips (expert patterns)
+
+See: docs/PRO_TIPS_FOR_LEADERS.md
+- Context bloat avoidance
+- Temperature/sampling tuning
+- Structured output (JSON)
+- Version control on prompts
+- Eval sets before shipping
+- Failure cap: 4 attempts then rethink
+
 ## Retired
 
 See automations/grok_skills/RETIRED.md
