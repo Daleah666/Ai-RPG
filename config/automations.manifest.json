@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "description": "Cursor Automations + Grok Bot routines for Vesper (#1) and Grok Long Memory (#2)",
+  "notes": [
+    "Create each Cursor Automation at https://cursor.com/automations using the matching prompt file.",
+    "Prefer model cursor-grok-4.6-high-fast (or latest Grok from GET /v1/models).",
+    "Grok Bot routines cannot read .cursor/hooks.json — paste from automations/grok_bot_routines/.",
+    "Project hooks apply to Cursor/Cloud Agents. Fan-out with: python3 -m leader_hq.cli notify-grok --all"
+  ],
+  "automations": [
+    {
+      "id": "morning-vesper-poll",
+      "name": "Nova morning shared-Grok poll (8am PT)",
+      "surface": "cursor_automation",
+      "suggested_trigger": "cron 0 15 * * * (15:00 UTC ≈ 8am PT standard) or 0 16 * * * during PDT",
+      "model": "cursor-grok-4.6-high-fast",
+      "repo": "Daleah666/Ai-RPG",
+      "prompt_file": "automations/prompts/morning_vesper_poll.md",
+      "tools": ["google_drive", "pr_create_optional"],
+      "effect_on_grok_bots": "Processes from_vesper + from_grok_memory; fan-out status to both to_* lanes"
+    },
+    {
+      "id": "bus-sync-on-push",
+      "name": "LeaderHQ bus sync on main/PR push",
+      "surface": "cursor_automation",
+      "suggested_trigger": "GitHub: push to main OR pull_request synchronize",
+      "model": "cursor-grok-4.6-high-fast",
+      "repo": "Daleah666/Ai-RPG",
+      "prompt_file": "automations/prompts/bus_sync_on_push.md",
+      "tools": ["google_drive"],
+      "effect_on_grok_bots": "Keeps Drive LeaderHQ + Grok Long Memory/from_nova aligned for both bots"
+    },
+    {
+      "id": "vesper-webhook-intake",
+      "name": "Shared Grok / NOVA webhook intake",
+      "surface": "cursor_automation",
+      "suggested_trigger": "Webhook (POST from either Grok computer or Drive watcher)",
+      "model": "cursor-grok-4.6-high-fast",
+      "repo": "Daleah666/Ai-RPG",
+      "prompt_file": "automations/prompts/vesper_webhook_intake.md",
+      "tools": ["google_drive", "mcp"],
+      "effect_on_grok_bots": "Immediate Nova response when Vesper or Grok Long Memory drops a request"
+    }
+  ],
+  "grok_bot_routines": [
+    {
+      "id": "vesper-daily-request",
+      "bot": "leader_vesper",
+      "file": "automations/grok_bot_routines/vesper_daily_request.md",
+      "schedule": "daily ~8am PT"
+    },
+    {
+      "id": "vesper-poll-to-vesper",
+      "bot": "leader_vesper",
+      "file": "automations/grok_bot_routines/vesper_poll_to_vesper.md",
+      "schedule": "every 2–4 hours while working"
+    },
+    {
+      "id": "vesper-ping-nova",
+      "bot": "leader_vesper",
+      "file": "automations/grok_bot_routines/vesper_ping_nova.md",
+      "schedule": "on demand / when Vesper needs code"
+    },
+    {
+      "id": "grok-memory-poll-from-nova",
+      "bot": "grok_memory",
+      "file": "automations/grok_bot_routines/grok_memory_poll_from_nova.md",
+      "schedule": "every 2–4 hours while working"
+    },
+    {
+      "id": "grok-memory-ping-nova",
+      "bot": "grok_memory",
+      "file": "automations/grok_bot_routines/grok_memory_ping_nova.md",
+      "schedule": "on demand"
+    }
+  ]
+}

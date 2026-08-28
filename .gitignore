@@ -1,0 +1,11 @@
+.local_bus/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+*.egg-info/
+dist/
+build/
+.cursor/hooks/__pycache__/

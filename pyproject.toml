@@ -1,0 +1,12 @@
+[project]
+name = "leader-hq"
+version = "0.2.0"
+description = "Nova / code_leader Google Drive bot bus + Grok Bot Vesper automation"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+code-leader = "leader_hq.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["leader_hq*"]

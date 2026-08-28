@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      {
+        "command": "python3 .cursor/hooks/before_submit_prompt.py",
+        "timeout": 15
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "python3 .cursor/hooks/guard_shell.py",
+        "timeout": 10,
+        "failClosed": false
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "python3 .cursor/hooks/post_tool_drive.py",
+        "timeout": 10
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "python3 .cursor/hooks/audit_agent_response.py",
+        "timeout": 10
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "python3 .cursor/hooks/subagent_stop_audit.py",
+        "timeout": 10
+      }
+    ],
+    "stop": [
+      {
+        "command": "python3 .cursor/hooks/stop_vesper_check.py",
+        "timeout": 20,
+        "loop_limit": 3
+      }
+    ]
+  }
+}

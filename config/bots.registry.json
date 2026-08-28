@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "leader": "code_leader",
+  "bots": [
+    {
+      "id": "drive_ops",
+      "name": "Drive Ops",
+      "role": "Google Drive hygiene, folder moves, file search, bus maintenance",
+      "capabilities": ["drive_search", "drive_create", "drive_move", "bus_cleanup"],
+      "status": "idle"
+    },
+    {
+      "id": "gemini_worker",
+      "name": "Gemini Worker",
+      "role": "Heavy drafting/reasoning tasks delegated to Gemini-class systems",
+      "capabilities": ["draft", "summarize", "rewrite", "brainstorm"],
+      "status": "idle"
+    },
+    {
+      "id": "planner",
+      "name": "Planner",
+      "role": "Turn goals into plans and task graphs for code_leader to assign",
+      "capabilities": ["plan", "decompose", "prioritize"],
+      "status": "idle"
+    },
+    {
+      "id": "hypno",
+      "name": "Hypno",
+      "role": "Audio + hypnosis research specialist; builds formulas and preset modes for Subliminal Maker",
+      "capabilities": [
+        "audio_research",
+        "subliminal_methods",
+        "formula_design",
+        "preset_modes",
+        "carrier_layers",
+        "affirmation_pacing"
+      ],
+      "status": "idle",
+      "reports_via": "code_leader",
+      "usable_by": ["leader_vesper", "librarian", "subliminal_maker"]
+    },
+    {
+      "id": "lyoko",
+      "name": "Lyoko",
+      "role": "Writer and world-builder; lore drafts that sit beside Vesper lore, Nyx notes, and related canon",
+      "capabilities": [
+        "worldbuilding",
+        "lore_writing",
+        "character_notes",
+        "setting_continuity",
+        "nyx_adjacent_notes",
+        "canon_patches"
+      ],
+      "status": "idle",
+      "reports_via": "code_leader",
+      "usable_by": ["leader_vesper", "librarian", "nyx"],
+      "lore_placement": "vesper_directed",
+      "lore_drop_hint": "Vesper sets lore.drop_path / drop_folder_id each request; see docs/LORE_SHELVES.md"
+    }
+  ]
+}
