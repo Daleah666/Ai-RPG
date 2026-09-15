@@ -186,6 +186,42 @@ def cmd_morning_shard(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_memory_vault(args: argparse.Namespace) -> int:
+    """Collect Vesper memory into a copy-only vault (never deletes sources)."""
+    from automations.memory_vault.collect import (
+        catalog_payload,
+        write_drop,
+        write_local_index,
+    )
+
+    if args.action == "catalog":
+        print(json.dumps(catalog_payload(), indent=2))
+        return 0
+
+    if args.action == "index":
+        out = Path(args.out) if args.out else Path(args.bus_root) / "memory_vault" / "indexes"
+        result = write_local_index(out, extra_notes=args.notes or "")
+        print(json.dumps(result, indent=2))
+        return 0 if result.get("ok") else 2
+
+    if args.action == "drop":
+        if not args.text:
+            print("Need --text for a drop", file=sys.stderr)
+            return 2
+        out = Path(args.out) if args.out else Path(args.bus_root) / "memory_vault" / "chat_drops"
+        result = write_drop(
+            out,
+            title=args.title or "vesper_drop",
+            text=args.text,
+            tags=args.tags or "",
+        )
+        print(json.dumps(result, indent=2))
+        return 0 if result.get("ok") else 2
+
+    print(f"Unknown memory-vault action: {args.action}", file=sys.stderr)
+    return 2
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="code-leader", description="Nova / code_leader bus CLI")
     parser.add_argument(
@@ -296,6 +332,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Output dir (default: <bus-root>/memory_sponge/in)",
     )
     p.set_defaults(func=cmd_morning_shard)
+
+    p = sub.add_parser(
+        "memory-vault",
+        help="Collect Vesper memory COPY-ONLY (never deletes sources)",
+    )
+    p.add_argument(
+        "action",
+        choices=["index", "drop", "catalog"],
+        help="index=build catalog links; drop=save pasted memory; catalog=list sources",
+    )
+    p.add_argument("--title", default="", help="Drop title")
+    p.add_argument("--text", default="", help="Drop body (her words)")
+    p.add_argument("--tags", default="", help="Optional tags")
+    p.add_argument("--notes", default="", help="Extra notes for index")
+    p.add_argument(
+        "--out",
+        default="",
+        help="Output dir (default under <bus-root>/memory_vault/)",
+    )
+    p.set_defaults(func=cmd_memory_vault)
 
     return parser
 
