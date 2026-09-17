@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visual Subliminal Flash</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="visual.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html">Self Signal</a>
+      <nav class="nav">
+        <a href="mixer.html">Audio mixer</a>
+        <a href="index.html">Home</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="brand-mark">Visual</p>
+        <h1>Flash images at subliminal speed.</h1>
+        <p class="lede">
+          Drag images from any folder or drive — add many at once. Runs in your
+          browser; nothing is uploaded unless you choose to.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Images</h2>
+          <p>Drop PNG, JPG, GIF, or WebP. Click the zone to browse.</p>
+        </div>
+        <div class="drop-zone" id="dropZone">
+          <p><strong>Drop images here</strong> or click to select multiple files</p>
+          <p style="font-size:0.85rem;margin-top:0.5rem">Works with files from any drive or window</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" multiple hidden />
+        <div class="image-grid" id="imageGrid"></div>
+        <div class="cta-row" style="margin-top:1rem">
+          <button type="button" class="btn ghost" id="clearBtn">Clear all</button>
+          <button type="button" class="btn ghost" id="demoBtn">Add demo text cards</button>
+        </div>
+        <div class="text-import">
+          <label class="field">
+            <span>Paste lines (one affirmation per line → flash cards)</span>
+            <textarea id="textImport" rows="4" placeholder="I am focused&#10;I follow through&#10;Start now"></textarea>
+          </label>
+          <button type="button" class="btn ghost" id="textToCardsBtn">Convert lines to flash cards</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Flash settings</h2>
+        </div>
+        <div class="score-grid">
+          <label class="field">
+            <span>Flash interval (ms)</span>
+            <input type="range" id="intervalMs" min="16" max="2000" value="80" />
+            <output id="intervalOut">80</output>
+          </label>
+          <label class="field">
+            <span>Opacity (0.01–0.5)</span>
+            <input type="range" id="opacity" min="1" max="50" value="12" />
+            <output id="opacityOut">0.12</output>
+          </label>
+          <label class="field">
+            <span>Position</span>
+            <select id="positionMode">
+              <option value="random">Random on screen</option>
+              <option value="center">Center</option>
+              <option value="corners">Random corners</option>
+            </select>
+          </label>
+        </div>
+        <label class="check">
+          <input type="checkbox" id="shuffle" checked />
+          <span>Shuffle order each cycle</span>
+        </label>
+        <div class="cta-row">
+          <button type="button" class="btn primary" id="startBtn">Start flashing</button>
+          <button type="button" class="btn ghost" id="stopBtn" disabled>Stop</button>
+          <button type="button" class="btn ghost" id="fullscreenBtn">Fullscreen overlay</button>
+        </div>
+        <p class="status" id="flashStatus" role="status"></p>
+        <p class="footnote">
+          For combined audio + visual: play your MP3 from the mixer while this runs.
+          Personal use only. Take breaks; stop if you feel eye strain.
+        </p>
+      </section>
+    </main>
+
+    <div class="flash-overlay flash-hidden" id="overlay">
+      <img id="flashImg" alt="" />
+    </div>
+    <div class="flash-toolbar flash-hidden" id="toolbar">
+      <button type="button" class="btn ghost" id="toolbarStop">Stop</button>
+      <span id="toolbarCount" style="color:var(--muted);font-size:0.85rem"></span>
+    </div>
+
+    <script src="visual.js"></script>
+  </body>
+</html>

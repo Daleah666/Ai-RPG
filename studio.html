@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Subliminal Studio — Self Signal</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="visual.css" />
+  </head>
+  <body>
+    <div class="atmosphere" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="index.html">Self Signal</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="mixer.html">Audio</a>
+        <a href="visual.html">Visual</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="brand-mark">Studio</p>
+        <h1>Audio layers + visual flash + API — one system.</h1>
+        <p class="lede">
+          Stack <strong>3 frequency layers</strong> into one MP3, flash
+          <strong>multiple images</strong> from any drive, or generate via
+          <strong>HTTP API</strong> from Cursor or any script.
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Quick start</h2></div>
+        <pre class="code-block">pip install -r requirements.txt
+python3 serve.py</pre>
+        <div class="cta-row">
+          <a class="btn primary" href="mixer.html">3-layer audio mixer</a>
+          <a class="btn primary" href="visual.html">Visual flash</a>
+          <a class="btn ghost" href="/api/schema" target="_blank">API schema</a>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <h2>How the 3 layers stack</h2>
+        </div>
+        <ol class="steps">
+          <li><strong>Layer 1</strong> — normal speech band (300–3400 Hz)</li>
+          <li><strong>Layer 2</strong> — mid shift (~1.6× pitch, 2–8 kHz)</li>
+          <li><strong>Layer 3</strong> — upper band (12–17 kHz emphasis)</li>
+        </ol>
+        <p class="footnote">
+          Each layer has its own affirmations, volume, and frequency profile.
+          FFmpeg mixes all layers on top of your music (or silent base).
+        </p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h2>Cursor / agent API</h2></div>
+        <pre class="code-block">curl -X POST http://localhost:8080/api/v1/generate \
+  -H "Content-Type: application/json" \
+  -d @subliminal/examples/3-layer-job.json \
+  -o output.mp3</pre>
+        <p class="footnote">Full docs: <code>docs/api.md</code> · Health: <code>/api/health</code></p>
+      </section>
+    </main>
+  </body>
+</html>
