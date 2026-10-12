@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MindZoom background player</title>
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin: 0; height: 100%; background: #050505; color: #f4f4f4; font-family: Georgia, "Times New Roman", serif; }
+  body { display: flex; flex-direction: column; }
+  #stage { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+  #line { font-size: clamp(22px, 4vw, 48px); line-height: 1.25; max-width: 22ch; }
+  #bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 12px; background: #141414; border-top: 1px solid #333; font-family: system-ui, sans-serif; font-size: 14px; }
+  button, select { background: #222; color: #fff; border: 1px solid #555; border-radius: 6px; padding: 6px 10px; }
+  button#stop { background: #6b1d1d; }
+  button#play { background: #1d4d32; }
+  #picker { display: none; }
+  #status { opacity: 0.8; margin-left: auto; }
+</style>
+</head>
+<body>
+  <div id="stage"><div id="line">Choose your MindZoom folder, then press Play.</div></div>
+  <div id="bar">
+    <button id="choose" type="button">Choose folder</button>
+    <input id="picker" type="file" accept=".txt,text/plain" multiple webkitdirectory directory />
+    <button id="play" type="button">Play</button>
+    <button id="stop" type="button">Stop</button>
+    <label>Speed
+      <select id="speed">
+        <option value="flash">Subliminal flash</option>
+        <option value="soft" selected>Soft background</option>
+        <option value="read">Readable</option>
+      </select>
+    </label>
+    <label>File
+      <select id="file"><option value="all">All files</option></select>
+    </label>
+    <label><input id="shuffle" type="checkbox" checked /> Shuffle</label>
+    <span id="status">no folder yet</span>
+  </div>
+<script>
+const lineEl = document.getElementById("line");
+const statusEl = document.getElementById("status");
+const fileSel = document.getElementById("file");
+const speeds = { flash: [90, 260], soft: [700, 500], read: [2200, 300] };
+const blocked = /high\s*school|highschool|childhood|underage|preteen|jailbait|\bloli\b|\bshota\b/i;
+let lines = [];
+let skipped = 0;
+let timer = null;
+let order = [];
+let cursor = 0;
+let playing = false;
+
+function pool() {
+  const pick = fileSel.value;
+  return pick === "all" ? lines : lines.filter(x => x.file === pick);
+}
+
+function rebuild() {
+  const items = pool();
+  order = items.map((_, i) => i);
+  if (document.getElementById("shuffle").checked) {
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+  }
+  cursor = 0;
+}
+
+function showNext() {
+  const items = pool();
+  if (!items.length) {
+    stop();
+    lineEl.textContent = "That folder has no affirmation lines.";
+    return;
+  }
+  if (!order.length || cursor >= order.length) rebuild();
+  const item = items[order[cursor]];
+  cursor += 1;
+  lineEl.textContent = item.line;
+  statusEl.textContent = item.file;
+  const [onMs, offMs] = speeds[document.getElementById("speed").value];
+  timer = setTimeout(() => {
+    lineEl.textContent = "";
+    timer = setTimeout(showNext, offMs);
+  }, onMs);
+}
+
+function stop() {
+  playing = false;
+  if (timer) clearTimeout(timer);
+  timer = null;
+  lineEl.textContent = lines.length ? "Stopped." : "Choose your MindZoom folder, then press Play.";
+  statusEl.textContent = lines.length ? "stopped" : "no folder yet";
+}
+
+document.getElementById("choose").onclick = () => document.getElementById("picker").click();
+
+document.getElementById("picker").onchange = async (event) => {
+  const picked = [...event.target.files].filter(f => f.name.toLowerCase().endsWith(".txt"));
+  const next = [];
+  const names = [];
+  skipped = 0;
+  for (const file of picked) {
+    const label = file.webkitRelativePath || file.name;
+    if (blocked.test(file.name) || blocked.test(label)) {
+      skipped += 1;
+      continue;
+    }
+    const text = await file.text();
+    let count = 0;
+    for (const raw of text.split(/\r?\n/)) {
+      const line = raw.trim();
+      if (!line || line.startsWith("#")) continue;
+      if (blocked.test(line)) {
+        skipped += 1;
+        continue;
+      }
+      next.push({ file: label, line });
+      count += 1;
+    }
+    if (count) names.push(label);
+  }
+  lines = next;
+  fileSel.innerHTML = '<option value="all">All files</option>';
+  for (const name of names) {
+    const opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name.split("/").pop();
+    fileSel.appendChild(opt);
+  }
+  const skipNote = skipped ? ", " + skipped + " skipped" : "";
+  statusEl.textContent = names.length + " files, " + lines.length + " lines" + skipNote;
+  lineEl.textContent = lines.length ? "Ready. Press Play." : "No text lines found in that folder.";
+  if (playing) rebuild();
+};
+
+document.getElementById("play").onclick = () => {
+  if (!lines.length) {
+    lineEl.textContent = "Choose the folder first.";
+    return;
+  }
+  if (playing) return;
+  playing = true;
+  rebuild();
+  showNext();
+};
+document.getElementById("stop").onclick = stop;
+fileSel.onchange = () => { if (playing) rebuild(); };
+document.getElementById("shuffle").onchange = () => { if (playing) rebuild(); };
+</script>
+</body>
+</html>
