@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Background subliminal player</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: rgba(255, 255, 255, 0.42);
+      --bg: #0e0e10;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: #ddd;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+    #line {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 8vh 10vw;
+      text-align: center;
+      font-size: clamp(18px, 3vw, 34px);
+      line-height: 1.35;
+      color: var(--ink);
+      pointer-events: none;
+      user-select: none;
+    }
+    #panel {
+      position: fixed;
+      left: 12px;
+      bottom: 12px;
+      width: min(420px, calc(100vw - 24px));
+      padding: 12px;
+      background: rgba(20, 20, 22, 0.92);
+      border: 1px solid #333;
+      border-radius: 10px;
+      font-family: system-ui, sans-serif;
+      font-size: 13px;
+    }
+    #panel.hidden { display: none; }
+    label { display: block; margin: 8px 0 4px; }
+    input[type="range"] { width: 100%; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    button, input[type="file"] { font: inherit; }
+    button {
+      background: #2a2a2e;
+      color: #eee;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 6px 10px;
+      cursor: pointer;
+    }
+    #status { margin-top: 8px; color: #aaa; }
+    #toggle {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="line">Load a text file, then press Play.</div>
+  <button id="toggle" type="button">Hide controls</button>
+  <form id="panel">
+    <label for="file">Affirmation file (.txt, one line each)</label>
+    <input id="file" type="file" accept=".txt,text/plain">
+    <label for="speed">Seconds per line: <span id="speed-out">3</span></label>
+    <input id="speed" type="range" min="1" max="12" value="3" step="0.5">
+    <label for="fade">How visible: <span id="fade-out">40%</span></label>
+    <input id="fade" type="range" min="8" max="80" value="40">
+    <div class="row">
+      <button id="play" type="button">Play</button>
+      <button id="stop" type="button">Stop</button>
+    </div>
+    <p id="status">Lines that start with # are skipped. Leave this tab open while you do something else.</p>
+  </form>
+  <script>
+    const lineEl = document.getElementById("line");
+    const fileEl = document.getElementById("file");
+    const speedEl = document.getElementById("speed");
+    const speedOut = document.getElementById("speed-out");
+    const fadeEl = document.getElementById("fade");
+    const fadeOut = document.getElementById("fade-out");
+    const playBtn = document.getElementById("play");
+    const stopBtn = document.getElementById("stop");
+    const statusEl = document.getElementById("status");
+    const panel = document.getElementById("panel");
+    const toggle = document.getElementById("toggle");
+
+    let lines = [];
+    let index = 0;
+    let timer = null;
+
+    function applyFade() {
+      const amount = Number(fadeEl.value) / 100;
+      fadeOut.textContent = fadeEl.value + "%";
+      document.documentElement.style.setProperty("--ink", "rgba(255,255,255," + amount + ")");
+    }
+
+    function showCurrent() {
+      if (!lines.length) {
+        lineEl.textContent = "No lines yet. Choose a .txt file.";
+        return;
+      }
+      lineEl.textContent = lines[index % lines.length];
+    }
+
+    function tick() {
+      if (!lines.length) return;
+      index = (index + 1) % lines.length;
+      showCurrent();
+    }
+
+    function stop() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      statusEl.textContent = lines.length
+        ? "Stopped. " + lines.length + " lines loaded."
+        : "Stopped.";
+    }
+
+    function play() {
+      stop();
+      if (!lines.length) {
+        statusEl.textContent = "Pick a .txt file first.";
+        return;
+      }
+      showCurrent();
+      const ms = Number(speedEl.value) * 1000;
+      timer = setInterval(tick, ms);
+      statusEl.textContent = "Playing " + lines.length + " lines in a loop.";
+    }
+
+    function parseText(text) {
+      return text
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line && !line.startsWith("#"));
+    }
+
+    fileEl.addEventListener("change", () => {
+      const file = fileEl.files && fileEl.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        lines = parseText(String(reader.result || ""));
+        index = 0;
+        showCurrent();
+        statusEl.textContent = lines.length
+          ? "Loaded " + lines.length + " lines from " + file.name + "."
+          : "That file had no playable lines.";
+      };
+      reader.readAsText(file);
+    });
+
+    speedEl.addEventListener("input", () => {
+      speedOut.textContent = speedEl.value;
+      if (timer) play();
+    });
+    fadeEl.addEventListener("input", applyFade);
+    playBtn.addEventListener("click", play);
+    stopBtn.addEventListener("click", stop);
+    toggle.addEventListener("click", () => {
+      panel.classList.toggle("hidden");
+      toggle.textContent = panel.classList.contains("hidden") ? "Show controls" : "Hide controls";
+    });
+
+    applyFade();
+    speedOut.textContent = speedEl.value;
+  </script>
+</body>
+</html>

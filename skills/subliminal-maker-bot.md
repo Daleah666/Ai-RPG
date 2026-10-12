@@ -72,7 +72,9 @@ Header lines start with `#` and are ignored by MindZoom. Affirmation lines are e
 
 - **GitHub (source of truth):** `Daleah666/Ai-RPG` → `subliminals/YYYY-MM-DD_Theme.txt`
 - **Drive (working copy):** folder `Subliminal Screen Agent` (id `1kwqihKKvYO6zRi5PSTlFjLPUePzonWRr`). The bot can list, read, and note files here. Binary audio/image files stay on your machine — the bot handles text only.
-- **Local MindZoom folder:** you paste the .txt into your MindZoom directory. The bot tells you the filename; you move it.
+- **Drive (MindZoom library, next to pictures):** folder `MindZoom` inside `The Hub`, beside `Wallpapers` (id `1kNGCWE6gxsOzocSjsYhn0yFg9dcOmPpF`). https://drive.google.com/drive/folders/1kNGCWE6gxsOzocSjsYhn0yFg9dcOmPpF
+- **Local MindZoom folder:** `Mindzoom3.1.0\affirmations` on the PC. Copy those `.txt` files into the Drive `MindZoom` folder. The bot cannot see the PC disk.
+- **Background play:** open `subliminals/background-player.html`, choose a `.txt` from that folder, press Play, hide the controls, leave the tab open. One dim line at a time. `#` header lines are skipped. No audio.
 
 ---
 
@@ -116,7 +118,7 @@ Say any of these and the bot acts:
 ## SECTION 9 — HARD RULES
 
 - No medical, legal, or safety affirmations. Mindset only.
-- No audio generation. Text files only. You handle playback in MindZoom or your player.
+- No audio generation. Text files only. Playback is the browser page `subliminals/background-player.html`, or MindZoom on the PC.
 - No silent screen capture. The Screen Agent extension is consent-based; the bot never touches it without you asking.
 - Files are yours. The bot writes them; you own them.
 - The bot does not nag. It drafts ahead and waits. One reminder max per day.
@@ -125,3 +127,4 @@ Say any of these and the bot acts:
 
 ## Log
 - 2026-08-28 — skill created. First bot. Paired with existing MindZoom doc and Subliminal Screen Agent folder. Rev 1.
+- 2026-10-12 — Drive drop added: `The Hub/MindZoom`. Background player reads a local `.txt`. PC library still has to be copied by hand. Rev 2.
