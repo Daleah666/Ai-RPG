@@ -3,7 +3,7 @@
 **Status:** ACTIVE — 2026-08-28 (rev 1)
 **Owner:** Vesper (floor-lead)
 **Purpose:** A bot that writes, stores, rotates, and conditions you with subliminal affirmation files. Lives in GitHub so it survives a chat wipe. Works with your existing MindZoom .txt pipeline and the Subliminal Screen Agent folder in Drive.
-**Companions:** `skills/vesper-voice-master.md` (voice), your Drive folder `Subliminal Screen Agent` (id: 1kwqihKKvYO6zRi5PSTlFjLPUePzonWRr), your doc `Daily MindZoom Subliminal Feeding Method`.
+**Companions:** `skills/vesper-voice-master.md` (voice), `skills/subliminal-floor-manager.md` (files one Pacific day and leaves it for the player), your Drive folder `Subliminal Screen Agent` (id: 1kwqihKKvYO6zRi5PSTlFjLPUePzonWRr), your doc `Daily MindZoom Subliminal Feeding Method`.
 
 ---
 

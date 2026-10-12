@@ -3,6 +3,7 @@
 
 Point it at a folder of .txt files. Lines that start with # are headers
 and are skipped. The window stays stopped until you press Play.
+With "New files" on, the same folder is reread about every 20 seconds.
 
 This file does not contain affirmation text. You choose the folder.
 """
@@ -83,7 +84,7 @@ def main(argv: list[str] | None = None) -> int:
 
     root = tk.Tk()
     root.title("MindZoom background")
-    root.geometry("720x280")
+    root.geometry("1040x300")
     root.configure(bg="#050505")
 
     items: list[tuple[str, str]] = []
@@ -97,7 +98,9 @@ def main(argv: list[str] | None = None) -> int:
     speed_var = tk.StringVar(value=args.speed)
     file_var = tk.StringVar(value="all")
     shuffle_var = tk.BooleanVar(value=True)
+    watch_var = tk.BooleanVar(value=True)
     top_var = tk.BooleanVar(value=False)
+    watched = {"path": None}
 
     stage = tk.Label(
         root,
@@ -179,30 +182,52 @@ def main(argv: list[str] | None = None) -> int:
         rebuild()
         show_next()
 
-    def refresh_files() -> None:
+    def refresh_files(*, keep_selection: bool) -> None:
         menu = file_menu["menu"]
         menu.delete(0, "end")
-        names = ["all"]
-        seen = []
+        seen: list[str] = []
         for name, _line in items:
             if name not in seen:
                 seen.append(name)
-        names.extend(seen)
+        names = ["all", *seen]
+        current = file_var.get()
         for name in names:
             menu.add_command(label=name, command=lambda value=name: file_var.set(value))
-        file_var.set("all")
+        if keep_selection and current in names:
+            return
+        if current != "all":
+            file_var.set("all")
 
-    def use_folder(folder: Path) -> None:
+    def use_folder(folder: Path, *, announce: bool = True) -> None:
         nonlocal items
+        watched["path"] = folder
+        if not folder.is_dir():
+            if announce:
+                items = []
+                refresh_files(keep_selection=False)
+                status_var.set("no folder yet")
+                line_var.set("Choose a folder, then press Play.")
+            return
         loaded, skipped = load_folder(folder)
+        changed = loaded != items
+        if not announce and not changed:
+            return
         items = loaded
-        refresh_files()
+        refresh_files(keep_selection=not announce)
         skip_note = f", {skipped} skipped" if skipped else ""
         file_count = len({name for name, _line in items})
         status_var.set(f"{file_count} files, {len(items)} lines{skip_note}")
-        line_var.set("Ready. Press Play." if items else "No text lines found in that folder.")
-        if playing["on"]:
+        if announce:
+            line_var.set("Ready. Press Play." if items else "No text lines found in that folder.")
+        if playing["on"] and changed:
             rebuild()
+
+    def poll_folder() -> None:
+        try:
+            if watch_var.get() and watched["path"] is not None:
+                use_folder(watched["path"], announce=False)
+        finally:
+            root.after(20000, poll_folder)
 
     def choose() -> None:
         picked = filedialog.askdirectory(title="Choose the MindZoom folder")
@@ -236,6 +261,14 @@ def main(argv: list[str] | None = None) -> int:
     ).pack(side="left", padx=4)
     tk.Checkbutton(
         bar,
+        text="New files",
+        variable=watch_var,
+        bg="#141414",
+        fg="#ffffff",
+        selectcolor="#222222",
+    ).pack(side="left", padx=4)
+    tk.Checkbutton(
+        bar,
         text="Stay on top",
         variable=top_var,
         bg="#141414",
@@ -250,6 +283,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.folder:
         use_folder(Path(args.folder))
 
+    root.after(20000, poll_folder)
     root.mainloop()
     return 0
 

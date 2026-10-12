@@ -21,7 +21,7 @@
 
 ## SECTION 2 — THE DAILY RUN (AUTOMATED)
 
-Fires every morning at 09:00 Pacific.
+Fires every morning at 09:00 Pacific. The floor manager (`skills/subliminal-floor-manager.md`) is the run that files that Pacific day, checks it, and copies the same text to the MindZoom Drive folder. If the file already exists, stop.
 
 **Step 1:** Read today's date. Determine the theme from the 7-day rotation.
 **Step 2:** Draft 12–18 affirmations for that theme. Follow the maker bot's rules exactly.

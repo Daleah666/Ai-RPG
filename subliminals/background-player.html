@@ -22,6 +22,7 @@
   <div id="stage"><div id="line">Choose your MindZoom folder, then press Play.</div></div>
   <div id="bar">
     <button id="choose" type="button">Choose folder</button>
+    <button id="watch" type="button">Watch folder</button>
     <input id="picker" type="file" accept=".txt,text/plain" multiple webkitdirectory directory />
     <button id="play" type="button">Play</button>
     <button id="stop" type="button">Stop</button>
@@ -36,6 +37,7 @@
       <select id="file"><option value="all">All files</option></select>
     </label>
     <label><input id="shuffle" type="checkbox" checked /> Shuffle</label>
+    <label><input id="pickup" type="checkbox" checked /> New files</label>
     <span id="status">no folder yet</span>
   </div>
 <script>
@@ -50,6 +52,9 @@ let timer = null;
 let order = [];
 let cursor = 0;
 let playing = false;
+let watchHandle = null;
+let watchTimer = null;
+let suppressFileChange = false;
 
 function pool() {
   const pick = fileSel.value;
@@ -95,34 +100,13 @@ function stop() {
   statusEl.textContent = lines.length ? "stopped" : "no folder yet";
 }
 
-document.getElementById("choose").onclick = () => document.getElementById("picker").click();
+function lineSignature(items) {
+  return items.map(item => item.file + "\n" + item.line).join("\n");
+}
 
-document.getElementById("picker").onchange = async (event) => {
-  const picked = [...event.target.files].filter(f => f.name.toLowerCase().endsWith(".txt"));
-  const next = [];
-  const names = [];
-  skipped = 0;
-  for (const file of picked) {
-    const label = file.webkitRelativePath || file.name;
-    if (blocked.test(file.name) || blocked.test(label)) {
-      skipped += 1;
-      continue;
-    }
-    const text = await file.text();
-    let count = 0;
-    for (const raw of text.split(/\r?\n/)) {
-      const line = raw.trim();
-      if (!line || line.startsWith("#")) continue;
-      if (blocked.test(line)) {
-        skipped += 1;
-        continue;
-      }
-      next.push({ file: label, line });
-      count += 1;
-    }
-    if (count) names.push(label);
-  }
-  lines = next;
+function fillFileMenu(names, keep) {
+  const previous = fileSel.value;
+  suppressFileChange = true;
   fileSel.innerHTML = '<option value="all">All files</option>';
   for (const name of names) {
     const opt = document.createElement("option");
@@ -130,10 +114,113 @@ document.getElementById("picker").onchange = async (event) => {
     opt.textContent = name.split("/").pop();
     fileSel.appendChild(opt);
   }
+  const values = [...fileSel.options].map(opt => opt.value);
+  fileSel.value = keep && values.includes(previous) ? previous : "all";
+  suppressFileChange = false;
+}
+
+function takeLine(label, text, next, names) {
+  if (blocked.test(label)) {
+    skipped += 1;
+    return;
+  }
+  let count = 0;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    if (blocked.test(line)) {
+      skipped += 1;
+      continue;
+    }
+    next.push({ file: label, line });
+    count += 1;
+  }
+  if (count) names.push(label);
+}
+
+function applyLoaded(next, names, skippedCount, announce) {
+  const stable = next
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => a.item.file.localeCompare(b.item.file) || a.index - b.index)
+    .map(entry => entry.item);
+  names = [...names].sort((a, b) => a.localeCompare(b));
+  const changed = lineSignature(stable) !== lineSignature(lines);
+  if (!announce && !changed) return;
+  lines = stable;
+  skipped = skippedCount;
+  fillFileMenu(names, !announce);
   const skipNote = skipped ? ", " + skipped + " skipped" : "";
   statusEl.textContent = names.length + " files, " + lines.length + " lines" + skipNote;
-  lineEl.textContent = lines.length ? "Ready. Press Play." : "No text lines found in that folder.";
-  if (playing) rebuild();
+  if (announce) {
+    lineEl.textContent = lines.length ? "Ready. Press Play." : "No text lines found in that folder.";
+  }
+  if (playing && changed) rebuild();
+}
+
+async function readHandle(handle, prefix, next, names) {
+  for await (const [name, entry] of handle.entries()) {
+    const label = prefix ? prefix + "/" + name : name;
+    if (entry.kind === "directory") {
+      await readHandle(entry, label, next, names);
+    } else if (entry.kind === "file" && name.toLowerCase().endsWith(".txt")) {
+      const file = await entry.getFile();
+      takeLine(label, await file.text(), next, names);
+    }
+  }
+}
+
+async function loadHandle(handle, announce) {
+  const perm = await handle.queryPermission({ mode: "read" });
+  if (perm !== "granted") {
+    if (!announce) return;
+    const asked = await handle.requestPermission({ mode: "read" });
+    if (asked !== "granted") {
+      statusEl.textContent = "Folder permission was not granted.";
+      return;
+    }
+  }
+  const next = [];
+  const names = [];
+  skipped = 0;
+  await readHandle(handle, "", next, names);
+  applyLoaded(next, names, skipped, announce);
+}
+
+document.getElementById("choose").onclick = () => document.getElementById("picker").click();
+
+document.getElementById("watch").onclick = async () => {
+  if (!window.showDirectoryPicker) {
+    statusEl.textContent = "This browser cannot watch a folder. The desktop player can.";
+    return;
+  }
+  try {
+    watchHandle = await window.showDirectoryPicker();
+  } catch (err) {
+    if (err && err.name === "AbortError") return;
+    statusEl.textContent = "Could not watch that folder.";
+    return;
+  }
+  await loadHandle(watchHandle, true);
+  if (watchTimer) clearInterval(watchTimer);
+  watchTimer = setInterval(async () => {
+    if (!document.getElementById("pickup").checked || !watchHandle) return;
+    try {
+      await loadHandle(watchHandle, false);
+    } catch (err) {
+      statusEl.textContent = "Folder watch paused.";
+    }
+  }, 20000);
+};
+
+document.getElementById("picker").onchange = async (event) => {
+  const picked = [...event.target.files].filter(f => f.name.toLowerCase().endsWith(".txt"));
+  const next = [];
+  const names = [];
+  skipped = 0;
+  for (const file of picked) {
+    takeLine(file.webkitRelativePath || file.name, await file.text(), next, names);
+  }
+  applyLoaded(next, names, skipped, true);
 };
 
 document.getElementById("play").onclick = () => {
@@ -147,7 +234,7 @@ document.getElementById("play").onclick = () => {
   showNext();
 };
 document.getElementById("stop").onclick = stop;
-fileSel.onchange = () => { if (playing) rebuild(); };
+fileSel.onchange = () => { if (playing && !suppressFileChange) rebuild(); };
 document.getElementById("shuffle").onchange = () => { if (playing) rebuild(); };
 </script>
 </body>

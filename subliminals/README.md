@@ -2,14 +2,16 @@
 
 Source of truth for all subliminal .txt files. Written by the daily planner bot and the maker bot. One file per day, named YYYY-MM-DD_Theme.txt.
 
-See skills/daily-subliminal-planner-bot.md and skills/subliminal-maker-bot.md.
+See skills/subliminal-floor-manager.md, skills/daily-subliminal-planner-bot.md, and skills/subliminal-maker-bot.md.
+
+Daily files use the name `YYYY-MM-DD_Prefix.txt`. The floor manager writes one Pacific day, then copies that same text into the MindZoom Drive folder. If the file is already there, the next run leaves it alone.
 
 ## Background player
 
 Two local players read a folder of MindZoom `.txt` files and flash one line at a time. They start stopped. Press Play when you want them on. Lines that start with `#` are headers and are skipped.
 
-- Browser: open `background-player.html`, choose the folder, press Play. A folder picker works best in Chrome or Edge.
-- Desktop: `python3 subliminals/play_background.py --dir /path/to/your/folder`
+- Browser: open `background-player.html`. Press Watch folder in Chrome or Edge, leave New files checked, then press Play. Choose folder is the one-shot picker when a browser cannot watch.
+- Desktop: `python3 subliminals/play_background.py --dir /path/to/your/folder`. Leave New files checked. The window rereads that folder about every 20 seconds and keeps the line that is already on screen.
 
 Speeds:
 
