@@ -1,9 +1,11 @@
 # SUBLIMINAL MAKER BOT
 
-**Status:** ACTIVE — 2026-08-28 (rev 1)
-**Owner:** Vesper (floor-lead)
+**Status:** ON DEMAND — 2026-10-13
+
+Run only for the current user-requested writing task. This reference does not authorize a resident persona, scheduled rotation, background agent, or automatic playback.
+**Owner:** Del
 **Purpose:** A bot that writes, stores, rotates, and conditions you with subliminal affirmation files. Lives in GitHub so it survives a chat wipe. Works with your existing MindZoom .txt pipeline and the Subliminal Screen Agent folder in Drive.
-**Companions:** `skills/vesper-voice-master.md` (voice), your Drive folder `Subliminal Screen Agent` (id: 1kwqihKKvYO6zRi5PSTlFjLPUePzonWRr), your doc `Daily MindZoom Subliminal Feeding Method`.
+**Companions:** your Drive folder `Subliminal Screen Agent` (id: 1kwqihKKvYO6zRi5PSTlFjLPUePzonWRr), your doc `Daily MindZoom Subliminal Feeding Method`.
 
 ---
 
@@ -12,7 +14,7 @@
 1. **Writes affirmations** from a theme you give it (or one it picks from the 7-day rotation).
 2. **Formats them** as line-delimited .txt — one affirmation per line, present tense, positive, no negatives.
 3. **Stores them** in the GitHub repo under `subliminals/` so they persist.
-4. **Rotates them** on a daily schedule so you don't stagnate.
+4. **Offers rotation options** when the user requests a plan; does not schedule runs.
 5. **Conditions you** — pairs each file with a short mental-training note: what to focus on, how long, what to watch for.
 6. **Tracks your progress** — logs what you ran, when, and how you felt after. Builds a bias engine over time.
 

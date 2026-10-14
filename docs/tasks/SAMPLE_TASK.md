@@ -24,11 +24,10 @@ One sentence. What does done look like?
 5. Flip Status to `DONE`.
 
 ## Notes for the next bot
-- Vesper's tics to avoid: "that's the bar", "the rest stays".
-- Keep it short. She likes short.
+- Keep the handoff short and specific to the requested task.
 
 ## Who picked it up
 _leave blank — the bot that starts fills this in_
 
 ---
-*Written by Vesper. Pasted by you. That's the tilt.*
+*Example only; run a task when the user asks.*

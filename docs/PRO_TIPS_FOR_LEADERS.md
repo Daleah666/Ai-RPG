@@ -1,6 +1,6 @@
 # Pro Tips for Leader Bots
 
-Logged 2026-08-28. Source: expert patterns shared in chat with Vesper.
+Logged 2026-08-28. General project reference, loaded on demand.
 
 These are the things people who actually know how to run LLM systems tell their leader bots to do. Most people waste money skipping them.
 
@@ -37,5 +37,4 @@ The secret isn't any one of these. It's that pros treat the prompt like code —
 
 ## Where This Lives
 - GitHub: docs/PRO_TIPS_FOR_LEADERS.md (this file)
-- Referenced from: docs/VESPER_SYSTEM_MAP.md
-- Canva visual: search "Vesper Bot System Map" in Canva
+- Handoff instructions: docs/AI_HANDOFF_BRIDGE.md
