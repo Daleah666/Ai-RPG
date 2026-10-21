@@ -9,6 +9,9 @@ export function reduce(state: GameState, action: Action): GameState {
     case "NEW_GAME": {
       return { ...blankState(state.settings), screen: "create" };
     }
+    case "OPEN_LIBRARY": {
+      return { ...blankState(state.settings), screen: "library" };
+    }
     case "BACK_TITLE": {
       return blankState(state.settings);
     }

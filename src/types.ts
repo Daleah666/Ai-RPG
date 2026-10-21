@@ -1,4 +1,4 @@
-export type Screen = "title" | "create" | "play" | "combat" | "ending";
+export type Screen = "title" | "create" | "library" | "play" | "combat" | "ending";
 export type TimeOfDay = "dawn" | "day" | "dusk" | "night";
 export type Stat = "vigor" | "aether" | "steel" | "cunning" | "presence";
 export type ClassId = "warden" | "hexweaver" | "ashblade" | "oathbound";
@@ -32,6 +32,28 @@ export interface Identity {
   signatureSkill: string;
   spent: Stats;
   epithet: string;
+}
+
+export interface CharacterNotes {
+  concept: string;
+  appearance: string;
+  backstory: string;
+  bonds: string;
+  voice: string;
+}
+
+export interface CharacterCard {
+  schemaVersion: 1;
+  id: string;
+  name: string;
+  classId: ClassId;
+  originId: OriginId;
+  identity: Identity;
+  notes: CharacterNotes;
+  favorite: boolean;
+  starter?: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 export type LocationId =
   | "emberhearth"
@@ -177,6 +199,7 @@ export type CombatMove =
 
 export type Action =
   | { type: "NEW_GAME" }
+  | { type: "OPEN_LIBRARY" }
   | { type: "BACK_TITLE" }
   | { type: "CREATE"; name: string; classId: ClassId; originId: OriginId; identity?: Identity }
   | { type: "CHOICE"; choiceId: string }

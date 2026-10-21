@@ -12,6 +12,7 @@ npm run dev
 Then open the local URL Vite prints (usually `http://127.0.0.1:5173`).
 
 - **New tale** — pick an origin and a calling, then wake in Emberhearth.
+- **Character library** — save in-depth cards with story notes, search and favorite them, start a tale from any card, and import/export portable JSON.
 - Explore, talk, travel, and fight. Number keys `1–9` pick choices.
 - The main thread: Ember Anchor (Veilwood), Tide Anchor (Saltmoor), Ash Anchor (Cathedral), then the Rift.
 - Side threads: Liri in the village, Vesk on the docks, a forbidden page in the Archives.

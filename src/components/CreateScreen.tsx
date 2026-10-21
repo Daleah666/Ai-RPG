@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Dispatch } from "../App";
+import { emptyNotes, saveCharacter } from "../characterLibrary";
 import { CLASSES } from "../content/classes";
 import {
   AGES,
@@ -26,6 +27,7 @@ import { SKILLS } from "../content/skills";
 import type {
   AgeId,
   ClassId,
+  CharacterNotes,
   DriveId,
   EyeId,
   FearId,
@@ -50,6 +52,7 @@ const STEPS = [
   "Nature",
   "Wound",
   "Craft",
+  "Story",
   "Recital",
 ] as const;
 
@@ -62,6 +65,8 @@ export function CreateScreen({ dispatch }: { dispatch: Dispatch }) {
   const [classId, setClassId] = useState<ClassId>("warden");
   const [originId, setOriginId] = useState<OriginId>("foundling");
   const [id, setId] = useState<Identity>(() => defaultIdentity("warden", "foundling"));
+  const [notes, setNotes] = useState<CharacterNotes>(emptyNotes);
+  const [saveNotice, setSaveNotice] = useState("");
 
   const patch = (partial: Partial<Identity>) => {
     setId((prev) => {
@@ -112,6 +117,17 @@ export function CreateScreen({ dispatch }: { dispatch: Dispatch }) {
       originId,
       identity: { ...id, epithet: generateEpithet(classId, id.temper, id.drive) },
     });
+  };
+
+  const saveToLibrary = () => {
+    const card = saveCharacter({
+      name: previewName,
+      classId,
+      originId,
+      identity: { ...id, epithet: generateEpithet(classId, id.temper, id.drive) },
+      notes,
+    });
+    setSaveNotice(`${card.name} is safe in the library.`);
   };
 
   return (
@@ -276,6 +292,42 @@ export function CreateScreen({ dispatch }: { dispatch: Dispatch }) {
           )}
 
           {step === 6 && (
+            <>
+              <p className="blurb">Give the card enough texture to stay consistent in play. These notes travel with JSON exports.</p>
+              <StoryField
+                label="Core concept"
+                hint="The one-sentence hook that makes this character distinct."
+                value={notes.concept}
+                onChange={(concept) => setNotes((prev) => ({ ...prev, concept }))}
+              />
+              <StoryField
+                label="Appearance"
+                hint="Silhouette, clothing, movement, and details the portrait cannot show."
+                value={notes.appearance}
+                onChange={(appearance) => setNotes((prev) => ({ ...prev, appearance }))}
+              />
+              <StoryField
+                label="Backstory"
+                hint="What happened before the opening scene, and what remains unresolved."
+                value={notes.backstory}
+                onChange={(backstory) => setNotes((prev) => ({ ...prev, backstory }))}
+              />
+              <StoryField
+                label="Bonds & loyalties"
+                hint="People, places, promises, and grudges that can pull them off course."
+                value={notes.bonds}
+                onChange={(bonds) => setNotes((prev) => ({ ...prev, bonds }))}
+              />
+              <StoryField
+                label="Voice & manner"
+                hint="Speech rhythm, tells, habits, and what changes under pressure."
+                value={notes.voice}
+                onChange={(voice) => setNotes((prev) => ({ ...prev, voice }))}
+              />
+            </>
+          )}
+
+          {step === 7 && (
             <div className="recital">
               <p className="creed">
                 {previewName}, {id.epithet}.
@@ -304,6 +356,7 @@ export function CreateScreen({ dispatch }: { dispatch: Dispatch }) {
                 </li>
               </ul>
               <p className="hint">{MARKS[id.mark].wake}</p>
+              {notes.concept && <p className="blurb">{notes.concept}</p>}
             </div>
           )}
         </div>
@@ -327,12 +380,35 @@ export function CreateScreen({ dispatch }: { dispatch: Dispatch }) {
             Next
           </button>
         ) : (
-          <button className="btn primary" onClick={wake}>
-            Wake in Emberhearth
-          </button>
+          <>
+            <button className="btn" onClick={saveToLibrary}>Save to library</button>
+            <button className="btn primary" onClick={wake}>Wake in Emberhearth</button>
+          </>
         )}
       </div>
+      {saveNotice && <p className="library-notice" role="status">{saveNotice}</p>}
     </main>
+  );
+}
+
+function StoryField({
+  label,
+  hint,
+  value,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="story-field">
+      <strong>{label}</strong>
+      <span>{hint}</span>
+      <textarea value={value} maxLength={1200} rows={4} onChange={(event) => onChange(event.target.value)} />
+      <small>{value.length} / 1200</small>
+    </label>
   );
 }
 

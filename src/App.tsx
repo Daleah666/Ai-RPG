@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useReducer } from "react";
 import { CombatScreen } from "./components/CombatScreen";
+import { CharacterLibrary } from "./components/CharacterLibrary";
 import { CreateScreen } from "./components/CreateScreen";
 import { EndingScreen } from "./components/EndingScreen";
 import { PlayScreen } from "./components/PlayScreen";
@@ -41,6 +42,7 @@ export function App() {
       {state.screen === "title" && (
         <TitleScreen dispatch={dispatch} canContinue={hasSave()} />
       )}
+      {state.screen === "library" && <CharacterLibrary dispatch={dispatch} />}
       {state.screen === "create" && <CreateScreen dispatch={dispatch} />}
       {(state.screen === "play" || state.screen === "combat") && state.player && state.world && scene && (
         <PlayScreen state={state} scene={scene} dispatch={dispatch} />

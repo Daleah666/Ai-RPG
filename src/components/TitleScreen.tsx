@@ -27,6 +27,9 @@ export function TitleScreen({
             Continue
           </button>
         )}
+        <button className="btn" onClick={() => dispatch({ type: "OPEN_LIBRARY" })}>
+          Character library
+        </button>
       </div>
       {canContinue && (
         <p className="wipe">
