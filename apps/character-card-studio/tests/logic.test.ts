@@ -21,6 +21,10 @@ describe("safety", () => {
   it("passes every seeded card", () => {
     for (const c of seedCharacters()) expect(checkCharacterSafety(c)).toEqual({ ok: true });
   });
+
+  it("gives seeded cards stable ids so seeding twice cannot duplicate them", () => {
+    expect(seedCharacters().map((c) => c.id)).toEqual(seedCharacters().map((c) => c.id));
+  });
 });
 
 describe("lorebook", () => {

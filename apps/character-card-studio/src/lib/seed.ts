@@ -3,8 +3,10 @@ import type { Character } from "./types";
 
 export const SEED_FLAG = "card-studio:seeded-v1";
 
+/** Ids are fixed so a repeated first-launch seed (e.g. React StrictMode effects) overwrites instead of duplicating. */
 export function seedCharacters(): Character[] {
   const mira = newCharacter({
+    id: "seed-mira-vale",
     name: "Mira Vale",
     age: 32,
     tags: ["cozy", "sfw", "slice-of-life", "cartographer"],
@@ -76,6 +78,7 @@ export function seedCharacters(): Character[] {
     spells: "Blessing of the Forge, Spiritual Weapon, Heat Metal, Revivify",
   });
   const brannoc = newCharacter({
+    id: "seed-brannoc-ashvale",
     name: "Brannoc Ashvale",
     age: 147,
     tags: ["fantasy", "dnd", "dwarf", "mentor", "sfw"],
@@ -141,6 +144,7 @@ export function seedCharacters(): Character[] {
     spells: "Vicious Mockery, Charm Person, Suggestion, Cutting Words",
   });
   const sera = newCharacter({
+    id: "seed-sera-quill",
     name: "Sera Quill",
     age: 26,
     tags: ["fantasy", "dnd", "bard", "intrigue", "sfw"],
