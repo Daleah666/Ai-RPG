@@ -189,10 +189,17 @@
           "part": "arms",
           "tags": [
             "ranged",
-            "projectile"
+            "projectile",
+            "wound"
           ],
-          "effects": [],
-          "text": "Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit."
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 6,
+              "source": "wound"
+            }
+          ],
+          "text": "Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit, and 6 wound stress if it lands."
         },
         {
           "id": "boss_bolgrim_bellow",
@@ -1331,7 +1338,7 @@
         ]
       },
       "tactics": "Three actions a round. Every single-target attack goes to the hero with the highest current HP; a taunt overrides that. Double Entry comes round on a four-round cycle from Phase 2, Repossession from Phase 3 and the Closing Bell from Phase 4. Her Luck is exactly the benchmark for her level, so she neither out-lucks anyone nor is out-lucked.",
-      "counterplay": "Make Valerie the richest target in the room and let the coins bounce. When the ledger flips, either Think through it and accept the stress or spend 100 MCE on I'm Just a Good Hero! to ignore it; time buffs for the round after a Repossession. When the bell rings, spin the Wheel with a Chaos Wave, taunt so Valerie takes the bill alone, or Guard. Dark hurts her and holy is half as effective.",
+      "counterplay": "Make Valerie the richest target in the room and let the coins bounce; dark hurts Parity and holy is halved. When the ledger flips, either Think through it and accept the stress or spend 100 MCE on I'm Just a Good Hero! to ignore it, and time buffs for the round after a Repossession. When the bell rings, spin the Great Wheel with a Chaos Wave, taunt so Valerie takes the bill alone, or have everyone Guard.",
       "vsHero": "Madam Parity audits the kit itself: she aims by HP so the dodge has to be earned, turns the gauge upside down so Thinking is lucky, reads out the receipt for every accident, and can only be ended early by the one thing she has never had, a stroke of luck.",
       "keys": [
         "parity",

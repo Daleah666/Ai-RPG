@@ -44,10 +44,17 @@ for (const [id, a] of archetypes) {
 for (const need of ['warrior', 'mage', 'rogue', 'klutz_knight']) if (!archetypes.has(need)) err('archetypes', `"${need}" is missing`);
 
 // ---------- statuses ----------
-const statuses = new Set((data.skills?.statuses ?? []).map((s) => s.id));
-for (const s of data.skills?.statuses ?? []) {
-  claim(`status:${s.id}`, `status ${s.id}`);
-  if (!s.name || !s.text) err(`status ${s.id}`, 'needs name and text');
+// Class and hero statuses live in skills.json. Bosses and encounters register their own beside their moves.
+// The same id may be registered in more than one file; each file must register everything its own moves use.
+const statuses = new Set();
+for (const [file, list] of [['skills', data.skills?.statuses], ['bosses', data.bosses?.statuses], ['encounters', data.encounters?.statuses]]) {
+  const seen = new Set();
+  for (const s of list ?? []) {
+    if (!s.id || !s.name || !s.text) err(`status ${s.id} in ${file}.json`, 'needs id, name and text');
+    if (seen.has(s.id)) err(`status ${s.id} in ${file}.json`, 'registered twice in the same file');
+    seen.add(s.id);
+    statuses.add(s.id);
+  }
 }
 
 // ---------- skills ----------
@@ -61,7 +68,7 @@ function checkEffects(effects, where) {
       if (e.source !== undefined && !STRESS_SOURCES.includes(e.source)) err(at, `unknown stress source "${e.source}"`);
     }
     if (e.kind === 'mod' && (!STAT_KEYS.includes(e.stat) || typeof e.mult !== 'number' || !(e.turns >= 1))) err(at, 'mod needs stat, mult and turns');
-    if (e.kind === 'status' && !statuses.has(e.id)) err(at, `status "${e.id}" is not in the status registry in skills.json`);
+    if (e.kind === 'status' && !statuses.has(e.id)) err(at, `status "${e.id}" is not registered (skills.json, bosses.json or encounters.json "statuses")`);
     if (e.kind === 'dot' && e.element !== undefined && !ELEMENTS.includes(e.element)) err(at, `unknown element "${e.element}"`);
   }
 }

@@ -500,7 +500,7 @@
               "effects": [
                 {
                   "kind": "stress",
-                  "amount": 5,
+                  "amount": 7,
                   "source": "horror"
                 },
                 {
@@ -510,7 +510,7 @@
                 }
               ],
               "auto": true,
-              "text": "Raps out an order in a dead language. Cannot miss: 5 horror stress to every hero, and a broken formation re-forms."
+              "text": "Raps out an order in a dead language. Cannot miss: 7 horror stress to every hero, and a broken formation re-forms."
             }
           ],
           "text": "The only skeleton giving orders. While it stands a broken formation re-forms; drop it and the hoplites stop locking shields."
@@ -593,10 +593,17 @@
               "target": "one",
               "part": "head",
               "tags": [
-                "melee"
+                "melee",
+                "wound"
               ],
-              "effects": [],
-              "text": "Snaps at the nearest hero: Power 5 physical, +5 to hit."
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 6,
+                  "source": "wound"
+                }
+              ],
+              "text": "Snaps at the nearest hero: Power 5 physical, +5 to hit, and 6 wound stress if it lands."
             },
             {
               "id": "enemy_hoard_drake_tail_sweep",
@@ -894,12 +901,12 @@
               "effects": [
                 {
                   "kind": "stress",
-                  "amount": 5,
+                  "amount": 7,
                   "source": "horror"
                 }
               ],
               "auto": true,
-              "text": "A beat the party feels in its teeth. Cannot miss: 5 horror stress to every hero."
+              "text": "A beat the party feels in its teeth. Cannot miss: 7 horror stress to every hero."
             },
             {
               "id": "enemy_horde_drummer_drive_them_on",

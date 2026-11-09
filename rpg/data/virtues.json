@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "side": "virtue",
+  "table": {
+    "die": "d100",
+    "range": [1, 25],
+    "reading": "One d100 answers the whole Resolve Check. The band picks the entry. An even roll swaps in the character's personal entry if they have one. Doubles (11, 22 ... 99, 100) make it permanent: the Virtue leaves a Silver Lining when it ends.",
+    "rescale": "A shift moves the Virtue edge by up to 15 either way. Each side keeps its entries in order and stretches or squeezes them evenly: engine/stress.js resolveBands()."
+  },
+  "virtues": [
+    {
+      "id": "vir_on_a_roll",
+      "name": "On a Roll",
+      "range": [1, 5],
+      "quote": "Stand back. I've read how this part goes.",
+      "text": "Everything is finally going right: Might and Arcana ×1.25, and about one turn in three their attack gets +20 crit, but they will not Guard or take a Breather. They shed 40 stress and allies shed 8 when it starts.",
+      "want": "To do the big brave thing while everyone is watching.",
+      "cost": "Will not Guard and will not catch their breath: it would ruin the moment.",
+      "effects": [
+        { "kind": "mod", "stat": "STR", "mult": 1.25 },
+        { "kind": "mod", "stat": "INT", "mult": 1.25 },
+        { "kind": "refuse", "what": "guard" },
+        { "kind": "refuse", "what": "breather" }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "cue_the_music",
+          "name": "Cue the Music",
+          "action": "none",
+          "attack": { "critBonus": 20 },
+          "text": "This turn's attack gets +20 to its crit chance."
+        }
+      },
+      "onStart": { "selfStress": -40, "partyStress": -8 },
+      "until": "battle"
+    },
+    {
+      "id": "vir_unflappable",
+      "name": "Unflappable",
+      "range": [6, 10],
+      "quote": "Hm? Oh, the dragon. Yes, I saw.",
+      "text": "Nothing gets to them: stress taken ×0.5, Willpower ×1.25, Finesse ×0.85, and about one turn in three every ally sheds 5 stress. They shed 50 stress and allies shed 10 when it starts, and allies' own Virtue chance is 10 higher while it lasts.",
+      "want": "To be the calm one in the room.",
+      "cost": "Cannot be hurried: slow to act, and the last to move in any round that matters.",
+      "effects": [
+        { "kind": "mod", "stat": "WIL", "mult": 1.25 },
+        { "kind": "mod", "stat": "AGI", "mult": 0.85 },
+        { "kind": "stressMult", "mult": 0.5 },
+        { "kind": "resolveShift", "allies": 5 }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "there_there",
+          "name": "There, There",
+          "action": "none",
+          "partyRelief": 5,
+          "text": "Every ally sheds 5 stress."
+        }
+      },
+      "onStart": { "selfStress": -50, "partyStress": -10 },
+      "until": "battle"
+    },
+    {
+      "id": "vir_in_the_zone",
+      "name": "In the Zone",
+      "range": [11, 15],
+      "quote": "Shh. I can see the numbers.",
+      "text": "The world narrows to one target: +15 to hit, +10 crit and no fumbles, and about one turn in three their attack cannot be pushed under a 95% chance to hit, but they cannot switch targets while the current one stands. They shed 40 stress and allies shed 5 when it starts.",
+      "want": "To finish the one thing in front of them.",
+      "cost": "Tunnel vision: cannot change targets while the current one is standing.",
+      "effects": [
+        { "kind": "attack", "hitBonus": 15, "critBonus": 10, "noFumble": true },
+        { "kind": "refuse", "what": "switch_target" }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "dead_centre",
+          "name": "Dead Centre",
+          "action": "none",
+          "attack": { "hitFloor": 95 },
+          "text": "This turn's attack cannot be pushed under a 95% chance to hit."
+        }
+      },
+      "onStart": { "selfStress": -40, "partyStress": -5 },
+      "until": "battle"
+    },
+    {
+      "id": "vir_mother_hen",
+      "name": "Mother Hen",
+      "range": [16, 20],
+      "quote": "Behind me. All of you. And drink some water.",
+      "text": "Adopts the whole party: Constitution ×1.25, single-target attacks aimed at the most hurt ally hit them instead, and about one turn in three that ally heals 10% of max HP, but they will not attack while any ally is under a quarter health. They shed 40 stress and allies shed 12 when it starts.",
+      "want": "To get everyone home in one piece.",
+      "cost": "Takes the hits for the party, and will not attack while a friend is badly hurt.",
+      "effects": [
+        { "kind": "mod", "stat": "CON", "mult": 1.25 },
+        { "kind": "cover", "who": "weakest_ally" },
+        { "kind": "refuse", "what": "attack", "when": "ally_below_25" }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "fuss",
+          "name": "Fuss",
+          "action": "none",
+          "allyHealPct": { "who": "weakest_ally", "pct": 10 },
+          "text": "The most hurt ally heals 10% of their max HP."
+        }
+      },
+      "onStart": { "selfStress": -40, "partyStress": -12 },
+      "until": "battle"
+    },
+    {
+      "id": "vir_second_wind",
+      "name": "Second Wind",
+      "range": [21, 25],
+      "quote": "Is that all? I haven't even stretched.",
+      "text": "Gets up like nothing happened: heals 25% of max HP at once and 8% at the start of each turn, Constitution ×1.2, and about one turn in three shakes off every bind, but refuses healing from allies. They shed 40 stress and allies shed 6 when it starts.",
+      "want": "To prove they can take it.",
+      "cost": "Insists they are fine: refuses healing from allies.",
+      "effects": [
+        { "kind": "mod", "stat": "CON", "mult": 1.2 },
+        { "kind": "regen", "hpPct": 8 },
+        { "kind": "refuse", "what": "heal" }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "walk_it_off",
+          "name": "Walk It Off",
+          "action": "none",
+          "cureBinds": true,
+          "text": "Shakes off every bind on them."
+        }
+      },
+      "onStart": { "selfStress": -40, "partyStress": -6, "selfHealPct": 25 },
+      "until": "battle"
+    }
+  ]
+}
