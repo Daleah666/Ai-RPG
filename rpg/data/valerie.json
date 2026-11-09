@@ -162,7 +162,7 @@
       "id": "val_kinetic_deflection",
       "name": "Kinetic Deflection",
       "nickname": "The Booby Bounce",
-      "unlock": 3,
+      "unlock": 1,
       "kind": "passive",
       "rule": "Against attacks tagged projectile, the top of the attacker's hit band becomes a bounce band: Airhead/4 points wide, plus up to 10 for out-lucking the shooter. A roll in that band deals no damage to her and sends the shot back at the attacker for the damage it would have done, resolved against the attacker's own defense. The crit band is never eaten.",
       "gm": "Projectiles only. The top gauge/4 (+ up to 10) points of the attacker's hit band bounce the shot back at the attacker for its full damage. Crits still land.",
@@ -183,7 +183,7 @@
     {
       "id": "val_chaos_wave",
       "name": "Accidental Chaos Wave",
-      "unlock": 5,
+      "unlock": 1,
       "kind": "passive",
       "rule": "When Valerie fumbles while Winging It, the fumble is a Chaos Wave: every enemy is Off-Balance (Finesse ×0.75 for 2 turns) and loses its Guard, she gains 15 Limit, and any contraption on the field goes off. On a natural 100 the wave also hits every enemy for Power 4 physical damage. A fumble while Thinking is just a miss.",
       "gm": "Her own fumble while Winging It: every enemy is Off-Balance (Finesse x0.75, 2 turns) and loses Guard, +15 MCE, and any contraption in the scene goes off. Natural 100: also Power 4 damage to all enemies.",
@@ -202,7 +202,7 @@
     {
       "id": "val_aura_befuddlement",
       "name": "Aura of Befuddlement",
-      "unlock": 8,
+      "unlock": 1,
       "kind": "passive",
       "rule": "Enemies attacking Valerie fumble on 96 − Airhead/10 or higher (86+ at full gauge). An enemy that fumbles this way binds one of its own body parts for 1 turn, chosen by the roll.",
       "gm": "Enemies attacking her fumble on 96 minus gauge/10 or higher (86+ at full). An enemy that fumbles binds one of its own body parts for a turn.",
@@ -219,7 +219,7 @@
     {
       "id": "val_inspirational_ignorance",
       "name": "Inspirational Ignorance",
-      "unlock": 12,
+      "unlock": 1,
       "kind": "passive",
       "rule": "While not Lucid, Valerie takes no stress from horror or mental sources, and every ally who sees it sheds 3 stress. Allies making a Resolve Check gain +5 Virtue chance while she is Ditzy, +10 while she is a Total Airhead. The price: realization stress ignores her Willpower and drops the gauge by 10; embarrassment stress is ×1.5 unless she is too far gone to notice.",
       "gm": "Unless Lucid she takes no stress from horror or fear, and allies who see it shed 3. Allies get +5 (Ditzy) or +10 (Total Airhead) to roll a Virtue.",
@@ -820,5 +820,6 @@
       "start": 80,
       "text": "Slapstick tracker. Ticks down with every pratfall and wardrobe mishap. Does nothing. She has never checked it."
     }
-  ]
+  ],
+  "abilitiesNote": "All six are innate from level 1. They are who she is, not rewards: staggering them would make the opening hours play like a different character. Her growth comes from the skill tree and from learning to ride the gauge."
 }

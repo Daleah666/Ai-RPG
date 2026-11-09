@@ -82,7 +82,8 @@ Lucky or precise, never both.`, { constant: true, position: 'before_char', order
 
 add('valerie · the six accidents', [], `
 [VALERIE: THE SIX ACCIDENTS] She does none of these on purpose and takes credit for all of them.
-${valerie.abilities.map((a) => `- ${a.name} (level ${a.unlock}): ${a.gm}`).join('\n')}`, { constant: true, position: 'before_char', order: 4 });
+${valerie.abilities.map((a) => `- ${a.name}: ${a.gm}`).join('\n')}
+All six are hers from level 1.`, { constant: true, position: 'before_char', order: 4 });
 
 for (const a of valerie.abilities) {
   const keys = [a.name.toLowerCase(), ...(a.nickname ? [a.nickname.toLowerCase().replace(/^the /, '')] : []), ...(a.keys ?? [])];
@@ -109,7 +110,7 @@ add('rules · stress and resolve', ['stress', 'stressed', 'resolve', 'panic', 'b
 At ${SCALE.STRESS_BREAK} a character makes a Resolve Check, one d100: 01-${RESOLVE.VIRTUE_PCT} a Virtue, ${RESOLVE.VIRTUE_PCT + 1}-100 an Affliction. At ${SCALE.STRESS_MAX}: Breakdown.
 ${virtues.length ? `Virtues: ${virtues.map((v) => `${v.name} (${v.text})`).join(' ')}` : ''}
 ${afflictions.length ? `Afflictions: ${afflictions.map((a) => `${a.name} (${a.text})`).join(' ')}` : ''}
-Valerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead. Her own outcomes: ${valerie.resolve.affliction.name} (${valerie.resolve.affliction.text}) or ${valerie.resolve.virtue.name} (${valerie.resolve.virtue.text})`);
+Valerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead. When her Resolve roll is an even number she gets one of her own outcomes instead: ${valerie.resolve.affliction.name} (${valerie.resolve.affliction.text}) or ${valerie.resolve.virtue.name} (${valerie.resolve.virtue.text})`);
 
 add('rules · binds', ['bind', 'bound', 'binds', 'tangled', 'disarmed', 'pinned', 'tripped', 'blinded', 'gagged', 'head', 'arms', 'legs'], `
 [RULES: BINDS] Three body parts can be bound: ${Object.entries(BIND_MAP).map(([part, stats]) => `${part} (halves ${stats.map((k) => STAT_INFO[k].name).join(' and ')} and seals ${part} skills)`).join('; ')}. A bind lasts a set number of turns. Two binds never quarter the same attribute.

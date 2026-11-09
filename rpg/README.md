@@ -26,6 +26,7 @@ engine/      the rules, as small pure functions with no dependencies
   stress.js      stress bar, Resolve Check, afflictions and virtues
   binds.js       head, arms and legs binds
   valerie.js     the Airhead gauge and her six accidents
+  valerie-combat.js  her kit joined to the combat math: one call, one d100
   events.js      event packs: validate, draw, resolve, convert
 data/        archetypes, skills, passives, items, bosses, encounters, afflictions, virtues, Valerie
 events/      event packs (drop new ones in events/packs/)

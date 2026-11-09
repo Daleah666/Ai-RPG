@@ -64,9 +64,9 @@ function heroSection() {
   out.push(`**The choice.** ${gauge.choice}`);
 
   out.push('### 6.4 The six accidents');
-  out.push('None of these adds a roll. Each one moves a band edge on a d100 that was going to be rolled anyway.');
+  out.push(`None of these adds a roll. Each one moves a band edge on a d100 that was going to be rolled anyway. ${v.abilitiesNote ?? ''}`.trim());
   for (const a of abilities) {
-    out.push(`#### ${a.name}${a.nickname ? ` (${a.nickname})` : ''}, level ${a.unlock}`);
+    out.push(`#### ${a.name}${a.nickname ? ` (${a.nickname})` : ''}`);
     out.push(`*${a.fiction}*`);
     out.push(`- **Rule.** ${a.rule}\n- **The choice.** ${a.choice}\n- **Engine.** \`${a.engine}\` in \`engine/valerie.js\``);
   }
@@ -78,7 +78,7 @@ function heroSection() {
     `| ${s.unlock} | **${s.name}** | ${costOf(s)} | ${whenOf(s)} | ${s.power || 'n/a'} | ${s.text} |`).join('\n'));
 
   out.push('### 6.6 Her Resolve Check');
-  out.push('Valerie rolls the same 25/75 check as everyone at 100 stress. Half the time the result is replaced by one of her own:');
+  out.push('Valerie rolls the same 25/75 check as everyone at 100 stress, on the same single d100. When that roll is an even number, the table result is replaced by one of her own:');
   out.push(`- **Affliction: ${resolve.affliction.name}.** ${resolve.affliction.text}\n- **Virtue: ${resolve.virtue.name}.** ${resolve.virtue.text}`);
 
   out.push('### 6.7 Dashboard');

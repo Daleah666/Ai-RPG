@@ -36,7 +36,13 @@ This file is the contract every contributor builds against: people, sub-agents, 
 
 There is no separate DEF or RES stat. STR attacks are defended by CON. INT attacks are defended by WIL. Gear adds to attributes.
 
-The intended triangle: Warriors (CON) shrug off blades and crack under magic and stress. Mages (WIL) shrug off magic and stress and fold to blades. Rogues (AGI, LCK) avoid both and survive neither.
+The triangle is about each class's soft side. Measured with the engine, as the share of its own HP one even hit removes:
+
+- **Warrior** (CON): a spell costs 27% more HP than a blade, and stress lands hardest (13 of 20 at level 100).
+- **Mage** (WIL): a blade costs 16% more than a spell and removes twice the share a warrior loses to it. Stress lands lightest (9 of 20).
+- **Rogue** (AGI, LCK): loses the most to everything, and is the hardest to hit.
+
+HP comes from CON alone, so a warrior still outlasts a mage under any kind of fire. The triangle says what each class should fear, not who lives longest.
 
 **Benchmark line.** `benchmarkStat(level)` runs straight from 10 at L1 to 600 at L100. It is what a trained attribute looks like. Signature stats sit above it, dump stats below. Boss stats, event difficulty and skill costs are written relative to it.
 
