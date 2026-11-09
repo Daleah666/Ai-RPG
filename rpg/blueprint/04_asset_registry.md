@@ -4,7 +4,7 @@ This section lists everything a party member can learn or buy: 54 class skills, 
 
 The hero's own class, the Klutz Knight, is in section 6. Boss and enemy moves are in section 5.
 
-One rule shaped the whole registry. Costs are flat, so a skill learned at level 1 costs 1 MP forever, and by level 30 it is free. MP is therefore only the price of a *new* skill. Every skill needs a second price that never wears off: a missed turn, a body part, stress, or exposure. Read each entry for that second price.
+One rule shaped the whole registry. Costs are flat, so a skill learned at level 1 costs 1 MP forever, and by level 10 that is less than half a percent of anyone's bar. MP is therefore only the price of a *new* skill. Every skill needs a second price that never wears off: a missed turn, a body part, stress, or exposure. Read each entry for that second price.
 
 ### 4.1 How to read a skill entry
 
@@ -43,7 +43,7 @@ cost.mp = mpShare × mpBudget(unlock level), rounded to two significant figures,
 
 `mpBudget(level)` is the MP bar of a character with benchmark Willpower: 640 at level 10, 15,100 at level 50, 60,000 at level 100. The three bars are different sizes (the warrior holds half the budget, the rogue two thirds, the mage four thirds), so each archetype has its own share ladder. The ladders are set so that the same weight of skill empties anyone's bar at about the same pace, with the mage ahead by a third because casting is all the mage does.
 
-| Weight | Warrior share | Rogue share | Mage share | Casts from a full bar at the unlock level (W / R / M) |
+| Weight | Warrior share | Rogue share | Mage share | Casts from a full bar when it unlocks (W / R / M, at level 50) |
 | --- | ---: | ---: | ---: | ---: |
 | light | 3% | 4% | 6% | 17 / 16 / 22 |
 | standard | 5% | 6% | 10% | 10 / 11 / 13 |
@@ -69,11 +69,11 @@ Light is a stance, a setup or a small utility. Standard is a bread-and-butter at
 **How an action resolves.**
 
 1. Pay the cost. A skill whose part is bound cannot be chosen.
-2. An effect marked `"target": "self"` is the price or the stance. It lands on the user once per use, hit or miss. A self-bind is applied with no roll (`applyBind`), which is why its `chance` reads 100.
+2. An effect marked `"target": "self"` is the price or the stance. It lands on the user once per use, hit or miss, unless it also says `"onHit": true`. A self-bind is applied with no roll (`applyBind`), which is why its `chance` reads 100.
 3. A skill aimed at enemies rolls one d100 for each enemy, with `acc` and `crit`. On a miss or a fumble nothing else in the skill touches that enemy.
 4. On a hit or a crit the enemy takes the damage, then every unmarked effect. Skills with Power 0 (`debuff`, `stress`) still roll to hit; they simply deal no damage.
 5. A skill aimed at the party does not roll. Healing is `healAmount` for each target, then every unmarked effect lands on each target.
-6. Durations count the bearer's own turns and tick at the end of each, as binds do. Something a character puts on itself during its own turn starts counting on its next turn.
+6. Durations count the bearer's own turns and tick at the end of each, as binds do. Something a character puts on itself during its own turn starts counting on its next turn. Guard is the one exception: its entry in 4.6 says when it ends.
 
 The attribute names in rules text are the ones the player sees: Might (STR), Arcana (INT), Finesse (AGI), Constitution (CON), Willpower (WIL), Luck (LCK).
 
@@ -94,10 +94,10 @@ A bind is a real problem and never a shutdown. Skills by part: head 3, arms 8, l
 | 1 | **Not On My Watch** | 1 | 1 MP | light | n/a | one ally | legs | n/a | You step in front of one ally. For 2 turns, single-target attacks aimed at them hit you instead. Area attacks still reach them, and you cannot cover yourself. |
 | 5 | **Cleave** | 1 | 12 MP | heavy | 3 (STR) | one row | arms | phys | A wide, low swing through one row. 40% base chance to bind each target's legs for 2 turns. |
 | 9 | **Oi! Over Here!** | 1 | 26 MP | standard | n/a | self | head | n/a | You make yourself everyone's problem. Taunt for 3 turns: enemies must aim their attacks at you. Holding that much attention costs you 6 stress. |
-| 14 | **Shield Wall** | 2 | 85 MP | heavy | n/a | all allies | legs | n/a | Everyone behind the shield. Every ally, you included, gains Guard (damage ×0.5) until their next turn and can still act. You brace so hard that your legs are bound for 1 turn, so the wall cannot go up two turns running. |
+| 14 | **Shield Wall** | 2 | 85 MP | heavy | n/a | all allies | legs | n/a | Everyone behind the shield. Every ally, you included, gains Guard (damage ×0.5) until the start of your next turn and can still act. You brace so hard that your legs are bound for 1 turn, so the wall cannot go up two turns running. |
 | 19 | **Can Opener** | 2 | 110 MP | standard | 4 (STR) | one enemy | arms | phys | You go looking for the seam in the armor. Damage to one enemy; it loses Guard this round and has Constitution ×0.7 for 3 turns. |
 | 24 | **Come At Me** | 3 | 180 MP | standard | n/a | self | arms | n/a | A stance and an invitation. For 2 turns, every melee attack rolled against you, hit or miss, is answered with a free basic attack. Guarding ends the stance. |
-| 30 | **Walk It Off** | 3 | 380 MP | heavy | heal 6 (CON) | self | none | phys | You decide it is not that bad. Restores about 30% of your max HP (Power 6 on your own Constitution). Pretending costs you 5 stress. |
+| 30 | **Walk It Off** | 3 | 380 MP | heavy | heal 6 (CON) | self | none | n/a | You decide it is not that bad. Restores about 30% of your max HP (Power 6 on your own Constitution). Pretending costs you 5 stress. |
 | 36 | **Shrug It Off** | 4 | 240 MP | light | n/a | self | none | n/a | Ropes, webs, hexes: you flex until something gives. Removes every bind on you, and your Willpower is ×1.3 for 3 turns. |
 | 46 | **Overhead Regret** | 5 | 900 MP | heavy | 9 (STR) | one enemy | arms | phys | Everything you have, straight down: heavy damage to one enemy at −15 to hit. Hit or miss, the sword sticks in the floor and your arms are bound for 1 turn. |
 | 52 | **Rattle the Line** | 6 | 820 MP | standard | n/a | one row | head | n/a | A parade-ground roar at one row, rolled at +5 to hit. Each enemy it lands on has Might ×0.75 for 3 turns and takes 14 stress. No damage. |
@@ -180,7 +180,7 @@ The rogue's skills attack with Finesse or Luck, not Might, and its basic attack 
 | 40 | **Put a Sock in It** | 4 | 580 MP | standard | 3 (AGI) | one enemy | arms | phys | A sock, applied to the mouth mid-sentence. Damage to one enemy from your Finesse; 45% base chance to bind its head for 2 turns. |
 | 46 | **Borrowed Time** | 5 | 1,200 MP | heavy | n/a | self | legs | n/a | You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do. |
 | 52 | **Stab in the Back** | 6 | 1,500 MP | heavy | 7 (AGI) | one enemy | arms | phys | The classic. Heavy damage to one enemy from your Finesse at −5 to hit and +10 to crit. You end up standing right beside it: Exposed for 1 turn, so every hit on you deals ×1.25. |
-| 59 | **Five-Finger Discount** | 6 | 1,300 MP | standard | 3 (AGI) | one enemy | arms | phys | You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit; its buffs are removed and you gain 12 Limit. |
+| 59 | **Five-Finger Discount** | 6 | 1,300 MP | standard | 3 (AGI) | one enemy | arms | phys | You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit. On a hit its buffs are removed and you gain 12 Limit. |
 | 66 | **Roast** | 7 | 3,400 MP | signature | n/a | all enemies | head | n/a | Five minutes of material on everyone in the room, rolled at +5 to hit against each enemy: 20 stress to every one it lands on. Then they are all looking at you: you have Taunt until your next turn. |
 | 73 | **All In** | 8 | 4,200 MP | signature | 10 (LCK) | one enemy | none | phys | No plan, one throw. Huge damage to one enemy from your Luck at −20 to hit and +20 to crit. Win or lose you are Exposed for 2 turns. It uses no body part, so no bind can seal it. |
 | 80 | **Gift Wrap** | 8 | 3,500 MP | heavy | 4 (AGI) | one enemy | arms | phys | Rope, ribbon and a bow. Damage to one enemy from your Finesse, and a 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll. |
@@ -211,7 +211,7 @@ A **general passive** is chosen. A character has one general slot, and a second 
 | 12 | **Stubborn** | Binds on your arms and legs last 1 turn less, to a minimum of 1. Binds on your head last 1 turn longer. | Your body shrugs off what your head cannot. Every head bind is a longer stretch at half Willpower with your shouts sealed. |
 | 26 | **Bodyguard's Reflex** | Once per round, when a single-target attack is aimed at an ally below 30% HP, you take it instead as if they were Covered. Your legs must be free. You cannot decline. | It is a reflex, not a decision. It fires when you are the one who cannot afford the hit, and it goes to the first ally in trouble, not the one you would have picked. |
 | 42 | **Seeing Red** | For every 25 stress you carry, your Might is ×1.05 higher and your Willpower ×0.95 lower, up to Might ×1.2 and Willpower ×0.8 at 100 stress. | Stress you keep is damage you deal and magic you eat. Calming the warrior down also turns the warrior down. |
-| 60 | **Share the Shield** | When you use the Guard action, the ally with the lowest share of HP also gains Guard until their next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5. | You give away part of your cover every time, wanted or not: two people half protected instead of one door properly shut. |
+| 60 | **Share the Shield** | When you use the Guard action, the ally with the lowest share of HP also gains Guard until the start of your next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5. | You give away part of your cover every time, wanted or not: two people half protected instead of one door properly shut. |
 | 80 | **Last One Standing** | While at least one ally is down, your Might and Constitution are ×1.25, and at the start of each of your turns you gain 10 Limit and take 5 stress. | Your best form arrives exactly when things are worst, and it bills your nerves every turn you stay in it. Reviving the ally ends both. |
 
 #### Mage
@@ -256,7 +256,7 @@ A **general passive** is chosen. A character has one general slot, and a second 
 | **Analyzed** | `analyzed` | bad | Its affinities are revealed, and attacks on it get +20 to hit for the duration. |
 | **Taunt** | `taunt` | neutral | Enemies must aim their attacks at this character. Area attacks are unaffected. |
 | **Guard Broken** | `guard_broken` | bad | Loses Guard and cannot Guard for the rest of this round. |
-| **Guard** | `guard` | good | Takes ×0.5 damage until the duration runs out. The same state as the basic Guard action. It does not reduce stress and does not stack with Fortified or Bulwark. |
+| **Guard** | `guard` | good | Takes ×0.5 damage. A Guard you raise yourself lasts until the start of your next turn; a Guard someone else gives you lasts until the start of their next turn. It does not reduce stress and does not stack with Fortified or Bulwark. |
 | **Provoked** | `provoked` | bad | Must aim its single-target attacks at the character who provoked it. Area attacks are unaffected. Ends early if that character is downed or Hidden. |
 | **Covered** | `covered` | good | Single-target attacks aimed at this character hit the ally covering it instead, against the coverer's defenses. Ends early if the coverer is downed or has bound legs. |
 | **Counter Stance** | `counter` | good | Every melee attack rolled against this character, hit or miss, is answered with a free basic attack on the attacker if this character is still standing. Ends if it Guards or its arms are bound. |
@@ -456,7 +456,7 @@ Every number in this part is engine output. "Even peer" is a target with every a
 | 100 | Rogue | Cheap Shot | 3 AGI | 130,909 | 21.8% | 80 / 22 | 19.9% | 1 | 0.0% | 40,000 |
 | 100 | Rogue | Stab in the Back | 7 AGI | 305,454 | 50.9% | 75 / 17 | 42.5% | 1,500 | 3.8% | 26 |
 
-The level 1 attacks keep their share of a peer's bar at every level and their cost falls to nothing: that is the flat-cost rule at work. The newer skills cost 7–19% of the bar each and buy a bigger hit or a rider, never both for free.
+The level 1 attacks keep their share of a peer's bar at every level while their cost falls to nothing: that is the flat-cost rule at work. A newer skill still takes a real slice of the bar, and what it buys is a bigger hit or a rider, each with its own drawback written into the text.
 
 **Casts per bar.** What a skill of each weight costs if it unlocks at that level, and how many times a full bar pays for it.
 
@@ -494,9 +494,9 @@ The level 1 attacks keep their share of a peer's bar at every level and their co
 
 | Archetype | Skill | Power | HP restored | On a warrior | On a mage | On a rogue |
 | --- | --- | --- | ---: | ---: | ---: | ---: |
-| Warrior | Walk It Off | 6 CON | 240,000 | 30% | 50% | 52% |
+| Warrior | Walk It Off | 6 CON | 240,000 | 30% | n/a | n/a |
 | Mage | Light Reading | 4 INT | 152,000 | 19% | 32% | 33% |
-| Mage | Group Project | 4 INT | 152,000 | 19% | 32% | 33% |
+| Mage | Group Project | 4 INT | 152,000 | 19% | n/a | 33% |
 | Mage | Recommended Reading | 9 INT | 342,000 | 43% | 71% | 74% |
 
 **Stress on enemies** at each skill's unlock level. The last three columns are what lands on an enemy whose Willpower is half the benchmark, on it, and half again above it.
@@ -510,7 +510,7 @@ The level 1 attacks keep their share of a peer's bar at every level and their co
 | 52 | Warrior | Rattle the Line | one row | 14 | mental | 11 | 9 | 8 |
 | 66 | Rogue | Roast | all enemies | 20 | embarrassment | 15 | 12 | 10 |
 
-A benchmark enemy is Rattled after eight to twelve of these and Routed after twice that. An even enemy dies to about seven Power 3 hits. Stress is the slower road against ordinary enemies and the better one against anything with a deep HP bar and a weak mind.
+A benchmark enemy is Rattled after about nine of the single-target hits and Routed after about eighteen. The same enemy dies to five landed Power 3 hits. Stress is the slower road against ordinary enemies and the better one against anything with a deep HP bar and a weak mind, and a stress rider on a damaging skill (Strongly Worded Letter, Kick Me Sign's Mark) costs nothing extra.
 
 **Bind chances** at each skill's unlock level, from `bindChance`. The target has benchmark Luck.
 
