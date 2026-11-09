@@ -134,12 +134,12 @@ export function clampStress(v) {
   return Math.max(STRESS.MIN, Math.min(STRESS.MAX, Math.round(num(v))));
 }
 
-/** 'calm' 0-49, 'rattled' 50-99, 'cracking' 100-199, 'breakdown' 200. For display. */
+/** 'calm' 0-49, 'strained' 50-99, 'cracking' 100-199, 'breakdown' 200. For display. */
 export function stressBand(stress) {
   const s = clampStress(stress);
   if (s >= STRESS.MAX) return 'breakdown';
   if (s >= STRESS.RESOLVE_AT) return 'cracking';
-  if (s >= STRESS.CALM_BELOW) return 'rattled';
+  if (s >= STRESS.CALM_BELOW) return 'strained';
   return 'calm';
 }
 

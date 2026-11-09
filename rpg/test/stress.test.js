@@ -237,8 +237,8 @@ test('A6: reaching 200 is a Breakdown, it outranks the Resolve Check, and it fir
 test('stressBand names the four stretches of the bar', () => {
   assert.equal(stressBand(0), 'calm');
   assert.equal(stressBand(49), 'calm');
-  assert.equal(stressBand(50), 'rattled');
-  assert.equal(stressBand(99), 'rattled');
+  assert.equal(stressBand(50), 'strained');
+  assert.equal(stressBand(99), 'strained');
   assert.equal(stressBand(100), 'cracking');
   assert.equal(stressBand(199), 'cracking');
   assert.equal(stressBand(200), 'breakdown');
