@@ -1,0 +1,15 @@
+{
+  "name": "valerie-isekai-rpg",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rules engine, data and exports for the Valerie isekai tactical JRPG. No dependencies.",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "check": "node tools/check-data.mjs",
+    "events": "node tools/validate-events.mjs",
+    "build": "node tools/build-blueprint.mjs && node sillytavern/build.mjs",
+    "all": "npm test && npm run check && npm run events && npm run build"
+  }
+}

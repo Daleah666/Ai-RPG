@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "archetypes": [
+    {
+      "id": "warrior",
+      "name": "Warrior",
+      "identity": "The party's front door: thick, loud and very hard to get past.",
+      "want": "To be the one still standing between the party and whatever is charging at it.",
+      "cost": "A head built for helmets, not hexes: spells and nerves get through where swords cannot.",
+      "signature": "CON",
+      "l1": { "STR": 15, "INT": 8, "AGI": 10, "CON": 16, "WIL": 9, "LCK": 12 },
+      "l100": { "STR": 760, "INT": 300, "AGI": 520, "CON": 800, "WIL": 300, "LCK": 620 },
+      "exponent": { "STR": 1, "INT": 1, "AGI": 1, "CON": 1, "WIL": 1, "LCK": 1 }
+    },
+    {
+      "id": "mage",
+      "name": "Mage",
+      "identity": "A library with a temper: an unshakeable mind in a very shakeable body.",
+      "want": "To understand the thing, name the thing and set the thing on fire, in that order.",
+      "cost": "Everything below the neck is on loan: one good shove and the lecture is over.",
+      "signature": "WIL",
+      "l1": { "STR": 9, "INT": 15, "AGI": 10, "CON": 10, "WIL": 16, "LCK": 10 },
+      "l100": { "STR": 420, "INT": 760, "AGI": 420, "CON": 480, "WIL": 800, "LCK": 420 },
+      "exponent": { "STR": 1, "INT": 1, "AGI": 1, "CON": 1, "WIL": 1, "LCK": 1 }
+    },
+    {
+      "id": "rogue",
+      "name": "Rogue",
+      "identity": "Never where the blade lands, never around when the bill arrives.",
+      "want": "To get in, get the prize and get out before anyone finishes saying \"hey\".",
+      "cost": "No armour and no backup plan: the one hit that does connect is the one that counts.",
+      "signature": "AGI",
+      "l1": { "STR": 12, "INT": 8, "AGI": 16, "CON": 10, "WIL": 9, "LCK": 15 },
+      "l100": { "STR": 580, "INT": 300, "AGI": 800, "CON": 460, "WIL": 400, "LCK": 760 },
+      "exponent": { "STR": 1, "INT": 1, "AGI": 1, "CON": 1, "WIL": 1, "LCK": 1 }
+    }
+  ]
+}

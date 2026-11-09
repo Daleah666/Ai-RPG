@@ -1,0 +1,825 @@
+{
+  "version": 1,
+  "hero": {
+    "id": "valerie",
+    "name": "Valerie",
+    "fullName": "Dame Valerie Bellweather",
+    "class": "Klutz Knight",
+    "pronouns": "she/her",
+    "age": 24,
+    "premise": "You were an ordinary person in an ordinary world. You woke up in a forest wearing golden armor, holding a sword taller than you are, and everyone keeps calling you Dame Valerie. The body is hers. The thoughts are yours. Her luck only works when you stop steering.",
+    "look": "Long pink hair, bright green eyes, a permanent look of mild surprise. Gleaming gold plate that was clearly designed by an optimist: pauldrons, gauntlets and thigh-high greaves over a deep teal cloak. Tall, soft and very curvy, built top-heavy enough that her center of gravity is a running joke the physics engine is in on.",
+    "want": "To be a real hero people can rely on.",
+    "cost": "Every win comes from an accident she cannot see, so the harder she tries to earn one, the worse she gets.",
+    "lie": "I'm just a really good hero!",
+    "wound": "She was knighted by mistake at a ceremony meant for someone else, and nobody had the heart to take it back.",
+    "secret": "The person behind her eyes is not her, and the only way to keep her alive is to let go of the wheel.",
+    "playerWant": "To get home, or at least to survive until lunch.",
+    "playerCost": "Surviving means trusting a body you do not control and a reputation you did not earn.",
+    "symbols": [
+      {
+        "id": "sword",
+        "name": "Happenstance",
+        "meaning": "A greatsword taller than she is. She does not swing it; it swings her. It is the heroism she cannot control: it always lands somewhere useful, never where she aimed."
+      },
+      {
+        "id": "cloak",
+        "name": "The Teal Cloak",
+        "meaning": "Where lost things go. Whatever she misplaces is in there, waiting for the exact moment it matters. It is the part of her that is prepared without knowing it."
+      },
+      {
+        "id": "armor",
+        "name": "The Gold Plate",
+        "meaning": "It shines brighter the more people believe in her. It is the reputation: dazzling from outside, awkward from inside, and it never quite fits."
+      },
+      {
+        "id": "name",
+        "name": "Bellweather",
+        "meaning": "A bellwether is the sheep with the bell that the flock follows. She has no idea where she is going. Everyone follows anyway, and it keeps working."
+      }
+    ]
+  },
+  "archetype": {
+    "id": "klutz_knight",
+    "name": "Klutz Knight",
+    "identity": "A front-liner who tanks with accidents: the less she understands the fight, the harder she is to hit.",
+    "want": "To be a real hero people can rely on.",
+    "cost": "Every win comes from an accident she cannot see, so the harder she tries, the worse she gets.",
+    "signature": "LCK",
+    "l1": {
+      "STR": 13,
+      "INT": 8,
+      "AGI": 10,
+      "CON": 14,
+      "WIL": 9,
+      "LCK": 16
+    },
+    "l100": {
+      "STR": 620,
+      "INT": 300,
+      "AGI": 460,
+      "CON": 720,
+      "WIL": 400,
+      "LCK": 800
+    },
+    "exponent": {
+      "STR": 1,
+      "INT": 1,
+      "AGI": 1,
+      "CON": 1,
+      "WIL": 1,
+      "LCK": 1
+    }
+  },
+  "gauge": {
+    "id": "airhead",
+    "name": "Airhead Gauge",
+    "range": [
+      0,
+      100
+    ],
+    "start": 60,
+    "bands": [
+      {
+        "id": "lucid",
+        "name": "Lucid",
+        "range": [
+          0,
+          33
+        ],
+        "text": "You are driving. Planned actions are sharp. Her lucky accidents barely happen, and everything scary is exactly as scary as it looks."
+      },
+      {
+        "id": "ditzy",
+        "name": "Ditzy",
+        "range": [
+          34,
+          66
+        ],
+        "text": "You share the wheel. Everything works a bit. The safe middle, and the least exciting place to be."
+      },
+      {
+        "id": "airhead",
+        "name": "Total Airhead",
+        "range": [
+          67,
+          100
+        ],
+        "text": "The body is driving. Blows miss, arrows bounce, enemies fall over, and fear does not register. Planned skills are sealed: the thought just leaves."
+      }
+    ],
+    "stances": [
+      {
+        "id": "wing",
+        "name": "Wing It",
+        "text": "Act on instinct. Gauge +10, stress −2. Your fumble band widens with the gauge (up to 76–100), and a fumble becomes an Accidental Chaos Wave instead of a wasted turn."
+      },
+      {
+        "id": "think",
+        "name": "Think It Through",
+        "text": "Use your own head. Gauge −15, +4 stress that Willpower cannot reduce. +15 to hit, +5 to crit, normal fumble band. Required for planned skills."
+      }
+    ],
+    "choice": "Lucky or precise, never both. Winging it makes her nearly untouchable and takes aimed damage away from you. Thinking gives you your skills back and strips the luck that was keeping her alive."
+  },
+  "abilities": [
+    {
+      "id": "val_unintentional_dodge",
+      "name": "Unintentional Dodge",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "Enemies attacking Valerie have their hit ceiling lowered from 95 to 95 − 0.4 × Airhead (55 at full gauge). Guarding on purpose switches it off for the turn.",
+      "gm": "Enemies' chance to hit her is capped at 95 minus 0.4 x gauge (55 at full). Off for a turn if she guards on purpose. She trips under the blow.",
+      "fiction": "A monster swings; she trips and falls under the blow. She believes she is being agile.",
+      "choice": "Guard halves damage you take. Not guarding lets the dodge work. Pick one each turn.",
+      "engine": "incomingOpts().hitCap",
+      "keys": [
+        "dodge",
+        "dodges",
+        "trips",
+        "stumbles"
+      ]
+    },
+    {
+      "id": "val_pocket_dimension",
+      "name": "Pocket Dimension",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "After each battle, one consumable may go Missing (10% + Airhead/4). Missing items are not lost: once per battle or scene, when an ally drops below 25% HP or a scene calls for an item, roll her Luck against a normal check (+Airhead/5) to have a fitting Missing item turn up and be used for free. Slots: 3 + 1 per 20 levels. Once per rest you may Misplace an item on purpose.",
+      "gm": "After a battle one consumable may go Missing (10 + gauge/4 %). Once per battle or scene, when it is badly needed, roll Luck at normal difficulty (+gauge/5): a Missing item turns up and is used for free.",
+      "fiction": "The lunch, the map, the one key that matters. It is in the cloak. It was always in the cloak. She is just really good at finding things.",
+      "choice": "An item in your pack is yours to use when you decide. An item in the cloak costs no turn and arrives at the perfect moment, if it arrives.",
+      "engine": "misplacePct(), foundPct(), pocketSlots()",
+      "keys": [
+        "cloak",
+        "lost",
+        "misplaced",
+        "found it",
+        "missing"
+      ]
+    },
+    {
+      "id": "val_kinetic_deflection",
+      "name": "Kinetic Deflection",
+      "nickname": "The Booby Bounce",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "Against attacks tagged projectile, the top of the attacker's hit band becomes a bounce band: Airhead/4 points wide, plus up to 10 for out-lucking the shooter. A roll in that band deals no damage to her and sends the shot back at the attacker for the damage it would have done, resolved against the attacker's own defense. The crit band is never eaten.",
+      "gm": "Projectiles only. The top gauge/4 (+ up to 10) points of the attacker's hit band bounce the shot back at the attacker for its full damage. Crits still land.",
+      "fiction": "Arrows, rocks and magic missiles meet a chest that defies physics, stop, reconsider, and leave the way they came. She thinks she bounced it off. She is not wrong.",
+      "choice": "It only answers projectiles, and only while the gauge is high. Standing in the open to bait archers means standing in the open.",
+      "engine": "incomingOpts().bounce, readIncoming()",
+      "keys": [
+        "arrow",
+        "arrows",
+        "bolt",
+        "missile",
+        "thrown",
+        "volley",
+        "bounce",
+        "bounces"
+      ]
+    },
+    {
+      "id": "val_chaos_wave",
+      "name": "Accidental Chaos Wave",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "When Valerie fumbles while Winging It, the fumble is a Chaos Wave: every enemy is Off-Balance (Finesse ×0.75 for 2 turns) and loses its Guard, she gains 15 Limit, and any contraption on the field goes off. On a natural 100 the wave also hits every enemy for Power 4 physical damage. A fumble while Thinking is just a miss.",
+      "gm": "Her own fumble while Winging It: every enemy is Off-Balance (Finesse x0.75, 2 turns) and loses Guard, +15 MCE, and any contraption in the scene goes off. Natural 100: also Power 4 damage to all enemies.",
+      "fiction": "She trips, lands hard, and the floor disagrees with everyone else. Her sword clips a wall and something expensive starts happening.",
+      "choice": "Up to a quarter of your Wing It attacks become waves instead of damage. Wonderful against a crowd, a wasted turn against one big target.",
+      "engine": "stanceEffects('wing').opts.fumbleFrom, chaosWave()",
+      "keys": [
+        "fumble",
+        "falls",
+        "trips",
+        "chaos wave",
+        "lever",
+        "contraption"
+      ]
+    },
+    {
+      "id": "val_aura_befuddlement",
+      "name": "Aura of Befuddlement",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "Enemies attacking Valerie fumble on 96 − Airhead/10 or higher (86+ at full gauge). An enemy that fumbles this way binds one of its own body parts for 1 turn, chosen by the roll.",
+      "gm": "Enemies attacking her fumble on 96 minus gauge/10 or higher (86+ at full). An enemy that fumbles binds one of its own body parts for a turn.",
+      "fiction": "They drop weapons, trip on nothing, forget which end of the spear is the business end. Nobody connects it to her. She certainly does not.",
+      "choice": "It only reaches enemies who are attacking her. To use it you have to be the one they are swinging at.",
+      "engine": "incomingOpts().fumbleFrom, befuddledPart()",
+      "keys": [
+        "befuddled",
+        "confused",
+        "drops",
+        "clumsy"
+      ]
+    },
+    {
+      "id": "val_inspirational_ignorance",
+      "name": "Inspirational Ignorance",
+      "unlock": 1,
+      "kind": "passive",
+      "rule": "While not Lucid, Valerie takes no stress from horror or mental sources, and every ally who sees it sheds 3 stress. Allies making a Resolve Check gain +5 Virtue chance while she is Ditzy, +10 while she is a Total Airhead. The price: realization stress ignores her Willpower and drops the gauge by 10; embarrassment stress is ×1.5 unless she is too far gone to notice.",
+      "gm": "Unless Lucid she takes no stress from horror or fear, and allies who see it shed 3. Allies get +5 (Ditzy) or +10 (Total Airhead) to roll a Virtue.",
+      "fiction": "She faces the lich with the calm of someone who has not understood the situation. The party mistakes it for courage and finds some of their own.",
+      "choice": "The party's nerve rests on her not understanding. Anyone who explains what really happened, including you, is spending it.",
+      "engine": "stressFilter(), resolveShiftForAllies()",
+      "keys": [
+        "fearless",
+        "brave",
+        "courage",
+        "rally",
+        "inspire"
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "id": "val_big_swing",
+      "name": "Big Swing",
+      "archetype": "klutz_knight",
+      "unlock": 1,
+      "tier": 1,
+      "type": "physical",
+      "stat": "STR",
+      "power": 2.8,
+      "acc": -10,
+      "crit": 0,
+      "element": "phys",
+      "target": "row",
+      "part": "arms",
+      "cost": {
+        "mp": 1,
+        "limit": 0
+      },
+      "mpShare": 0.1,
+      "tags": [
+        "melee"
+      ],
+      "effects": [],
+      "text": "Happenstance goes where it wants. You mostly hold on. Hits a whole row, less accurately."
+    },
+    {
+      "id": "val_look_closely",
+      "name": "Wait, Look Closely",
+      "archetype": "klutz_knight",
+      "unlock": 1,
+      "tier": 1,
+      "type": "utility",
+      "stat": "INT",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "one",
+      "part": "head",
+      "cost": {
+        "mp": 1,
+        "limit": 0
+      },
+      "mpShare": 0.04,
+      "tags": [
+        "mental"
+      ],
+      "stance": "think",
+      "bands": [
+        "lucid",
+        "ditzy"
+      ],
+      "effects": [
+        {
+          "kind": "status",
+          "id": "analyzed",
+          "turns": 3
+        }
+      ],
+      "text": "You squint with her eyes and your brain. Reveals a target's affinities; attacks on it get +20 to hit for 3 turns."
+    },
+    {
+      "id": "val_whoopsie_daisy",
+      "name": "Whoopsie Daisy",
+      "archetype": "klutz_knight",
+      "unlock": 4,
+      "tier": 1,
+      "type": "utility",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "self",
+      "part": "legs",
+      "cost": {
+        "mp": 3,
+        "limit": 0
+      },
+      "mpShare": 0.03,
+      "tags": [],
+      "stance": "wing",
+      "effects": [
+        {
+          "kind": "airhead",
+          "amount": 25
+        },
+        {
+          "kind": "status",
+          "id": "extra_slippery",
+          "turns": 1
+        }
+      ],
+      "text": "You let go of the wheel completely. Gauge +25, and until her next turn enemies' hit ceiling against her drops 10 more."
+    },
+    {
+      "id": "val_heroic_pose",
+      "name": "Heroic Pose",
+      "archetype": "klutz_knight",
+      "unlock": 7,
+      "tier": 2,
+      "type": "buff",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "allies",
+      "part": "none",
+      "cost": {
+        "mp": 26,
+        "limit": 0
+      },
+      "mpShare": 0.08,
+      "tags": [],
+      "effects": [
+        {
+          "kind": "mod",
+          "stat": "STR",
+          "mult": 1.2,
+          "turns": 3
+        },
+        {
+          "kind": "stress",
+          "amount": -5
+        }
+      ],
+      "text": "Cloak billowing, sword up, sun catching the armor. Allies gain Might ×1.2 for 3 turns and shed 5 stress."
+    },
+    {
+      "id": "val_stand_behind_me",
+      "name": "Stand Behind Me!",
+      "archetype": "klutz_knight",
+      "unlock": 10,
+      "tier": 2,
+      "type": "utility",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "self",
+      "part": "none",
+      "cost": {
+        "mp": 38,
+        "limit": 0
+      },
+      "mpShare": 0.06,
+      "tags": [],
+      "effects": [
+        {
+          "kind": "status",
+          "id": "taunt",
+          "turns": 2
+        }
+      ],
+      "text": "She plants herself in front of everyone. Enemies must target her for 2 turns. This is where the dodge, the bounce and the aura all pay out."
+    },
+    {
+      "id": "val_called_shot",
+      "name": "Called Shot",
+      "archetype": "klutz_knight",
+      "unlock": 15,
+      "tier": 3,
+      "type": "physical",
+      "stat": "STR",
+      "power": 4.5,
+      "acc": 10,
+      "crit": 15,
+      "element": "phys",
+      "target": "one",
+      "part": "arms",
+      "cost": {
+        "mp": 140,
+        "limit": 0
+      },
+      "mpShare": 0.1,
+      "tags": [
+        "melee"
+      ],
+      "stance": "think",
+      "bands": [
+        "lucid",
+        "ditzy"
+      ],
+      "effects": [],
+      "text": "For once you line it up properly. A precise, heavy strike on one target."
+    },
+    {
+      "id": "val_found_it",
+      "name": "Found It!",
+      "archetype": "klutz_knight",
+      "unlock": 20,
+      "tier": 3,
+      "type": "utility",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "ally",
+      "part": "arms",
+      "cost": {
+        "mp": 120,
+        "limit": 0
+      },
+      "mpShare": 0.05,
+      "tags": [],
+      "stance": "wing",
+      "effects": [
+        {
+          "kind": "status",
+          "id": "pocket_found_check"
+        }
+      ],
+      "text": "She rummages in the cloak on purpose. Make the Found check now instead of waiting for an emergency. It still only works once per battle."
+    },
+    {
+      "id": "val_spin_cycle",
+      "name": "Spin Cycle",
+      "archetype": "klutz_knight",
+      "unlock": 25,
+      "tier": 4,
+      "type": "physical",
+      "stat": "STR",
+      "power": 3.4,
+      "acc": -15,
+      "crit": 5,
+      "element": "phys",
+      "target": "all",
+      "part": "legs",
+      "cost": {
+        "mp": 540,
+        "limit": 0
+      },
+      "mpShare": 0.14,
+      "tags": [
+        "melee"
+      ],
+      "stance": "wing",
+      "bands": [
+        "ditzy",
+        "airhead"
+      ],
+      "effects": [
+        {
+          "kind": "mod",
+          "target": "self",
+          "stat": "AGI",
+          "mult": 0.75,
+          "turns": 1
+        }
+      ],
+      "text": "The sword starts turning and she goes with it. Hits every enemy; she is dizzy for a turn afterwards."
+    },
+    {
+      "id": "val_youve_got_this",
+      "name": "You've Got This (Probably)",
+      "archetype": "klutz_knight",
+      "unlock": 30,
+      "tier": 4,
+      "type": "buff",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "ally",
+      "part": "head",
+      "cost": {
+        "mp": 380,
+        "limit": 0
+      },
+      "mpShare": 0.07,
+      "tags": [],
+      "effects": [
+        {
+          "kind": "stress",
+          "amount": -15
+        },
+        {
+          "kind": "mod",
+          "stat": "WIL",
+          "mult": 1.2,
+          "turns": 3
+        }
+      ],
+      "text": "A pep talk with total sincerity and no information. One ally sheds 15 stress and gains Willpower ×1.2 for 3 turns."
+    },
+    {
+      "id": "val_good_hero",
+      "name": "I'm Just a Good Hero!",
+      "archetype": "klutz_knight",
+      "unlock": 35,
+      "tier": 5,
+      "type": "utility",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "holy",
+      "target": "self",
+      "part": "none",
+      "cost": {
+        "mp": 0,
+        "limit": 100
+      },
+      "tags": [
+        "ultimate"
+      ],
+      "effects": [
+        {
+          "kind": "status",
+          "id": "good_hero",
+          "turns": 3
+        },
+        {
+          "kind": "stress",
+          "target": "allies",
+          "amount": -10
+        }
+      ],
+      "text": "Ultimate. For 3 turns her passives act as if the gauge were 100 whatever it really is, planned skills stay available, and allies shed 10 stress. When it ends the gauge resets to 50."
+    },
+    {
+      "id": "val_accidental_trip",
+      "name": "Accidental Trip",
+      "archetype": "klutz_knight",
+      "unlock": 40,
+      "tier": 5,
+      "type": "debuff",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "one",
+      "part": "legs",
+      "cost": {
+        "mp": 770,
+        "limit": 0
+      },
+      "mpShare": 0.08,
+      "tags": [
+        "melee"
+      ],
+      "stance": "wing",
+      "effects": [
+        {
+          "kind": "bind",
+          "part": "legs",
+          "chance": 55,
+          "turns": 2
+        }
+      ],
+      "text": "Her foot finds theirs. 55% base chance to bind an enemy's legs for 2 turns."
+    },
+    {
+      "id": "val_lucky_break",
+      "name": "Lucky Break",
+      "archetype": "klutz_knight",
+      "unlock": 50,
+      "tier": 6,
+      "type": "physical",
+      "stat": "STR",
+      "power": 6,
+      "acc": -5,
+      "crit": 10,
+      "element": "phys",
+      "target": "one",
+      "part": "arms",
+      "cost": {
+        "mp": 1800,
+        "limit": 0
+      },
+      "mpShare": 0.12,
+      "tags": [
+        "melee"
+      ],
+      "effects": [
+        {
+          "kind": "bind",
+          "part": "arms",
+          "chance": 35,
+          "turns": 2,
+          "onCritChance": 95
+        }
+      ],
+      "text": "A wild overhead chop that lands exactly where it hurts. 35% to bind arms for 2 turns; a crit all but guarantees it."
+    },
+    {
+      "id": "val_wait_i_get_it",
+      "name": "Wait, I Get It Now",
+      "archetype": "klutz_knight",
+      "unlock": 60,
+      "tier": 7,
+      "type": "utility",
+      "stat": "INT",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "self",
+      "part": "head",
+      "cost": {
+        "mp": 0,
+        "limit": 50
+      },
+      "tags": [
+        "ultimate",
+        "realization"
+      ],
+      "stance": "think",
+      "bands": [
+        "lucid"
+      ],
+      "effects": [
+        {
+          "kind": "status",
+          "id": "auto_crit_next_think",
+          "turns": 2
+        },
+        {
+          "kind": "airhead",
+          "set": 0
+        },
+        {
+          "kind": "stress",
+          "target": "self",
+          "amount": 20,
+          "source": "realization"
+        }
+      ],
+      "text": "Ultimate, Lucid only. Everything you know about how stories work clicks into place. Your next planned skill is an automatic crit. Gauge drops to 0 and she takes 20 realization stress."
+    },
+    {
+      "id": "val_follow_me",
+      "name": "Follow Me!",
+      "archetype": "klutz_knight",
+      "unlock": 70,
+      "tier": 8,
+      "type": "buff",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "holy",
+      "target": "allies",
+      "part": "none",
+      "cost": {
+        "mp": 4400,
+        "limit": 0
+      },
+      "mpShare": 0.15,
+      "tags": [],
+      "effects": [
+        {
+          "kind": "mod",
+          "stat": "AGI",
+          "mult": 1.25,
+          "turns": 3
+        },
+        {
+          "kind": "mod",
+          "stat": "LCK",
+          "mult": 1.25,
+          "turns": 3
+        }
+      ],
+      "text": "She charges the wrong way with complete conviction and the party follows. Allies gain Finesse and Luck ×1.25 for 3 turns."
+    },
+    {
+      "id": "val_plot_armor",
+      "name": "Plot Armor",
+      "archetype": "klutz_knight",
+      "unlock": 80,
+      "tier": 9,
+      "type": "utility",
+      "stat": "LCK",
+      "power": 0,
+      "acc": 0,
+      "crit": 0,
+      "element": "phys",
+      "target": "self",
+      "part": "none",
+      "cost": {
+        "mp": 0,
+        "limit": 0
+      },
+      "tags": [
+        "passive"
+      ],
+      "effects": [
+        {
+          "kind": "status",
+          "id": "plot_armor"
+        }
+      ],
+      "text": "Passive. Once per battle, a blow that would drop her instead leaves her at 1 HP if she passes a Luck check at normal difficulty (+Airhead/5)."
+    },
+    {
+      "id": "val_accidentally_legendary",
+      "name": "Accidentally Legendary",
+      "archetype": "klutz_knight",
+      "unlock": 100,
+      "tier": 10,
+      "type": "physical",
+      "stat": "STR",
+      "power": 24,
+      "acc": 50,
+      "crit": 0,
+      "element": "holy",
+      "target": "all",
+      "part": "arms",
+      "cost": {
+        "mp": 0,
+        "limit": 100
+      },
+      "tags": [
+        "ultimate",
+        "melee"
+      ],
+      "bands": [
+        "lucid",
+        "airhead"
+      ],
+      "effects": [
+        {
+          "kind": "airhead",
+          "set": 50
+        }
+      ],
+      "text": "Ultimate. Usable only at the far ends of the gauge: all you, or all her. Happenstance comes down once and the story ends the way stories about her always do. Massive damage to every enemy; the gauge snaps back to 50."
+    }
+  ],
+  "resolve": {
+    "affliction": {
+      "id": "aff_val_self_aware",
+      "name": "Self-Aware",
+      "text": "\"Oh no. I'm a fraud.\" The gauge locks at 0 and her passives go quiet. Allies who relied on her nerve take 5 stress when it starts."
+    },
+    "virtue": {
+      "id": "vir_val_good_hero",
+      "name": "A Good Hero",
+      "text": "\"I'm a GOOD hero!\" She decides the evidence is on her side. Stress stops reaching her, and every ally sheds 10."
+    }
+  },
+  "dashboard": [
+    {
+      "k": "Airhead",
+      "max": 100,
+      "start": 60,
+      "text": "Clever to clueless. The gauge everything else reads."
+    },
+    {
+      "k": "Stress",
+      "max": 200,
+      "start": 0,
+      "text": "Resolve Check at 100, Breakdown at 200."
+    },
+    {
+      "k": "Main Character Energy",
+      "max": 100,
+      "start": 0,
+      "text": "Her Limit gauge. Fills on chaos waves, bounces and enemy fumbles. Pays for ultimates."
+    },
+    {
+      "k": "Hero Rep",
+      "max": 100,
+      "start": 5,
+      "text": "How legendary the world thinks she is. Rises whether or not she earned it."
+    },
+    {
+      "k": "Party Trust",
+      "max": 100,
+      "start": 30,
+      "text": "How much the party believes in her. Realization costs it; showing up earns it back."
+    },
+    {
+      "k": "Dignity",
+      "max": 100,
+      "start": 80,
+      "text": "Slapstick tracker. Ticks down with every pratfall and wardrobe mishap. Does nothing. She has never checked it."
+    }
+  ],
+  "abilitiesNote": "All six are innate from level 1. They are who she is, not rewards: staggering them would make the opening hours play like a different character. Her growth comes from the skill tree and from learning to ride the gauge."
+}

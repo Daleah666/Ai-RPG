@@ -1,0 +1,342 @@
+{
+  "pack": {
+    "format": "rpg-events/1",
+    "id": "valerie-starter",
+    "name": "Valerie: First Steps (and Missteps)",
+    "version": "1.0.0",
+    "author": "Ai-RPG",
+    "rating": "pg13",
+    "description": "Thirteen events for the opening hours of Oops, I'm the Hero?!: the wake-up, the first accidents, the party, and the question of who is actually driving.",
+    "tags": ["valerie", "isekai", "slapstick"]
+  },
+  "events": [
+    {
+      "id": "val.wrong_body_right_sword",
+      "title": "Wrong Body, Right Sword",
+      "t": "Woke up in a forest in someone else's armor and won a fight by standing up.",
+      "tags": ["isekai", "first day", "slapstick"],
+      "imp": 3,
+      "where": ["forest"],
+      "when": { "level": [1, 1], "weight": 100 },
+      "art": { "prompt": "sunlit forest clearing, a pink-haired knight in gold armor sitting up dazed beside an enormous greatsword, anime style" },
+      "scene": "You wake on your back in a forest clearing. The sky is very blue. Something heavy is resting on your chest; on inspection, it is your chest. Beside you lies a sword roughly the size of a door. From the treeline a voice shouts, \"Dame Valerie! The goblins are back!\" You have never been called Dame anything.",
+      "choices": [
+        {
+          "id": "stand_up", "label": "Stand up and see what happens", "mode": "wing",
+          "check": { "difficulty": "easy" },
+          "success": { "text": "You stand, overbalance, and the sword comes up with you in a wide and entirely accidental arc. Three goblins who had been creeping up behind you leave at speed. Someone in the trees starts clapping.", "effects": [{ "kind": "exp", "levelShare": 0.3 }, { "kind": "airhead", "amount": 10 }, { "kind": "rep", "amount": 3 }, { "kind": "moment", "title": "Wrong Body, Right Sword", "t": "Stood up, fell over, routed three goblins. Day one.", "tags": ["isekai", "slapstick"], "imp": 3 }] },
+          "failure": { "text": "You stand, overbalance, and sit back down on a goblin. It makes a noise like a bagpipe. Technically that counts.", "effects": [{ "kind": "exp", "levelShare": 0.15 }, { "kind": "airhead", "amount": 10 }, { "kind": "dignity", "amount": -5 }] }
+        },
+        {
+          "id": "take_inventory", "label": "Stay down and work out what is going on", "mode": "think",
+          "check": { "difficulty": "easy" },
+          "success": { "text": "Armor: gold, ornate, not yours. Hair: pink, and a great deal of it. Hands: smaller than your hands. You are, as far as you can tell, somebody else. In the folds of the cloak you find a packed lunch you have no memory of packing.", "effects": [{ "kind": "item", "id": "itm_packed_lunch", "qty": 1 }, { "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "flag", "set": "knows_isekai" }] },
+          "failure": { "text": "You get as far as \"pink?\" before the goblins arrive.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "battle", "encounter": "goblin_scouts", "advantage": "enemy" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.return_to_sender",
+      "title": "Return to Sender",
+      "t": "Walked into an arrow ambush. The arrows went back.",
+      "tags": ["kinetic deflection", "ambush", "slapstick"],
+      "imp": 2,
+      "where": ["road", "forest"],
+      "when": { "level": [2, 20], "weight": 12 },
+      "art": { "prompt": "forest road ambush, arrows mid-flight rebounding off a startled knight in gold armor, comedic anime action" },
+      "scene": "The road narrows between two banks of bramble. A branch creaks. Then the air is full of arrows, and every one of them is heading for the most visible thing on the road, which is you.",
+      "choices": [
+        {
+          "id": "keep_walking", "label": "Keep walking; you were mid-sentence", "mode": "wing",
+          "check": { "difficulty": "normal", "bonus": 10 },
+          "success": { "text": "The arrows arrive, meet an obstacle no fletcher planned for, and depart the way they came. There is yelping in the brambles. You finish your sentence. \"Did anyone hear something?\"", "effects": [{ "kind": "exp", "levelShare": 0.2 }, { "kind": "limit", "amount": 20 }, { "kind": "rep", "amount": 2 }, { "kind": "moment", "title": "Return to Sender", "t": "Six arrows in, six arrows out. She thinks she bounced them off.", "tags": ["kinetic deflection"], "imp": 2 }] },
+          "failure": { "text": "Most of them bounce. One does not. It sticks in a pauldron and wobbles there like a rude little flag.", "effects": [{ "kind": "hp", "pct": -12 }, { "kind": "battle", "encounter": "bandit_archers" }] }
+        },
+        {
+          "id": "take_cover", "label": "Dive for cover and count the archers", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "Four bows, one crossbow, all on the left bank. You call the positions and the party goes through them like a list.", "effects": [{ "kind": "exp", "levelShare": 0.2 }, { "kind": "airhead", "amount": -15 }, { "kind": "trust", "amount": 4 }, { "kind": "battle", "encounter": "bandit_archers", "advantage": "party" }] },
+          "failure": { "text": "You dive for cover. The body does not dive; it sort of settles. You are now lying in the road, which is not cover.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "dignity", "amount": -5 }, { "kind": "hp", "pct": -18 }, { "kind": "battle", "encounter": "bandit_archers" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.rope_bridge_has_opinions",
+      "title": "The Rope Bridge Has Opinions",
+      "t": "Crossed a gorge the hard way and arrived first.",
+      "tags": ["unintentional dodge", "slapstick", "travel"],
+      "imp": 2,
+      "where": ["mountain", "bridge"],
+      "when": { "level": [3, 40], "weight": 10 },
+      "art": { "prompt": "swaying rope bridge over a misty gorge, knight in gold armor mid-stumble, cloak flying, anime style" },
+      "scene": "The bridge is rope, plank and optimism. It was built for people who weigh less than a knight in full plate carrying a door-sized sword. Halfway out, it begins to express this.",
+      "choices": [
+        {
+          "id": "run", "label": "Run for it", "mode": "wing",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "A plank goes. You were not on it; you had tripped onto the next one. That one goes too. You stumble the entire length of the bridge exactly one step ahead of its collapse and arrive on the far side asking why everyone looks so pale.", "effects": [{ "kind": "exp", "levelShare": 0.2 }, { "kind": "airhead", "amount": 10 }, { "kind": "stress", "amount": -5 }] },
+          "failure": { "text": "The bridge wins. You do not fall far, because the cloak catches on a post, and you spend a while hanging there like laundry while the party finds a rope.", "effects": [{ "kind": "hp", "pct": -10 }, { "kind": "dignity", "amount": -10 }, { "kind": "airhead", "amount": 10 }] }
+        },
+        {
+          "id": "test_planks", "label": "Test each plank and spread your weight", "mode": "think",
+          "check": { "difficulty": "hard" },
+          "success": { "text": "Slow, careful, correct. You cross like a person who has read about bridges. The party follows in your footsteps and nobody falls.", "effects": [{ "kind": "exp", "levelShare": 0.25 }, { "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "trust", "amount": 5 }] },
+          "failure": { "text": "You test the first plank with great care. It holds. You test the second. While you are thinking about the third, the first one gives up behind you.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 10, "source": "general" }, { "kind": "hp", "pct": -10 }] }
+        }
+      ]
+    },
+    {
+      "id": "val.where_did_i_put_lunch",
+      "title": "Where Did I Put Lunch?",
+      "t": "Lost the rations. Found them exactly when it mattered.",
+      "tags": ["pocket dimension", "camp", "party"],
+      "imp": 1,
+      "where": ["camp"],
+      "when": { "level": [1, 100], "weight": 8, "once": false },
+      "art": { "prompt": "cozy campfire at dusk, knight rummaging in a teal cloak while party members watch, warm anime style" },
+      "scene": "Camp. Fire. A party that has walked all day looks at you, because you were carrying the food. You pat your belt. You pat your pack. You have a very clear memory of putting lunch somewhere sensible.",
+      "choices": [
+        {
+          "id": "it_will_turn_up", "label": "Shrug. It'll turn up", "mode": "wing",
+          "check": { "difficulty": "easy", "bonus": 5 },
+          "success": { "text": "You shake out the cloak to sit on it and lunch falls out. So does a second lunch. Nobody asks.", "effects": [{ "kind": "item", "id": "itm_packed_lunch", "qty": 1 }, { "kind": "stress", "amount": -8 }, { "kind": "hp", "pct": 15 }] },
+          "failure": { "text": "It does not turn up tonight. It will turn up at some dramatically better moment. Tonight is dry biscuits.", "effects": [{ "kind": "misplace", "id": "itm_packed_lunch" }, { "kind": "stress", "amount": 3, "source": "general" }] }
+        },
+        {
+          "id": "retrace_steps", "label": "Retrace your steps properly", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "You walk it back in your head: bridge, stream, the rock where you stopped. It is on the rock. You fetch it. Dinner is on time and you feel briefly like a competent adult.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "hp", "pct": 15 }, { "kind": "trust", "amount": 2 }] },
+          "failure": { "text": "You retrace your steps for an hour. The harder you think about the cloak, the emptier it is.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 6, "source": "realization" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.a_squire_with_a_notebook",
+      "title": "A Squire with a Notebook",
+      "t": "Tamsin joined the party to write down what really happens.",
+      "tags": ["party", "recruit", "realization"],
+      "imp": 3,
+      "where": ["town", "camp", "road"],
+      "when": { "level": [2, 30], "weight": 14, "flags": { "none": ["tamsin_met"] } },
+      "art": { "prompt": "young scribe in travel clothes holding an ink-stained notebook, bowing to a tall knight in gold armor, town square, anime style" },
+      "scene": "A young person in ink-stained travelling clothes steps into your path and bows so fast their satchel swings over their head. \"Tamsin. They and them. I'm writing the true account of Dame Valerie Bellweather.\" They open a notebook already half full. \"I have some questions about the mill fire. Specifically about who put it out.\"",
+      "choices": [
+        {
+          "id": "welcome_aboard", "label": "\"A biographer! Welcome aboard!\"", "mode": "wing",
+          "check": null,
+          "success": { "text": "Tamsin joins. They are a fair hand with a sling and a better hand with bandages. They also write everything down, and they are very observant.", "effects": [{ "kind": "flag", "set": "tamsin_met" }, { "kind": "flag", "set": "tamsin_in_party" }, { "kind": "trust", "amount": 5 }, { "kind": "airhead", "amount": 5 }, { "kind": "moment", "title": "A Squire with a Notebook", "t": "Tamsin signed on to record the truth. The truth is going to be a problem.", "tags": ["party", "realization"], "imp": 3 }] }
+        },
+        {
+          "id": "ask_what_they_saw", "label": "Ask what they think happened at the mill", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "Tamsin tells you, gently and in order. You tripped on a bucket, the bucket hit a sluice lever, the sluice put the fire out. You take it better than they expected. They close the notebook. \"I'd still like to come.\"", "effects": [{ "kind": "flag", "set": "tamsin_met" }, { "kind": "flag", "set": "tamsin_in_party" }, { "kind": "flag", "set": "knows_mill_truth" }, { "kind": "stress", "amount": 12, "source": "realization" }, { "kind": "airhead", "amount": -20 }, { "kind": "trust", "amount": 10 }] },
+          "failure": { "text": "Tamsin tells you. It lands badly. You nod along with a fixed smile and hear none of the second half.", "effects": [{ "kind": "flag", "set": "tamsin_met" }, { "kind": "flag", "set": "tamsin_in_party" }, { "kind": "stress", "amount": 20, "source": "realization" }, { "kind": "airhead", "amount": -20 }] }
+        },
+        {
+          "id": "no_thank_you", "label": "\"No questions, please. Hero business.\"", "mode": "any",
+          "check": null,
+          "success": { "text": "Tamsin bows again, undeterred, and writes something down as they back away. You will see them again; biographers are patient.", "effects": [{ "kind": "flag", "set": "tamsin_met" }, { "kind": "stress", "amount": -3 }] }
+        }
+      ]
+    },
+    {
+      "id": "val.the_bard_got_it_right",
+      "title": "The Bard Got It Right (Didn't He?)",
+      "t": "Heard a song about her own deeds and could not remember doing them that way.",
+      "tags": ["realization", "tavern", "reputation"],
+      "imp": 2,
+      "where": ["tavern", "town"],
+      "when": { "level": [4, 60], "weight": 10 },
+      "art": { "prompt": "crowded warm tavern, bard on a table mid-song, knight in gold armor at the bar looking puzzled, anime style" },
+      "scene": "The bard is standing on a table. The song is about you. In the song you leapt a chasm, parried a troll and gave a speech. You remember the chasm. You remember being very surprised to be on the other side of it. The room is watching to see what the hero thinks of her own ballad.",
+      "choices": [
+        {
+          "id": "take_a_bow", "label": "Take a bow. It's a good song", "mode": "wing",
+          "check": { "difficulty": "easy" },
+          "success": { "text": "You bow. The room roars. Somebody buys a round. For one evening the song and the memory are the same thing and it is lovely.", "effects": [{ "kind": "rep", "amount": 6 }, { "kind": "stress", "amount": -10 }, { "kind": "airhead", "amount": 10 }, { "kind": "gold", "levelShare": 0.05 }] },
+          "failure": { "text": "You bow, catch the table with the sword on the way down, and the bard joins the audience rather suddenly. The room roars anyway. He adds a verse.", "effects": [{ "kind": "rep", "amount": 3 }, { "kind": "dignity", "amount": -8 }, { "kind": "airhead", "amount": 10 }] }
+        },
+        {
+          "id": "correct_the_record", "label": "Correct the record", "mode": "think",
+          "check": { "difficulty": "hard" },
+          "success": { "text": "You explain, plainly, what you actually did, which was fall. The room is quiet. Then an old soldier at the back raises her mug. \"Fell the right way, though.\" It is the first compliment you have believed.", "effects": [{ "kind": "trust", "amount": 12 }, { "kind": "rep", "amount": -2 }, { "kind": "stress", "amount": 10, "source": "realization" }, { "kind": "airhead", "amount": -20 }, { "kind": "exp", "levelShare": 0.25 }] },
+          "failure": { "text": "You try to explain. It comes out as modesty, which the room likes even more. The bard writes \"humble\" on his sleeve. You have made it worse.", "effects": [{ "kind": "rep", "amount": 4 }, { "kind": "stress", "amount": 14, "source": "realization" }, { "kind": "airhead", "amount": -15 }] }
+        }
+      ]
+    },
+    {
+      "id": "val.do_not_pull",
+      "title": "Do Not Pull",
+      "t": "Found a lever marked DO NOT PULL in a room full of enemies.",
+      "tags": ["chaos wave", "dungeon", "contraption"],
+      "imp": 2,
+      "where": ["dungeon", "ruin"],
+      "when": { "level": [5, 80], "weight": 12 },
+      "art": { "prompt": "torchlit dungeon hall with a huge brass lever and warning sign, skeleton soldiers turning, knight backing into the lever, anime style" },
+      "scene": "A long hall. At the far end, a dozen skeletons in formation turn their heads together. Beside you, bolted to the wall, a brass lever under a sign in four languages. All four say DO NOT PULL. You are backing up. The lever is behind you.",
+      "choices": [
+        {
+          "id": "back_into_it", "label": "Keep backing up", "mode": "wing",
+          "check": { "difficulty": "normal", "bonus": 10 },
+          "crit": { "text": "Your pauldron hooks the lever. Somewhere, stone grinds. The floor under the skeletons becomes briefly and decisively not a floor. In the silence afterwards, a chest rises out of the wall where the lever was.", "effects": [{ "kind": "exp", "levelShare": 0.5 }, { "kind": "gold", "levelShare": 0.25 }, { "kind": "limit", "amount": 30 }, { "kind": "rep", "amount": 4 }] },
+          "success": { "text": "Your pauldron hooks the lever. Half the hall drops a foot and tilts. The skeletons slide into one corner in a rattling heap and have to sort out whose arm is whose.", "effects": [{ "kind": "limit", "amount": 15 }, { "kind": "battle", "encounter": "skeleton_phalanx", "advantage": "party" }] },
+          "failure": { "text": "You miss the lever entirely and back into the wall. The skeletons advance in excellent order.", "effects": [{ "kind": "battle", "encounter": "skeleton_phalanx" }] }
+        },
+        {
+          "id": "read_the_mechanism", "label": "Work out what the lever actually does", "mode": "think",
+          "check": { "difficulty": "hard" },
+          "success": { "text": "Counterweights, a pivot, a seam across the floor at the two-thirds mark. You wait until the whole formation has crossed the seam, and then you pull it on purpose.", "effects": [{ "kind": "exp", "levelShare": 0.45 }, { "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "trust", "amount": 6 }] },
+          "failure": { "text": "You are still tracing the counterweights when the first skeleton reaches you.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "battle", "encounter": "skeleton_phalanx", "advantage": "enemy" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.armor_fitting_emergency",
+      "title": "Armor Fitting, Emergency",
+      "t": "A strap gave up in the middle of the market. The cloak handled it.",
+      "tags": ["slapstick", "town", "wardrobe"],
+      "imp": 1,
+      "where": ["town", "market"],
+      "when": { "level": [1, 100], "weight": 6 },
+      "art": { "prompt": "busy fantasy market, armorer sprinting with a toolbox toward a tall knight clutching a teal cloak around herself, comedic anime style" },
+      "scene": "Market day. You are admiring a cheese when a strap somewhere behind your left shoulder lets go with a note like a harp string. A pauldron slides. The breastplate, which has been doing heroic work all week, begins to consider its position. An armorer three stalls down has already started running.",
+      "choices": [
+        {
+          "id": "carry_on_shopping", "label": "Carry on shopping", "mode": "wing",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "The cloak slips off your shoulder, drapes itself exactly where it is needed and stays there like it was tailored. You buy the cheese. The armorer arrives, out of breath, to find nothing wrong and a customer asking if he has anything in a brie.", "effects": [{ "kind": "stress", "amount": -4 }, { "kind": "airhead", "amount": 10 }, { "kind": "item", "id": "itm_packed_lunch", "qty": 1 }] },
+          "failure": { "text": "The pauldron hits the cobbles and rolls the length of the market like a dropped coin, with you after it. By the time you catch it you have an audience, a ripped hem and no cheese.", "effects": [{ "kind": "dignity", "amount": -12 }, { "kind": "stress", "amount": 8, "source": "embarrassment" }, { "kind": "rep", "amount": 1 }] }
+        },
+        {
+          "id": "hold_everything", "label": "Freeze, hold everything together, call the armorer", "mode": "think",
+          "check": { "difficulty": "easy" },
+          "success": { "text": "You stand perfectly still with both arms crossed until the armorer reaches you. He refits the strap, tuts at whoever did the last one, and reinforces two others for free. \"Whoever built this was guessing.\"", "effects": [{ "kind": "airhead", "amount": -10 }, { "kind": "gold", "levelShare": -0.03 }, { "kind": "mod", "stat": "CON", "mult": 1.1, "turns": 20 }] },
+          "failure": { "text": "You freeze. You call for the armorer. You are now a very large, very gold woman standing rigid in a market shouting for help, and people are starting to gather.", "effects": [{ "kind": "airhead", "amount": -10 }, { "kind": "stress", "amount": 10, "source": "embarrassment" }, { "kind": "dignity", "amount": -8 }] }
+        }
+      ]
+    },
+    {
+      "id": "val.rival_demands_a_duel",
+      "title": "The Rival Demands a Duel",
+      "t": "Dame Ottoline has trained for twenty years and would like a word.",
+      "tags": ["rival", "duel", "reputation"],
+      "imp": 3,
+      "where": ["town", "castle"],
+      "when": { "level": [8, 70], "weight": 9, "flags": { "none": ["ottoline_dueled"] } },
+      "art": { "prompt": "castle courtyard, stern silver-haired knight in dark steel pointing a longsword at a cheerful pink-haired knight in gold, banners, anime style" },
+      "scene": "Dame Ottoline Graves has trained every morning for twenty years. She has never been late, never dropped a guard, and never once been in a ballad. She draws her sword in the middle of the courtyard and points it at you. \"Bellweather. One bout. I want to see it for myself.\"",
+      "choices": [
+        {
+          "id": "sure_sounds_fun", "label": "\"Sure! Sounds fun!\"", "mode": "wing",
+          "check": { "stat": "LCK", "difficulty": "hard", "bonus": 10 },
+          "success": { "text": "It lasts nine seconds. Ottoline's form is perfect. Your foot finds a loose flagstone, your sword finds her crossguard, and her blade leaves the courtyard over the wall. She stares at her empty hand for a long moment. \"...Again tomorrow,\" she says, and there is something in it that is not quite anger.", "effects": [{ "kind": "flag", "set": "ottoline_dueled" }, { "kind": "flag", "set": "ottoline_rival" }, { "kind": "rep", "amount": 8 }, { "kind": "exp", "levelShare": 0.4 }, { "kind": "airhead", "amount": 10 }, { "kind": "moment", "title": "The Rival Demands a Duel", "t": "Disarmed Dame Ottoline in nine seconds by tripping. Ottoline wants a rematch every morning now.", "tags": ["rival"], "imp": 3 }] },
+          "failure": { "text": "It lasts nine seconds. Ottoline puts you on the flagstones with a move so clean the garrison applauds. She offers you a hand up. \"You fall well,\" she says, puzzled. \"Almost like practice.\"", "effects": [{ "kind": "flag", "set": "ottoline_dueled" }, { "kind": "flag", "set": "ottoline_rival" }, { "kind": "hp", "pct": -20 }, { "kind": "rep", "amount": -3 }, { "kind": "trust", "amount": 3 }, { "kind": "exp", "levelShare": 0.2 }] }
+        },
+        {
+          "id": "ask_her_to_teach", "label": "Ask her to teach you instead", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "Ottoline lowers the sword. Nobody has ever asked. She corrects your grip, then your feet, then, with visible pain, everything else. It is the first hour of training this body has ever had and you feel the difference.", "effects": [{ "kind": "flag", "set": "ottoline_dueled" }, { "kind": "flag", "set": "ottoline_mentor" }, { "kind": "airhead", "amount": -20 }, { "kind": "stress", "amount": 6, "source": "realization" }, { "kind": "exp", "levelShare": 0.5 }, { "kind": "trust", "amount": 8 }] },
+          "failure": { "text": "\"Teach you.\" Ottoline's jaw works. \"They gave you a ballad and you want me to teach you.\" She sheathes her sword and walks away. That could have gone better.", "effects": [{ "kind": "flag", "set": "ottoline_dueled" }, { "kind": "flag", "set": "ottoline_rival" }, { "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 12, "source": "realization" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.the_mirror_shows_someone_else",
+      "title": "The Mirror Shows Someone Else",
+      "t": "Saw Valerie's face properly for the first time and had to decide whose it is.",
+      "tags": ["isekai", "identity", "quiet"],
+      "imp": 3,
+      "where": ["inn", "shrine"],
+      "when": { "level": [3, 100], "weight": 9, "flags": { "all": ["knows_isekai"] } },
+      "art": { "prompt": "quiet inn room at night, pink-haired woman in a nightshirt looking into a small mirror by candlelight, thoughtful, soft anime style" },
+      "scene": "The inn has a real mirror, the first you have found. Armor off, candle lit, you look. Pink hair. Green eyes. A face that is used to smiling. It is a kind face, and it is not the one you have had all your life. She looks back at you and waits to see what you will do.",
+      "choices": [
+        {
+          "id": "say_hello", "label": "\"...Hi, Valerie.\"", "mode": "wing",
+          "check": null,
+          "success": { "text": "You say it out loud. The face in the mirror smiles, a little ahead of you meaning to. For a second there are two of you in here and it does not feel crowded. You sleep better than you have since you arrived.", "effects": [{ "kind": "stress", "amount": -20 }, { "kind": "airhead", "amount": 10 }, { "kind": "flag", "set": "made_peace_with_mirror" }, { "kind": "moment", "title": "The Mirror Shows Someone Else", "t": "Said hello to the face in the mirror. It smiled first.", "tags": ["isekai", "identity"], "imp": 3 }] }
+        },
+        {
+          "id": "say_your_own_name", "label": "Say your own name, the old one", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "You say it. It sounds strange in her voice, and it is still yours. You hold on to it: the street you grew up on, the taste of the tea you liked, the reason you want to get home. The gauge drops and something steadier takes its place.", "effects": [{ "kind": "airhead", "amount": -25 }, { "kind": "stress", "amount": -8 }, { "kind": "flag", "set": "remembers_home" }, { "kind": "exp", "levelShare": 0.2 }] },
+          "failure": { "text": "You try to say it and for one cold second it will not come. Then it does. You sit on the bed for a long time afterwards.", "effects": [{ "kind": "airhead", "amount": -10 }, { "kind": "stress", "amount": 15, "source": "realization" }, { "kind": "flag", "set": "remembers_home" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.a_memory_of_crosswalks",
+      "title": "A Memory of Crosswalks",
+      "t": "Dreamed of the old world: a bright street, cold drinks, friends waving.",
+      "tags": ["isekai", "home", "dream"],
+      "imp": 2,
+      "where": ["camp", "inn"],
+      "when": { "level": [5, 100], "weight": 7, "flags": { "all": ["remembers_home"] } },
+      "art": { "prompt": "sunny crowded city shopping street, friends laughing and holding iced drinks, one reaching toward the viewer, billboards and trees, bright anime style" },
+      "scene": "You dream of a street. Glass towers, a crossing light counting down, a crowd in summer clothes. Your friends are there with iced drinks, and one of them turns and reaches out a hand to pull you into the photo. You know every one of their names. You are wearing gold armor in the dream and nobody thinks it is odd.",
+      "choices": [
+        {
+          "id": "take_the_hand", "label": "Take the hand", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "You take it. For the length of a dream you are home, and you wake with all of it intact: the names, the street, the way out you are looking for. It hurts, the useful way.", "effects": [{ "kind": "airhead", "amount": -20 }, { "kind": "stress", "amount": -12 }, { "kind": "trust", "amount": 2 }, { "kind": "exp", "levelShare": 0.15 }] },
+          "failure": { "text": "You reach, and the crossing light hits zero, and the crowd closes. You wake with your hand in the air and one of the names gone.", "effects": [{ "kind": "airhead", "amount": -10 }, { "kind": "stress", "amount": 12, "source": "realization" }] }
+        },
+        {
+          "id": "let_it_go_by", "label": "Wave, and let it go by", "mode": "wing",
+          "check": null,
+          "success": { "text": "You wave. They wave back. The street folds itself away like a map, and you sleep on, deep and easy. In the morning you remember that you dreamed something nice.", "effects": [{ "kind": "airhead", "amount": 15 }, { "kind": "stress", "amount": -15 }, { "kind": "hp", "pct": 10 }] }
+        }
+      ]
+    },
+    {
+      "id": "val.the_sleeping_drake",
+      "title": "The Sleeping Drake",
+      "t": "The only way through was past a sleeping drake, in full plate.",
+      "tags": ["stealth", "cave", "aura of befuddlement"],
+      "imp": 2,
+      "where": ["cave", "mountain"],
+      "when": { "level": [20, 70], "weight": 10 },
+      "art": { "prompt": "vast cave with a sleeping dragon on a hoard, party tiptoeing along a ledge led by a knight in clanking gold armor, anime style" },
+      "scene": "The drake is asleep across the only way through, one wing over its hoard, breathing like a forge bellows. Your party can move quietly. You are wearing eighty pounds of gold-plated steel and carrying a sword that rings like a bell when it touches anything.",
+      "choices": [
+        {
+          "id": "tiptoe", "label": "Tiptoe", "mode": "wing",
+          "check": { "difficulty": "hard", "bonus": 5 },
+          "success": { "text": "You clank. You scrape. You knock a goblet off the hoard and it bounces down forty stone steps. The drake opens one eye, looks straight at you, visibly decides you could not possibly be real, and goes back to sleep.", "effects": [{ "kind": "exp", "levelShare": 0.35 }, { "kind": "gold", "levelShare": 0.2 }, { "kind": "airhead", "amount": 10 }, { "kind": "stress", "amount": -5 }] },
+          "failure": { "text": "The goblet bounces down forty stone steps. The drake opens both eyes.", "effects": [{ "kind": "airhead", "amount": 10 }, { "kind": "battle", "encounter": "hoard_drake" }] }
+        },
+        {
+          "id": "muffle_and_time_it", "label": "Wrap the armor in cloaks and move on its out-breath", "mode": "think",
+          "check": { "difficulty": "normal" },
+          "success": { "text": "Blankets around the greaves, the sword slung in two bedrolls, four steps on every out-breath. It takes an hour. Nobody clanks. On the far side Tamsin underlines something twice.", "effects": [{ "kind": "exp", "levelShare": 0.35 }, { "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 4, "source": "realization" }, { "kind": "trust", "amount": 6 }] },
+          "failure": { "text": "The plan is good. The timing is good. Halfway across, the bedroll slips and the sword touches stone with a long, clear, beautiful note.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 8, "source": "general" }, { "kind": "battle", "encounter": "hoard_drake", "advantage": "enemy" }] }
+        }
+      ]
+    },
+    {
+      "id": "val.theyre_cheering_for_you",
+      "title": "They're Cheering for You",
+      "t": "A frightened town looked at her and decided to be brave.",
+      "tags": ["inspirational ignorance", "town", "party"],
+      "imp": 3,
+      "where": ["town", "castle"],
+      "when": { "level": [10, 100], "weight": 8, "stress": [0, 99] },
+      "art": { "prompt": "town gate at dawn, anxious militia and townsfolk looking up at a smiling knight in gold armor on the wall, banners, hopeful anime style" },
+      "scene": "The horde will reach the walls by dusk. The militia is forty farmers with borrowed spears, and they have gone very quiet. Then they see you up on the gate, armor catching the morning, looking out at the dust cloud with mild interest. Someone starts to cheer. They want you to say something.",
+      "choices": [
+        {
+          "id": "say_whatever", "label": "Say whatever comes out", "mode": "wing",
+          "check": { "difficulty": "normal", "bonus": 10 },
+          "success": { "text": "\"That's a lot of them!\" you say brightly. \"Good thing there's a lot of us!\" There are forty of them. Nobody counts. The cheer goes up the whole wall. Your party stands straighter, and so do the farmers.", "effects": [{ "kind": "stress", "amount": -15 }, { "kind": "rep", "amount": 8 }, { "kind": "trust", "amount": 5 }, { "kind": "limit", "amount": 25 }, { "kind": "airhead", "amount": 10 }, { "kind": "moment", "title": "They're Cheering for You", "t": "Told forty farmers the odds were fine. They believed her, and then so did the odds.", "tags": ["inspirational ignorance"], "imp": 3 }] },
+          "failure": { "text": "\"Wow,\" you say. \"That is so many.\" A pause. \"...Is that all of them?\" The militia laughs, a little too loud, but they are laughing.", "effects": [{ "kind": "stress", "amount": -5 }, { "kind": "rep", "amount": 3 }, { "kind": "airhead", "amount": 10 }] }
+        },
+        {
+          "id": "give_real_orders", "label": "Give them a real plan", "mode": "think",
+          "check": { "difficulty": "hard" },
+          "success": { "text": "You have read about sieges. Spears at the gate, oil on the ramp, runners between the towers, and nobody leaves the wall to chase. The farmers repeat it back. It is not a speech. It is better: they know what to do with their hands.", "effects": [{ "kind": "trust", "amount": 12 }, { "kind": "airhead", "amount": -20 }, { "kind": "stress", "amount": 6, "source": "realization" }, { "kind": "exp", "levelShare": 0.4 }, { "kind": "battle", "encounter": "horde_at_the_gate", "advantage": "party" }] },
+          "failure": { "text": "You start strong and lose the thread at \"flanking.\" Forty farmers watch their hero trail off. Bran steps in to finish the sentence, which helps, some.", "effects": [{ "kind": "airhead", "amount": -15 }, { "kind": "stress", "amount": 14, "source": "embarrassment" }, { "kind": "trust", "amount": -4 }, { "kind": "battle", "encounter": "horde_at_the_gate" }] }
+        }
+      ]
+    }
+  ]
+}
