@@ -144,6 +144,17 @@ test('her ultimate pins the passive gauge at 100 without touching the stored val
   assert.equal(incomingOpts(v, archer, club).hitCap, 55);
 });
 
+test('a flipped ledger runs her luck backwards: passives read 100 minus the gauge, and the ultimate still wins', () => {
+  const flipped = val(90, { flags: { airhead: 90, ledgerFlipped: true } });
+  assert.equal(passiveAirhead(flipped), 10);
+  assert.equal(airheadOf(flipped), 90);
+  assert.equal(incomingOpts(flipped, archer, club).hitCap, 91, 'a Total Airhead is easy to hit while the ledger is flipped');
+  const lucidFlipped = val(10, { flags: { airhead: 10, ledgerFlipped: true } });
+  assert.equal(incomingOpts(lucidFlipped, archer, club).hitCap, 59, 'and a Lucid one has the luck');
+  const both = val(90, { flags: { airhead: 90, ledgerFlipped: true, goodHeroTurns: 2 } });
+  assert.equal(passiveAirhead(both), 100);
+});
+
 test('out of combat: the gauge helps Wing It and hurts Think It Through', () => {
   const dc = 300;
   assert.ok(stancePct(val(100), 'wing', dc) > stancePct(val(0), 'wing', dc));

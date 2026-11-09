@@ -45,9 +45,16 @@ export function airheadOf(valerie) {
   return clampGauge(valerie.flags?.airhead ?? AIRHEAD.START);
 }
 
-/** The gauge her passives read. Her ultimate pins it at 100 without touching the stored value. */
+/**
+ * The gauge her passives read. The stored value is never touched.
+ *   goodHeroTurns  her ultimate pins it at 100
+ *   ledgerFlipped  Madam Parity's Double Entry runs her luck backwards: passives read 100 minus the gauge,
+ *                  so the luck only works while the player is thinking. The ultimate still wins.
+ */
 export function passiveAirhead(valerie) {
-  return (valerie.flags?.goodHeroTurns ?? 0) > 0 ? SCALE.AIRHEAD_MAX : airheadOf(valerie);
+  if ((valerie.flags?.goodHeroTurns ?? 0) > 0) return SCALE.AIRHEAD_MAX;
+  const gauge = airheadOf(valerie);
+  return valerie.flags?.ledgerFlipped ? SCALE.AIRHEAD_MAX - gauge : gauge;
 }
 
 export function airheadBand(value) {

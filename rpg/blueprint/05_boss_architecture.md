@@ -12,7 +12,7 @@ Three bosses anchor the difficulty curve, and five standard encounters give the 
 
 "Rounds to kill" is the reference party of four acting every round with nothing but that attack. HP pressure rises gently (9.4%, 10.1%, 12.7% of the party's combined HP per round). Stress pressure rises faster: the first Resolve Check moves from round 24.9 to round 16.5 while the fights get longer. In every fight the unhealed party falls before the boss does (10.6 rounds against 17, 9.9 against 23, 7.9 against 48), so no boss can be raced.
 
-Bolgrim Underbridge is level 12, not 10, because Inspirational Ignorance unlocks at 12: he is the first fight in which all six of Valerie's accidents are online, and he is built to test each one.
+Bolgrim Underbridge is level 12: late enough that the opening events have shown the player each of Valerie's six accidents (all six are hers from level 1), early enough to be the first real wall, and he is built to test each one.
 
 ### 5.2 Rules every boss follows
 
@@ -158,7 +158,7 @@ Reference party at level 12, no gear:
 | **Party per round** |  |  |  |  | **3,334** | **7,688** |
 | **Rounds to kill** |  |  |  |  | **39** | **17** |
 
-With every hero on Power 8 skills the fight would take 9 rounds.
+Skill Power scales the fight in a straight line: every hero on Power 3 takes 23 rounds, on Power 6 12, on Power 8 9.
 
 **Boss offense.** Share of each hero's max HP lost per round, telegraphed moves left out. Valerie at Airhead 60.
 
@@ -200,19 +200,19 @@ The Proof left unanswered every cycle would add 9.3% (Warrior), 19.2% (Mage), 17
 | 60 | Ditzy | 71 | 71% | 50% | 21% | 11% |
 | 100 | Total Airhead | 55 | 55% | 24% | 31% | 15% |
 
-The same three gauges with Valerie taunting, so every aimed attack is hers, and what the gauge does to everyone's nerve:
+The same three gauges with Valerie taunting, so every single-target attack is hers (row and all-target moves are unaffected by a taunt), and what the gauge does to everyone's nerve:
 
 | Airhead | She loses per round | Rounds she lasts unhealed | Bounced back per round | Boss self-binds per round | Her stress per round | Allies' net stress per round (W / M / R) | Her Power 4: Wing It | Her Power 4: Think It Through | Chaos Wave per Wing It action |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0 | 27.4% | 3.7 | 98 (0.08% of his HP) | 0.07 | 6.6 | 5.2 / 4.7 / 5.1 | 1,765 | 2,142 | 5% |
-| 60 | 21.9% | 4.6 | 344 (0.27% of his HP) | 0.15 | 3.1 | 4.0 / 3.6 / 3.9 | 1,765 | 2,142 | 17% |
-| 100 | 15.1% | 6.6 | 508 (0.39% of his HP) | 0.21 | 2.2 | 4.0 / 3.6 / 3.9 | 1,744 | 2,142 | 25% |
+| 0 | 25.3% | 4.0 | 98 (0.08% of his HP) | 0.06 | 6.6 | 5.2 / 4.7 / 5.1 | 1,765 | 2,142 | 5% |
+| 60 | 20.0% | 5.0 | 344 (0.27% of his HP) | 0.13 | 3.1 | 4.0 / 3.6 / 3.9 | 1,765 | 2,142 | 17% |
+| 100 | 13.6% | 7.3 | 508 (0.39% of his HP) | 0.18 | 2.2 | 4.0 / 3.6 / 3.9 | 1,744 | 2,142 | 25% |
 
 One Power 3 heal from the reference mage restores 1,764 HP, 16.0% of Valerie's bar. That covers a taunting round at Airhead 100 and falls short at Airhead 0 and 60. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
 
 **The contraption in numbers.** Exhibit A is worth 5,184 damage each time it goes off, 0.7 rounds of the whole party's Power 4 output, on top of its bind or lost action. A phase lasts about 5.7 rounds at the Power 4 pace. If Valerie Wings It every turn, at least one Chaos Wave arrives in that time 65% of the time at Airhead 60 and 80% at Airhead 100. In the one round between the wind-up and The Proof, the odds are 17% and 25%: the wave is the gamble, the bind and the Guard are the plans.
 
-**Where he sits on the curve.** Bolgrim Underbridge takes 17 rounds of Power 4 skills or 39 of basic attacks. In that time he deals 1.6 times the party's combined HP, and the unhealed party lasts 10.6 rounds, so the fight cannot be raced. At the Power 4 pace his moves alone leave the Warrior on 68 stress and the Mage on 61: under the Resolve Check if the fight is clean, over it if it drags past round 24. This is the gentlest of the three on purpose. It asks whether the party has learned to stand behind Valerie: taunting as a Total Airhead she loses 15.1% of her bar a round instead of 27.4% Lucid.
+**Where he sits on the curve.** Bolgrim Underbridge takes 17 rounds of Power 4 skills or 39 of basic attacks. In that time he deals 1.6 times the party's combined HP, and the unhealed party lasts 10.6 rounds, so the fight cannot be raced. At the Power 4 pace his moves alone leave the Warrior on 68 stress and the Mage on 61: under the Resolve Check if the fight is clean, over it if it drags past round 24. This is the gentlest of the three on purpose. It asks whether the party has learned to stand behind Valerie: taunting as a Total Airhead she loses 13.6% of her bar a round instead of 25.3% Lucid.
 
 ### 5.4 Imara Vellum, the Unabridged (mid game)
 
@@ -326,7 +326,7 @@ Reference party at level 50, no gear:
 | **Party per round** |  |  |  |  | **49,253** | **110,225** |
 | **Rounds to kill** |  |  |  |  | **51** | **23** |
 
-With every hero on Power 8 skills the fight would take 12 rounds. If nobody ever finds the heart-book, the Guard stretches the Power 4 fight to 28 rounds.
+Skill Power scales the fight in a straight line: every hero on Power 3 takes 31 rounds, on Power 6 16, on Power 8 12. If nobody ever finds the heart-book, the Guard stretches the Power 4 fight to 28 rounds.
 
 **Boss offense.** Share of each hero's max HP lost per round, telegraphed moves left out. Valerie at Airhead 60.
 
@@ -368,13 +368,13 @@ The Final Draft left unanswered every cycle would add 13.8% (Warrior), 18.3% (Ma
 | 60 | Ditzy | 71 | 71% | 51% | 20% | 11% |
 | 100 | Total Airhead | 55 | 55% | 25% | 30% | 15% |
 
-The same three gauges with Valerie taunting, so every aimed attack is hers, and what the gauge does to everyone's nerve:
+The same three gauges with Valerie taunting, so every single-target attack is hers (row and all-target moves are unaffected by a taunt), and what the gauge does to everyone's nerve:
 
 | Airhead | She loses per round | Rounds she lasts unhealed | Bounced back per round | Boss self-binds per round | Her stress per round | Allies' net stress per round (W / M / R) | Her Power 4: Wing It | Her Power 4: Think It Through | Chaos Wave per Wing It action |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0 | 27.3% | 3.7 | 1,134 (0.05% of her HP) | 0.07 | 8.2 | 7.0 / 5.3 / 6.4 | 26,002 | 31,873 | 5% |
-| 60 | 21.2% | 4.7 | 4,536 (0.18% of her HP) | 0.15 | 3.9 | 6.1 / 4.4 / 5.5 | 26,002 | 31,873 | 17% |
-| 100 | 14.2% | 7.0 | 6,804 (0.27% of her HP) | 0.20 | 3.1 | 6.1 / 4.4 / 5.5 | 26,002 | 31,873 | 25% |
+| 0 | 27.3% | 3.7 | 1,134 (0.05% of her HP) | 0.06 | 8.2 | 7.0 / 5.3 / 6.4 | 26,002 | 31,873 | 5% |
+| 60 | 21.2% | 4.7 | 4,536 (0.18% of her HP) | 0.14 | 3.9 | 6.1 / 4.4 / 5.5 | 26,002 | 31,873 | 17% |
+| 100 | 14.2% | 7.0 | 6,804 (0.27% of her HP) | 0.19 | 3.1 | 6.1 / 4.4 / 5.5 | 26,002 | 31,873 | 25% |
 
 One Power 3 heal from the reference mage restores 28,800 HP, 15.9% of Valerie's bar. That covers a taunting round at Airhead 100 and falls short at Airhead 0 and 60. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
 
@@ -497,7 +497,7 @@ Reference party at level 100, no gear:
 | **Party per round** |  |  |  |  | **208,970** | **464,273** |
 | **Rounds to kill** |  |  |  |  | **107** | **48** |
 
-With every hero on Power 8 skills the fight would take 24 rounds.
+Skill Power scales the fight in a straight line: every hero on Power 3 takes 64 rounds, on Power 6 32, on Power 8 24.
 
 **Boss offense.** Share of each hero's max HP lost per round, telegraphed moves left out. Valerie at Airhead 60.
 
@@ -543,19 +543,19 @@ Service Charge is not in the table, because paying it in MP is the default. A he
 | 60 | Ditzy | 71 | 71% | 51% | 20% | 11% |
 | 100 | Total Airhead | 55 | 55% | 25% | 30% | 15% |
 
-The same three gauges with Valerie taunting, so every aimed attack is hers, and what the gauge does to everyone's nerve:
+The same three gauges with Valerie taunting, so every single-target attack is hers (row and all-target moves are unaffected by a taunt), and what the gauge does to everyone's nerve:
 
 | Airhead | She loses per round | Rounds she lasts unhealed | Bounced back per round | Boss self-binds per round | Her stress per round | Allies' net stress per round (W / M / R) | Her Power 4: Wing It | Her Power 4: Think It Through | Chaos Wave per Wing It action |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| 0 | 41.3% | 2.4 | 12,024 (0.05% of her HP) | 0.09 | 8.1 | 6.0 / 4.0 / 5.4 | 110,306 | 135,375 | 5% |
-| 60 | 27.8% | 3.6 | 48,097 (0.22% of her HP) | 0.21 | 4.3 | 5.0 / 3.0 / 4.4 | 110,306 | 135,375 | 17% |
-| 100 | 15.9% | 6.3 | 72,145 (0.32% of her HP) | 0.28 | 4.2 | 5.0 / 3.0 / 4.4 | 110,306 | 135,375 | 25% |
+| 0 | 38.7% | 2.6 | 12,024 (0.05% of her HP) | 0.08 | 8.1 | 6.0 / 4.0 / 5.4 | 110,306 | 135,375 | 5% |
+| 60 | 25.5% | 3.9 | 48,097 (0.22% of her HP) | 0.19 | 4.3 | 5.0 / 3.0 / 4.4 | 110,306 | 135,375 | 17% |
+| 100 | 14.1% | 7.1 | 72,145 (0.32% of her HP) | 0.25 | 4.2 | 5.0 / 3.0 / 4.4 | 110,306 | 135,375 | 25% |
 
-One Power 3 heal from the reference mage restores 114,000 HP, 15.8% of Valerie's bar. That is less than she loses in a round at any gauge (15.9% at Airhead 100), so a taunt always needs more than one healer's turn behind it. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
+One Power 3 heal from the reference mage restores 114,000 HP, 15.8% of Valerie's bar. That covers a taunting round at Airhead 100 and falls short at Airhead 0 and 60. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
 
 **The contraption in numbers.** The Great Wheel is worth 444,000 damage each time it goes off, 1.0 rounds of the whole party's Power 4 output, on top of its bind or lost action. A phase lasts about 12.0 rounds at the Power 4 pace. If Valerie Wings It every turn, at least one Chaos Wave arrives in that time 89% of the time at Airhead 60 and 97% at Airhead 100. In the 2 rounds between the wind-up and Balance Due, the odds are 31% and 44%: the wave is the gamble, the bind and the Guard are the plans.
 
-**Where she sits on the curve.** Madam Parity takes 48 rounds of Power 4 skills or 107 of basic attacks. In that time she deals 6.1 times the party's combined HP, and the unhealed party lasts 7.9 rounds, so the fight cannot be raced. With Power 8 skills, which is what a level 100 party actually carries, it is 24 rounds. At the Power 4 pace her moves alone leave the Warrior on 242 stress and the Mage on 142, which is a Breakdown at 200 near round 40 unless stress is relieved along the way. Damage is the highest of the three (12.7% of party HP a round, from three actions) and falls as the fight goes on, while stress climbs: the opening phase tests bars, the last two test nerve.
+**Where she sits on the curve.** Madam Parity takes 48 rounds of Power 4 skills or 107 of basic attacks. In that time she deals 6.1 times the party's combined HP, and the unhealed party lasts 7.9 rounds, so the fight cannot be raced. At Power 8, well inside the 3 to 12 that FOUNDATION gives for skills, it is 24 rounds. At the Power 4 pace her moves alone leave the Warrior on 242 stress and the Mage on 142, which is a Breakdown at 200 near round 40 unless stress is relieved along the way. Damage is the highest of the three (12.7% of party HP a round, from three actions) and falls as the fight goes on, while stress climbs: the opening phase tests bars, the last two test nerve.
 
 ### 5.6 Standard encounters
 
@@ -677,15 +677,15 @@ The same reference party as the bosses, at two or three levels inside each event
 
 Goblin Scouts is also the first fight of the game, when Valerie is alone at level 1: solo, basic attacks clear it in 7.6 rounds and the goblins take 6.0% of her HP in the opening round.
 
-Each encounter against the hero's kit, at the lower of its two levels. The first column is the opening pressure from the table above; the second is the same round with Valerie taunting as a Total Airhead, so every aimed attack is hers; the third is what her bounce sends back in that round.
+Each encounter against the hero's kit, at the lower of its two levels. The first column is the opening pressure from the table above; the second is the same round with Valerie taunting as a Total Airhead, so every single-target attack is hers; the third is what her bounce sends back in that round.
 
 | Encounter | Level | Damaging moves that are projectiles | Party HP lost per round, attacks spread | Party HP lost per round, Valerie taunting at Airhead 100 | Bounced back per round | How it plays |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
 | Goblin Scouts | 1 | 1 of 3 | 2.0% | 1.2% | 1 (1.8% of all enemy HP) | The tutorial: three weak enemies in one row for Big Swing, one sling stone to bounce, and a Rude Gesture that only lands on a Valerie who is paying attention. |
-| Bandit Archers | 5 | 4 of 4 | 9.7% | 4.0% | 324 (10.3% of all enemy HP) | The bounce fight. Every damaging move is a projectile, so a taunting Total Airhead sends a large share of the volley straight back; a Lucid Valerie is just a large gold target. |
-| Skeleton Phalanx | 10 | 2 of 4 | 9.5% | 6.2% | 487 (2.2% of all enemy HP) | The Chaos Wave fight. A wave strips the shield wall's Guard and pulls the lever; Thinking It Through instead means chewing through a guarded front rank. |
-| The Hoard Drake | 20 | 1 of 4 | 10.5% | 8.0% | 381 (0.4% of all enemy HP) | The taunt fight. Two actions a round from one elite land hard on anyone else; on Valerie they miss, bounce or bind the drake, and a wave buries it in its own hoard. |
-| The Horde at the Gate | 10 | 2 of 4 | 9.5% | 6.6% | 487 (1.3% of all enemy HP) | The crowd fight. Chaos Waves and row attacks are worth the most here, and War Drums are fear that Valerie does not hear, so the party sheds stress each time they sound. |
+| Bandit Archers | 5 | 4 of 4 | 9.7% | 4.6% | 303 (9.6% of all enemy HP) | The bounce fight. Every damaging move is a projectile, so a taunting Total Airhead sends a large share of the volley straight back; a Lucid Valerie is just a large gold target. |
+| Skeleton Phalanx | 10 | 2 of 4 | 9.5% | 6.9% | 379 (1.7% of all enemy HP) | The Chaos Wave fight. A wave strips the shield wall's Guard and pulls the lever; Thinking It Through instead means chewing through a guarded front rank. |
+| The Hoard Drake | 20 | 1 of 4 | 10.5% | 8.4% | 381 (0.4% of all enemy HP) | The taunt fight. Two actions a round from one elite land hard on anyone else; on Valerie they miss, bounce or bind the drake, and a wave buries it in its own hoard. |
+| The Horde at the Gate | 10 | 2 of 4 | 9.5% | 7.4% | 353 (1.0% of all enemy HP) | The crowd fight. Chaos Waves and row attacks are worth the most here, and War Drums are fear that Valerie does not hear, so the party sheds stress each time they sound. |
 
 ### 5.7 What these designs assume the engine will do
 

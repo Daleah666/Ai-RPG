@@ -98,6 +98,9 @@ Questions the roles raised, settled here so nobody answers them twice.
 - **The basic attack is never sealed.** Bound arms halve its Might; they do not take it away. Every other skill is sealed while its body part is bound.
 - **Starting purse:** 160 gold.
 - **The duel anchor (A2) is measured on plain hits:** no crits, variance 1.
+- **Her six accidents are innate at level 1.** Nothing in her kit is gated by level except the skill tree.
+- **Boss phase changes do not fire set-piece stress on their own.** A boss's stress comes from its moves; the boss tables are tuned on that basis.
+- **Statuses are registered where they are used:** class and hero statuses in `skills.json`, boss and encounter statuses in their own files.
 
 ## Anchors (these become tests)
 

@@ -523,7 +523,7 @@
         { "kind": "cleanse", "what": "mods" },
         { "kind": "limit", "amount": 12, "target": "self" }
       ],
-      "text": "You bump into them and leave with more than you arrived with. Damage to one enemy at +5 to hit; its buffs are removed and you gain 12 Limit."
+      "text": "You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit; its buffs are removed and you gain 12 Limit."
     },
     {
       "id": "rog_roast", "name": "Roast", "archetype": "rogue", "unlock": 66, "tier": 7,

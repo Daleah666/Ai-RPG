@@ -56,6 +56,12 @@ npm run all
 2. **Stress does not level up.** One bar, 0–200, the same at level 1 and level 100. At 100 a character makes a Resolve Check: 25% they rise to it, 75% they crack.
 3. **Two minds, one body.** Valerie's Airhead gauge runs from Lucid to Total Airhead. Wing It pushes it up and her accidents take over: blows miss, arrows bounce, enemies fall over. Think It Through pulls it down and gives you your planned skills back. Lucky or precise, never both.
 
+## What runs today, and what is designed but not built
+
+**Runs, with tests:** the dice and their bands; damage, hit, crit, healing and initiative; stress mitigation; the EXP curve, attribute growth, HP and MP, yields and prices; the stress bar, Resolve Check, afflictions, virtues and breakdown; binds; Valerie's gauge, stances and six accidents, joined to the combat math; event packs.
+
+**Designed in data, with no runner yet:** there is no battle loop. Nothing in `engine/` takes turns, tracks a boss's phases, or plays its script. The boss and encounter files describe things only a battle runner would act on: several actions a round, phase changes, wound-up telegraphed moves, moves that cannot miss, contraption effects, concessions, enemy targeting rules. A game master, human or the SillyTavern card, can run all of it from the text today. `handoff/boss-desk.md` lists the thirteen things a runner would need.
+
 ## Generated files
 
 `blueprint/MASTER_BLUEPRINT.md` and everything in `sillytavern/out/` are built by `npm run build`. Edit the sources, then rebuild.
