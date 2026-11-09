@@ -1,0 +1,155 @@
+{
+  "version": 1,
+  "slots": { "class": "every class passive is active from its unlock level", "general": [{ "fromLevel": 1, "slots": 1 }, { "fromLevel": 50, "slots": 2 }] },
+  "passives": [
+    {
+      "id": "war_p_doorstop", "name": "Doorstop", "archetype": "warrior", "unlock": 1, "trigger": "hit_taken_for_ally",
+      "text": "Each time you are hit by an attack that was aimed at an ally, or that Provoked, Taunt, Covered or Bulwark pulled onto you, gain 8 Limit. At most twice per round.",
+      "choice": "Hits aimed at you from the start earn nothing. Your gauge only fills while you are doing the most dangerous thing available.",
+      "effects": [{ "kind": "limit", "amount": 8, "target": "self" }]
+    },
+    {
+      "id": "war_p_stubborn", "name": "Stubborn", "archetype": "warrior", "unlock": 12, "trigger": "bind_applied_to_self",
+      "text": "Binds on your arms and legs last 1 turn less, to a minimum of 1. Binds on your head last 1 turn longer.",
+      "choice": "Your body shrugs off what your head cannot. Every head bind is a longer stretch at half Willpower with your shouts sealed.",
+      "effects": []
+    },
+    {
+      "id": "war_p_bodyguards_reflex", "name": "Bodyguard's Reflex", "archetype": "warrior", "unlock": 26, "trigger": "ally_below_30_pct_hp_targeted",
+      "text": "Once per round, when a single-target attack is aimed at an ally below 30% HP, you take it instead as if they were Covered. Your legs must be free. You cannot decline.",
+      "choice": "It is a reflex, not a decision. It fires when you are the one who cannot afford the hit, and it goes to the first ally in trouble, not the one you would have picked.",
+      "effects": [{ "kind": "status", "id": "covered", "turns": 1 }]
+    },
+    {
+      "id": "war_p_seeing_red", "name": "Seeing Red", "archetype": "warrior", "unlock": 42, "trigger": "always",
+      "text": "For every 25 stress you carry, your Might is ×1.05 higher and your Willpower ×0.95 lower, up to Might ×1.2 and Willpower ×0.8 at 100 stress.",
+      "choice": "Stress you keep is damage you deal and magic you eat. Calming the warrior down also turns the warrior down.",
+      "effects": [
+        { "kind": "mod", "target": "self", "stat": "STR", "mult": 1.05, "perStress": 25, "limitMult": 1.2 },
+        { "kind": "mod", "target": "self", "stat": "WIL", "mult": 0.95, "perStress": 25, "limitMult": 0.8 }
+      ]
+    },
+    {
+      "id": "war_p_share_the_shield", "name": "Share the Shield", "archetype": "warrior", "unlock": 60, "trigger": "self_uses_guard",
+      "text": "When you use the Guard action, the ally with the lowest share of HP also gains Guard until their next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5.",
+      "choice": "You give away part of your cover every time, wanted or not: two people half protected instead of one door properly shut.",
+      "effects": [{ "kind": "status", "id": "guard", "turns": 1 }]
+    },
+    {
+      "id": "war_p_last_one_standing", "name": "Last One Standing", "archetype": "warrior", "unlock": 80, "trigger": "ally_down_at_turn_start",
+      "text": "While at least one ally is down, your Might and Constitution are ×1.25, and at the start of each of your turns you gain 10 Limit and take 5 stress.",
+      "choice": "Your best form arrives exactly when things are worst, and it bills your nerves every turn you stay in it. Reviving the ally ends both.",
+      "effects": [
+        { "kind": "mod", "stat": "STR", "mult": 1.25, "turns": 1, "target": "self" },
+        { "kind": "mod", "stat": "CON", "mult": 1.25, "turns": 1, "target": "self" },
+        { "kind": "limit", "amount": 10, "target": "self" },
+        { "kind": "stress", "amount": 5, "source": "death", "target": "self" }
+      ]
+    },
+    {
+      "id": "mag_p_marginalia", "name": "Marginalia", "archetype": "mage", "unlock": 1, "trigger": "spell_hits_enemy",
+      "text": "The first time each battle you hit an enemy with a given element, its affinity to that element is revealed to the party and you gain 6 Limit. Whenever one of your spells hits a weakness, you gain 8 Limit.",
+      "choice": "The gauge pays for research and for being right, not for repeating a safe spell. Testing an element costs a turn, and the answer may be \"resisted\".",
+      "effects": [
+        { "kind": "limit", "amount": 6, "target": "self" },
+        { "kind": "limit", "amount": 8, "target": "self" }
+      ]
+    },
+    {
+      "id": "mag_p_i_told_you_so", "name": "I Told You So", "archetype": "mage", "unlock": 14, "trigger": "spell_meets_affinity",
+      "text": "When your spell hits a weakness, your next skill costs half MP. When your spell is resisted, nulled or absorbed, you take 5 stress that Willpower cannot reduce.",
+      "choice": "Being right is cheap and being wrong is personal. Guessing at an unknown enemy now risks your nerve as well as your turn.",
+      "effects": [{ "kind": "stress", "amount": 5, "source": "embarrassment", "ignoreWill": true, "target": "self" }]
+    },
+    {
+      "id": "mag_p_ivory_tower", "name": "Ivory Tower", "archetype": "mage", "unlock": 30, "trigger": "always",
+      "text": "While you are at full HP your Arcana is ×1.15. While you are below 50% HP it is ×0.9.",
+      "choice": "Your best work needs you untouched, so the party pays to keep you that way, and one good shove moves you from the first number to the second.",
+      "effects": [
+        { "kind": "mod", "target": "self", "stat": "INT", "mult": 1.15, "when": "hp_full" },
+        { "kind": "mod", "target": "self", "stat": "INT", "mult": 0.9, "when": "hp_below_50_pct" }
+      ]
+    },
+    {
+      "id": "mag_p_bedside_manner", "name": "Bedside Manner", "archetype": "mage", "unlock": 46, "trigger": "self_heals_ally",
+      "text": "Your healing on an ally below 30% HP is ×1.3. Your healing on an ally above 70% HP is ×0.7.",
+      "choice": "Topping people up is wasteful; waiting until it is nearly too late is efficient and frightening. You choose how close to the edge to let them get.",
+      "effects": []
+    },
+    {
+      "id": "mag_p_chain_of_thought", "name": "Chain of Thought", "archetype": "mage", "unlock": 62, "trigger": "self_casts_damaging_spell",
+      "text": "Each damaging spell you cast of a different element from your previous spell deals 10% more damage, building to 30%. Repeating an element, or doing anything else with your turn, resets it to nothing.",
+      "choice": "Rotating elements builds the bonus; hammering the one weakness you found throws it away. So does stopping to heal.",
+      "effects": []
+    },
+    {
+      "id": "mag_p_mind_over_matter", "name": "Mind Over Matter", "archetype": "mage", "unlock": 80, "trigger": "lethal_hit_on_self",
+      "text": "Once per round, when a hit would take you to 0 HP, you stay at 1 HP and pay the rest of that hit from MP at 1 MP per 4 HP. If you cannot pay all of it, the hit lands in full and no MP is spent.",
+      "choice": "It is automatic. Every MP held back as armor is a spell not cast, and every spell cast is armor spent.",
+      "effects": []
+    },
+    {
+      "id": "rog_p_sticky_fingers", "name": "Sticky Fingers", "archetype": "rogue", "unlock": 1, "trigger": "self_crits_or_binds",
+      "text": "Gain 6 Limit each time you land a crit and each time you inflict a bind.",
+      "choice": "Plain hits earn nothing. A careful rogue has an empty gauge; a greedy one is fishing for crits with skills that miss more often.",
+      "effects": [{ "kind": "limit", "amount": 6, "target": "self" }]
+    },
+    {
+      "id": "rog_p_first_in", "name": "First In", "archetype": "rogue", "unlock": 10, "trigger": "round_number",
+      "text": "In the first two rounds of a battle your attacks get +15 to crit. From round six onward they get −10 to hit.",
+      "choice": "You are built for the opening, not the siege. A long fight turns your best trait into a penalty, so end it early or be carried.",
+      "effects": []
+    },
+    {
+      "id": "rog_p_opportunist", "name": "Opportunist", "archetype": "rogue", "unlock": 22, "trigger": "self_hits_with_bind_skill",
+      "text": "When you crit with a skill that carries a bind, the bind ignores the target's bind resistance and the wear from earlier binds. When such a skill hits without a crit, any bind it lands lasts 1 turn less, to a minimum of 1.",
+      "choice": "Your binds become bets on your crits. Setting up Marked or Hidden lets you tie up a boss; skipping the setup leaves you with the shortest binds in the party.",
+      "effects": []
+    },
+    {
+      "id": "rog_p_travelling_light", "name": "Travelling Light", "archetype": "rogue", "unlock": 38, "trigger": "attack_aimed_at_self",
+      "text": "The first attack aimed at you each round gets −15 to hit. Any attack that hits you while you are above 50% HP deals ×1.15 damage.",
+      "choice": "Harder to touch, softer when touched. The one hit that does connect is the one that counts.",
+      "effects": []
+    },
+    {
+      "id": "rog_p_kick_em", "name": "Kick 'Em While They're Down", "archetype": "rogue", "unlock": 55, "trigger": "self_deals_damage",
+      "text": "You deal ×1.25 damage to a target with at least one bound part and ×0.9 damage to a target with none.",
+      "choice": "You are the best in the party at finishing a tied-up enemy and the worst at opening on a free one. Something has to land a bind first.",
+      "effects": []
+    },
+    {
+      "id": "rog_p_cut_and_run", "name": "Cut and Run", "archetype": "rogue", "unlock": 76, "trigger": "combatant_defeated",
+      "text": "When you defeat an enemy you become Hidden for 1 turn. When an ally is defeated you take 8 stress that Willpower cannot reduce.",
+      "choice": "You get out clean after every kill, which leaves your friends holding the room, and you feel it when one of them pays for that.",
+      "effects": [
+        { "kind": "status", "id": "hidden", "turns": 1, "target": "self" },
+        { "kind": "stress", "amount": 8, "source": "death", "ignoreWill": true, "target": "self" }
+      ]
+    },
+    {
+      "id": "any_p_quartermaster", "name": "Quartermaster", "archetype": "any", "unlock": 5, "trigger": "self_uses_item",
+      "text": "Recovery and MP items you use on an ally restore 25% more. The same items used on yourself restore 25% less.",
+      "choice": "This character is the party's medic or its own, not both. Somebody else has to keep them on their feet.",
+      "effects": []
+    },
+    {
+      "id": "any_p_deep_breaths", "name": "Deep Breaths", "archetype": "any", "unlock": 15, "trigger": "self_uses_guard",
+      "text": "When you use the Guard action you shed 4 stress. You gain no Limit during any round in which you Guard.",
+      "choice": "A turn spent breathing is a turn not spent building toward your ultimate, or doing anything else.",
+      "effects": [{ "kind": "stress", "amount": -4, "source": "general", "target": "self" }]
+    },
+    {
+      "id": "any_p_lucky_charm", "name": "Lucky Charm", "archetype": "any", "unlock": 35, "trigger": "self_fumbles",
+      "text": "Once per battle, the first fumble you roll counts as a plain miss instead. From then until the battle ends your attacks get −5 to crit.",
+      "choice": "You buy off one disaster with a little of every success that follows. On Valerie it also cancels an Accidental Chaos Wave.",
+      "effects": []
+    },
+    {
+      "id": "any_p_gallows_humour", "name": "Gallows Humour", "archetype": "any", "unlock": 55, "trigger": "stress_or_enemy_defeated",
+      "text": "You take no stress from death sources, and you shed 5 stress whenever an enemy is defeated. Embarrassment stress on you is ×1.5.",
+      "choice": "Nothing grim gets to you and everything silly does. A heckle or a public pratfall lands harder than a lich.",
+      "effects": [{ "kind": "stress", "amount": -5, "source": "general", "target": "self" }]
+    }
+  ]
+}
