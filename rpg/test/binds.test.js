@@ -104,7 +104,7 @@ test('bind chance: the skill\'s chance, swung by Luck against Luck, exactly like
   for (const base of [20, 35, 45, 55, 80]) {
     assert.equal(bindChance(even, even, 'legs', base), base, 'even Luck: the chance on the skill');
     assert.equal(bindChance(fighter(300, { LCK: 600 }), even, 'legs', base), Math.min(95, base + 20), 'double Luck: +20');
-    assert.equal(bindChance(even, fighter(300, { LCK: 600 }), 'legs', base), base - 20, 'half Luck: -20');
+    assert.equal(bindChance(even, fighter(300, { LCK: 600 }), 'legs', base), Math.max(5, base - 20), 'half Luck: -20');
     for (const [mine, theirs] of [[300, 300], [450, 300], [300, 450], [800, 600], [100, 900]]) {
       assert.equal(bindChance(fighter(300, { LCK: mine }), fighter(300, { LCK: theirs }), 'arms', base), contestPct(mine, theirs, base - 50));
     }
@@ -476,15 +476,16 @@ test('what each bind is worth, in this engine\'s numbers', () => {
   const slowest = initiative(fighter(181), () => 0);
   const fastestBound = initiative(bound('legs'), () => 0.999999);
   assert.ok(slowest > fastestBound, 'AGI 181 always outruns a bound AGI 300');
-  // Average damage per action, misses and crits included: arms bound cuts their output to 38%, legs to 90%;
-  // legs bound on the target lifts yours by 10%, Trussed by 65%.
+  // Average damage per action, misses and crits included: bound arms cut their output to 37.5%, bound legs to 89.7%;
+  // bound legs on the target lift yours to 110.3%, and a Trussed target takes 165.5%.
   const baseline = expectedDamage(even, even);
-  assert.equal(Math.round((100 * expectedDamage(bound('arms'), even)) / baseline), 38);
-  assert.equal(Math.round((100 * expectedDamage(bound('legs'), even)) / baseline), 90);
-  assert.equal(Math.round((100 * expectedDamage(even, bound('legs'))) / baseline), 110);
+  const share = (value) => ((100 * value) / baseline).toFixed(1);
+  assert.equal(share(expectedDamage(bound('arms'), even)), '37.5');
+  assert.equal(share(expectedDamage(bound('legs'), even)), '89.7');
+  assert.equal(share(expectedDamage(even, bound('legs'))), '110.3');
   let trussed = even;
   for (const part of BIND_PARTS) trussed = applyBind(trussed, part, 2);
-  assert.equal(Math.round((100 * expectedDamage(even, trussed, BASIC_ATTACK, { damageMult: trussedDamageMult(trussed) })) / baseline), 165);
+  assert.equal(share(expectedDamage(even, trussed, BASIC_ATTACK, { damageMult: trussedDamageMult(trussed) })), '165.5');
 });
 
 // ---------------------------------------------------------------- purity

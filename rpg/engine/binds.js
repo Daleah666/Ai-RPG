@@ -183,7 +183,8 @@ export function tryBind(attacker, target, part, baseChance, turns = BIND_RULES.D
   const success = !fumble && roll <= pct;
   const crit = success && roll <= Math.max(1, Math.floor(pct / CRIT_DIVISOR));
   const lasting = success ? clampTurns(clampTurns(turns) + (crit ? BIND_RULES.CRIT_TURNS : 0)) : 0;
-  const combatant = success ? applyBind(target, part, lasting, { ownTurn: opts.ownTurn, count: true }) : { ...target };
+  // A failed attempt still hands back a fresh copy (applyBind with 0 turns changes nothing).
+  const combatant = success ? applyBind(target, part, lasting, { ownTurn: opts.ownTurn, count: true }) : applyBind(target, part, 0);
   const backfire = fumble && Boolean(attacker) && (opts.backfire ?? !handed);
   const binder = backfire ? applyBind(attacker, part, BIND_RULES.BACKFIRE_TURNS, { ownTurn: true }) : attacker;
   return { pct, roll, success, crit, fumble, backfire, turns: lasting, combatant, attacker: binder };
