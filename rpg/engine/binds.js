@@ -26,6 +26,7 @@ export const NEVER_SEALED = Object.freeze([BASIC_ATTACK.id]);
 
 // ---------------------------------------------------------------- helpers
 
+const EPS = 1e-9;
 const num = (v, fallback = 0) => (Number.isFinite(v) ? v : fallback);
 
 function assertPart(part) {
@@ -128,7 +129,8 @@ export function bindOdds(attacker, target, part, baseChance, opts = {}) {
   const resist = opts.ignoreResist ? 0 : bindResistOf(target, part);
   const count = opts.ignoreWear ? 0 : timesBound(target, part);
   const wear = BIND_RULES.WEAR ** count;
-  const pct = clampPct(raw * (1 - resist / 100) * wear, opts.floor ?? undefined, opts.cap ?? undefined);
+  // Multiply everything, round once at the end. EPS keeps an exact half (55 x 0.7 = 38.5) rounding up despite float noise.
+  const pct = clampPct((raw * (100 - resist) * wear) / 100 + EPS, opts.floor ?? undefined, opts.cap ?? undefined);
   return { base, swing, bonus, raw, resist, timesBound: count, wear, pct };
 }
 

@@ -10,7 +10,7 @@ Three bosses anchor the difficulty curve, and five standard encounters give the 
 | **Imara Vellum** | mid | 50 | boss | 2,500,000 | 2 | 51 | 23 | 10.1% | 9.9 | 16.5 (Warrior) | 75,000 | 15,000 |
 | **Madam Parity** | superboss | 100 | superboss | 22,200,000 | 3 | 107 | 48 | 12.7% | 7.9 | 19.8 (Warrior) | 500,000 | 100,000 |
 
-"Rounds to kill" is the reference party of four acting every round with nothing but that attack. HP pressure rises gently (9.4%, 10.1%, 12.7% of the party's combined HP per round). Stress pressure rises faster: the first Resolve Check moves from round 24.9 to round 16.5 while the fights get longer. In every fight the unhealed party falls in well under half the rounds it needs to win, so no boss can be raced.
+"Rounds to kill" is the reference party of four acting every round with nothing but that attack. HP pressure rises gently (9.4%, 10.1%, 12.7% of the party's combined HP per round). Stress pressure rises faster: the first Resolve Check moves from round 24.9 to round 16.5 while the fights get longer. In every fight the unhealed party falls before the boss does (10.6 rounds against 17, 9.9 against 23, 7.9 against 48), so no boss can be raced.
 
 Bolgrim Underbridge is level 12, not 10, because Inspirational Ignorance unlocks at 12: he is the first fight in which all six of Valerie's accidents are online, and he is built to test each one.
 
@@ -47,7 +47,7 @@ How the simulation reads a fight:
 - **Boss offense** averages each phase's script over its cycle. An aimed attack is spread evenly (a quarter each), a row attack catches the front row (Warrior, Valerie) or the back row (Mage, Rogue) half the time each, and an all-target move rolls against everyone. All 100 faces of the d100 are counted, so these are exact expectations, not samples.
 - **Telegraphed moves** are left out of the per-round figures and shown on their own line, as if nobody answered them.
 - **Phases** are weighted by their share of the HP bar.
-- **Stress** is `stressTaken` for the allies and `stressOnValerie` for the hero, with the 3 points allies shed whenever she shrugs off fear. It counts stress from boss moves only. The standard sources in section 3 (a crit taken, an ally down, low HP) come on top.
+- **Stress** is `stressTaken` for the allies and `stressOnValerie` for the hero, with the 3 points allies shed whenever she shrugs off fear. It counts stress from boss moves only. The standard sources in `engine/stress.js` (a crit taken, an ally down, low HP) come on top; a phase change is not treated as a separate stress hit, because each phase's stress is already written into the moves it adds.
 
 ### 5.3 Bolgrim Underbridge, the Troll Who Was There (early game)
 
@@ -209,6 +209,8 @@ The same three gauges with Valerie taunting, so every aimed attack is hers, and 
 | 100 | 15.1% | 6.6 | 508 (0.39% of his HP) | 0.21 | 2.2 | 4.0 / 3.6 / 3.9 | 1,744 | 2,142 | 25% |
 
 One Power 3 heal from the reference mage restores 1,764 HP, 16.0% of Valerie's bar. That covers a taunting round at Airhead 100 and falls short at Airhead 0 and 60. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
+
+**The contraption in numbers.** Exhibit A is worth 5,184 damage each time it goes off, 0.7 rounds of the whole party's Power 4 output, on top of its bind or lost action. A phase lasts about 5.7 rounds at the Power 4 pace. If Valerie Wings It every turn, at least one Chaos Wave arrives in that time 65% of the time at Airhead 60 and 80% at Airhead 100. In the one round between the wind-up and The Proof, the odds are 17% and 25%: the wave is the gamble, the bind and the Guard are the plans.
 
 **Where he sits on the curve.** Bolgrim Underbridge takes 17 rounds of Power 4 skills or 39 of basic attacks. In that time he deals 1.6 times the party's combined HP, and the unhealed party lasts 10.6 rounds, so the fight cannot be raced. At the Power 4 pace his moves alone leave the Warrior on 68 stress and the Mage on 61: under the Resolve Check if the fight is clean, over it if it drags past round 24. This is the gentlest of the three on purpose. It asks whether the party has learned to stand behind Valerie: taunting as a Total Airhead she loses 15.1% of her bar a round instead of 27.4% Lucid.
 
@@ -376,6 +378,8 @@ The same three gauges with Valerie taunting, so every aimed attack is hers, and 
 
 One Power 3 heal from the reference mage restores 28,800 HP, 15.9% of Valerie's bar. That covers a taunting round at Airhead 100 and falls short at Airhead 0 and 60. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
 
+**The contraption in numbers.** The Rolling Ladder is worth 75,000 damage each time it goes off, 0.7 rounds of the whole party's Power 4 output, on top of its bind or lost action. A phase lasts about 7.7 rounds at the Power 4 pace. If Valerie Wings It every turn, at least one Chaos Wave arrives in that time 76% of the time at Airhead 60 and 89% at Airhead 100. In the one round between the wind-up and The Final Draft, the odds are 17% and 25%: the wave is the gamble, the bind and the Guard are the plans.
+
 **Where she sits on the curve.** Imara Vellum takes 23 rounds of Power 4 skills or 51 of basic attacks. In that time she deals 2.3 times the party's combined HP, and the unhealed party lasts 9.9 rounds, so the fight cannot be raced. At the Power 4 pace her moves alone leave the Warrior on 140 stress and the Mage on 101, so somebody rolls a Resolve Check around round 17 unless stress is managed. HP pressure is about level with the first boss (10.1% of party HP a round); the step up is in nerve, and in a Guard that costs 5 extra rounds if nobody answers it. A Lucid Valerie takes 8.2 stress a round here against 3.1 as a Total Airhead, before the 4 that each Think adds.
 
 ### 5.5 Madam Parity, Comptroller of Fortune (endgame superboss)
@@ -420,7 +424,7 @@ Bind resist is the percentage taken off a bind's chance (`engine/binds.js`). A b
 | From HP | Phase | Read to the table | The question | An answer | What the answer costs |
 | --- | --- | --- | --- | --- | --- |
 | 100% | **Opening Balance** | She collects from whoever has the most: every single-target attack goes to the hero with the highest current HP. Decide who you top up, because a full bar is a target. | Who can afford to be the richest hero in the room? | Keep Valerie's bar the fullest, or taunt, so the coins fly at the one hero they bounce off. | Healing Valerie first leaves the mage and the rogue low when Actuarial Table and Red Tape arrive for everyone anyway. |
-| 75% | **The Audit** | She flips the ledger: for three rounds in every four, Valerie's luck runs backwards and only works while she is Thinking. Decide whether to chase the flip or sit it out in the middle of the gauge. | When the luck runs backwards, do you run with it? | Think It Through while the ledger is flipped and be lucky and precise at once, sit at Ditzy and take half of everything, or spend 100 MCE on I'm Just a Good Hero! and ignore the flip for 3 turns. | Every Think costs 4 stress her Willpower cannot touch, and when the ledger flips back she is Lucid with the luck off; the ultimate spends the MCE the ending might need. |
+| 75% | **The Audit** | She flips the ledger: for three rounds in every four, Valerie's luck runs backwards and only works while she is Thinking. Decide whether to chase the flip or sit it out in the middle of the gauge. | When the luck runs backwards, do you run with it? | Think It Through while the ledger is flipped and be lucky and precise at once, hold the gauge near 50 so the luck half-works whichever way the ledger faces, or spend 100 MCE on I'm Just a Good Hero! and ignore the flip for 3 turns. | Every Think costs 4 stress her Willpower cannot touch, and when the ledger flips back she is Lucid with the luck off; the ultimate spends the MCE the ending might need. |
 | 50% | **Collections** | She starts taking things back: buffs, MP and nerve. Repossession lands as the first action of every fourth round: decide what you are willing to let her take. | What do you let her take? | Buff straight after a Repossession and never before one; pay Service Charge in MP while there is MP, and in nerve after. | Fighting unbuffed one round in four is slower; MP paid to her is MP not spent on healing; stress kept is a Resolve Check coming. |
 | 25% | **Closing the Books** | She rings the closing bell, and two rounds later the whole bill comes due on everyone. Spin the Wheel, brace, or let Valerie stand up and take the bill alone. | Who pays the bill? | A Chaos Wave spins the Great Wheel and cancels the bill; a taunting Valerie takes all of it alone, and may trip under it; everyone can Guard; or Valerie can share the luck (One for the House). | Fishing for a wave means two rounds of Winging It with no guarantee; taking the bill alone can drop Valerie from full; Guarding saves bodies and not nerves, because the 40 death stress still lands. |
 
@@ -549,6 +553,8 @@ The same three gauges with Valerie taunting, so every aimed attack is hers, and 
 
 One Power 3 heal from the reference mage restores 114,000 HP, 15.8% of Valerie's bar. That is less than she loses in a round at any gauge (15.9% at Airhead 100), so a taunt always needs more than one healer's turn behind it. Her stress columns are before her stance: Wing It takes 2 off every turn, Think It Through adds 4.
 
+**The contraption in numbers.** The Great Wheel is worth 444,000 damage each time it goes off, 1.0 rounds of the whole party's Power 4 output, on top of its bind or lost action. A phase lasts about 12.0 rounds at the Power 4 pace. If Valerie Wings It every turn, at least one Chaos Wave arrives in that time 89% of the time at Airhead 60 and 97% at Airhead 100. In the 2 rounds between the wind-up and Balance Due, the odds are 31% and 44%: the wave is the gamble, the bind and the Guard are the plans.
+
 **Where she sits on the curve.** Madam Parity takes 48 rounds of Power 4 skills or 107 of basic attacks. In that time she deals 6.1 times the party's combined HP, and the unhealed party lasts 7.9 rounds, so the fight cannot be raced. With Power 8 skills, which is what a level 100 party actually carries, it is 24 rounds. At the Power 4 pace her moves alone leave the Warrior on 242 stress and the Mage on 142, which is a Breakdown at 200 near round 40 unless stress is relieved along the way. Damage is the highest of the three (12.7% of party HP a round, from three actions) and falls as the fight goes on, while stress climbs: the opening phase tests bars, the last two test nerve.
 
 ### 5.6 Standard encounters
@@ -671,15 +677,15 @@ The same reference party as the bosses, at two or three levels inside each event
 
 Goblin Scouts is also the first fight of the game, when Valerie is alone at level 1: solo, basic attacks clear it in 7.6 rounds and the goblins take 6.0% of her HP in the opening round.
 
-Each encounter against the hero's kit, with the odds for one projectile aimed at Valerie:
+Each encounter against the hero's kit, at the lower of its two levels. The first column is the opening pressure from the table above; the second is the same round with Valerie taunting as a Total Airhead, so every aimed attack is hers; the third is what her bounce sends back in that round.
 
-| Encounter | Projectile | At Airhead 60 | At Airhead 100 | How it plays |
-| --- | --- | --- | --- | --- |
-| Goblin Scouts | Sling Stone (Goblin Slinger, level 1) | lands 50%, bounces 21%, fumbles 11% | lands 24%, bounces 31%, fumbles 15% | The tutorial: three weak enemies in one row for Big Swing, one sling stone to bounce, and a Rude Gesture that only lands on a Valerie who is paying attention. |
-| Bandit Archers | Loose (Bandit Bowman, level 5) | lands 50%, bounces 21%, fumbles 11% | lands 24%, bounces 31%, fumbles 15% | The bounce fight. Every damaging move is a projectile, so a taunting Total Airhead sends a large share of the volley straight back; a Lucid Valerie is just a large gold target. |
-| Skeleton Phalanx | Bone Arrow (Skeleton Archer, level 10) | lands 50%, bounces 21%, fumbles 11% | lands 24%, bounces 31%, fumbles 15% | The Chaos Wave fight. A wave strips the shield wall's Guard and pulls the lever; Thinking It Through instead means chewing through a guarded front rank. |
-| The Hoard Drake | Molten Spit (Hoard Drake, level 20) | lands 50%, bounces 21%, fumbles 11% | lands 24%, bounces 31%, fumbles 15% | The taunt fight. Two actions a round from one elite land hard on anyone else; on Valerie they miss, bounce or bind the drake, and a wave buries it in its own hoard. |
-| The Horde at the Gate | Sling Volley (Horde Slinger, level 10) | lands 50%, bounces 21%, fumbles 11% | lands 24%, bounces 31%, fumbles 15% | The crowd fight. Chaos Waves and row attacks are worth the most here, and War Drums are fear that Valerie does not hear, so the party sheds stress each time they sound. |
+| Encounter | Level | Damaging moves that are projectiles | Party HP lost per round, attacks spread | Party HP lost per round, Valerie taunting at Airhead 100 | Bounced back per round | How it plays |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Goblin Scouts | 1 | 1 of 3 | 2.0% | 1.2% | 1 (1.8% of all enemy HP) | The tutorial: three weak enemies in one row for Big Swing, one sling stone to bounce, and a Rude Gesture that only lands on a Valerie who is paying attention. |
+| Bandit Archers | 5 | 4 of 4 | 9.7% | 4.0% | 324 (10.3% of all enemy HP) | The bounce fight. Every damaging move is a projectile, so a taunting Total Airhead sends a large share of the volley straight back; a Lucid Valerie is just a large gold target. |
+| Skeleton Phalanx | 10 | 2 of 4 | 9.5% | 6.2% | 487 (2.2% of all enemy HP) | The Chaos Wave fight. A wave strips the shield wall's Guard and pulls the lever; Thinking It Through instead means chewing through a guarded front rank. |
+| The Hoard Drake | 20 | 1 of 4 | 10.5% | 8.0% | 381 (0.4% of all enemy HP) | The taunt fight. Two actions a round from one elite land hard on anyone else; on Valerie they miss, bounce or bind the drake, and a wave buries it in its own hoard. |
+| The Horde at the Gate | 10 | 2 of 4 | 9.5% | 6.6% | 487 (1.3% of all enemy HP) | The crowd fight. Chaos Waves and row attacks are worth the most here, and War Drums are fear that Valerie does not hear, so the party sheds stress each time they sound. |
 
 ### 5.7 What these designs assume the engine will do
 

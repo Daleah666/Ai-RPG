@@ -982,7 +982,7 @@
           "name": "The Audit",
           "text": "She flips the ledger: for three rounds in every four, Valerie's luck runs backwards and only works while she is Thinking. Decide whether to chase the flip or sit it out in the middle of the gauge.",
           "question": "When the luck runs backwards, do you run with it?",
-          "answer": "Think It Through while the ledger is flipped and be lucky and precise at once, sit at Ditzy and take half of everything, or spend 100 MCE on I'm Just a Good Hero! and ignore the flip for 3 turns.",
+          "answer": "Think It Through while the ledger is flipped and be lucky and precise at once, hold the gauge near 50 so the luck half-works whichever way the ledger faces, or spend 100 MCE on I'm Just a Good Hero! and ignore the flip for 3 turns.",
           "price": "Every Think costs 4 stress her Willpower cannot touch, and when the ledger flips back she is Lucid with the luck off; the ultimate spends the MCE the ending might need.",
           "moves": [
             "boss_parity_heads_i_win",
