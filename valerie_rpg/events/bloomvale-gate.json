@@ -1,0 +1,13 @@
+{
+  "id": "bloomvale-gate",
+  "when": "on_scene_enter",
+  "card_text": "Valerie bursts through the Bloomvale gate. The sword is longer than her stride. The cape has already picked a fight with the latch.",
+  "checks": [
+    {"stat": "dexterity", "dc": 120}
+  ],
+  "on_success": "She stays up, arms wide, and calls it a heroic entrance.",
+  "on_fail": {
+    "text": "She face-plants. The boards jump.",
+    "proc": "chaos_wave"
+  }
+}

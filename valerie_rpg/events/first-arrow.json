@@ -1,0 +1,10 @@
+{
+  "id": "first-arrow",
+  "when": "on_projectile_hit_torso",
+  "card_text": "An arrow flies at her chest.",
+  "checks": [
+    {"proc": "kinetic_deflection"}
+  ],
+  "on_success": "She takes none of it. The arrow goes back. She thinks she bounced it.",
+  "on_fail": "Bounce does not miss. If this branch runs, the event is wrong."
+}

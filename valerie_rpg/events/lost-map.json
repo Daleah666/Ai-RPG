@@ -1,0 +1,10 @@
+{
+  "id": "lost-map",
+  "when": "on_item_needed",
+  "card_text": "The path splits. She needs the map she swears she put somewhere else.",
+  "checks": [
+    {"proc": "pocket", "item": "map"}
+  ],
+  "on_success": "The map is in the fold of her cape. She beams. She is really good at finding things.",
+  "on_fail": "She pats herself down and finds lint. The map stays lost."
+}
