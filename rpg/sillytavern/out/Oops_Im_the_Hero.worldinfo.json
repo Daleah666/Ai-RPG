@@ -490,7 +490,7 @@
       ],
       "keysecondary": [],
       "comment": "rules · stress and resolve",
-      "content": "[RULES: STRESS] Stress runs 0 to 200 and never scales with level. Willpower reduces incoming stress: a hit of 20 lands as 20 at Willpower 10, 16 at 150, 12 at 400, 8 at 1000.\nAt 100 a character makes a Resolve Check, one d100: 01-25 a Virtue, 26-100 an Affliction. At 200: Breakdown.\n\n\nValerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead. When her Resolve roll is an even number she gets one of her own outcomes instead: Self-Aware (\"Oh no. I'm a fraud.\" The gauge locks at 0 and her passives go quiet. Allies who relied on her nerve take 5 stress when it starts.) or A Good Hero (\"I'm a GOOD hero!\" She decides the evidence is on her side. Stress stops reaching her, and every ally sheds 10.)",
+      "content": "[RULES: STRESS] Stress runs 0 to 200 and never scales with level. Willpower reduces incoming stress: a hit of 20 lands as 20 at Willpower 10, 16 at 150, 12 at 400, 8 at 1000.\nAt 100 a character makes a Resolve Check, one d100: 01-25 a Virtue, 26-100 an Affliction. At 200: Breakdown.\nVirtues: On a Roll (Everything is finally going right: Might and Arcana ×1.25, and about one turn in three their attack gets +20 crit, but they will not Guard or take a Breather. They shed 40 stress and allies shed 8 when it starts.) Unflappable (Nothing gets to them: stress taken ×0.5, Willpower ×1.25, Finesse ×0.85, and about one turn in three every ally sheds 5 stress. They shed 50 stress and allies shed 10 when it starts, and allies' own Virtue chance is 10 higher while it lasts.) In the Zone (The world narrows to one target: +15 to hit, +10 crit and no fumbles, and about one turn in three their attack cannot be pushed under a 95% chance to hit, but they cannot switch targets while the current one stands. They shed 40 stress and allies shed 5 when it starts.) Mother Hen (Adopts the whole party: Constitution ×1.25, single-target attacks aimed at the most hurt ally hit them instead, and about one turn in three that ally heals 10% of max HP, but they will not attack while any ally is under a quarter health. They shed 40 stress and allies shed 12 when it starts.) Second Wind (Gets up like nothing happened: heals 25% of max HP at once and 8% at the start of each turn, Constitution ×1.2, and about one turn in three shakes off every bind, but refuses healing from allies. They shed 40 stress and allies shed 6 when it starts.)\nAfflictions: Martyr Complex (Decides the party's pain is theirs to carry: Constitution ×0.85, and about one turn in three they spend the turn shielding the most hurt ally and refuse healing until their next turn. Allies take 5 stress when it starts.) Spooked (Sees a mimic in every barrel: Might and Arcana ×0.8, Finesse ×1.1, horror stress ×1.5, and about one turn in three they Guard instead of acting. Allies take 6 stress when it starts.) Loot Goblin (Decides the loot, the potions and the credit are all theirs: Willpower ×0.85, Luck ×1.1, they will not use items or single-target skills on anyone else, they skim 10% of battle gold, and about one turn in three they down the party's best healing item whether they need it or not. Allies take 5 stress when it starts.) Tinfoil Helm (Certain the party is plotting against them: Willpower ×0.8, mental stress ×1.25, ally buffs never land on them, and about one turn in three they accuse an ally (6 stress) and refuse healing, comfort and items until their next turn. Allies take 8 stress when it starts.) Backseat Hero (Appoints themselves the party's critic: Might and Arcana ×1.1, Finesse ×0.85, any ally who misses or fumbles takes 3 stress, and about one turn in three they give an ally notes (8 stress). Allies take 8 stress when it starts.) Doomsayer (Has read the ending and it is bad: Finesse and Luck ×0.8, stress relief works half as well on them, and about one turn in three they do nothing at all. Allies take 10 stress when it starts, and their own Virtue chance is 10 lower while it lasts.) Lost the Plot (Has left the conversation and possibly the genre: Arcana and Willpower ×0.8, they fumble on 91 or higher, and about two turns in five they make a basic attack on a target read off the dice, friend or foe. Allies take 8 stress when it starts.)\nValerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead. When her Resolve roll is an even number she gets one of her own outcomes instead: Self-Aware (\"Oh no. I'm a fraud.\" The gauge locks at 0 and her passives go quiet. Allies who relied on her nerve take 5 stress when it starts.) or A Good Hero (\"I'm a GOOD hero!\" She decides the evidence is on her side. Stress stops reaching her, and every ally sheds 10.)",
       "constant": false,
       "vectorized": false,
       "selective": false,
@@ -818,6 +818,337 @@
     "21": {
       "uid": 21,
       "key": [
+        "goblin",
+        "goblins",
+        "scouts",
+        "ferns",
+        "knives",
+        "clearing",
+        "sling"
+      ],
+      "keysecondary": [],
+      "comment": "encounter · goblin_scouts",
+      "content": "[ENCOUNTER: Goblin Scouts] Three goblin scouts creeping through the ferns with knives and a sling, convinced nobody has noticed them. They are brave as a group: when two are down the third runs. Enemy attributes are multiples of a typical attribute for the party's level.\n- 2 x Goblin Knifer (minion): A knee-high scout with a kitchen knife. Stabs the nearest shin and runs if it is the last one standing. Moves: Shank: Stabs the nearest shin: Power 2 physical. | Ankle Stab: Goes for the ankles: Power 1.5 physical, +5 to hit, 25% chance of a legs bind for 1 turn.\n- 1 x Goblin Slinger (minion): Hangs back with a sling and a repertoire of gestures. Its stones are projectiles, so they can bounce. Moves: Sling Stone: Slings a river stone at one hero: Power 2 physical projectile. | Rude Gesture: A gesture that needs no translation, at +10 to hit: 5 embarrassment stress if it lands.\nNo contraption here.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 71,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 21
+    },
+    "22": {
+      "uid": 22,
+      "key": [
+        "bandit",
+        "bandits",
+        "archers",
+        "arrows",
+        "ambush",
+        "crossbow",
+        "volley",
+        "brambles"
+      ],
+      "keysecondary": [],
+      "comment": "encounter · bandit_archers",
+      "content": "[ENCOUNTER: Bandit Archers] Four bows and one crossbow dug into the left bank of a bramble-lined road, all aimed at the shiniest thing on it. Every attack they have is a projectile, and none of them wants a fight at arm's length. Enemy attributes are multiples of a typical attribute for the party's level.\n- 4 x Bandit Bowman (minion): Shoots from cover at whoever is most visible, which is the knight in gold. Folds quickly once anyone reaches the bank. Moves: Loose: Shoots one hero: Power 2.2 physical projectile. | Pinning Shot: Aims for a boot: Power 1.6 physical projectile, +5 to hit, 30% chance of a legs bind for 2 turns.\n- 1 x Crossbow Sergeant (standard): Calls the volleys and reloads a crossbow the size of a plough. Slow, steady, and the only one who does not run. Moves: Heavy Bolt: Fires a crossbow the size of a plough at one hero: Power 5 physical projectile, −5 to hit. | On My Mark: Calls a volley down on one row: Power 2.8 physical projectile against each hero in it.\nNo contraption here.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 72,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 22
+    },
+    "23": {
+      "uid": 23,
+      "key": [
+        "skeleton",
+        "skeletons",
+        "phalanx",
+        "formation",
+        "lever",
+        "hall",
+        "bones",
+        "shields"
+      ],
+      "keysecondary": [],
+      "comment": "encounter · skeleton_phalanx",
+      "content": "[ENCOUNTER: Skeleton Phalanx] A dozen skeletons in formation in a long hall: eight hoplites in two ranks of four, three archers and a captain. Only the front four hoplites can reach the party, and locked shields halve what gets through until something breaks the formation. Enemy attributes are multiples of a typical attribute for the party's level.\n- 8 x Skeleton Hoplite (minion): Shield, spear, no opinions. The front four attack or lock shields; when one falls, the hoplite behind steps up. Moves: Spear Thrust: A drilled thrust from behind the shield: Power 2.2 physical. | Locked Shields: Locks shields with its neighbours and Guards (takes half damage) until its next turn. Sealed while its legs are bound or the formation is broken.\n- 3 x Skeleton Archer (minion): Shoots over the shield wall. Its arrows are projectiles and it has no shield of its own. Moves: Bone Arrow: Shoots over the shield wall: Power 2 physical projectile. | Rattling Volley: A clattering volley at one row: Power 1.6 physical projectile, −5 to hit, and 4 horror stress to each hero hit.\n- 1 x Phalanx Captain (standard): The only skeleton giving orders. While it stands a broken formation re-forms; drop it and the hoplites stop locking shields. Moves: Captain's Halberd: A long overhead chop at one hero: Power 4.5 physical. | Dress the Line: Raps out an order in a dead language. Cannot miss: 7 horror stress to every hero, and a broken formation re-forms.\nContraption (an Accidental Chaos Wave sets it off): The DO NOT PULL Lever. A brass lever under a sign in four languages. When a Chaos Wave sets it off, the floor under the phalanx drops a foot and tilts: every skeleton slides into one corner, takes damage equal to 25% of its max HP, has its legs bound for 2 turns and loses Guard, and no shields can be locked for 2 turns. Works once. If the event already pulled it, start the fight with all of this applied.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 73,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 23
+    },
+    "24": {
+      "uid": 24,
+      "key": [
+        "drake",
+        "dragon",
+        "hoard",
+        "cave",
+        "goblet",
+        "treasure",
+        "breath"
+      ],
+      "keysecondary": [],
+      "comment": "encounter · hoard_drake",
+      "content": "[ENCOUNTER: The Hoard Drake] A drake woken on top of its hoard in a cave with one way through, and it has counted every coin. One elite with two actions a round: it guards the pile first and the exit second. Enemy attributes are multiples of a typical attribute for the party's level.\n- 1 x Hoard Drake (elite): Bites what is close, spits molten gold at what is far, and breathes on everyone when crowded. It will not leave the hoard, so it can be circled. Moves: Bite: Snaps at the nearest hero: Power 5 physical, +5 to hit, and 6 wound stress if it lands. | Tail Sweep: Sweeps a row with its tail: Power 3 physical and a 30% chance of a legs bind for 2 turns. | Molten Spit: Spits a gobbet of molten gold at a hero out of reach: Power 5 fire magic projectile. | Bellows Breath: Breathes like a forge across the whole cave: Power 2.8 fire magic to each hero it lands on, and 8 horror stress to every hero whether it lands or not. | That One Is Mine: Fixes one hero with a stare of pure ownership at +10 to hit: 14 mental stress if it lands.\nContraption (an Accidental Chaos Wave sets it off): The Hoard. A hill of coin, plate and goblets under the drake. When a Chaos Wave sets it off the pile slides: the drake loses its next action scrabbling after its goblets, its legs are bound for 2 turns, it loses Guard, and the party collects 20% more gold after the fight. Works once.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 74,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 24
+    },
+    "25": {
+      "uid": 25,
+      "key": [
+        "horde",
+        "gate",
+        "walls",
+        "raiders",
+        "militia",
+        "siege",
+        "drums",
+        "portcullis"
+      ],
+      "keysecondary": [],
+      "comment": "encounter · horde_at_the_gate",
+      "content": "[ENCOUNTER: The Horde at the Gate] A raiding horde hitting a town gate at dusk: eighteen raiders, six slingers and two war drummers, far more than fit through the gap at once. Only five raiders and three slingers can act each round, and a fresh one steps up as each falls; if the party has the advantage, the militia holds the flanks and only three raiders can act. Enemy attributes are multiples of a typical attribute for the party's level.\n- 18 x Horde Raider (minion): A borrowed axe and one good swing's worth of courage. Any solid hit drops it; there is always another behind it. Moves: Hack: Swings a borrowed axe: Power 2 physical. | Dogpile: Throws itself at a hero's knees: Power 2.6 physical, −10 to hit, 20% chance of a legs bind for 1 turn.\n- 6 x Horde Slinger (minion): Lobs stones and fire pots over the front line. Everything it throws is a projectile. Moves: Sling Volley: Slings a stone over the front line: Power 1.8 physical projectile. | Fire Pot: Lobs a pot of burning pitch at one row: Power 2.2 fire projectile driven by Might, −10 to hit.\n- 2 x War Drummer (standard): Keeps the horde coming and the party rattled. With both drummers down the raiders stop pressing and only three can act each round. Moves: War Drums: A beat the party feels in its teeth. Cannot miss: 7 horror stress to every hero. | Drive Them On: Shouts the front line forward: every raider gains Might ×1.2 for 2 turns.\nContraption (an Accidental Chaos Wave sets it off): The Portcullis. The gate's own portcullis, winched up and badly pinned. When a Chaos Wave sets it off it drops: the four raiders under it are out of the fight, and for 2 turns only half as many enemies can act while the rest hammer on the wrong side. Works once.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 75,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 25
+    },
+    "26": {
+      "uid": 26,
+      "key": [
+        "bolgrim",
+        "underbridge",
+        "troll",
+        "toll",
+        "bridge",
+        "exhibit a"
+      ],
+      "keysecondary": [],
+      "comment": "boss · boss_bolgrim",
+      "content": "[BOSS: Bolgrim Underbridge, the Troll Who Was There] he/him. Level 12 boss, 2 actions a round. HP 129,600. STR 96, INT 36, AGI 80, CON 54, WIL 58, LCK 52.\nA river troll the size of a hay cart: moss on his shoulders, reading spectacles on a chain, and a toll signpost for a club. Arena: Underbridge Toll: a narrow stone bridge over a gorge, an iron toll box, and Exhibit A cocked and creaking at the far end.\nA toll-bridge troll chieftain who watched Valerie rout his whole warband by falling over, and has told the true story to everyone since without being believed once. Wants: To hear one person, any person, say out loud that she tripped. Cost: His warband walked out on the chief who lost to a pratfall, and every toll he has taken since has gone into a machine built to prove it was an accident.\nAffinities: weak to fire, resist to ice. Bind resistance: head 30, arms 50, legs 20.\nPhase from 100% HP, Pay the Toll: He blocks the bridge, clubs whoever stands closest and throws the toll box at whoever stands furthest. Decide who holds the bridge mouth: the hero he keeps missing, or the warrior he does not.\nPhase from 60% HP, I Was There: He stops fighting quietly and starts telling everyone exactly what he saw. Every telling knocks 10 off the Airhead gauge and rattles the party: decide whether to shut him up or out-oblivious him.\nPhase from 30% HP, The Proof: He winds Exhibit A, and one round later it fires at everyone. Stop the machine, brace for it, or give him the one thing he actually wants.\nMoves: Toll Collector: Swings the PAY TROLL signpost at one hero: Power 5 physical, +10 to hit. | Bridge Sweep: Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 6 embarrassment stress and has a 30% chance of a legs bind for 2 turns. | Exact Change: Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit, and 6 wound stress if it lands. | Bridge-Shaking Bellow: A roar that shakes the planks. Cannot miss: 10 horror stress to every hero. | I Was There: Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 6 mental stress. | Wind the Proof: Cranks Exhibit A, loudly. Cannot miss: 8 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first. | The Proof: Telegraphed one round ahead by Wind the Proof. Exhibit A fires every log at once: Power 9 physical projectile at every hero, +15 to hit. Guarding halves it.\nContraption (an Accidental Chaos Wave sets it off): Exhibit A. A rack of counterweighted logs Bolgrim built to prove nobody crosses his bridge by skill. When a Chaos Wave sets it off it swings the wrong way: Bolgrim takes damage equal to 4% of his max HP, his legs are bound for 2 turns, and a wound-up Proof is cancelled. Works once per phase; he re-cocks it when the phase changes.\nAnother way to end it, Tell Him He Is Right: At 30% HP or below, any hero can spend a turn saying it out loud: she tripped. Bolgrim sits down on his bridge, the fight ends as a win with full rewards, and he waves the party across. The price: Valerie takes 25 realization stress (it ignores Willpower and drops the gauge 10) and Party Trust falls by 5.\nHow it fights: Two actions a round. Toll Collector goes to the nearest hero and Exact Change to the furthest; a taunt overrides both. From Phase 2 he opens every third round with I Was There. In Phase 3 he winds The Proof every fourth round and fires it first thing the round after.\nHow to beat it: Let him swing at Valerie while she is Winging It: his hit ceiling drops, his toll box bounces back and his fumbles bind him. Bind his head to stop the truth-telling and his arms to stop The Proof, or let a Chaos Wave set Exhibit A off in his face; fire hurts him. If the party's nerve is running out, admit she tripped: it ends the fight and costs Valerie 25 stress.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 76,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 26
+    },
+    "27": {
+      "uid": 27,
+      "key": [
+        "imara",
+        "vellum",
+        "chronicler",
+        "lich",
+        "archive",
+        "stacks",
+        "heart-book",
+        "ladder"
+      ],
+      "keysecondary": [],
+      "comment": "boss · boss_vellum",
+      "content": "[BOSS: Imara Vellum, the Unabridged] she/her. Level 50 boss, 2 actions a round. HP 2,500,000. STR 180, INT 370, AGI 330, CON 250, WIL 420, LCK 280.\nA tall lich in a chronicler's ink-stained robes, grey locs bound in archive ribbon, a quill behind one ear and a neat stitched seam where her heart came out. Arena: The Unabridged Archive: stacks forty feet high, a lectern, a card index the size of a chapel, and one very long ladder on brass rails.\nThe Royal Chronicler, three hundred years dead and still at her desk, who cannot rest while one ballad in the kingdom says something that did not happen. Wants: To publish a single true history of the realm, with no hero in it who did not earn the word. Cost: She cut out her own heart so it would stop improving the stories, and now she remembers every fact and not one reason any of them mattered.\nAffinities: weak to fire, weak to holy, resist to ice, absorb to dark. Bind resistance: head 65, arms 40, legs 25.\nPhase from 100% HP, Quiet, Please: She hides her heart-book in the stacks and takes half damage until it is found, while the shelves stare the party down. Decide how to find the book: have Valerie look closely, which costs gauge, or wait for her to knock it loose by accident.\nPhase from 65% HP, Citation Needed: She opens the ledger and reads true entries aloud: Valerie's first, then everyone's. The truth drops the gauge, and the embarrassment only misses a Total Airhead: decide whose nerve gets spent.\nPhase from 30% HP, The Final Draft: She stops hiding the book because she is writing in it: the party's ending, due next round. Break the quill hand, bring the ladder down, brace for the last page, or give her a true account to print instead.\nMoves: Sharp Correction: Throws a quill like a dart at one hero: Power 5 projectile driven by Arcana and resisted by Willpower, +10 to hit. | Strike Through: Draws a line through one hero: Power 6 dark magic and a 35% chance of an arms bind for 2 turns. | Shhh.: One finger to her lips, aimed at a row at +10 to hit: each hero it lands on takes 10 mental stress and has a 45% chance of a head bind for 2 turns. | The Stacks Remember: Every face ever written down looks out of the shelves at once: Power 2.5 dark magic to each hero it lands on, and 20 horror stress to every hero whether it lands or not. | Re-shelve: Hides her heart-book somewhere in the stacks: she Guards (takes half damage) until the end of next round, or until Valerie's Wait, Look Closely finds the book or a Chaos Wave knocks it loose. | As It Actually Happened: Reads Valerie's true entry aloud. Cannot miss: Valerie takes 16 realization stress (ignores Willpower, Airhead −10) and every other hero takes 10 mental stress. | Errata: Reads out one hero's most embarrassing true entry. Cannot miss: 20 embarrassment stress (Valerie takes half again as much, unless she is a Total Airhead, who takes none). | Dip the Quill: Writes the party's names at the top of a clean page. Cannot miss: 8 death stress to every hero, and The Final Draft lands as her first action next round unless her arms are bound or the Rolling Ladder is set off first. | The Final Draft: Telegraphed one round ahead by Dip the Quill. She writes how the party ends and reads it out: Power 10 dark magic at every hero, +20 to hit, and 30 death stress to each hero it lands on. Guarding halves the damage, not the stress.\nContraption (an Accidental Chaos Wave sets it off): The Rolling Ladder. A forty-foot library ladder on brass rails that runs the length of the stacks. When a Chaos Wave sets it off it rolls the whole way: Vellum takes damage equal to 3% of her max HP, her arms are bound for 2 turns under a landslide of folios, a dipped quill is wasted, and her heart-book lands in plain sight, so she cannot Re-shelve for 2 rounds. Works once per phase.\nAnother way to end it, Go on the Record: At 30% HP or below, Valerie can spend a turn Thinking It Through to dictate what really happened at the mill, the chasm and the bridge. Vellum writes it down, closes the book, and the fight ends as a win with full rewards. The price: Valerie takes 30 realization stress (it ignores Willpower and drops the gauge 10), and Hero Rep falls by 10 once the corrected edition circulates.\nHow it fights: Two actions a round. She opens with Re-shelve and repeats it every fourth round through Phases 1 and 2. Quills go to whoever is casting or healing, Strike Through to whoever hit her hardest; a taunt redirects her attacks, but readings (As It Actually Happened, Errata) ignore taunts. In Phase 3 she dips the quill every fourth round and reads The Final Draft first thing the round after.\nHow to beat it: Find the heart-book whenever she Re-shelves it: Wait, Look Closely does it reliably and a Chaos Wave does it for free. Keep Valerie a Total Airhead through the readings so horror and embarrassment miss her and the party sheds stress, and bind Vellum's arms or drop the Rolling Ladder on her the round she dips the quill. Fire and holy hurt her; dark heals her.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 77,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 27
+    },
+    "28": {
+      "uid": 28,
+      "key": [
+        "parity",
+        "comptroller",
+        "auditor",
+        "ledger",
+        "counting house",
+        "great wheel",
+        "audit"
+      ],
+      "keysecondary": [],
+      "comment": "boss · boss_parity",
+      "content": "[BOSS: Madam Parity, Comptroller of Fortune] she/her. Level 100 superboss, 3 actions a round. HP 22,200,000. STR 500, INT 640, AGI 640, CON 370, WIL 700, LCK 600.\nA stately woman in her sixties with dark brown skin and silver locs pinned under a green eyeshade, in pinstriped robes, with an abacus for a halo and a set of brass scales standing where her shadow should be. Arena: The Counting House at the End of Luck: a marble floor ruled like a ledger, a wall of pigeonholes holding everyone's odds, and the Great Wheel, chained since the day she took office.\nThe celestial auditor who balances every stroke of luck in the world against a loss somewhere else, and has found one account that only ever pays out. Wants: To close the Bellweather account: every accident repaid and every rescue it bought reversed, until the books are square. Cost: Perfect fairness means nothing has ever happened to her by chance: she has never been lucky, never been surprised, and never once been glad to be wrong.\nAffinities: weak to dark, resist to holy. Bind resistance: head 70, arms 60, legs 50.\nPhase from 100% HP, Opening Balance: She collects from whoever has the most: every single-target attack goes to the hero with the highest current HP. Decide who you top up, because a full bar is a target.\nPhase from 75% HP, The Audit: She flips the ledger: for three rounds in every four, Valerie's luck runs backwards and only works while she is Thinking. Decide whether to chase the flip or sit it out in the middle of the gauge.\nPhase from 50% HP, Collections: She starts taking things back: buffs, MP and nerve. Repossession lands as the first action of every fourth round: decide what you are willing to let her take.\nPhase from 25% HP, Closing the Books: She rings the closing bell, and two rounds later the whole bill comes due on everyone. Spin the Wheel, brace, or let Valerie stand up and take the bill alone.\nMoves: Heads I Win: Flips a coin the size of a cartwheel at one hero: Power 6 projectile driven by Arcana and resisted by Willpower, +10 to hit. | Red Tape: Wraps one row in triplicate: Power 3 holy magic, +5 to hit, and a 40% chance of a legs bind for 2 turns on each hero hit. | Actuarial Table: Shows each hero the exact odds that they die today. Cannot miss: 20 horror stress to every hero. | Itemised Statement: Reads the Bellweather account line by line. Cannot miss: Valerie takes 20 realization stress (ignores Willpower, Airhead −10) and every other hero takes 10 mental stress. | Double Entry: Flips the ledger for 3 rounds. Cannot miss: Valerie's accidents read 100 minus the Airhead gauge, so her luck only works while she is Thinking. Her ultimate I'm Just a Good Hero! overrides it and a spin of the Great Wheel ends it. | Service Charge: Cannot miss. Each hero chooses: pay 12% of max MP, or keep it and take 15 general stress. | Repossession: Cannot miss. Strips every buff from every hero and applies each one to her own attributes for 2 turns. | Final Notice: Hands one hero a black-edged envelope: Power 4 holy magic, +10 to hit, and 28 death stress if it lands. | Closing Bell: Rings the closing bell. Cannot miss: 10 horror stress to every hero, and Balance Due lands as her first action two rounds later unless her arms are bound or the Great Wheel is spun first. | Balance Due: Telegraphed two rounds ahead by Closing Bell. Everything her luck ever dodged, presented at once: Power 16 holy magic at every hero, +20 to hit, and 40 death stress to each hero it lands on. Guarding halves the damage, not the stress. If Valerie is taunting, the whole bill goes to her alone as a single hit.\nContraption (an Accidental Chaos Wave sets it off): The Great Wheel. A wheel of fortune three storeys tall, chained since the day she took office because a wheel that spins is an unaudited liability. When a Chaos Wave sets it off the chain snaps and it spins: Madam Parity is Surprised for the first time in her existence and loses her next action, she takes damage equal to 2% of her max HP, a flipped ledger flips back, and a rung Closing Bell is cancelled. Works once per phase.\nAnother way to end it, One for the House: At 25% HP or below, a Valerie who is truly a Total Airhead (gauge 67 or more, ledger not flipped) can spend 100 MCE to give the Wheel's next spin to Madam Parity. It lands on her number. She has never won anything before, and the fight ends as a win with full rewards. The price: All 100 MCE, saved instead of spent on either ultimate, and Valerie has to be an Airhead at the moment it matters, which the Itemised Statement is working against.\nHow it fights: Three actions a round. Every single-target attack goes to the hero with the highest current HP; a taunt overrides that. Double Entry comes round on a four-round cycle from Phase 2, Repossession from Phase 3 and the Closing Bell from Phase 4. Her Luck is exactly the benchmark for her level, so she neither out-lucks anyone nor is out-lucked.\nHow to beat it: Make Valerie the richest target in the room and let the coins bounce; dark hurts Parity and holy is halved. When the ledger flips, either Think through it and accept the stress or spend 100 MCE on I'm Just a Good Hero! to ignore it, and time buffs for the round after a Repossession. When the bell rings, spin the Great Wheel with a Chaos Wave, taunt so Valerie takes the bill alone, or have everyone Guard.",
+      "constant": false,
+      "vectorized": false,
+      "selective": false,
+      "selectiveLogic": 0,
+      "addMemo": true,
+      "order": 78,
+      "position": 1,
+      "disable": false,
+      "excludeRecursion": false,
+      "preventRecursion": false,
+      "probability": 100,
+      "useProbability": true,
+      "depth": 4,
+      "group": "",
+      "groupOverride": false,
+      "groupWeight": 100,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "matchWholeWords": null,
+      "useGroupScoring": null,
+      "automationId": "",
+      "role": null,
+      "sticky": 0,
+      "cooldown": 0,
+      "delay": 0,
+      "displayIndex": 28
+    },
+    "29": {
+      "uid": 29,
+      "key": [
         "forest",
         "isekai",
         "first day",
@@ -851,10 +1182,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 21
+      "displayIndex": 29
     },
-    "22": {
-      "uid": 22,
+    "30": {
+      "uid": 30,
       "key": [
         "road",
         "forest",
@@ -890,10 +1221,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 22
+      "displayIndex": 30
     },
-    "23": {
-      "uid": 23,
+    "31": {
+      "uid": 31,
       "key": [
         "mountain",
         "bridge",
@@ -929,10 +1260,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 23
+      "displayIndex": 31
     },
-    "24": {
-      "uid": 24,
+    "32": {
+      "uid": 32,
       "key": [
         "camp",
         "pocket dimension",
@@ -966,10 +1297,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 24
+      "displayIndex": 32
     },
-    "25": {
-      "uid": 25,
+    "33": {
+      "uid": 33,
       "key": [
         "town",
         "camp",
@@ -1006,10 +1337,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 25
+      "displayIndex": 33
     },
-    "26": {
-      "uid": 26,
+    "34": {
+      "uid": 34,
       "key": [
         "tavern",
         "town",
@@ -1044,10 +1375,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 26
+      "displayIndex": 34
     },
-    "27": {
-      "uid": 27,
+    "35": {
+      "uid": 35,
       "key": [
         "dungeon",
         "ruin",
@@ -1082,10 +1413,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 27
+      "displayIndex": 35
     },
-    "28": {
-      "uid": 28,
+    "36": {
+      "uid": 36,
       "key": [
         "town",
         "market",
@@ -1120,10 +1451,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 28
+      "displayIndex": 36
     },
-    "29": {
-      "uid": 29,
+    "37": {
+      "uid": 37,
       "key": [
         "town",
         "castle",
@@ -1159,10 +1490,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 29
+      "displayIndex": 37
     },
-    "30": {
-      "uid": 30,
+    "38": {
+      "uid": 38,
       "key": [
         "inn",
         "shrine",
@@ -1198,10 +1529,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 30
+      "displayIndex": 38
     },
-    "31": {
-      "uid": 31,
+    "39": {
+      "uid": 39,
       "key": [
         "camp",
         "inn",
@@ -1237,10 +1568,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 31
+      "displayIndex": 39
     },
-    "32": {
-      "uid": 32,
+    "40": {
+      "uid": 40,
       "key": [
         "cave",
         "mountain",
@@ -1275,10 +1606,10 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 32
+      "displayIndex": 40
     },
-    "33": {
-      "uid": 33,
+    "41": {
+      "uid": 41,
       "key": [
         "town",
         "castle",
@@ -1313,7 +1644,7 @@
       "sticky": 0,
       "cooldown": 0,
       "delay": 0,
-      "displayIndex": 33
+      "displayIndex": 41
     }
   }
 }

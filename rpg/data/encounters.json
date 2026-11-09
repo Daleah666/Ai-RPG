@@ -1,0 +1,960 @@
+{
+  "version": 1,
+  "encounters": [
+    {
+      "id": "goblin_scouts",
+      "name": "Goblin Scouts",
+      "level": "party",
+      "text": "Three goblin scouts creeping through the ferns with knives and a sling, convinced nobody has noticed them. They are brave as a group: when two are down the third runs.",
+      "keys": [
+        "goblin",
+        "goblins",
+        "scouts",
+        "ferns",
+        "knives",
+        "clearing",
+        "sling"
+      ],
+      "enemies": [
+        {
+          "id": "enemy_goblin_knifer",
+          "name": "Goblin Knifer",
+          "count": 2,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.8,
+            "INT": 0.4,
+            "AGI": 1,
+            "CON": 0.5,
+            "WIL": 0.5,
+            "LCK": 0.8
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 0,
+            "arms": 0,
+            "legs": 10
+          },
+          "moves": [
+            {
+              "id": "enemy_goblin_knifer_shank",
+              "name": "Shank",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "melee"
+              ],
+              "effects": [],
+              "text": "Stabs the nearest shin: Power 2 physical."
+            },
+            {
+              "id": "enemy_goblin_knifer_ankle_stab",
+              "name": "Ankle Stab",
+              "type": "physical",
+              "stat": "STR",
+              "power": 1.5,
+              "acc": 5,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "melee"
+              ],
+              "effects": [
+                {
+                  "kind": "bind",
+                  "part": "legs",
+                  "chance": 25,
+                  "turns": 1
+                }
+              ],
+              "text": "Goes for the ankles: Power 1.5 physical, +5 to hit, 25% chance of a legs bind for 1 turn."
+            }
+          ],
+          "text": "A knee-high scout with a kitchen knife. Stabs the nearest shin and runs if it is the last one standing."
+        },
+        {
+          "id": "enemy_goblin_slinger",
+          "name": "Goblin Slinger",
+          "count": 1,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.7,
+            "INT": 0.4,
+            "AGI": 1.1,
+            "CON": 0.5,
+            "WIL": 0.5,
+            "LCK": 0.9
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 0,
+            "arms": 0,
+            "legs": 10
+          },
+          "moves": [
+            {
+              "id": "enemy_goblin_slinger_sling_stone",
+              "name": "Sling Stone",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Slings a river stone at one hero: Power 2 physical projectile."
+            },
+            {
+              "id": "enemy_goblin_slinger_rude_gesture",
+              "name": "Rude Gesture",
+              "type": "stress",
+              "stat": "STR",
+              "power": 0,
+              "acc": 10,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "embarrassment"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 5,
+                  "source": "embarrassment"
+                }
+              ],
+              "text": "A gesture that needs no translation, at +10 to hit: 5 embarrassment stress if it lands."
+            }
+          ],
+          "text": "Hangs back with a sling and a repertoire of gestures. Its stones are projectiles, so they can bounce."
+        }
+      ],
+      "contraption": null
+    },
+    {
+      "id": "bandit_archers",
+      "name": "Bandit Archers",
+      "level": "party",
+      "text": "Four bows and one crossbow dug into the left bank of a bramble-lined road, all aimed at the shiniest thing on it. Every attack they have is a projectile, and none of them wants a fight at arm's length.",
+      "keys": [
+        "bandit",
+        "bandits",
+        "archers",
+        "arrows",
+        "ambush",
+        "crossbow",
+        "volley",
+        "brambles"
+      ],
+      "enemies": [
+        {
+          "id": "enemy_bandit_bowman",
+          "name": "Bandit Bowman",
+          "count": 4,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.9,
+            "INT": 0.5,
+            "AGI": 1.1,
+            "CON": 0.6,
+            "WIL": 0.6,
+            "LCK": 0.8
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 10,
+            "arms": 10,
+            "legs": 10
+          },
+          "moves": [
+            {
+              "id": "enemy_bandit_bowman_loose",
+              "name": "Loose",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2.2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Shoots one hero: Power 2.2 physical projectile."
+            },
+            {
+              "id": "enemy_bandit_bowman_pinning_shot",
+              "name": "Pinning Shot",
+              "type": "physical",
+              "stat": "STR",
+              "power": 1.6,
+              "acc": 5,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [
+                {
+                  "kind": "bind",
+                  "part": "legs",
+                  "chance": 30,
+                  "turns": 2
+                }
+              ],
+              "text": "Aims for a boot: Power 1.6 physical projectile, +5 to hit, 30% chance of a legs bind for 2 turns."
+            }
+          ],
+          "text": "Shoots from cover at whoever is most visible, which is the knight in gold. Folds quickly once anyone reaches the bank."
+        },
+        {
+          "id": "enemy_bandit_sergeant",
+          "name": "Crossbow Sergeant",
+          "count": 1,
+          "rank": "standard",
+          "factors": {
+            "STR": 1.1,
+            "INT": 0.6,
+            "AGI": 0.9,
+            "CON": 0.9,
+            "WIL": 0.8,
+            "LCK": 0.8
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 20,
+            "arms": 20,
+            "legs": 20
+          },
+          "moves": [
+            {
+              "id": "enemy_bandit_sergeant_heavy_bolt",
+              "name": "Heavy Bolt",
+              "type": "physical",
+              "stat": "STR",
+              "power": 5,
+              "acc": -5,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Fires a crossbow the size of a plough at one hero: Power 5 physical projectile, −5 to hit."
+            },
+            {
+              "id": "enemy_bandit_sergeant_on_my_mark",
+              "name": "On My Mark",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2.8,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "row",
+              "part": "head",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Calls a volley down on one row: Power 2.8 physical projectile against each hero in it."
+            }
+          ],
+          "text": "Calls the volleys and reloads a crossbow the size of a plough. Slow, steady, and the only one who does not run."
+        }
+      ],
+      "contraption": null
+    },
+    {
+      "id": "skeleton_phalanx",
+      "name": "Skeleton Phalanx",
+      "level": "party",
+      "text": "A dozen skeletons in formation in a long hall: eight hoplites in two ranks of four, three archers and a captain. Only the front four hoplites can reach the party, and locked shields halve what gets through until something breaks the formation.",
+      "keys": [
+        "skeleton",
+        "skeletons",
+        "phalanx",
+        "formation",
+        "lever",
+        "hall",
+        "bones",
+        "shields"
+      ],
+      "enemies": [
+        {
+          "id": "enemy_skeleton_hoplite",
+          "name": "Skeleton Hoplite",
+          "count": 8,
+          "acting": 4,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.9,
+            "INT": 0.3,
+            "AGI": 0.7,
+            "CON": 0.6,
+            "WIL": 0.6,
+            "LCK": 0.5
+          },
+          "affinities": {
+            "holy": "weak",
+            "dark": "resist"
+          },
+          "bindResist": {
+            "head": 40,
+            "arms": 10,
+            "legs": 0
+          },
+          "moves": [
+            {
+              "id": "enemy_skeleton_hoplite_spear_thrust",
+              "name": "Spear Thrust",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2.2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "melee"
+              ],
+              "effects": [],
+              "text": "A drilled thrust from behind the shield: Power 2.2 physical."
+            },
+            {
+              "id": "enemy_skeleton_hoplite_locked_shields",
+              "name": "Locked Shields",
+              "type": "buff",
+              "stat": "STR",
+              "power": 0,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "self",
+              "part": "legs",
+              "tags": [],
+              "effects": [
+                {
+                  "kind": "status",
+                  "id": "guard",
+                  "turns": 1,
+                  "target": "self"
+                }
+              ],
+              "auto": true,
+              "text": "Locks shields with its neighbours and Guards (takes half damage) until its next turn. Sealed while its legs are bound or the formation is broken."
+            }
+          ],
+          "text": "Shield, spear, no opinions. The front four attack or lock shields; when one falls, the hoplite behind steps up."
+        },
+        {
+          "id": "enemy_skeleton_archer",
+          "name": "Skeleton Archer",
+          "count": 3,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.8,
+            "INT": 0.3,
+            "AGI": 0.9,
+            "CON": 0.5,
+            "WIL": 0.6,
+            "LCK": 0.6
+          },
+          "affinities": {
+            "holy": "weak",
+            "dark": "resist"
+          },
+          "bindResist": {
+            "head": 40,
+            "arms": 10,
+            "legs": 0
+          },
+          "moves": [
+            {
+              "id": "enemy_skeleton_archer_bone_arrow",
+              "name": "Bone Arrow",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Shoots over the shield wall: Power 2 physical projectile."
+            },
+            {
+              "id": "enemy_skeleton_archer_rattling_volley",
+              "name": "Rattling Volley",
+              "type": "physical",
+              "stat": "STR",
+              "power": 1.6,
+              "acc": -5,
+              "crit": 0,
+              "element": "phys",
+              "target": "row",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile",
+                "horror"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 4,
+                  "source": "horror"
+                }
+              ],
+              "text": "A clattering volley at one row: Power 1.6 physical projectile, −5 to hit, and 4 horror stress to each hero hit."
+            }
+          ],
+          "text": "Shoots over the shield wall. Its arrows are projectiles and it has no shield of its own."
+        },
+        {
+          "id": "enemy_phalanx_captain",
+          "name": "Phalanx Captain",
+          "count": 1,
+          "rank": "standard",
+          "factors": {
+            "STR": 1.1,
+            "INT": 0.5,
+            "AGI": 0.8,
+            "CON": 1,
+            "WIL": 0.9,
+            "LCK": 0.7
+          },
+          "affinities": {
+            "holy": "weak",
+            "dark": "resist"
+          },
+          "bindResist": {
+            "head": 40,
+            "arms": 20,
+            "legs": 10
+          },
+          "moves": [
+            {
+              "id": "enemy_phalanx_captain_halberd",
+              "name": "Captain's Halberd",
+              "type": "physical",
+              "stat": "STR",
+              "power": 4.5,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "melee"
+              ],
+              "effects": [],
+              "text": "A long overhead chop at one hero: Power 4.5 physical."
+            },
+            {
+              "id": "enemy_phalanx_captain_dress_the_line",
+              "name": "Dress the Line",
+              "type": "stress",
+              "stat": "STR",
+              "power": 0,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "all",
+              "part": "head",
+              "tags": [
+                "horror"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 7,
+                  "source": "horror"
+                },
+                {
+                  "kind": "status",
+                  "id": "formation_reformed",
+                  "target": "enemies"
+                }
+              ],
+              "auto": true,
+              "text": "Raps out an order in a dead language. Cannot miss: 7 horror stress to every hero, and a broken formation re-forms."
+            }
+          ],
+          "text": "The only skeleton giving orders. While it stands a broken formation re-forms; drop it and the hoplites stop locking shields."
+        }
+      ],
+      "contraption": {
+        "name": "The DO NOT PULL Lever",
+        "text": "A brass lever under a sign in four languages. When a Chaos Wave sets it off, the floor under the phalanx drops a foot and tilts: every skeleton slides into one corner, takes damage equal to 25% of its max HP, has its legs bound for 2 turns and loses Guard, and no shields can be locked for 2 turns. Works once. If the event already pulled it, start the fight with all of this applied.",
+        "uses": "once",
+        "effects": [
+          {
+            "kind": "damage",
+            "target": "enemies",
+            "hpPct": 25
+          },
+          {
+            "kind": "bind",
+            "target": "enemies",
+            "part": "legs",
+            "chance": 100,
+            "turns": 2
+          },
+          {
+            "kind": "status",
+            "target": "enemies",
+            "id": "formation_broken",
+            "turns": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "hoard_drake",
+      "name": "The Hoard Drake",
+      "level": "party",
+      "text": "A drake woken on top of its hoard in a cave with one way through, and it has counted every coin. One elite with two actions a round: it guards the pile first and the exit second.",
+      "keys": [
+        "drake",
+        "dragon",
+        "hoard",
+        "cave",
+        "goblet",
+        "treasure",
+        "breath"
+      ],
+      "enemies": [
+        {
+          "id": "enemy_hoard_drake",
+          "name": "Hoard Drake",
+          "count": 1,
+          "actions": 2,
+          "rank": "elite",
+          "factors": {
+            "STR": 1.1,
+            "INT": 1,
+            "AGI": 0.9,
+            "CON": 1.2,
+            "WIL": 1,
+            "LCK": 0.8
+          },
+          "affinities": {
+            "fire": "resist",
+            "ice": "weak"
+          },
+          "bindResist": {
+            "head": 40,
+            "arms": 30,
+            "legs": 30
+          },
+          "moves": [
+            {
+              "id": "enemy_hoard_drake_bite",
+              "name": "Bite",
+              "type": "physical",
+              "stat": "STR",
+              "power": 5,
+              "acc": 5,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "head",
+              "tags": [
+                "melee",
+                "wound"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 6,
+                  "source": "wound"
+                }
+              ],
+              "text": "Snaps at the nearest hero: Power 5 physical, +5 to hit, and 6 wound stress if it lands."
+            },
+            {
+              "id": "enemy_hoard_drake_tail_sweep",
+              "name": "Tail Sweep",
+              "type": "physical",
+              "stat": "STR",
+              "power": 3,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "row",
+              "part": "legs",
+              "tags": [
+                "melee"
+              ],
+              "effects": [
+                {
+                  "kind": "bind",
+                  "part": "legs",
+                  "chance": 30,
+                  "turns": 2
+                }
+              ],
+              "text": "Sweeps a row with its tail: Power 3 physical and a 30% chance of a legs bind for 2 turns."
+            },
+            {
+              "id": "enemy_hoard_drake_molten_spit",
+              "name": "Molten Spit",
+              "type": "magical",
+              "stat": "INT",
+              "power": 5,
+              "acc": 0,
+              "crit": 0,
+              "element": "fire",
+              "target": "one",
+              "part": "head",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Spits a gobbet of molten gold at a hero out of reach: Power 5 fire magic projectile."
+            },
+            {
+              "id": "enemy_hoard_drake_bellows_breath",
+              "name": "Bellows Breath",
+              "type": "magical",
+              "stat": "INT",
+              "power": 2.8,
+              "acc": 0,
+              "crit": 0,
+              "element": "fire",
+              "target": "all",
+              "part": "head",
+              "tags": [
+                "horror"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 8,
+                  "source": "horror",
+                  "target": "heroes"
+                }
+              ],
+              "text": "Breathes like a forge across the whole cave: Power 2.8 fire magic to each hero it lands on, and 8 horror stress to every hero whether it lands or not."
+            },
+            {
+              "id": "enemy_hoard_drake_that_one_is_mine",
+              "name": "That One Is Mine",
+              "type": "stress",
+              "stat": "INT",
+              "power": 0,
+              "acc": 10,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "head",
+              "tags": [
+                "mental"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 14,
+                  "source": "mental"
+                }
+              ],
+              "text": "Fixes one hero with a stare of pure ownership at +10 to hit: 14 mental stress if it lands."
+            }
+          ],
+          "text": "Bites what is close, spits molten gold at what is far, and breathes on everyone when crowded. It will not leave the hoard, so it can be circled."
+        }
+      ],
+      "contraption": {
+        "name": "The Hoard",
+        "text": "A hill of coin, plate and goblets under the drake. When a Chaos Wave sets it off the pile slides: the drake loses its next action scrabbling after its goblets, its legs are bound for 2 turns, it loses Guard, and the party collects 20% more gold after the fight. Works once.",
+        "uses": "once",
+        "effects": [
+          {
+            "kind": "status",
+            "target": "enemies",
+            "id": "lose_next_action",
+            "turns": 1
+          },
+          {
+            "kind": "bind",
+            "target": "enemies",
+            "part": "legs",
+            "chance": 100,
+            "turns": 2
+          },
+          {
+            "kind": "gold",
+            "pct": 20
+          }
+        ]
+      }
+    },
+    {
+      "id": "horde_at_the_gate",
+      "name": "The Horde at the Gate",
+      "level": "party",
+      "text": "A raiding horde hitting a town gate at dusk: eighteen raiders, six slingers and two war drummers, far more than fit through the gap at once. Only five raiders and three slingers can act each round, and a fresh one steps up as each falls; if the party has the advantage, the militia holds the flanks and only three raiders can act.",
+      "keys": [
+        "horde",
+        "gate",
+        "walls",
+        "raiders",
+        "militia",
+        "siege",
+        "drums",
+        "portcullis"
+      ],
+      "enemies": [
+        {
+          "id": "enemy_horde_raider",
+          "name": "Horde Raider",
+          "count": 18,
+          "acting": 5,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.7,
+            "INT": 0.3,
+            "AGI": 0.8,
+            "CON": 0.4,
+            "WIL": 0.4,
+            "LCK": 0.6
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 0,
+            "arms": 0,
+            "legs": 0
+          },
+          "moves": [
+            {
+              "id": "enemy_horde_raider_hack",
+              "name": "Hack",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "melee"
+              ],
+              "effects": [],
+              "text": "Swings a borrowed axe: Power 2 physical."
+            },
+            {
+              "id": "enemy_horde_raider_dogpile",
+              "name": "Dogpile",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2.6,
+              "acc": -10,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "legs",
+              "tags": [
+                "melee"
+              ],
+              "effects": [
+                {
+                  "kind": "bind",
+                  "part": "legs",
+                  "chance": 20,
+                  "turns": 1
+                }
+              ],
+              "text": "Throws itself at a hero's knees: Power 2.6 physical, −10 to hit, 20% chance of a legs bind for 1 turn."
+            }
+          ],
+          "text": "A borrowed axe and one good swing's worth of courage. Any solid hit drops it; there is always another behind it."
+        },
+        {
+          "id": "enemy_horde_slinger",
+          "name": "Horde Slinger",
+          "count": 6,
+          "acting": 3,
+          "rank": "minion",
+          "factors": {
+            "STR": 0.7,
+            "INT": 0.3,
+            "AGI": 1,
+            "CON": 0.4,
+            "WIL": 0.4,
+            "LCK": 0.7
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 0,
+            "arms": 0,
+            "legs": 0
+          },
+          "moves": [
+            {
+              "id": "enemy_horde_slinger_sling_volley",
+              "name": "Sling Volley",
+              "type": "physical",
+              "stat": "STR",
+              "power": 1.8,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "one",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Slings a stone over the front line: Power 1.8 physical projectile."
+            },
+            {
+              "id": "enemy_horde_slinger_fire_pot",
+              "name": "Fire Pot",
+              "type": "physical",
+              "stat": "STR",
+              "power": 2.2,
+              "acc": -10,
+              "crit": 0,
+              "element": "fire",
+              "target": "row",
+              "part": "arms",
+              "tags": [
+                "ranged",
+                "projectile"
+              ],
+              "effects": [],
+              "text": "Lobs a pot of burning pitch at one row: Power 2.2 fire projectile driven by Might, −10 to hit."
+            }
+          ],
+          "text": "Lobs stones and fire pots over the front line. Everything it throws is a projectile."
+        },
+        {
+          "id": "enemy_horde_drummer",
+          "name": "War Drummer",
+          "count": 2,
+          "rank": "standard",
+          "factors": {
+            "STR": 0.7,
+            "INT": 0.9,
+            "AGI": 0.7,
+            "CON": 0.9,
+            "WIL": 1,
+            "LCK": 0.7
+          },
+          "affinities": {},
+          "bindResist": {
+            "head": 20,
+            "arms": 20,
+            "legs": 20
+          },
+          "moves": [
+            {
+              "id": "enemy_horde_drummer_war_drums",
+              "name": "War Drums",
+              "type": "stress",
+              "stat": "STR",
+              "power": 0,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "all",
+              "part": "arms",
+              "tags": [
+                "horror"
+              ],
+              "effects": [
+                {
+                  "kind": "stress",
+                  "amount": 7,
+                  "source": "horror"
+                }
+              ],
+              "auto": true,
+              "text": "A beat the party feels in its teeth. Cannot miss: 7 horror stress to every hero."
+            },
+            {
+              "id": "enemy_horde_drummer_drive_them_on",
+              "name": "Drive Them On",
+              "type": "buff",
+              "stat": "STR",
+              "power": 0,
+              "acc": 0,
+              "crit": 0,
+              "element": "phys",
+              "target": "allies",
+              "part": "head",
+              "tags": [],
+              "effects": [
+                {
+                  "kind": "mod",
+                  "stat": "STR",
+                  "mult": 1.2,
+                  "turns": 2,
+                  "target": "allies"
+                }
+              ],
+              "auto": true,
+              "text": "Shouts the front line forward: every raider gains Might ×1.2 for 2 turns."
+            }
+          ],
+          "text": "Keeps the horde coming and the party rattled. With both drummers down the raiders stop pressing and only three can act each round."
+        }
+      ],
+      "contraption": {
+        "name": "The Portcullis",
+        "text": "The gate's own portcullis, winched up and badly pinned. When a Chaos Wave sets it off it drops: the four raiders under it are out of the fight, and for 2 turns only half as many enemies can act while the rest hammer on the wrong side. Works once.",
+        "uses": "once",
+        "effects": [
+          {
+            "kind": "damage",
+            "target": "enemies",
+            "count": 4,
+            "hpPct": 100
+          },
+          {
+            "kind": "status",
+            "target": "enemies",
+            "id": "gate_shut",
+            "turns": 2
+          }
+        ]
+      }
+    }
+  ]
+}

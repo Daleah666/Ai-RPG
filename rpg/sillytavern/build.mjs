@@ -134,22 +134,39 @@ if (items.length) {
 ${items.map((i) => `- ${i.name} (Lv ${i.level}, ${n(i.price)}g): ${i.text}`).join('\n')}`);
 }
 
+const affinityLine = (aff) => Object.entries(aff ?? {}).map(([el, v]) => `${v} to ${el}`).join(', ') || 'none';
+const resistLine = (r) => Object.entries(r ?? {}).map(([part, v]) => `${part} ${v}`).join(', ') || 'none';
+const movesLine = (moves) => (moves ?? []).map((m) => `${m.name}: ${m.text}`).join(' | ');
+
 for (const e of encounters) {
-  const keys = [...new Set([...e.name.toLowerCase().split(/\s+/).filter((w) => w.length > 3), ...(e.keys ?? [])])];
+  const keys = [...new Set([...(e.keys ?? []), ...e.name.toLowerCase().split(/\s+/).filter((w) => w.length > 3)])];
   add(`encounter · ${e.id}`, keys, `
-[ENCOUNTER: ${e.name}] ${e.text}
-Enemies: ${e.enemies.map((x) => `${x.count} x ${x.name} (${x.rank}): ${x.text}`).join(' ')}
-${e.contraption ? `Contraption (goes off on an Accidental Chaos Wave): ${e.contraption.name}. ${e.contraption.text}` : ''}`);
+[ENCOUNTER: ${e.name}] ${e.text} Enemy attributes are multiples of a typical attribute for the party's level.
+${e.enemies.map((x) => `- ${x.count} x ${x.name} (${x.rank}): ${x.text} Moves: ${movesLine(x.moves)}`).join('\n')}
+${e.contraption ? `Contraption (an Accidental Chaos Wave sets it off): ${e.contraption.name}. ${e.contraption.text}` : 'No contraption here.'}`);
 }
 
 for (const b of bosses) {
-  const keys = [...new Set(b.name.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter((w) => w.length > 3))];
+  const derived = b.name.toLowerCase().replace(/[^a-z\s]/g, '').split(/\s+/).filter((w) => w.length > 3);
+  const keys = [...new Set(b.keys?.length ? b.keys : derived)];
   add(`boss · ${b.id}`, keys, `
-[BOSS: ${b.name}] Level ${b.level} ${b.rank}. HP ${n(b.hp)}. ${STAT_KEYS.map((k) => `${k} ${b.stats[k]}`).join(', ')}.
+[BOSS: ${b.name}${b.title ? `, ${b.title}` : ''}] ${b.pronouns ? `${b.pronouns}. ` : ''}Level ${b.level} ${b.rank}${b.actions ? `, ${b.actions} actions a round` : ''}. HP ${n(b.hp)}. ${STAT_KEYS.map((k) => `${k} ${b.stats[k]}`).join(', ')}.
+${[b.look, b.arena ? `Arena: ${b.arena}` : ''].filter(Boolean).join(' ')}
 ${b.identity} Wants: ${b.want} Cost: ${b.cost}
-${(b.phases ?? []).map((ph) => `Phase at ${ph.at}% HP, ${ph.name}: ${ph.text}`).join('\n')}
-Moves: ${(b.moves ?? []).map((m) => `${m.name} (${m.text})`).join(' ')}
+Affinities: ${affinityLine(b.affinities)}. Bind resistance: ${resistLine(b.bindResist)}.
+${(b.phases ?? []).map((ph) => `Phase from ${ph.at}% HP, ${ph.name}: ${ph.text}`).join('\n')}
+Moves: ${movesLine(b.moves)}
+${b.contraption ? `Contraption (an Accidental Chaos Wave sets it off): ${b.contraption.name}. ${b.contraption.text}` : ''}
+${b.concession ? `Another way to end it, ${b.concession.name}: ${b.concession.text} The price: ${b.concession.price}` : ''}
+How it fights: ${b.tactics ?? ''}
 How to beat it: ${b.counterplay}`);
+}
+
+const allStatuses = [...(readData('skills')?.statuses ?? []), ...(readData('bosses')?.statuses ?? []), ...(readData('encounters')?.statuses ?? [])]
+  .filter((st, i, list) => list.findIndex((x) => x.id === st.id) === i);
+if (allStatuses.length) {
+  add('rules · statuses', ['status', 'statuses', ...allStatuses.map((st) => st.name.toLowerCase())], `
+[STATUSES] ${allStatuses.map((st) => `${st.name}: ${st.text}`).join(' | ')}`);
 }
 
 let eventCount = 0;

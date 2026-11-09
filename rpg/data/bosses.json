@@ -1,0 +1,1359 @@
+{
+  "version": 1,
+  "bosses": [
+    {
+      "id": "boss_bolgrim",
+      "name": "Bolgrim Underbridge",
+      "title": "the Troll Who Was There",
+      "pronouns": "he/him",
+      "stage": "early",
+      "level": 12,
+      "rank": "boss",
+      "actions": 2,
+      "stats": {
+        "STR": 96,
+        "INT": 36,
+        "AGI": 80,
+        "CON": 54,
+        "WIL": 58,
+        "LCK": 52
+      },
+      "hp": 129600,
+      "mp": 696,
+      "look": "A river troll the size of a hay cart: moss on his shoulders, reading spectacles on a chain, and a toll signpost for a club.",
+      "arena": "Underbridge Toll: a narrow stone bridge over a gorge, an iron toll box, and Exhibit A cocked and creaking at the far end.",
+      "identity": "A toll-bridge troll chieftain who watched Valerie rout his whole warband by falling over, and has told the true story to everyone since without being believed once.",
+      "want": "To hear one person, any person, say out loud that she tripped.",
+      "cost": "His warband walked out on the chief who lost to a pratfall, and every toll he has taken since has gone into a machine built to prove it was an accident.",
+      "affinities": {
+        "fire": "weak",
+        "ice": "resist"
+      },
+      "bindResist": {
+        "head": 30,
+        "arms": 50,
+        "legs": 20
+      },
+      "phases": [
+        {
+          "at": 100,
+          "name": "Pay the Toll",
+          "text": "He blocks the bridge, clubs whoever stands closest and throws the toll box at whoever stands furthest. Decide who holds the bridge mouth: the hero he keeps missing, or the warrior he does not.",
+          "question": "Who stands in front?",
+          "answer": "Put Valerie in his way with Stand Behind Me! and keep her Winging It: his swings miss, his toll box comes back, and he trips over himself.",
+          "price": "A Valerie who is Winging It lands fewer aimed hits and has no planned skills, so the fight runs longer.",
+          "moves": [
+            "boss_bolgrim_toll_collector",
+            "boss_bolgrim_bridge_sweep",
+            "boss_bolgrim_exact_change",
+            "boss_bolgrim_bellow"
+          ],
+          "script": [
+            [
+              "boss_bolgrim_toll_collector",
+              "boss_bolgrim_exact_change"
+            ],
+            [
+              "boss_bolgrim_bridge_sweep",
+              "boss_bolgrim_toll_collector"
+            ],
+            [
+              "boss_bolgrim_bellow",
+              "boss_bolgrim_exact_change"
+            ]
+          ]
+        },
+        {
+          "at": 60,
+          "name": "I Was There",
+          "text": "He stops fighting quietly and starts telling everyone exactly what he saw. Every telling knocks 10 off the Airhead gauge and rattles the party: decide whether to shut him up or out-oblivious him.",
+          "question": "Do you let him talk?",
+          "answer": "Bind his head to seal both the telling and the bellow, or keep Winging It so the gauge climbs back as fast as he knocks it down.",
+          "price": "A head bind is a turn not spent on damage and may not take; Winging It gives up planned skills; Thinking It Through stacks its own stress on top of his.",
+          "moves": [
+            "boss_bolgrim_toll_collector",
+            "boss_bolgrim_bridge_sweep",
+            "boss_bolgrim_exact_change",
+            "boss_bolgrim_bellow",
+            "boss_bolgrim_i_was_there"
+          ],
+          "script": [
+            [
+              "boss_bolgrim_i_was_there",
+              "boss_bolgrim_toll_collector"
+            ],
+            [
+              "boss_bolgrim_bridge_sweep",
+              "boss_bolgrim_exact_change"
+            ],
+            [
+              "boss_bolgrim_bellow",
+              "boss_bolgrim_toll_collector"
+            ]
+          ]
+        },
+        {
+          "at": 30,
+          "name": "The Proof",
+          "text": "He winds Exhibit A, and one round later it fires at everyone. Stop the machine, brace for it, or give him the one thing he actually wants.",
+          "question": "Stop the machine, weather it, or tell him he is right?",
+          "answer": "Bind his arms in the round he winds it, let a Chaos Wave set Exhibit A off in his face, have everyone Guard, or concede (Tell Him He Is Right).",
+          "price": "A bind or a wave may not come in the one round you have; Guarding costs the whole party a turn and switches off Valerie's dodge; conceding is paid for in her nerve.",
+          "moves": [
+            "boss_bolgrim_toll_collector",
+            "boss_bolgrim_bridge_sweep",
+            "boss_bolgrim_exact_change",
+            "boss_bolgrim_bellow",
+            "boss_bolgrim_i_was_there",
+            "boss_bolgrim_wind_the_proof",
+            "boss_bolgrim_the_proof"
+          ],
+          "script": [
+            [
+              "boss_bolgrim_wind_the_proof",
+              "boss_bolgrim_toll_collector"
+            ],
+            [
+              "boss_bolgrim_the_proof",
+              "boss_bolgrim_i_was_there"
+            ],
+            [
+              "boss_bolgrim_bridge_sweep",
+              "boss_bolgrim_exact_change"
+            ],
+            [
+              "boss_bolgrim_bellow",
+              "boss_bolgrim_toll_collector"
+            ]
+          ]
+        }
+      ],
+      "moves": [
+        {
+          "id": "boss_bolgrim_toll_collector",
+          "name": "Toll Collector",
+          "type": "physical",
+          "stat": "STR",
+          "power": 5,
+          "acc": 10,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "arms",
+          "tags": [
+            "melee"
+          ],
+          "effects": [],
+          "text": "Swings the PAY TROLL signpost at one hero: Power 5 physical, +10 to hit."
+        },
+        {
+          "id": "boss_bolgrim_bridge_sweep",
+          "name": "Bridge Sweep",
+          "type": "physical",
+          "stat": "STR",
+          "power": 3.2,
+          "acc": 5,
+          "crit": 0,
+          "element": "phys",
+          "target": "row",
+          "part": "arms",
+          "tags": [
+            "melee",
+            "embarrassment"
+          ],
+          "effects": [
+            {
+              "kind": "bind",
+              "part": "legs",
+              "chance": 30,
+              "turns": 2
+            },
+            {
+              "kind": "stress",
+              "amount": 6,
+              "source": "embarrassment"
+            }
+          ],
+          "text": "Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 6 embarrassment stress and has a 30% chance of a legs bind for 2 turns."
+        },
+        {
+          "id": "boss_bolgrim_exact_change",
+          "name": "Exact Change",
+          "type": "physical",
+          "stat": "STR",
+          "power": 5.5,
+          "acc": 5,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "arms",
+          "tags": [
+            "ranged",
+            "projectile",
+            "wound"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 6,
+              "source": "wound"
+            }
+          ],
+          "text": "Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit, and 6 wound stress if it lands."
+        },
+        {
+          "id": "boss_bolgrim_bellow",
+          "name": "Bridge-Shaking Bellow",
+          "type": "stress",
+          "stat": "STR",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "horror"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 10,
+              "source": "horror"
+            }
+          ],
+          "auto": true,
+          "text": "A roar that shakes the planks. Cannot miss: 10 horror stress to every hero."
+        },
+        {
+          "id": "boss_bolgrim_i_was_there",
+          "name": "I Was There",
+          "type": "stress",
+          "stat": "STR",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "realization",
+            "mental"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 12,
+              "source": "realization",
+              "target": "valerie"
+            },
+            {
+              "kind": "stress",
+              "amount": 6,
+              "source": "mental",
+              "target": "others"
+            }
+          ],
+          "auto": true,
+          "text": "Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 6 mental stress."
+        },
+        {
+          "id": "boss_bolgrim_wind_the_proof",
+          "name": "Wind the Proof",
+          "type": "utility",
+          "stat": "STR",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "self",
+          "part": "arms",
+          "tags": [
+            "windup",
+            "horror"
+          ],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "proof_wound",
+              "turns": 1,
+              "target": "self"
+            },
+            {
+              "kind": "stress",
+              "amount": 8,
+              "source": "horror",
+              "target": "heroes"
+            }
+          ],
+          "auto": true,
+          "text": "Cranks Exhibit A, loudly. Cannot miss: 8 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first."
+        },
+        {
+          "id": "boss_bolgrim_the_proof",
+          "name": "The Proof",
+          "type": "physical",
+          "stat": "STR",
+          "power": 9,
+          "acc": 15,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "arms",
+          "tags": [
+            "telegraphed",
+            "ranged",
+            "projectile"
+          ],
+          "effects": [],
+          "telegraph": {
+            "by": "boss_bolgrim_wind_the_proof",
+            "rounds": 1,
+            "cancel": [
+              "arms bound",
+              "Exhibit A set off",
+              "concession"
+            ]
+          },
+          "text": "Telegraphed one round ahead by Wind the Proof. Exhibit A fires every log at once: Power 9 physical projectile at every hero, +15 to hit. Guarding halves it."
+        }
+      ],
+      "contraption": {
+        "name": "Exhibit A",
+        "text": "A rack of counterweighted logs Bolgrim built to prove nobody crosses his bridge by skill. When a Chaos Wave sets it off it swings the wrong way: Bolgrim takes damage equal to 4% of his max HP, his legs are bound for 2 turns, and a wound-up Proof is cancelled. Works once per phase; he re-cocks it when the phase changes.",
+        "uses": "once per phase",
+        "effects": [
+          {
+            "kind": "damage",
+            "target": "boss",
+            "hpPct": 4
+          },
+          {
+            "kind": "bind",
+            "target": "boss",
+            "part": "legs",
+            "chance": 100,
+            "turns": 2
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "windup_cancelled"
+          }
+        ],
+        "manual": {
+          "stance": "think",
+          "difficulty": "hard",
+          "text": "Any hero may spend a turn tripping the release on purpose: a hard check, and a failure wastes the turn."
+        }
+      },
+      "concession": {
+        "name": "Tell Him He Is Right",
+        "at": 30,
+        "text": "At 30% HP or below, any hero can spend a turn saying it out loud: she tripped. Bolgrim sits down on his bridge, the fight ends as a win with full rewards, and he waves the party across.",
+        "price": "Valerie takes 25 realization stress (it ignores Willpower and drops the gauge 10) and Party Trust falls by 5.",
+        "effects": [
+          {
+            "kind": "stress",
+            "target": "valerie",
+            "amount": 25,
+            "source": "realization"
+          },
+          {
+            "kind": "trust",
+            "amount": -5
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "vindicated"
+          }
+        ]
+      },
+      "tactics": "Two actions a round. Toll Collector goes to the nearest hero and Exact Change to the furthest; a taunt overrides both. From Phase 2 he opens every third round with I Was There. In Phase 3 he winds The Proof every fourth round and fires it first thing the round after.",
+      "counterplay": "Let him swing at Valerie while she is Winging It: his hit ceiling drops, his toll box bounces back and his fumbles bind him. Bind his head to stop the truth-telling and his arms to stop The Proof, or let a Chaos Wave set Exhibit A off in his face; fire hurts him. If the party's nerve is running out, admit she tripped: it ends the fight and costs Valerie 25 stress.",
+      "vsHero": "Bolgrim is the exam for the six accidents: an accurate brute who is at his worst swinging at a Total Airhead, and whose only real weapon against her is the truth.",
+      "keys": [
+        "bolgrim",
+        "underbridge",
+        "troll",
+        "toll",
+        "bridge",
+        "exhibit a"
+      ],
+      "rewards": {
+        "exp": 18000,
+        "gold": 3600,
+        "items": []
+      }
+    },
+    {
+      "id": "boss_vellum",
+      "name": "Imara Vellum",
+      "title": "the Unabridged",
+      "pronouns": "she/her",
+      "stage": "mid",
+      "level": 50,
+      "rank": "boss",
+      "actions": 2,
+      "stats": {
+        "STR": 180,
+        "INT": 370,
+        "AGI": 330,
+        "CON": 250,
+        "WIL": 420,
+        "LCK": 280
+      },
+      "hp": 2500000,
+      "mp": 21000,
+      "look": "A tall lich in a chronicler's ink-stained robes, grey locs bound in archive ribbon, a quill behind one ear and a neat stitched seam where her heart came out.",
+      "arena": "The Unabridged Archive: stacks forty feet high, a lectern, a card index the size of a chapel, and one very long ladder on brass rails.",
+      "identity": "The Royal Chronicler, three hundred years dead and still at her desk, who cannot rest while one ballad in the kingdom says something that did not happen.",
+      "want": "To publish a single true history of the realm, with no hero in it who did not earn the word.",
+      "cost": "She cut out her own heart so it would stop improving the stories, and now she remembers every fact and not one reason any of them mattered.",
+      "affinities": {
+        "fire": "weak",
+        "holy": "weak",
+        "ice": "resist",
+        "dark": "absorb"
+      },
+      "bindResist": {
+        "head": 65,
+        "arms": 40,
+        "legs": 25
+      },
+      "phases": [
+        {
+          "at": 100,
+          "name": "Quiet, Please",
+          "text": "She hides her heart-book in the stacks and takes half damage until it is found, while the shelves stare the party down. Decide how to find the book: have Valerie look closely, which costs gauge, or wait for her to knock it loose by accident.",
+          "question": "Find the book, or flip the table?",
+          "answer": "Wait, Look Closely finds the heart-book every time and ends her Guard; a Chaos Wave strips the Guard and brings the Rolling Ladder down on her as well.",
+          "price": "Looking closely is a Think action: gauge −15 and 4 stress each time, sliding Valerie toward Lucid, where the horror starts landing on her too. Waiting for an accident means hitting at half damage until one comes.",
+          "moves": [
+            "boss_vellum_sharp_correction",
+            "boss_vellum_strike_through",
+            "boss_vellum_shush",
+            "boss_vellum_stacks_remember",
+            "boss_vellum_reshelve"
+          ],
+          "script": [
+            [
+              "boss_vellum_reshelve",
+              "boss_vellum_sharp_correction"
+            ],
+            [
+              "boss_vellum_strike_through",
+              "boss_vellum_shush"
+            ],
+            [
+              "boss_vellum_stacks_remember",
+              "boss_vellum_sharp_correction"
+            ],
+            [
+              "boss_vellum_strike_through",
+              "boss_vellum_sharp_correction"
+            ]
+          ]
+        },
+        {
+          "at": 65,
+          "name": "Citation Needed",
+          "text": "She opens the ledger and reads true entries aloud: Valerie's first, then everyone's. The truth drops the gauge, and the embarrassment only misses a Total Airhead: decide whose nerve gets spent.",
+          "question": "Whose nerve do you spend?",
+          "answer": "Keep Valerie a Total Airhead so Errata and the horror slide off her and the party sheds stress each time, or bind Vellum's head and seal every reading at once.",
+          "price": "Each true entry knocks 10 off the gauge, so staying an Airhead means Winging It nearly every turn and never looking for the book; her head is her best-guarded part.",
+          "moves": [
+            "boss_vellum_sharp_correction",
+            "boss_vellum_strike_through",
+            "boss_vellum_shush",
+            "boss_vellum_stacks_remember",
+            "boss_vellum_reshelve",
+            "boss_vellum_as_it_happened",
+            "boss_vellum_errata"
+          ],
+          "script": [
+            [
+              "boss_vellum_as_it_happened",
+              "boss_vellum_sharp_correction"
+            ],
+            [
+              "boss_vellum_errata",
+              "boss_vellum_strike_through"
+            ],
+            [
+              "boss_vellum_reshelve",
+              "boss_vellum_shush"
+            ],
+            [
+              "boss_vellum_stacks_remember",
+              "boss_vellum_sharp_correction"
+            ]
+          ]
+        },
+        {
+          "at": 30,
+          "name": "The Final Draft",
+          "text": "She stops hiding the book because she is writing in it: the party's ending, due next round. Break the quill hand, bring the ladder down, brace for the last page, or give her a true account to print instead.",
+          "question": "Break the quill, take the ending, or go on the record?",
+          "answer": "Bind her arms or set off the Rolling Ladder in the round she dips the quill; Guard if neither lands; or concede (Go on the Record).",
+          "price": "Guarding halves the damage but not the 30 death stress; a failed bind is a wasted round; going on the record is paid for in Valerie's stress and her legend.",
+          "moves": [
+            "boss_vellum_sharp_correction",
+            "boss_vellum_strike_through",
+            "boss_vellum_stacks_remember",
+            "boss_vellum_as_it_happened",
+            "boss_vellum_errata",
+            "boss_vellum_dip_the_quill",
+            "boss_vellum_final_draft"
+          ],
+          "script": [
+            [
+              "boss_vellum_dip_the_quill",
+              "boss_vellum_strike_through"
+            ],
+            [
+              "boss_vellum_final_draft",
+              "boss_vellum_as_it_happened"
+            ],
+            [
+              "boss_vellum_stacks_remember",
+              "boss_vellum_sharp_correction"
+            ],
+            [
+              "boss_vellum_errata",
+              "boss_vellum_strike_through"
+            ]
+          ]
+        }
+      ],
+      "moves": [
+        {
+          "id": "boss_vellum_sharp_correction",
+          "name": "Sharp Correction",
+          "type": "magical",
+          "stat": "INT",
+          "power": 5,
+          "acc": 10,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "arms",
+          "tags": [
+            "ranged",
+            "projectile"
+          ],
+          "effects": [],
+          "text": "Throws a quill like a dart at one hero: Power 5 projectile driven by Arcana and resisted by Willpower, +10 to hit."
+        },
+        {
+          "id": "boss_vellum_strike_through",
+          "name": "Strike Through",
+          "type": "magical",
+          "stat": "INT",
+          "power": 6,
+          "acc": 0,
+          "crit": 0,
+          "element": "dark",
+          "target": "one",
+          "part": "arms",
+          "tags": [
+            "melee"
+          ],
+          "effects": [
+            {
+              "kind": "bind",
+              "part": "arms",
+              "chance": 35,
+              "turns": 2
+            }
+          ],
+          "text": "Draws a line through one hero: Power 6 dark magic and a 35% chance of an arms bind for 2 turns."
+        },
+        {
+          "id": "boss_vellum_shush",
+          "name": "Shhh.",
+          "type": "debuff",
+          "stat": "INT",
+          "power": 0,
+          "acc": 10,
+          "crit": 0,
+          "element": "phys",
+          "target": "row",
+          "part": "head",
+          "tags": [
+            "mental"
+          ],
+          "effects": [
+            {
+              "kind": "bind",
+              "part": "head",
+              "chance": 45,
+              "turns": 2
+            },
+            {
+              "kind": "stress",
+              "amount": 10,
+              "source": "mental"
+            }
+          ],
+          "text": "One finger to her lips, aimed at a row at +10 to hit: each hero it lands on takes 10 mental stress and has a 45% chance of a head bind for 2 turns."
+        },
+        {
+          "id": "boss_vellum_stacks_remember",
+          "name": "The Stacks Remember",
+          "type": "magical",
+          "stat": "INT",
+          "power": 2.5,
+          "acc": 5,
+          "crit": 0,
+          "element": "dark",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "horror"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 20,
+              "source": "horror",
+              "target": "heroes"
+            }
+          ],
+          "text": "Every face ever written down looks out of the shelves at once: Power 2.5 dark magic to each hero it lands on, and 20 horror stress to every hero whether it lands or not."
+        },
+        {
+          "id": "boss_vellum_reshelve",
+          "name": "Re-shelve",
+          "type": "buff",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "self",
+          "part": "legs",
+          "tags": [],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "guard",
+              "turns": 2,
+              "target": "self"
+            }
+          ],
+          "auto": true,
+          "text": "Hides her heart-book somewhere in the stacks: she Guards (takes half damage) until the end of next round, or until Valerie's Wait, Look Closely finds the book or a Chaos Wave knocks it loose."
+        },
+        {
+          "id": "boss_vellum_as_it_happened",
+          "name": "As It Actually Happened",
+          "type": "stress",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "realization",
+            "mental"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 16,
+              "source": "realization",
+              "target": "valerie"
+            },
+            {
+              "kind": "stress",
+              "amount": 10,
+              "source": "mental",
+              "target": "others"
+            }
+          ],
+          "auto": true,
+          "text": "Reads Valerie's true entry aloud. Cannot miss: Valerie takes 16 realization stress (ignores Willpower, Airhead −10) and every other hero takes 10 mental stress."
+        },
+        {
+          "id": "boss_vellum_errata",
+          "name": "Errata",
+          "type": "stress",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "head",
+          "tags": [
+            "embarrassment"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 20,
+              "source": "embarrassment"
+            }
+          ],
+          "auto": true,
+          "text": "Reads out one hero's most embarrassing true entry. Cannot miss: 20 embarrassment stress (Valerie takes half again as much, unless she is a Total Airhead, who takes none)."
+        },
+        {
+          "id": "boss_vellum_dip_the_quill",
+          "name": "Dip the Quill",
+          "type": "utility",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "self",
+          "part": "arms",
+          "tags": [
+            "windup",
+            "death"
+          ],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "draft_begun",
+              "turns": 1,
+              "target": "self"
+            },
+            {
+              "kind": "stress",
+              "amount": 8,
+              "source": "death",
+              "target": "heroes"
+            }
+          ],
+          "auto": true,
+          "text": "Writes the party's names at the top of a clean page. Cannot miss: 8 death stress to every hero, and The Final Draft lands as her first action next round unless her arms are bound or the Rolling Ladder is set off first."
+        },
+        {
+          "id": "boss_vellum_final_draft",
+          "name": "The Final Draft",
+          "type": "magical",
+          "stat": "INT",
+          "power": 10,
+          "acc": 20,
+          "crit": 0,
+          "element": "dark",
+          "target": "all",
+          "part": "arms",
+          "tags": [
+            "telegraphed",
+            "death"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 30,
+              "source": "death"
+            }
+          ],
+          "telegraph": {
+            "by": "boss_vellum_dip_the_quill",
+            "rounds": 1,
+            "cancel": [
+              "arms bound",
+              "Rolling Ladder set off",
+              "concession"
+            ]
+          },
+          "text": "Telegraphed one round ahead by Dip the Quill. She writes how the party ends and reads it out: Power 10 dark magic at every hero, +20 to hit, and 30 death stress to each hero it lands on. Guarding halves the damage, not the stress."
+        }
+      ],
+      "contraption": {
+        "name": "The Rolling Ladder",
+        "text": "A forty-foot library ladder on brass rails that runs the length of the stacks. When a Chaos Wave sets it off it rolls the whole way: Vellum takes damage equal to 3% of her max HP, her arms are bound for 2 turns under a landslide of folios, a dipped quill is wasted, and her heart-book lands in plain sight, so she cannot Re-shelve for 2 rounds. Works once per phase.",
+        "uses": "once per phase",
+        "effects": [
+          {
+            "kind": "damage",
+            "target": "boss",
+            "hpPct": 3
+          },
+          {
+            "kind": "bind",
+            "target": "boss",
+            "part": "arms",
+            "chance": 100,
+            "turns": 2
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "windup_cancelled"
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "book_exposed",
+            "turns": 2
+          }
+        ],
+        "manual": {
+          "stance": "think",
+          "difficulty": "hard",
+          "text": "Any hero may spend a turn shoving the ladder on purpose: a hard check, and a failure wastes the turn."
+        }
+      },
+      "concession": {
+        "name": "Go on the Record",
+        "at": 30,
+        "text": "At 30% HP or below, Valerie can spend a turn Thinking It Through to dictate what really happened at the mill, the chasm and the bridge. Vellum writes it down, closes the book, and the fight ends as a win with full rewards.",
+        "price": "Valerie takes 30 realization stress (it ignores Willpower and drops the gauge 10), and Hero Rep falls by 10 once the corrected edition circulates.",
+        "effects": [
+          {
+            "kind": "stress",
+            "target": "valerie",
+            "amount": 30,
+            "source": "realization"
+          },
+          {
+            "kind": "rep",
+            "amount": -10
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "on_the_record"
+          }
+        ]
+      },
+      "tactics": "Two actions a round. She opens with Re-shelve and repeats it every fourth round through Phases 1 and 2. Quills go to whoever is casting or healing, Strike Through to whoever hit her hardest; a taunt redirects her attacks, but readings (As It Actually Happened, Errata) ignore taunts. In Phase 3 she dips the quill every fourth round and reads The Final Draft first thing the round after.",
+      "counterplay": "Find the heart-book whenever she Re-shelves it: Wait, Look Closely does it reliably and a Chaos Wave does it for free. Keep Valerie a Total Airhead through the readings so horror and embarrassment miss her and the party sheds stress, and bind Vellum's arms or drop the Rolling Ladder on her the round she dips the quill. Fire and holy hurt her; dark heals her.",
+      "vsHero": "Vellum pulls the gauge both ways at once: the book is found by Thinking, the readings are survived by not Thinking, and every true entry she reads moves Valerie 10 points toward the wrong one.",
+      "keys": [
+        "imara",
+        "vellum",
+        "chronicler",
+        "lich",
+        "archive",
+        "stacks",
+        "heart-book",
+        "ladder"
+      ],
+      "rewards": {
+        "exp": 75000,
+        "gold": 15000,
+        "items": []
+      }
+    },
+    {
+      "id": "boss_parity",
+      "name": "Madam Parity",
+      "title": "Comptroller of Fortune",
+      "pronouns": "she/her",
+      "stage": "superboss",
+      "level": 100,
+      "rank": "superboss",
+      "actions": 3,
+      "stats": {
+        "STR": 500,
+        "INT": 640,
+        "AGI": 640,
+        "CON": 370,
+        "WIL": 700,
+        "LCK": 600
+      },
+      "hp": 22200000,
+      "mp": 70000,
+      "look": "A stately woman in her sixties with dark brown skin and silver locs pinned under a green eyeshade, in pinstriped robes, with an abacus for a halo and a set of brass scales standing where her shadow should be.",
+      "arena": "The Counting House at the End of Luck: a marble floor ruled like a ledger, a wall of pigeonholes holding everyone's odds, and the Great Wheel, chained since the day she took office.",
+      "identity": "The celestial auditor who balances every stroke of luck in the world against a loss somewhere else, and has found one account that only ever pays out.",
+      "want": "To close the Bellweather account: every accident repaid and every rescue it bought reversed, until the books are square.",
+      "cost": "Perfect fairness means nothing has ever happened to her by chance: she has never been lucky, never been surprised, and never once been glad to be wrong.",
+      "affinities": {
+        "dark": "weak",
+        "holy": "resist"
+      },
+      "bindResist": {
+        "head": 70,
+        "arms": 60,
+        "legs": 50
+      },
+      "phases": [
+        {
+          "at": 100,
+          "name": "Opening Balance",
+          "text": "She collects from whoever has the most: every single-target attack goes to the hero with the highest current HP. Decide who you top up, because a full bar is a target.",
+          "question": "Who can afford to be the richest hero in the room?",
+          "answer": "Keep Valerie's bar the fullest, or taunt, so the coins fly at the one hero they bounce off.",
+          "price": "Healing Valerie first leaves the mage and the rogue low when Actuarial Table and Red Tape arrive for everyone anyway.",
+          "moves": [
+            "boss_parity_heads_i_win",
+            "boss_parity_red_tape",
+            "boss_parity_actuarial_table",
+            "boss_parity_service_charge"
+          ],
+          "script": [
+            [
+              "boss_parity_heads_i_win",
+              "boss_parity_red_tape",
+              "boss_parity_heads_i_win"
+            ],
+            [
+              "boss_parity_actuarial_table",
+              "boss_parity_heads_i_win",
+              "boss_parity_service_charge"
+            ],
+            [
+              "boss_parity_red_tape",
+              "boss_parity_heads_i_win",
+              "boss_parity_heads_i_win"
+            ]
+          ]
+        },
+        {
+          "at": 75,
+          "name": "The Audit",
+          "text": "She flips the ledger: for three rounds in every four, Valerie's luck runs backwards and only works while she is Thinking. Decide whether to chase the flip or sit it out in the middle of the gauge.",
+          "question": "When the luck runs backwards, do you run with it?",
+          "answer": "Think It Through while the ledger is flipped and be lucky and precise at once, sit at Ditzy and take half of everything, or spend 100 MCE on I'm Just a Good Hero! and ignore the flip for 3 turns.",
+          "price": "Every Think costs 4 stress her Willpower cannot touch, and when the ledger flips back she is Lucid with the luck off; the ultimate spends the MCE the ending might need.",
+          "moves": [
+            "boss_parity_heads_i_win",
+            "boss_parity_red_tape",
+            "boss_parity_actuarial_table",
+            "boss_parity_service_charge",
+            "boss_parity_itemised_statement",
+            "boss_parity_double_entry"
+          ],
+          "script": [
+            [
+              "boss_parity_double_entry",
+              "boss_parity_heads_i_win",
+              "boss_parity_red_tape"
+            ],
+            [
+              "boss_parity_itemised_statement",
+              "boss_parity_heads_i_win",
+              "boss_parity_heads_i_win"
+            ],
+            [
+              "boss_parity_actuarial_table",
+              "boss_parity_heads_i_win",
+              "boss_parity_service_charge"
+            ],
+            [
+              "boss_parity_red_tape",
+              "boss_parity_heads_i_win",
+              "boss_parity_heads_i_win"
+            ]
+          ]
+        },
+        {
+          "at": 50,
+          "name": "Collections",
+          "text": "She starts taking things back: buffs, MP and nerve. Repossession lands as the first action of every fourth round: decide what you are willing to let her take.",
+          "question": "What do you let her take?",
+          "answer": "Buff straight after a Repossession and never before one; pay Service Charge in MP while there is MP, and in nerve after.",
+          "price": "Fighting unbuffed one round in four is slower; MP paid to her is MP not spent on healing; stress kept is a Resolve Check coming.",
+          "moves": [
+            "boss_parity_heads_i_win",
+            "boss_parity_red_tape",
+            "boss_parity_actuarial_table",
+            "boss_parity_service_charge",
+            "boss_parity_itemised_statement",
+            "boss_parity_double_entry",
+            "boss_parity_repossession",
+            "boss_parity_final_notice"
+          ],
+          "script": [
+            [
+              "boss_parity_repossession",
+              "boss_parity_heads_i_win",
+              "boss_parity_final_notice"
+            ],
+            [
+              "boss_parity_double_entry",
+              "boss_parity_red_tape",
+              "boss_parity_heads_i_win"
+            ],
+            [
+              "boss_parity_itemised_statement",
+              "boss_parity_heads_i_win",
+              "boss_parity_service_charge"
+            ],
+            [
+              "boss_parity_actuarial_table",
+              "boss_parity_heads_i_win",
+              "boss_parity_final_notice"
+            ]
+          ]
+        },
+        {
+          "at": 25,
+          "name": "Closing the Books",
+          "text": "She rings the closing bell, and two rounds later the whole bill comes due on everyone. Spin the Wheel, brace, or let Valerie stand up and take the bill alone.",
+          "question": "Who pays the bill?",
+          "answer": "A Chaos Wave spins the Great Wheel and cancels the bill; a taunting Valerie takes all of it alone, and may trip under it; everyone can Guard; or Valerie can share the luck (One for the House).",
+          "price": "Fishing for a wave means two rounds of Winging It with no guarantee; taking the bill alone can drop Valerie from full; Guarding saves bodies and not nerves, because the 40 death stress still lands.",
+          "moves": [
+            "boss_parity_heads_i_win",
+            "boss_parity_red_tape",
+            "boss_parity_actuarial_table",
+            "boss_parity_service_charge",
+            "boss_parity_itemised_statement",
+            "boss_parity_repossession",
+            "boss_parity_final_notice",
+            "boss_parity_closing_bell",
+            "boss_parity_balance_due"
+          ],
+          "script": [
+            [
+              "boss_parity_closing_bell",
+              "boss_parity_heads_i_win",
+              "boss_parity_red_tape"
+            ],
+            [
+              "boss_parity_itemised_statement",
+              "boss_parity_heads_i_win",
+              "boss_parity_final_notice"
+            ],
+            [
+              "boss_parity_balance_due",
+              "boss_parity_heads_i_win",
+              "boss_parity_service_charge"
+            ],
+            [
+              "boss_parity_repossession",
+              "boss_parity_actuarial_table",
+              "boss_parity_heads_i_win"
+            ]
+          ]
+        }
+      ],
+      "moves": [
+        {
+          "id": "boss_parity_heads_i_win",
+          "name": "Heads I Win",
+          "type": "magical",
+          "stat": "INT",
+          "power": 6,
+          "acc": 10,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "arms",
+          "tags": [
+            "ranged",
+            "projectile"
+          ],
+          "effects": [],
+          "text": "Flips a coin the size of a cartwheel at one hero: Power 6 projectile driven by Arcana and resisted by Willpower, +10 to hit."
+        },
+        {
+          "id": "boss_parity_red_tape",
+          "name": "Red Tape",
+          "type": "magical",
+          "stat": "INT",
+          "power": 3,
+          "acc": 5,
+          "crit": 0,
+          "element": "holy",
+          "target": "row",
+          "part": "arms",
+          "tags": [
+            "ranged"
+          ],
+          "effects": [
+            {
+              "kind": "bind",
+              "part": "legs",
+              "chance": 40,
+              "turns": 2
+            }
+          ],
+          "text": "Wraps one row in triplicate: Power 3 holy magic, +5 to hit, and a 40% chance of a legs bind for 2 turns on each hero hit."
+        },
+        {
+          "id": "boss_parity_actuarial_table",
+          "name": "Actuarial Table",
+          "type": "stress",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "horror"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 20,
+              "source": "horror"
+            }
+          ],
+          "auto": true,
+          "text": "Shows each hero the exact odds that they die today. Cannot miss: 20 horror stress to every hero."
+        },
+        {
+          "id": "boss_parity_itemised_statement",
+          "name": "Itemised Statement",
+          "type": "stress",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [
+            "realization",
+            "mental"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 20,
+              "source": "realization",
+              "target": "valerie"
+            },
+            {
+              "kind": "stress",
+              "amount": 10,
+              "source": "mental",
+              "target": "others"
+            }
+          ],
+          "auto": true,
+          "text": "Reads the Bellweather account line by line. Cannot miss: Valerie takes 20 realization stress (ignores Willpower, Airhead −10) and every other hero takes 10 mental stress."
+        },
+        {
+          "id": "boss_parity_double_entry",
+          "name": "Double Entry",
+          "type": "utility",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "one",
+          "part": "head",
+          "tags": [],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "ledger_flipped",
+              "turns": 3,
+              "target": "valerie"
+            }
+          ],
+          "auto": true,
+          "text": "Flips the ledger for 3 rounds. Cannot miss: Valerie's accidents read 100 minus the Airhead gauge, so her luck only works while she is Thinking. Her ultimate I'm Just a Good Hero! overrides it and a spin of the Great Wheel ends it."
+        },
+        {
+          "id": "boss_parity_service_charge",
+          "name": "Service Charge",
+          "type": "debuff",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "head",
+          "tags": [],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 15,
+              "source": "general",
+              "orPay": {
+                "mpPct": 12
+              }
+            }
+          ],
+          "auto": true,
+          "text": "Cannot miss. Each hero chooses: pay 12% of max MP, or keep it and take 15 general stress."
+        },
+        {
+          "id": "boss_parity_repossession",
+          "name": "Repossession",
+          "type": "debuff",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "all",
+          "part": "arms",
+          "tags": [],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "buffs_repossessed",
+              "turns": 2
+            }
+          ],
+          "auto": true,
+          "text": "Cannot miss. Strips every buff from every hero and applies each one to her own attributes for 2 turns."
+        },
+        {
+          "id": "boss_parity_final_notice",
+          "name": "Final Notice",
+          "type": "magical",
+          "stat": "INT",
+          "power": 4,
+          "acc": 10,
+          "crit": 0,
+          "element": "holy",
+          "target": "one",
+          "part": "head",
+          "tags": [
+            "ranged",
+            "death"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 28,
+              "source": "death"
+            }
+          ],
+          "text": "Hands one hero a black-edged envelope: Power 4 holy magic, +10 to hit, and 28 death stress if it lands."
+        },
+        {
+          "id": "boss_parity_closing_bell",
+          "name": "Closing Bell",
+          "type": "utility",
+          "stat": "INT",
+          "power": 0,
+          "acc": 0,
+          "crit": 0,
+          "element": "phys",
+          "target": "self",
+          "part": "arms",
+          "tags": [
+            "windup",
+            "horror"
+          ],
+          "effects": [
+            {
+              "kind": "status",
+              "id": "bell_rung",
+              "turns": 2,
+              "target": "self"
+            },
+            {
+              "kind": "stress",
+              "amount": 10,
+              "source": "horror",
+              "target": "heroes"
+            }
+          ],
+          "auto": true,
+          "text": "Rings the closing bell. Cannot miss: 10 horror stress to every hero, and Balance Due lands as her first action two rounds later unless her arms are bound or the Great Wheel is spun first."
+        },
+        {
+          "id": "boss_parity_balance_due",
+          "name": "Balance Due",
+          "type": "magical",
+          "stat": "INT",
+          "power": 16,
+          "acc": 20,
+          "crit": 0,
+          "element": "holy",
+          "target": "all",
+          "part": "arms",
+          "tags": [
+            "telegraphed",
+            "death"
+          ],
+          "effects": [
+            {
+              "kind": "stress",
+              "amount": 40,
+              "source": "death"
+            }
+          ],
+          "telegraph": {
+            "by": "boss_parity_closing_bell",
+            "rounds": 2,
+            "cancel": [
+              "arms bound",
+              "Great Wheel spun",
+              "concession"
+            ],
+            "redirect": "If Valerie is taunting, every copy of the hit is replaced by one hit on her alone."
+          },
+          "text": "Telegraphed two rounds ahead by Closing Bell. Everything her luck ever dodged, presented at once: Power 16 holy magic at every hero, +20 to hit, and 40 death stress to each hero it lands on. Guarding halves the damage, not the stress. If Valerie is taunting, the whole bill goes to her alone as a single hit."
+        }
+      ],
+      "contraption": {
+        "name": "The Great Wheel",
+        "text": "A wheel of fortune three storeys tall, chained since the day she took office because a wheel that spins is an unaudited liability. When a Chaos Wave sets it off the chain snaps and it spins: Madam Parity is Surprised for the first time in her existence and loses her next action, she takes damage equal to 2% of her max HP, a flipped ledger flips back, and a rung Closing Bell is cancelled. Works once per phase.",
+        "uses": "once per phase",
+        "effects": [
+          {
+            "kind": "damage",
+            "target": "boss",
+            "hpPct": 2
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "surprised",
+            "turns": 1
+          },
+          {
+            "kind": "status",
+            "target": "valerie",
+            "id": "ledger_restored"
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "windup_cancelled"
+          }
+        ],
+        "manual": null
+      },
+      "concession": {
+        "name": "One for the House",
+        "at": 25,
+        "text": "At 25% HP or below, a Valerie who is truly a Total Airhead (gauge 67 or more, ledger not flipped) can spend 100 MCE to give the Wheel's next spin to Madam Parity. It lands on her number. She has never won anything before, and the fight ends as a win with full rewards.",
+        "price": "All 100 MCE, saved instead of spent on either ultimate, and Valerie has to be an Airhead at the moment it matters, which the Itemised Statement is working against.",
+        "effects": [
+          {
+            "kind": "limit",
+            "target": "valerie",
+            "amount": -100
+          },
+          {
+            "kind": "status",
+            "target": "boss",
+            "id": "lucky_once"
+          }
+        ]
+      },
+      "tactics": "Three actions a round. Every single-target attack goes to the hero with the highest current HP; a taunt overrides that. Double Entry comes round on a four-round cycle from Phase 2, Repossession from Phase 3 and the Closing Bell from Phase 4. Her Luck is exactly the benchmark for her level, so she neither out-lucks anyone nor is out-lucked.",
+      "counterplay": "Make Valerie the richest target in the room and let the coins bounce; dark hurts Parity and holy is halved. When the ledger flips, either Think through it and accept the stress or spend 100 MCE on I'm Just a Good Hero! to ignore it, and time buffs for the round after a Repossession. When the bell rings, spin the Great Wheel with a Chaos Wave, taunt so Valerie takes the bill alone, or have everyone Guard.",
+      "vsHero": "Madam Parity audits the kit itself: she aims by HP so the dodge has to be earned, turns the gauge upside down so Thinking is lucky, reads out the receipt for every accident, and can only be ended early by the one thing she has never had, a stroke of luck.",
+      "keys": [
+        "parity",
+        "comptroller",
+        "auditor",
+        "ledger",
+        "counting house",
+        "great wheel",
+        "audit"
+      ],
+      "rewards": {
+        "exp": 500000,
+        "gold": 100000,
+        "items": []
+      }
+    }
+  ]
+}
