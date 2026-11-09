@@ -44,13 +44,13 @@ export const STRESS_SOURCES = Object.freeze([
   { id: 'long_haul', tier: 'weak', source: 'general', who: 'party', text: 'Each battle after the third in a row with no camp or inn.' },
   { id: 'jeer', tier: 'weak', source: 'mental', who: 'target', text: 'An enemy taunt, jeer or unsettling stare.' },
   { id: 'dread', tier: 'medium', source: 'horror', who: 'target', text: 'An enemy howl, curse or nightmare.' },
-  { id: 'set_piece', tier: 'severe', source: 'horror', who: 'party', text: "A boss's signature move or phase change." },
+  { id: 'set_piece', tier: 'severe', source: 'horror', who: 'party', text: 'A set-piece horror that carries no stress number of its own: the lich unmasks, the floor turns out to be a mouth.' },
   { id: 'the_truth', tier: 'medium', source: 'realization', who: 'target', text: 'Someone explains what really just happened.' },
 ].map(Object.freeze));
 
 /** Flat stress relief. Relief is never reduced by WIL and never scales with level. */
 export const RELIEF = Object.freeze({
-  BREATHER: 10, // the universal action: your whole turn, yourself only
+  BREATHER: 8, // the universal action: your whole turn, yourself only. Deliberately weaker than anything paid for
   CRIT: 3, // landing a critical hit
   VICTORY: 5, // everyone, after a won battle
   BOSS_VICTORY: 15, // everyone, after beating a boss
@@ -110,6 +110,17 @@ export const BREAKDOWN = Object.freeze({
   STAY_STRESS: 80, // stress after either way of staying in the fight
   PARTY_STRESS: 20, // Have It Out: what every ally takes, flat
   PER_BATTLE: 1, // a second Breakdown in the same battle is not a choice: they Storm Off
+});
+
+/**
+ * Enemies have no Resolve table and make no choices. Their bar has two rungs, named by the statuses in
+ * data/skills.json: Rattled at 100 and Routed at 200. Keep these numbers and those status texts in step.
+ */
+export const ENEMY_STRESS = Object.freeze({
+  RATTLED_HIT_BONUS: -10, // a Rattled enemy's attacks
+  RATTLED_FUMBLE_SHIFT: -5, // and its fumble band: 91-100
+  ROUT_RUNS: Object.freeze(['minion', 'standard']), // these ranks run at 200 and count as defeated
+  ROUT_RESET: 100, // anything bigger loses its next action and drops back to this
 });
 
 // ---------------------------------------------------------------- helpers
@@ -201,8 +212,12 @@ export function refuses(combatant, what, ctx = {}) {
   return (combatant?.flags?.mood?.refuses ?? []).includes(what);
 }
 
-/** Who this character is shielding right now ('weakest_ally'), or null. Single-target attacks at that ally hit them. */
+/**
+ * Who this character is shielding right now ('weakest_ally'), or null. Single-target attacks at that ally hit them.
+ * Bound legs stop it, the same as the Covered status.
+ */
 export function covers(combatant) {
+  if ((combatant?.binds?.legs ?? 0) > 0) return null; // nobody steps in front of anything on bound legs
   const standing = (combatant?.resolve?.effects ?? []).find((e) => e?.kind === 'cover');
   return standing?.who ?? combatant?.flags?.mood?.cover ?? null;
 }
@@ -759,6 +774,28 @@ export function breakdown(combatant, { choice = 'storm_off', drop } = {}) {
     }
   }
   return { combatant: next, ...out };
+}
+
+// ---------------------------------------------------------------- enemies
+
+/**
+ * What a stress event from addStress / applyStress means for an enemy.
+ *   'resolve'   -> Rattled until the battle ends: its attacks get -10 to hit and fumble on 91+ (through withStateOpts).
+ *   'breakdown' -> Routed: a minion or standard enemy runs (defeated: true, full rewards); an elite, boss or
+ *                  superboss loses its next action (loseTurn: true), drops back to 100 stress and stays Rattled.
+ * Returns { status: 'rattled' | 'routed' | null, defeated, loseTurn, combatant }.
+ */
+export function enemyStressEvent(enemy, event) {
+  const out = { status: null, defeated: false, loseTurn: false, combatant: { ...enemy } };
+  if (event !== 'resolve' && event !== 'breakdown') return out;
+  const rattled = {
+    kind: 'rattled', id: 'rattled', name: 'Rattled', turns: null, until: 'battle', permanent: false, personal: false, roll: null,
+    effects: [{ kind: 'attack', hitBonus: ENEMY_STRESS.RATTLED_HIT_BONUS, fumbleShift: ENEMY_STRESS.RATTLED_FUMBLE_SHIFT }],
+    behavior: null, mark: null,
+  };
+  if (event === 'resolve') return { ...out, status: 'rattled', combatant: { ...enemy, resolve: rattled } };
+  if (ENEMY_STRESS.ROUT_RUNS.includes(enemy?.rank ?? 'standard')) return { ...out, status: 'routed', defeated: true };
+  return { ...out, status: 'routed', loseTurn: true, combatant: { ...enemy, stress: ENEMY_STRESS.ROUT_RESET, resolve: rattled } };
 }
 
 // ---------------------------------------------------------------- between battles

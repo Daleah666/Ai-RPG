@@ -75,7 +75,7 @@
       ]
     },
     {
-      "id": "itm_smelling_salts", "name": "Smelling Salts", "category": "cure", "line": "snap_out", "level": 20, "price": 1600, "use": "any",
+      "id": "itm_smelling_salts", "name": "Smelling Salts", "category": "cure", "line": "snap_out", "level": 20, "price": 1200, "use": "any",
       "text": "Snaps one ally out of an Affliction (or a Virtue) at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check.",
       "effects": [{ "kind": "cleanse", "what": "resolve", "stressTo": 90 }]
     },

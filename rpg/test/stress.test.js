@@ -13,7 +13,7 @@ import {
   withStateOpts, consumeFirstRefusal, addStress, applyStress, relieveStress, breather, clampShift, resolveVirtuePct, isDoubles,
   resolveBands, validateResolveTables, readResolveRoll, startResolve, resolveCheck, forceResolve, partyResolveShift,
   gainMark, removeMark, spendSilverLining, clearResolve, snapOut, actOutChance, actOutCheck, pickByRoll,
-  breakdownChoices, breakdown, endBattle, rest,
+  breakdownChoices, breakdown, endBattle, rest, ENEMY_STRESS, enemyStressEvent,
 } from '../engine/stress.js';
 
 // ---------------------------------------------------------------- fixtures
@@ -714,9 +714,10 @@ test('a character in a mood refuses comfort from allies, but not rest and not th
   assert.equal(relieveStress(composed, 15).relieved, 15);
 });
 
-test('the Breather is the universal action: 10 off your own bar, unless your state will not let you', () => {
-  assert.equal(RELIEF.BREATHER, 10);
-  assert.equal(breather(hero(300, { stress: 70 })).combatant.stress, 60);
+test('the Breather is the universal action: 8 off your own bar, unless your state will not let you', () => {
+  assert.equal(RELIEF.BREATHER, 8);
+  assert.equal(breather(hero(300, { stress: 70 })).combatant.stress, 62);
+  assert.ok(RELIEF.BREATHER < RELIEF.COMFORT && RELIEF.BREATHER < 10, 'the free action is weaker than anything paid for');
   const onARoll = { ...inState('virtue', vir('vir_on_a_roll')), stress: 70 };
   const tried = breather(onARoll);
   assert.equal(tried.refused, true);
@@ -853,6 +854,10 @@ test('refuses and covers: what a personality will not do, and who it stands in f
   assert.equal(covers(acting), 'weakest_ally');
   assert.equal(refuses(acting, 'heal'), true);
   assert.equal(activeEffects(martyr).length, 2);
+  // Nobody steps in front of anything on bound legs.
+  assert.equal(covers(applyBind(hen, 'legs', 2)), null);
+  assert.equal(covers(applyBind(acting, 'legs', 1)), null);
+  assert.equal(covers(applyBind(hen, 'arms', 2)), 'weakest_ally');
 });
 
 // ---------------------------------------------------------------- the turn check
@@ -1012,6 +1017,57 @@ test('Breakdown: a second one in the same battle is not a choice, and Bottling n
   assert.deepEqual(marksOf(breakdown(doubles, { choice: 'storm_off' }).combatant).map((m) => m.id), ['aff_scar_glass_half_empty']);
 });
 
+// ---------------------------------------------------------------- enemies
+
+test('enemies get no Resolve Check: Rattled at 100, Routed at 200, and only the big ones stay to be Routed twice', () => {
+  const enemy = (rank, stress) => makeCombatant({ id: 'enemy', level: 50, rank, stats: { AGI: 300, LCK: 300, WIL: 300 }, stress });
+  const nothing = enemyStressEvent(enemy('standard', 40), null);
+  assert.deepEqual({ status: nothing.status, defeated: nothing.defeated, loseTurn: nothing.loseTurn }, { status: null, defeated: false, loseTurn: false });
+
+  const hit = applyStress(enemy('boss', 95), 12, { source: 'embarrassment', ignoreWill: true });
+  assert.equal(hit.event, 'resolve');
+  const rattled = enemyStressEvent(hit.combatant, hit.event);
+  assert.equal(rattled.status, 'rattled');
+  assert.equal(rattled.defeated, false);
+  assert.equal(rattled.combatant.resolve.kind, 'rattled');
+  // -10 to hit and a fumble band of 91-100, as band-edge moves on its own attack roll.
+  assert.deepEqual(withStateOpts(rattled.combatant), { hitBonus: ENEMY_STRESS.RATTLED_HIT_BONUS, fumbleFrom: 91 });
+  assert.deepEqual(hitChance(rattled.combatant, hero(), undefined, withStateOpts(rattled.combatant)), { hitPct: 65, critPct: 5, fumbleFrom: 91 });
+  // Rattled once: more stress does not rattle it again, and it never takes a turn check.
+  assert.equal(applyStress({ ...rattled.combatant, stress: 90 }, 30, { ignoreWill: true }).event, null);
+  const unused = counting(makeRng(3));
+  assert.equal(actOutCheck(rattled.combatant, unused).outcome, 'none');
+  assert.equal(unused.calls, 0);
+
+  // 200: small fry run, and count as beaten.
+  for (const rank of ['minion', 'standard']) {
+    const routed = enemyStressEvent(enemy(rank, 200), 'breakdown');
+    assert.deepEqual({ status: routed.status, defeated: routed.defeated, loseTurn: routed.loseTurn }, { status: 'routed', defeated: true, loseTurn: false });
+  }
+  // Anything bigger loses an action, drops to 100 and can be pushed there again.
+  for (const rank of ['elite', 'boss', 'superboss']) {
+    const routed = enemyStressEvent(enemy(rank, 200), 'breakdown');
+    assert.deepEqual({ status: routed.status, defeated: routed.defeated, loseTurn: routed.loseTurn }, { status: 'routed', defeated: false, loseTurn: true });
+    assert.equal(routed.combatant.stress, ENEMY_STRESS.ROUT_RESET);
+    assert.equal(routed.combatant.resolve.kind, 'rattled');
+    assert.equal(applyStress(routed.combatant, 100, { ignoreWill: true }).event, 'breakdown');
+  }
+  // If data/skills.json is there, its status texts must say the same numbers.
+  let statuses = null;
+  try {
+    statuses = readData('skills')?.statuses ?? null;
+  } catch {
+    statuses = null;
+  }
+  const text = (id) => statuses?.find((s) => s.id === id)?.text;
+  if (text('rattled')) {
+    assert.ok(text('rattled').includes('−10 to hit') && text('rattled').includes('91'), 'data/skills.json "rattled" and ENEMY_STRESS disagree');
+  }
+  if (text('routed')) {
+    assert.ok(/minion or standard/i.test(text('routed')) && text('routed').includes('100'), 'data/skills.json "routed" and ENEMY_STRESS disagree');
+  }
+});
+
 // ---------------------------------------------------------------- purity
 
 test('nothing mutates its input: every function works on deep-frozen combatants and tables', () => {
@@ -1056,6 +1112,8 @@ test('nothing mutates its input: every function works on deep-frozen combatants 
       () => breakdown(frozen, { choice: 'have_it_out' }),
       () => breakdown(frozen, { choice: 'bottle_it' }),
       () => endBattle(frozen, { boss: true }),
+      () => enemyStressEvent(frozen, 'resolve'),
+      () => enemyStressEvent(frozen, 'breakdown'),
       () => rest(frozen, 'unwind'),
       () => rest(frozen, 'night_off'),
       () => partyResolveShift([frozen, frozen], 5),
