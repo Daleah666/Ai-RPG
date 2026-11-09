@@ -1,5 +1,32 @@
 {
   "version": 1,
+  "statuses": [
+    {
+      "id": "guard",
+      "name": "Guard",
+      "text": "Takes half damage from every hit. Lasts as long as the move that grants it says, and a Chaos Wave strips it at once."
+    },
+    {
+      "id": "formation_broken",
+      "name": "Formation Broken",
+      "text": "The phalanx is in a heap: every skeleton loses Guard and none can use Locked Shields. Lasts 2 turns, or until the Captain uses Dress the Line."
+    },
+    {
+      "id": "formation_reformed",
+      "name": "Formation Re-formed",
+      "text": "Removes Formation Broken from every skeleton at once, so Locked Shields works again. Instant."
+    },
+    {
+      "id": "lose_next_action",
+      "name": "Scrabbling",
+      "text": "Loses its next action. Ends once that action has been skipped."
+    },
+    {
+      "id": "gate_shut",
+      "name": "Gate Shut",
+      "text": "The portcullis is down: only half as many enemies of each kind can act each round, rounded down, never fewer than one. Lasts 2 turns."
+    }
+  ],
   "encounters": [
     {
       "id": "goblin_scouts",

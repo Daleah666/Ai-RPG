@@ -1,5 +1,72 @@
 {
   "version": 1,
+  "statuses": [
+    {
+      "id": "guard",
+      "name": "Guard",
+      "text": "Takes half damage from every hit. Lasts as long as the move that grants it says, and a Chaos Wave strips it at once."
+    },
+    {
+      "id": "proof_wound",
+      "name": "Proof Wound",
+      "text": "Bolgrim has cranked Exhibit A: The Proof fires as his first action next round. Ends when it fires, or early if his arms are bound, Exhibit A is set off or the party concedes."
+    },
+    {
+      "id": "windup_cancelled",
+      "name": "Wind-up Cancelled",
+      "text": "The boss's telegraphed move is called off and the wind-up is wasted: it must spend the wind-up action again before the move can fire. Instant."
+    },
+    {
+      "id": "vindicated",
+      "name": "Vindicated",
+      "text": "Bolgrim has heard someone admit she tripped: he stops fighting and the battle ends as a win. Permanent."
+    },
+    {
+      "id": "draft_begun",
+      "name": "Draft Begun",
+      "text": "Vellum has dipped the quill: The Final Draft lands as her first action next round. Ends when it lands, or early if her arms are bound, the Rolling Ladder is set off or Valerie goes on the record."
+    },
+    {
+      "id": "book_exposed",
+      "name": "Book Exposed",
+      "text": "Vellum's heart-book is lying in plain sight: she loses Guard and cannot use Re-shelve. Lasts 2 rounds."
+    },
+    {
+      "id": "on_the_record",
+      "name": "On the Record",
+      "text": "Vellum has a true account to print: she closes the book and the battle ends as a win. Permanent."
+    },
+    {
+      "id": "ledger_flipped",
+      "name": "Ledger Flipped",
+      "text": "Valerie's accidents read 100 minus the Airhead gauge, so her luck works only while the gauge is low; which skills she can use still depends on the real gauge. Lasts 3 rounds; I'm Just a Good Hero! overrides it and a spin of the Great Wheel ends it."
+    },
+    {
+      "id": "ledger_restored",
+      "name": "Ledger Restored",
+      "text": "Removes Ledger Flipped from Valerie at once. Instant."
+    },
+    {
+      "id": "buffs_repossessed",
+      "name": "Repossessed",
+      "text": "Every buff the heroes had is removed from them and applied to Madam Parity's own attributes instead. Her copies last 2 turns."
+    },
+    {
+      "id": "bell_rung",
+      "name": "Bell Rung",
+      "text": "Madam Parity has rung the closing bell: Balance Due lands as her first action two rounds later. Ends when it lands, or early if her arms are bound, the Great Wheel is spun or Valerie shares the luck."
+    },
+    {
+      "id": "surprised",
+      "name": "Surprised",
+      "text": "Loses its next action. Ends once that action has been skipped."
+    },
+    {
+      "id": "lucky_once",
+      "name": "Lucky, Once",
+      "text": "Madam Parity has won a spin of the Great Wheel: she marks the account settled and the battle ends as a win. Permanent."
+    }
+  ],
   "bosses": [
     {
       "id": "boss_bolgrim",
@@ -170,11 +237,11 @@
             },
             {
               "kind": "stress",
-              "amount": 6,
+              "amount": 5,
               "source": "embarrassment"
             }
           ],
-          "text": "Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 6 embarrassment stress and has a 30% chance of a legs bind for 2 turns."
+          "text": "Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 5 embarrassment stress and has a 30% chance of a legs bind for 2 turns."
         },
         {
           "id": "boss_bolgrim_exact_change",
@@ -195,11 +262,11 @@
           "effects": [
             {
               "kind": "stress",
-              "amount": 6,
+              "amount": 5,
               "source": "wound"
             }
           ],
-          "text": "Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit, and 6 wound stress if it lands."
+          "text": "Hurls the iron toll box at one hero, by choice the one furthest away: Power 5.5 physical projectile, +5 to hit, and 5 wound stress if it lands."
         },
         {
           "id": "boss_bolgrim_bellow",
@@ -249,13 +316,13 @@
             },
             {
               "kind": "stress",
-              "amount": 6,
+              "amount": 5,
               "source": "mental",
               "target": "others"
             }
           ],
           "auto": true,
-          "text": "Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 6 mental stress."
+          "text": "Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 5 mental stress."
         },
         {
           "id": "boss_bolgrim_wind_the_proof",
@@ -281,13 +348,13 @@
             },
             {
               "kind": "stress",
-              "amount": 8,
+              "amount": 6,
               "source": "horror",
               "target": "heroes"
             }
           ],
           "auto": true,
-          "text": "Cranks Exhibit A, loudly. Cannot miss: 8 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first."
+          "text": "Cranks Exhibit A, loudly. Cannot miss: 6 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first."
         },
         {
           "id": "boss_bolgrim_the_proof",
@@ -1260,7 +1327,7 @@
           "name": "Balance Due",
           "type": "magical",
           "stat": "INT",
-          "power": 16,
+          "power": 15,
           "acc": 20,
           "crit": 0,
           "element": "holy",
@@ -1287,7 +1354,7 @@
             ],
             "redirect": "If Valerie is taunting, every copy of the hit is replaced by one hit on her alone."
           },
-          "text": "Telegraphed two rounds ahead by Closing Bell. Everything her luck ever dodged, presented at once: Power 16 holy magic at every hero, +20 to hit, and 40 death stress to each hero it lands on. Guarding halves the damage, not the stress. If Valerie is taunting, the whole bill goes to her alone as a single hit."
+          "text": "Telegraphed two rounds ahead by Closing Bell. Everything her luck ever dodged, presented at once: Power 15 holy magic at every hero, +20 to hit, and 40 death stress to each hero it lands on. Guarding halves the damage, not the stress. If Valerie is taunting, the whole bill goes to her alone as a single hit."
         }
       ],
       "contraption": {

@@ -1,0 +1,266 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "id": "itm_packed_lunch", "name": "Packed Lunch", "category": "recovery", "line": "lunch", "level": 1, "price": 10, "use": "field",
+      "text": "Out of battle only. Restores 20% of one character's max HP and sheds 3 stress. Only the first lunch a character eats after each rest sheds stress.",
+      "effects": [
+        { "kind": "heal", "pct": 20 },
+        { "kind": "stress", "amount": -3, "source": "general" }
+      ]
+    },
+    {
+      "id": "itm_pick_me_up", "name": "Pick-Me-Up", "category": "recovery", "line": "pick_me_up", "level": 1, "price": 20, "use": "any",
+      "text": "Restores 30% of one ally's max HP, up to 5,700 HP.",
+      "effects": [{ "kind": "heal", "pct": 30, "cap": 5700 }]
+    },
+    {
+      "id": "itm_proper_pick_me_up", "name": "Proper Pick-Me-Up", "category": "recovery", "line": "pick_me_up", "level": 15, "price": 300, "use": "any",
+      "text": "Restores 30% of one ally's max HP, up to 39,000 HP.",
+      "effects": [{ "kind": "heal", "pct": 30, "cap": 39000 }]
+    },
+    {
+      "id": "itm_serious_pick_me_up", "name": "Serious Pick-Me-Up", "category": "recovery", "line": "pick_me_up", "level": 40, "price": 800, "use": "any",
+      "text": "Restores 30% of one ally's max HP, up to 140,000 HP.",
+      "effects": [{ "kind": "heal", "pct": 30, "cap": 140000 }]
+    },
+    {
+      "id": "itm_unreasonable_pick_me_up", "name": "Unreasonable Pick-Me-Up", "category": "recovery", "line": "pick_me_up", "level": 75, "price": 1500, "use": "any",
+      "text": "Restores 30% of one ally's max HP, up to 300,000 HP.",
+      "effects": [{ "kind": "heal", "pct": 30, "cap": 300000 }]
+    },
+    {
+      "id": "itm_cup_of_coffee", "name": "Cup of Coffee", "category": "mp", "line": "coffee", "level": 5, "price": 200, "use": "any",
+      "text": "Restores 30% of one ally's max MP, up to 2,200 MP.",
+      "effects": [{ "kind": "heal", "bar": "mp", "pct": 30, "cap": 2200 }]
+    },
+    {
+      "id": "itm_double_espresso", "name": "Double Espresso", "category": "mp", "line": "coffee", "level": 30, "price": 1200, "use": "any",
+      "text": "Restores 30% of one ally's max MP, up to 10,000 MP.",
+      "effects": [{ "kind": "heal", "bar": "mp", "pct": 30, "cap": 10000 }]
+    },
+    {
+      "id": "itm_concerning_espresso", "name": "Concerning Espresso", "category": "mp", "line": "coffee", "level": 65, "price": 2600, "use": "any",
+      "text": "Restores 30% of one ally's max MP, up to 30,000 MP.",
+      "effects": [{ "kind": "heal", "bar": "mp", "pct": 30, "cap": 30000 }]
+    },
+    {
+      "id": "itm_chamomile_tea", "name": "Chamomile Tea", "category": "stress", "line": "tea", "level": 8, "price": 320, "use": "any",
+      "text": "One ally sheds 10 stress and loses 15% of their max MP: calm, and a little sleepy. Only the first cup a character drinks after each rest does anything.",
+      "effects": [
+        { "kind": "stress", "amount": -10, "source": "general" },
+        { "kind": "heal", "bar": "mp", "pct": -15 }
+      ]
+    },
+    {
+      "id": "itm_big_soft_hanky", "name": "Big Soft Hanky", "category": "stress", "line": "hanky", "level": 25, "price": 1500, "use": "battle",
+      "text": "Battle only. One ally has a good cry: they shed 25 stress and sit out their next turn.",
+      "effects": [
+        { "kind": "stress", "amount": -25, "source": "general" },
+        { "kind": "status", "id": "sitting_out", "turns": 1 }
+      ]
+    },
+    {
+      "id": "itm_wriggle_oil", "name": "Wriggle Oil", "category": "cure", "line": "bind_cure", "level": 5, "price": 100, "use": "any",
+      "text": "Removes every bind (head, arms and legs) from one ally.",
+      "effects": [{ "kind": "cleanse", "what": "binds" }]
+    },
+    {
+      "id": "itm_fresh_start_kit", "name": "Fresh Start Kit", "category": "cure", "line": "bind_cure", "level": 30, "price": 1200, "use": "any",
+      "text": "Removes every bind, every debuff and every harmful status from one ally.",
+      "effects": [
+        { "kind": "cleanse", "what": "binds" },
+        { "kind": "cleanse", "what": "mods" },
+        { "kind": "cleanse", "what": "statuses" }
+      ]
+    },
+    {
+      "id": "itm_smelling_salts", "name": "Smelling Salts", "category": "cure", "line": "snap_out", "level": 20, "price": 1600, "use": "any",
+      "text": "Snaps one ally out of an Affliction (or a Virtue) at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check.",
+      "effects": [{ "kind": "cleanse", "what": "resolve", "stressTo": 90 }]
+    },
+    {
+      "id": "itm_alarm_rooster", "name": "Alarm Rooster", "category": "revive", "line": "revive", "level": 10, "price": 800, "use": "any",
+      "text": "Revives a downed ally at 25% of max HP. Nobody enjoys it: they wake up with 10 stress that Willpower cannot reduce.",
+      "effects": [
+        { "kind": "revive", "pct": 25 },
+        { "kind": "stress", "amount": 10, "source": "wound", "ignoreWill": true }
+      ]
+    },
+    {
+      "id": "itm_camp_kit", "name": "Camp Kit", "category": "key", "line": "camp", "level": 1, "price": 40, "use": "field",
+      "priceFights": 1,
+      "text": "Used up to make camp once, outside battle. Each character either Sleeps (restores 50% of max HP and MP) or Unwinds (sheds 30 stress). The price is one fight's gold at the party's level, 40 × level, so the price shown is for level 1.",
+      "effects": []
+    },
+    {
+      "id": "itm_firecracker", "name": "Firecracker", "category": "elemental", "line": "thrown_fire", "level": 8, "price": 160, "use": "battle",
+      "power": 4, "element": "fire", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 fire damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_snowball", "name": "Snowball", "category": "elemental", "line": "thrown_ice", "level": 8, "price": 160, "use": "battle",
+      "power": 4, "element": "ice", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 ice damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_static_sock", "name": "Static Sock", "category": "elemental", "line": "thrown_bolt", "level": 8, "price": 160, "use": "battle",
+      "power": 4, "element": "bolt", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 bolt damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_blessed_water_balloon", "name": "Blessed Water Balloon", "category": "elemental", "line": "thrown_holy", "level": 8, "price": 160, "use": "battle",
+      "power": 4, "element": "holy", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 holy damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_ink_bomb", "name": "Ink Bomb", "category": "elemental", "line": "thrown_dark", "level": 8, "price": 160, "use": "battle",
+      "power": 4, "element": "dark", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 dark damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_bottled_bonfire", "name": "Bottled Bonfire", "category": "elemental", "line": "thrown_fire", "level": 45, "price": 1400, "use": "battle",
+      "power": 7, "element": "fire", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 fire damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_bottled_blizzard", "name": "Bottled Blizzard", "category": "elemental", "line": "thrown_ice", "level": 45, "price": 1400, "use": "battle",
+      "power": 7, "element": "ice", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 ice damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_bottled_thunder", "name": "Bottled Thunder", "category": "elemental", "line": "thrown_bolt", "level": 45, "price": 1400, "use": "battle",
+      "power": 7, "element": "bolt", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 bolt damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_bottled_sunrise", "name": "Bottled Sunrise", "category": "elemental", "line": "thrown_holy", "level": 45, "price": 1400, "use": "battle",
+      "power": 7, "element": "holy", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 holy damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_bottled_midnight", "name": "Bottled Midnight", "category": "elemental", "line": "thrown_dark", "level": 45, "price": 1400, "use": "battle",
+      "power": 7, "element": "dark", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
+      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 dark damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "effects": []
+    },
+    {
+      "id": "itm_oven_mitts", "name": "Oven Mitts", "category": "elemental", "line": "ward_fire", "level": 12, "price": 240, "use": "battle",
+      "element": "fire",
+      "text": "One ally resists fire for 3 turns: fire damage ×0.5, or normal damage if they were weak to it.",
+      "effects": [{ "kind": "status", "id": "ward_fire", "turns": 3 }]
+    },
+    {
+      "id": "itm_woolly_scarf", "name": "Woolly Scarf", "category": "elemental", "line": "ward_ice", "level": 12, "price": 240, "use": "battle",
+      "element": "ice",
+      "text": "One ally resists ice for 3 turns: ice damage ×0.5, or normal damage if they were weak to it.",
+      "effects": [{ "kind": "status", "id": "ward_ice", "turns": 3 }]
+    },
+    {
+      "id": "itm_rubber_boots", "name": "Rubber Boots", "category": "elemental", "line": "ward_bolt", "level": 12, "price": 240, "use": "battle",
+      "element": "bolt",
+      "text": "One ally resists bolt for 3 turns: bolt damage ×0.5, or normal damage if they were weak to it.",
+      "effects": [{ "kind": "status", "id": "ward_bolt", "turns": 3 }]
+    },
+    {
+      "id": "itm_tinted_spectacles", "name": "Tinted Spectacles", "category": "elemental", "line": "ward_holy", "level": 12, "price": 240, "use": "battle",
+      "element": "holy",
+      "text": "One ally resists holy for 3 turns: holy damage ×0.5, or normal damage if they were weak to it.",
+      "effects": [{ "kind": "status", "id": "ward_holy", "turns": 3 }]
+    },
+    {
+      "id": "itm_night_light", "name": "Night Light", "category": "elemental", "line": "ward_dark", "level": 12, "price": 240, "use": "battle",
+      "element": "dark",
+      "text": "One ally resists dark for 3 turns: dark damage ×0.5, or normal damage if they were weak to it.",
+      "effects": [{ "kind": "status", "id": "ward_dark", "turns": 3 }]
+    },
+    {
+      "id": "itm_protein_biscuit", "name": "Protein Biscuit", "category": "buff", "line": "buff_str", "level": 18, "price": 720, "use": "battle",
+      "text": "One ally has Might ×1.2 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "STR", "mult": 1.2, "turns": 3 }]
+    },
+    {
+      "id": "itm_clever_toffee", "name": "Clever Toffee", "category": "buff", "line": "buff_int", "level": 18, "price": 720, "use": "battle",
+      "text": "One ally has Arcana ×1.2 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "INT", "mult": 1.2, "turns": 3 }]
+    },
+    {
+      "id": "itm_jumping_beans", "name": "Jumping Beans", "category": "buff", "line": "buff_agi", "level": 18, "price": 720, "use": "battle",
+      "text": "One ally has Finesse ×1.2 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "AGI", "mult": 1.2, "turns": 3 }]
+    },
+    {
+      "id": "itm_second_breakfast", "name": "Second Breakfast", "category": "buff", "line": "buff_con", "level": 18, "price": 360, "use": "battle",
+      "text": "One ally has Constitution ×1.3 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "CON", "mult": 1.3, "turns": 3 }]
+    },
+    {
+      "id": "itm_nerve_tonic", "name": "Nerve Tonic", "category": "buff", "line": "buff_wil", "level": 18, "price": 360, "use": "battle",
+      "text": "One ally has Willpower ×1.3 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "WIL", "mult": 1.3, "turns": 3 }]
+    },
+    {
+      "id": "itm_four_leaf_clover", "name": "Four-Leaf Clover", "category": "buff", "line": "buff_lck", "level": 18, "price": 360, "use": "battle",
+      "text": "One ally has Luck ×1.3 for 3 turns.",
+      "effects": [{ "kind": "mod", "stat": "LCK", "mult": 1.3, "turns": 3 }]
+    },
+    {
+      "id": "itm_gristle_seed", "name": "Gristle Seed", "category": "seed", "line": "seed_str", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "STR", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Might for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    },
+    {
+      "id": "itm_bookworm_seed", "name": "Bookworm Seed", "category": "seed", "line": "seed_int", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "INT", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Arcana for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    },
+    {
+      "id": "itm_fidget_seed", "name": "Fidget Seed", "category": "seed", "line": "seed_agi", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "AGI", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Finesse for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    },
+    {
+      "id": "itm_stodge_seed", "name": "Stodge Seed", "category": "seed", "line": "seed_con", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "CON", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Constitution for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    },
+    {
+      "id": "itm_mule_seed", "name": "Mule Seed", "category": "seed", "line": "seed_wil", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "WIL", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Willpower for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    },
+    {
+      "id": "itm_fluke_seed", "name": "Fluke Seed", "category": "seed", "line": "seed_lck", "level": 50, "price": 16000, "use": "field",
+      "grants": { "stat": "LCK", "add": 5, "maxPerCharacter": 10 },
+      "text": "Out of battle only. Permanent: +5 Luck for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "effects": []
+    }
+  ],
+  "gearNote": "A set is three pieces: weapon (the listed price, half the bonus), armour (0.6 of the price, three tenths of the bonus) and charm (0.4 of the price, a fifth of the bonus). Each piece puts its points on one attribute chosen when it is bought. Gear and seeds together never add more than 200 to one attribute.",
+  "gearTiers": [
+    { "tier": 1, "name": "Hand-Me-Downs", "minLevel": 1, "maxLevel": 10, "price": 160, "setPrice": 320, "bonus": 5 },
+    { "tier": 2, "name": "Guild Issue", "minLevel": 11, "maxLevel": 20, "price": 2900, "setPrice": 5700, "bonus": 25 },
+    { "tier": 3, "name": "Journeyman", "minLevel": 21, "maxLevel": 30, "price": 7600, "setPrice": 15000, "bonus": 45 },
+    { "tier": 4, "name": "Tournament Grade", "minLevel": 31, "maxLevel": 40, "price": 14000, "setPrice": 29000, "bonus": 65 },
+    { "tier": 5, "name": "Master-Forged", "minLevel": 41, "maxLevel": 50, "price": 23000, "setPrice": 46000, "bonus": 85 },
+    { "tier": 6, "name": "Rune-Etched", "minLevel": 51, "maxLevel": 60, "price": 34000, "setPrice": 67000, "bonus": 105 },
+    { "tier": 7, "name": "Royal Armory", "minLevel": 61, "maxLevel": 70, "price": 46000, "setPrice": 93000, "bonus": 125 },
+    { "tier": 8, "name": "Dragonscale", "minLevel": 71, "maxLevel": 80, "price": 61000, "setPrice": 120000, "bonus": 150 },
+    { "tier": 9, "name": "Star-Metal", "minLevel": 81, "maxLevel": 90, "price": 78000, "setPrice": 160000, "bonus": 175 },
+    { "tier": 10, "name": "Legendary (Probably)", "minLevel": 91, "maxLevel": 100, "price": 96000, "setPrice": 190000, "bonus": 200 }
+  ]
+}

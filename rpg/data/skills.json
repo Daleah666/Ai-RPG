@@ -1,0 +1,581 @@
+{
+  "version": 1,
+  "statuses": [
+    { "id": "analyzed", "name": "Analyzed", "polarity": "bad", "text": "Its affinities are revealed, and attacks on it get +20 to hit for the duration." },
+    { "id": "extra_slippery", "name": "Extra Slippery", "polarity": "good", "text": "Valerie only. Until her next turn, enemies' hit ceiling against her drops 10 more. Guarding on purpose switches it off." },
+    { "id": "taunt", "name": "Taunt", "polarity": "neutral", "text": "Enemies must aim their attacks at this character. Area attacks are unaffected." },
+    { "id": "pocket_found_check", "name": "Rummaging", "polarity": "neutral", "text": "Valerie only. Make her Pocket Dimension Found check now. Instant: nothing lingers." },
+    { "id": "good_hero", "name": "A Good Hero", "polarity": "good", "text": "Valerie only. Her passives act as if the Airhead gauge were 100 and her planned skills stay available. When it ends the gauge resets to 50." },
+    { "id": "auto_crit_next_think", "name": "It All Clicks", "polarity": "good", "text": "Valerie only. Her next planned skill is an automatic crit, then this ends." },
+    { "id": "plot_armor", "name": "Plot Armor", "polarity": "good", "text": "Valerie only. Once per battle, a blow that would drop her leaves her at 1 HP if she passes a Luck check at normal difficulty (+Airhead/5)." },
+    { "id": "guard_broken", "name": "Guard Broken", "polarity": "bad", "text": "Loses Guard and cannot Guard for the rest of this round." },
+    { "id": "guard", "name": "Guard", "polarity": "good", "text": "Takes ×0.5 damage until the duration runs out. The same state as the basic Guard action. It does not reduce stress and does not stack with Fortified or Bulwark." },
+    { "id": "provoked", "name": "Provoked", "polarity": "bad", "text": "Must aim its single-target attacks at the character who provoked it. Area attacks are unaffected. Ends early if that character is downed or Hidden." },
+    { "id": "covered", "name": "Covered", "polarity": "good", "text": "Single-target attacks aimed at this character hit the ally covering it instead, against the coverer's defenses. Ends early if the coverer is downed or has bound legs." },
+    { "id": "counter", "name": "Counter Stance", "polarity": "good", "text": "Every melee attack rolled against this character, hit or miss, is answered with a free basic attack on the attacker if this character is still standing. Ends if it Guards or its arms are bound." },
+    { "id": "fortified", "name": "Fortified", "polarity": "good", "text": "Takes ×0.5 damage and can still act. Does not reduce stress and does not stack with Guard." },
+    { "id": "bulwark", "name": "Bulwark", "polarity": "good", "text": "Every attack aimed at an ally hits this character instead, and an area attack hits it once. It takes ×0.5 damage. Stress and binds riding on those attacks land on it too." },
+    { "id": "marked", "name": "Marked", "polarity": "bad", "text": "Every attack on this character gets +15 to crit." },
+    { "id": "hidden", "name": "Hidden", "polarity": "good", "text": "Enemies cannot choose this character as the target of a single-target skill while another ally is standing. Its next attack gets +20 to crit. Ends when it attacks." },
+    { "id": "exposed", "name": "Exposed", "polarity": "bad", "text": "Every hit on this character deals ×1.25 damage." },
+    { "id": "focused", "name": "Focused", "polarity": "good", "text": "Its next damaging skill deals ×1.5 damage, then this ends. While it lasts, attacks against this character get +10 to hit." },
+    { "id": "sitting_out", "name": "Sitting Out", "polarity": "bad", "text": "Loses its next turn, then this ends. It can still be targeted and cannot Guard." },
+    { "id": "all_nighter", "name": "All-Nighter", "polarity": "good", "text": "Its skills cost no MP. When this ends, its head is bound for 2 turns." },
+    { "id": "ward_fire", "name": "Fire Ward", "polarity": "good", "text": "Treats fire as resisted: fire damage ×0.5. A character weak to fire takes normal damage instead. Null and absorb are unchanged." },
+    { "id": "ward_ice", "name": "Ice Ward", "polarity": "good", "text": "Treats ice as resisted: ice damage ×0.5. A character weak to ice takes normal damage instead. Null and absorb are unchanged." },
+    { "id": "ward_bolt", "name": "Bolt Ward", "polarity": "good", "text": "Treats bolt as resisted: bolt damage ×0.5. A character weak to bolt takes normal damage instead. Null and absorb are unchanged." },
+    { "id": "ward_holy", "name": "Holy Ward", "polarity": "good", "text": "Treats holy as resisted: holy damage ×0.5. A character weak to holy takes normal damage instead. Null and absorb are unchanged." },
+    { "id": "ward_dark", "name": "Dark Ward", "polarity": "good", "text": "Treats dark as resisted: dark damage ×0.5. A character weak to dark takes normal damage instead. Null and absorb are unchanged." },
+    { "id": "rattled", "name": "Rattled", "polarity": "bad", "text": "An enemy whose stress reaches 100 is Rattled until the battle ends: its attacks get −10 to hit and it fumbles on a roll of 91 or more." },
+    { "id": "routed", "name": "Routed", "polarity": "bad", "text": "An enemy whose stress reaches 200 is Routed. A minion or standard enemy runs: it is defeated and pays full rewards. An elite, boss or superboss loses its next action instead, and its stress drops back to 100." }
+  ],
+  "skills": [
+    {
+      "id": "war_shield_bash", "name": "Shield Bash", "archetype": "warrior", "unlock": 1, "tier": 1,
+      "type": "physical", "stat": "STR", "power": 3, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.05,
+      "tags": ["melee"],
+      "effects": [{ "kind": "status", "id": "provoked", "turns": 2 }],
+      "text": "A faceful of shield. Damage to one enemy, and it is Provoked for 2 turns: its single-target attacks must be aimed at you."
+    },
+    {
+      "id": "war_not_on_my_watch", "name": "Not On My Watch", "archetype": "warrior", "unlock": 1, "tier": 1,
+      "type": "buff", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "ally", "part": "legs",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.03,
+      "tags": [],
+      "effects": [{ "kind": "status", "id": "covered", "turns": 2 }],
+      "text": "You step in front of one ally. For 2 turns, single-target attacks aimed at them hit you instead. Area attacks still reach them, and you cannot cover yourself."
+    },
+    {
+      "id": "war_cleave", "name": "Cleave", "archetype": "warrior", "unlock": 5, "tier": 1,
+      "type": "physical", "stat": "STR", "power": 3, "acc": 0, "crit": 0,
+      "element": "phys", "target": "row", "part": "arms",
+      "cost": { "mp": 12, "limit": 0 }, "mpShare": 0.07,
+      "tags": ["melee"],
+      "effects": [{ "kind": "bind", "part": "legs", "chance": 40, "turns": 2 }],
+      "text": "A wide, low swing through one row. 40% base chance to bind each target's legs for 2 turns."
+    },
+    {
+      "id": "war_oi_over_here", "name": "Oi! Over Here!", "archetype": "warrior", "unlock": 9, "tier": 1,
+      "type": "utility", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "head",
+      "cost": { "mp": 26, "limit": 0 }, "mpShare": 0.05,
+      "tags": [],
+      "effects": [
+        { "kind": "status", "id": "taunt", "turns": 3 },
+        { "kind": "stress", "amount": 6, "source": "general" }
+      ],
+      "text": "You make yourself everyone's problem. Taunt for 3 turns: enemies must aim their attacks at you. Holding that much attention costs you 6 stress."
+    },
+    {
+      "id": "war_shield_wall", "name": "Shield Wall", "archetype": "warrior", "unlock": 14, "tier": 2,
+      "type": "buff", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "allies", "part": "legs",
+      "cost": { "mp": 85, "limit": 0 }, "mpShare": 0.07,
+      "tags": [],
+      "effects": [
+        { "kind": "status", "id": "guard", "turns": 1 },
+        { "kind": "bind", "target": "self", "part": "legs", "chance": 100, "turns": 1 }
+      ],
+      "text": "Everyone behind the shield. Every ally, you included, gains Guard (damage ×0.5) until their next turn and can still act. You brace so hard that your legs are bound for 1 turn, so the wall cannot go up two turns running."
+    },
+    {
+      "id": "war_can_opener", "name": "Can Opener", "archetype": "warrior", "unlock": 19, "tier": 2,
+      "type": "physical", "stat": "STR", "power": 4, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 110, "limit": 0 }, "mpShare": 0.05,
+      "tags": ["melee"],
+      "effects": [
+        { "kind": "status", "id": "guard_broken", "turns": 1 },
+        { "kind": "mod", "stat": "CON", "mult": 0.7, "turns": 3 }
+      ],
+      "text": "You go looking for the seam in the armor. Damage to one enemy; it loses Guard this round and has Constitution ×0.7 for 3 turns."
+    },
+    {
+      "id": "war_come_at_me", "name": "Come At Me", "archetype": "warrior", "unlock": 24, "tier": 3,
+      "type": "utility", "stat": "STR", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "arms",
+      "cost": { "mp": 180, "limit": 0 }, "mpShare": 0.05,
+      "tags": [],
+      "effects": [{ "kind": "status", "id": "counter", "turns": 2 }],
+      "text": "A stance and an invitation. For 2 turns, every melee attack rolled against you, hit or miss, is answered with a free basic attack. Guarding ends the stance."
+    },
+    {
+      "id": "war_walk_it_off", "name": "Walk It Off", "archetype": "warrior", "unlock": 30, "tier": 3,
+      "type": "heal", "stat": "CON", "power": 6, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "none",
+      "cost": { "mp": 380, "limit": 0 }, "mpShare": 0.07,
+      "tags": ["field"],
+      "effects": [{ "kind": "stress", "amount": 5, "source": "wound" }],
+      "text": "You decide it is not that bad. Restores about 30% of your max HP (Power 6 on your own Constitution). Pretending costs you 5 stress."
+    },
+    {
+      "id": "war_shrug_it_off", "name": "Shrug It Off", "archetype": "warrior", "unlock": 36, "tier": 4,
+      "type": "utility", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "none",
+      "cost": { "mp": 240, "limit": 0 }, "mpShare": 0.03,
+      "tags": [],
+      "effects": [
+        { "kind": "cleanse", "what": "binds" },
+        { "kind": "mod", "stat": "WIL", "mult": 1.3, "turns": 3 }
+      ],
+      "text": "Ropes, webs, hexes: you flex until something gives. Removes every bind on you, and your Willpower is ×1.3 for 3 turns."
+    },
+    {
+      "id": "war_the_door_holds", "name": "The Door Holds", "archetype": "warrior", "unlock": 40, "tier": 4,
+      "type": "buff", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 0, "limit": 60 },
+      "tags": ["ultimate"],
+      "effects": [{ "kind": "status", "id": "bulwark", "turns": 2 }],
+      "text": "Ultimate. Bulwark for 2 turns: every attack aimed at an ally hits you instead, an area attack hits you once, and you take half damage. The stress and binds riding on those attacks land on you too."
+    },
+    {
+      "id": "war_overhead_regret", "name": "Overhead Regret", "archetype": "warrior", "unlock": 46, "tier": 5,
+      "type": "physical", "stat": "STR", "power": 9, "acc": -15, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 900, "limit": 0 }, "mpShare": 0.07,
+      "tags": ["melee"],
+      "effects": [{ "kind": "bind", "target": "self", "part": "arms", "chance": 100, "turns": 1 }],
+      "text": "Everything you have, straight down: heavy damage to one enemy at −15 to hit. Hit or miss, the sword sticks in the floor and your arms are bound for 1 turn."
+    },
+    {
+      "id": "war_rattle_the_line", "name": "Rattle the Line", "archetype": "warrior", "unlock": 52, "tier": 6,
+      "type": "debuff", "stat": "STR", "power": 0, "acc": 5, "crit": 0,
+      "element": "phys", "target": "row", "part": "head",
+      "cost": { "mp": 820, "limit": 0 }, "mpShare": 0.05,
+      "tags": ["mental"],
+      "effects": [
+        { "kind": "mod", "stat": "STR", "mult": 0.75, "turns": 3 },
+        { "kind": "stress", "amount": 14, "source": "mental" }
+      ],
+      "text": "A parade-ground roar at one row, rolled at +5 to hit. Each enemy it lands on has Might ×0.75 for 3 turns and takes 14 stress. No damage."
+    },
+    {
+      "id": "war_stiff_upper_lip", "name": "Stiff Upper Lip", "archetype": "warrior", "unlock": 60, "tier": 6,
+      "type": "utility", "stat": "WIL", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "none",
+      "cost": { "mp": 650, "limit": 0 }, "mpShare": 0.03,
+      "tags": [],
+      "effects": [
+        { "kind": "stress", "amount": -20, "source": "general" },
+        { "kind": "bind", "target": "self", "part": "head", "chance": 100, "turns": 2 }
+      ],
+      "text": "You simply stop thinking about it. You shed 20 stress, and your head is bound for 2 turns: Arcana and Willpower halved, head skills sealed."
+    },
+    {
+      "id": "war_table_flip", "name": "Table Flip", "archetype": "warrior", "unlock": 68, "tier": 7,
+      "type": "physical", "stat": "STR", "power": 6, "acc": -10, "crit": 0,
+      "element": "phys", "target": "row", "part": "arms",
+      "cost": { "mp": 2800, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["melee"],
+      "effects": [{ "kind": "status", "id": "guard_broken", "turns": 1 }],
+      "text": "The nearest heavy object goes through one row at −10 to hit. Every enemy it hits loses Guard this round."
+    },
+    {
+      "id": "war_grudge_match", "name": "Grudge Match", "archetype": "warrior", "unlock": 76, "tier": 8,
+      "type": "physical", "stat": "STR", "power": 6, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 2400, "limit": 0 }, "mpShare": 0.07,
+      "tags": ["melee", "scripted"],
+      "effects": [],
+      "text": "You have been keeping count. Power 6, plus 1 for every 20 stress you are carrying, up to Power 11 at 100 stress."
+    },
+    {
+      "id": "war_castle_doctrine", "name": "Castle Doctrine", "archetype": "warrior", "unlock": 84, "tier": 9,
+      "type": "buff", "stat": "CON", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 4200, "limit": 0 }, "mpShare": 0.1,
+      "tags": [],
+      "effects": [
+        { "kind": "status", "id": "fortified", "turns": 3 },
+        { "kind": "bind", "target": "self", "part": "legs", "chance": 100, "turns": 4 }
+      ],
+      "text": "You become furniture. Fortified for 3 turns: you take half damage and can still act. Your legs are bound for 4 turns, one longer than the protection lasts: Finesse halved, leg skills sealed."
+    },
+    {
+      "id": "war_bring_it_on", "name": "Bring It On", "archetype": "warrior", "unlock": 92, "tier": 10,
+      "type": "utility", "stat": "WIL", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "head",
+      "cost": { "mp": 1500, "limit": 0 }, "mpShare": 0.03,
+      "tags": [],
+      "effects": [
+        { "kind": "limit", "amount": 30 },
+        { "kind": "stress", "amount": 15, "source": "general" }
+      ],
+      "text": "You dare the whole room. Gain 30 Limit and take 15 stress."
+    },
+    {
+      "id": "war_closing_time", "name": "Closing Time", "archetype": "warrior", "unlock": 100, "tier": 10,
+      "type": "physical", "stat": "STR", "power": 22, "acc": 20, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 0, "limit": 100 },
+      "tags": ["ultimate", "melee", "scripted"],
+      "effects": [{ "kind": "status", "id": "guard_broken", "turns": 1 }],
+      "text": "Ultimate. One swing to end the evening: Power 22 at +20 to hit, and the target loses Guard first. Add 2 Power for each ally who is down, up to Power 28."
+    },
+    {
+      "id": "mag_hot_take", "name": "Hot Take", "archetype": "mage", "unlock": 1, "tier": 1,
+      "type": "magical", "stat": "INT", "power": 3, "acc": 5, "crit": 0,
+      "element": "fire", "target": "one", "part": "arms",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["ranged", "projectile"],
+      "effects": [{ "kind": "dot", "power": 1, "turns": 2, "element": "fire" }],
+      "text": "A scorching opinion, thrown overhand at +5 to hit. Fire damage to one enemy, which then burns for Power 1 at the start of each of its next 2 turns."
+    },
+    {
+      "id": "mag_light_reading", "name": "Light Reading", "archetype": "mage", "unlock": 1, "tier": 1,
+      "type": "heal", "stat": "INT", "power": 4, "acc": 0, "crit": 0,
+      "element": "holy", "target": "ally", "part": "head",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["field"],
+      "effects": [],
+      "text": "A short, kind passage read aloud. Restores HP to one ally: Power 4 on your Arcana, about 20% of the bar of an ally whose Constitution matches it."
+    },
+    {
+      "id": "mag_cold_feet", "name": "Cold Feet", "archetype": "mage", "unlock": 4, "tier": 1,
+      "type": "magical", "stat": "INT", "power": 3, "acc": 5, "crit": 0,
+      "element": "ice", "target": "one", "part": "legs",
+      "cost": { "mp": 11, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["ranged"],
+      "effects": [{ "kind": "bind", "part": "legs", "chance": 45, "turns": 2 }],
+      "text": "You stamp, and frost runs along the floor at +5 to hit. Ice damage to one enemy; 45% base chance to bind its legs for 2 turns."
+    },
+    {
+      "id": "mag_pop_quiz", "name": "Pop Quiz", "archetype": "mage", "unlock": 8, "tier": 1,
+      "type": "magical", "stat": "INT", "power": 4.5, "acc": -10, "crit": 20,
+      "element": "bolt", "target": "one", "part": "arms",
+      "cost": { "mp": 42, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["ranged"],
+      "effects": [],
+      "text": "Lightning, with no warning and no revision time. Bolt damage to one enemy at −10 to hit and +20 to crit."
+    },
+    {
+      "id": "mag_strongly_worded_letter", "name": "Strongly Worded Letter", "archetype": "mage", "unlock": 13, "tier": 2,
+      "type": "magical", "stat": "INT", "power": 3, "acc": 5, "crit": 0,
+      "element": "dark", "target": "one", "part": "head",
+      "cost": { "mp": 110, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["ranged", "mental"],
+      "effects": [{ "kind": "stress", "amount": 12, "source": "mental" }],
+      "text": "Composed in your head, delivered directly to theirs at +5 to hit. Dark damage to one enemy, and it takes 12 stress."
+    },
+    {
+      "id": "mag_office_hours", "name": "Office Hours", "archetype": "mage", "unlock": 18, "tier": 2,
+      "type": "utility", "stat": "WIL", "power": 0, "acc": 0, "crit": 0,
+      "element": "holy", "target": "ally", "part": "none",
+      "cost": { "mp": 120, "limit": 0 }, "mpShare": 0.06,
+      "tags": [],
+      "effects": [
+        { "kind": "stress", "amount": -15, "source": "general" },
+        { "kind": "stress", "amount": 5, "source": "mental", "ignoreWill": true, "target": "self" }
+      ],
+      "text": "You listen, properly. One other ally sheds 15 stress. You take 5 stress that Willpower cannot reduce: their worries have to go somewhere."
+    },
+    {
+      "id": "mag_thesis_statement", "name": "Thesis Statement", "archetype": "mage", "unlock": 23, "tier": 3,
+      "type": "buff", "stat": "INT", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "head",
+      "cost": { "mp": 190, "limit": 0 }, "mpShare": 0.06,
+      "tags": [],
+      "effects": [{ "kind": "status", "id": "focused", "turns": 2 }],
+      "text": "You stop and state exactly what is about to happen. Focused for 2 turns: your next damaging skill deals ×1.5 damage. Until then, attacks against you get +10 to hit."
+    },
+    {
+      "id": "mag_group_project", "name": "Group Project", "archetype": "mage", "unlock": 28, "tier": 3,
+      "type": "heal", "stat": "INT", "power": 4, "acc": 0, "crit": 0,
+      "element": "holy", "target": "allies", "part": "arms",
+      "cost": { "mp": 670, "limit": 0 }, "mpShare": 0.14,
+      "tags": ["field", "scripted"],
+      "effects": [],
+      "text": "You hand out the work, then do all of it yourself. Restores HP to every ally except you: Power 4 on your Arcana."
+    },
+    {
+      "id": "mag_burnout", "name": "Burnout", "archetype": "mage", "unlock": 34, "tier": 4,
+      "type": "magical", "stat": "INT", "power": 5, "acc": 0, "crit": 0,
+      "element": "fire", "target": "row", "part": "arms",
+      "cost": { "mp": 990, "limit": 0 }, "mpShare": 0.14,
+      "tags": ["ranged"],
+      "effects": [
+        { "kind": "dot", "power": 1, "turns": 2, "element": "fire" },
+        { "kind": "mod", "stat": "INT", "mult": 0.8, "turns": 2, "target": "self" }
+      ],
+      "text": "Everything on the desk goes up at once. Fire damage to one row, and each enemy hit burns for Power 1 at the start of each of its next 2 turns. Then you are spent: your Arcana is ×0.8 for 2 turns."
+    },
+    {
+      "id": "mag_peer_review", "name": "Peer Review", "archetype": "mage", "unlock": 39, "tier": 4,
+      "type": "magical", "stat": "INT", "power": 6, "acc": 10, "crit": 0,
+      "element": "holy", "target": "one", "part": "arms",
+      "cost": { "mp": 1300, "limit": 0 }, "mpShare": 0.14,
+      "tags": ["ranged"],
+      "effects": [{ "kind": "cleanse", "what": "mods" }],
+      "text": "Harsh, fair light and a red pen. Holy damage to one enemy at +10 to hit, and every buff on it is struck out."
+    },
+    {
+      "id": "mag_all_nighter", "name": "All-Nighter", "archetype": "mage", "unlock": 44, "tier": 5,
+      "type": "buff", "stat": "INT", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "none",
+      "cost": { "mp": 0, "limit": 60 },
+      "tags": ["ultimate"],
+      "effects": [
+        { "kind": "status", "id": "all_nighter", "turns": 3 },
+        { "kind": "mod", "stat": "INT", "mult": 1.2, "turns": 3 }
+      ],
+      "text": "Ultimate. For 3 turns your skills cost no MP and your Arcana is ×1.2. When it ends you crash: your head is bound for 2 turns."
+    },
+    {
+      "id": "mag_closed_book", "name": "Closed Book", "archetype": "mage", "unlock": 50, "tier": 5,
+      "type": "debuff", "stat": "INT", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "head",
+      "cost": { "mp": 1500, "limit": 0 }, "mpShare": 0.1,
+      "tags": ["mental"],
+      "effects": [{ "kind": "bind", "part": "head", "chance": 50, "turns": 2 }],
+      "text": "You name the thing, and it forgets how it works. 50% base chance to bind one enemy's head for 2 turns: Arcana and Willpower halved, head skills sealed. No damage."
+    },
+    {
+      "id": "mag_second_edition", "name": "Second Edition", "archetype": "mage", "unlock": 58, "tier": 6,
+      "type": "heal", "stat": "INT", "power": 0, "acc": 0, "crit": 0,
+      "element": "holy", "target": "ally", "part": "arms",
+      "cost": { "mp": 4100, "limit": 0 }, "mpShare": 0.2,
+      "tags": ["field"],
+      "effects": [
+        { "kind": "revive", "pct": 30 },
+        { "kind": "stress", "amount": 8, "source": "death", "target": "self" }
+      ],
+      "text": "Revised, corrected and back in print. Revives a downed ally at 30% of max HP. Looking that closely at the first edition costs you 8 stress."
+    },
+    {
+      "id": "mag_brainstorm", "name": "Brainstorm", "archetype": "mage", "unlock": 66, "tier": 7,
+      "type": "magical", "stat": "INT", "power": 4, "acc": -5, "crit": 10,
+      "element": "bolt", "target": "all", "part": "head",
+      "cost": { "mp": 3700, "limit": 0 }, "mpShare": 0.14,
+      "tags": ["ranged"],
+      "effects": [],
+      "text": "Every idea you have had today, as weather. Bolt damage to every enemy at −5 to hit and +10 to crit. Each enemy is rolled separately."
+    },
+    {
+      "id": "mag_recommended_reading", "name": "Recommended Reading", "archetype": "mage", "unlock": 74, "tier": 8,
+      "type": "heal", "stat": "INT", "power": 9, "acc": 0, "crit": 0,
+      "element": "holy", "target": "ally", "part": "head",
+      "cost": { "mp": 4600, "limit": 0 }, "mpShare": 0.14,
+      "tags": ["field"],
+      "effects": [
+        { "kind": "cleanse", "what": "binds" },
+        { "kind": "status", "id": "sitting_out", "turns": 1 }
+      ],
+      "text": "A long, soothing chapter the patient cannot put down. Restores a lot of HP to one ally (Power 9 on your Arcana) and removes their binds. They sit out their next turn, reading."
+    },
+    {
+      "id": "mag_absolute_zero_tolerance", "name": "Absolute Zero Tolerance", "archetype": "mage", "unlock": 82, "tier": 9,
+      "type": "magical", "stat": "INT", "power": 9, "acc": -5, "crit": 0,
+      "element": "ice", "target": "one", "part": "legs",
+      "cost": { "mp": 8100, "limit": 0 }, "mpShare": 0.2,
+      "tags": ["ranged"],
+      "effects": [
+        { "kind": "mod", "stat": "AGI", "mult": 0.7, "turns": 3 },
+        { "kind": "bind", "target": "self", "part": "legs", "chance": 100, "turns": 2 }
+      ],
+      "text": "You plant both feet and take all the warmth out of one enemy: heavy ice damage at −5 to hit, and its Finesse is ×0.7 for 3 turns. You freeze to the spot too: your legs are bound for 2 turns."
+    },
+    {
+      "id": "mag_publish_or_perish", "name": "Publish or Perish", "archetype": "mage", "unlock": 92, "tier": 10,
+      "type": "magical", "stat": "INT", "power": 7, "acc": 0, "crit": 0,
+      "element": "dark", "target": "all", "part": "head",
+      "cost": { "mp": 10000, "limit": 0 }, "mpShare": 0.2,
+      "tags": ["ranged", "mental"],
+      "effects": [{ "kind": "stress", "amount": 15, "source": "mental", "ignoreWill": true, "target": "self" }],
+      "text": "You release the unreviewed draft. Heavy dark damage to every enemy. You take 15 stress that Willpower cannot reduce."
+    },
+    {
+      "id": "mag_dissertation", "name": "Dissertation", "archetype": "mage", "unlock": 100, "tier": 10,
+      "type": "magical", "stat": "INT", "power": 24, "acc": 20, "crit": 0,
+      "element": "fire", "target": "one", "part": "head",
+      "cost": { "mp": 0, "limit": 100 },
+      "tags": ["ultimate", "ranged", "scripted"],
+      "effects": [],
+      "text": "Ultimate. Four hundred pages on why the target should be on fire: Power 24 at +20 to hit, dealt as fire, ice, bolt, holy or dark, whichever the target is weakest to."
+    },
+    {
+      "id": "rog_cheap_shot", "name": "Cheap Shot", "archetype": "rogue", "unlock": 1, "tier": 1,
+      "type": "physical", "stat": "AGI", "power": 3, "acc": 0, "crit": 15,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.06,
+      "tags": ["melee"],
+      "effects": [],
+      "text": "A knife where they were not looking. Damage to one enemy from your Finesse, at +15 to crit."
+    },
+    {
+      "id": "rog_ankle_tap", "name": "Ankle Tap", "archetype": "rogue", "unlock": 1, "tier": 1,
+      "type": "physical", "stat": "STR", "power": 2, "acc": 5, "crit": 0,
+      "element": "phys", "target": "one", "part": "legs",
+      "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.06,
+      "tags": ["melee"],
+      "effects": [{ "kind": "bind", "part": "legs", "chance": 45, "turns": 2 }],
+      "text": "A neat kick behind the knee at +5 to hit. Light damage from your Might; 45% base chance to bind the target's legs for 2 turns."
+    },
+    {
+      "id": "rog_heckle", "name": "Heckle", "archetype": "rogue", "unlock": 4, "tier": 1,
+      "type": "stress", "stat": "LCK", "power": 0, "acc": 10, "crit": 0,
+      "element": "phys", "target": "one", "part": "head",
+      "cost": { "mp": 5, "limit": 0 }, "mpShare": 0.04,
+      "tags": ["embarrassment"],
+      "effects": [{ "kind": "stress", "amount": 12, "source": "embarrassment" }],
+      "text": "You say the one thing they hoped nobody had noticed. Rolled at +10 to hit: one enemy takes 12 stress. No damage."
+    },
+    {
+      "id": "rog_head_start", "name": "Head Start", "archetype": "rogue", "unlock": 8, "tier": 1,
+      "type": "buff", "stat": "AGI", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 25, "limit": 0 }, "mpShare": 0.06,
+      "tags": [],
+      "effects": [
+        { "kind": "mod", "stat": "AGI", "mult": 1.25, "turns": 3 },
+        { "kind": "status", "id": "exposed", "turns": 3 }
+      ],
+      "text": "You drop everything that slows you down. Finesse ×1.25 for 3 turns. For the same 3 turns you are Exposed: every hit on you deals ×1.25 damage."
+    },
+    {
+      "id": "rog_kick_me_sign", "name": "Kick Me Sign", "archetype": "rogue", "unlock": 12, "tier": 2,
+      "type": "debuff", "stat": "AGI", "power": 0, "acc": 10, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 36, "limit": 0 }, "mpShare": 0.04,
+      "tags": ["embarrassment"],
+      "effects": [
+        { "kind": "status", "id": "marked", "turns": 3 },
+        { "kind": "stress", "amount": 6, "source": "embarrassment" }
+      ],
+      "text": "Stuck to their back before they turn round, rolled at +10 to hit. The target is Marked for 3 turns: every attack on it gets +15 to crit. It also takes 6 stress. No damage."
+    },
+    {
+      "id": "rog_butterfingers", "name": "Butterfingers", "archetype": "rogue", "unlock": 17, "tier": 2,
+      "type": "physical", "stat": "AGI", "power": 3, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 110, "limit": 0 }, "mpShare": 0.06,
+      "tags": ["melee"],
+      "effects": [{ "kind": "bind", "part": "arms", "chance": 45, "turns": 2 }],
+      "text": "A rap across the knuckles at the worst moment. Damage to one enemy from your Finesse; 45% base chance to bind its arms for 2 turns."
+    },
+    {
+      "id": "rog_exit_stage_left", "name": "Exit, Stage Left", "archetype": "rogue", "unlock": 22, "tier": 3,
+      "type": "utility", "stat": "AGI", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 180, "limit": 0 }, "mpShare": 0.06,
+      "tags": [],
+      "effects": [{ "kind": "status", "id": "hidden", "turns": 2 }],
+      "text": "You are simply not there any more. Hidden for 2 turns: enemies cannot single you out while another ally stands, and your next attack gets +20 to crit. Attacking ends it. While you hide, the hits land on your friends."
+    },
+    {
+      "id": "rog_trouser_malfunction", "name": "Trouser Malfunction", "archetype": "rogue", "unlock": 28, "tier": 3,
+      "type": "stress", "stat": "AGI", "power": 0, "acc": 5, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 430, "limit": 0 }, "mpShare": 0.09,
+      "tags": ["embarrassment"],
+      "effects": [
+        { "kind": "stress", "amount": 15, "source": "embarrassment" },
+        { "kind": "bind", "part": "legs", "chance": 40, "turns": 2 }
+      ],
+      "text": "One tug on one belt, rolled at +5 to hit. The target takes 15 stress; 40% base chance to bind its legs for 2 turns. No damage, except to its dignity."
+    },
+    {
+      "id": "rog_clean_getaway", "name": "Clean Getaway", "archetype": "rogue", "unlock": 35, "tier": 4,
+      "type": "utility", "stat": "AGI", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 0, "limit": 50 },
+      "tags": ["ultimate", "scripted"],
+      "effects": [{ "kind": "status", "id": "hidden", "turns": 2 }],
+      "text": "Ultimate. You take two more actions right now, then vanish: Hidden for 2 turns."
+    },
+    {
+      "id": "rog_put_a_sock_in_it", "name": "Put a Sock in It", "archetype": "rogue", "unlock": 40, "tier": 4,
+      "type": "physical", "stat": "AGI", "power": 3, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 580, "limit": 0 }, "mpShare": 0.06,
+      "tags": ["melee"],
+      "effects": [{ "kind": "bind", "part": "head", "chance": 45, "turns": 2 }],
+      "text": "A sock, applied to the mouth mid-sentence. Damage to one enemy from your Finesse; 45% base chance to bind its head for 2 turns."
+    },
+    {
+      "id": "rog_borrowed_time", "name": "Borrowed Time", "archetype": "rogue", "unlock": 46, "tier": 5,
+      "type": "utility", "stat": "AGI", "power": 0, "acc": 0, "crit": 0,
+      "element": "phys", "target": "self", "part": "legs",
+      "cost": { "mp": 1200, "limit": 0 }, "mpShare": 0.09,
+      "tags": ["scripted"],
+      "effects": [{ "kind": "status", "id": "sitting_out", "turns": 1 }],
+      "text": "You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do."
+    },
+    {
+      "id": "rog_stab_in_the_back", "name": "Stab in the Back", "archetype": "rogue", "unlock": 52, "tier": 6,
+      "type": "physical", "stat": "AGI", "power": 7, "acc": -5, "crit": 10,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 1500, "limit": 0 }, "mpShare": 0.09,
+      "tags": ["melee"],
+      "effects": [{ "kind": "status", "id": "exposed", "turns": 1, "target": "self" }],
+      "text": "The classic. Heavy damage to one enemy from your Finesse at −5 to hit and +10 to crit. You end up standing right beside it: Exposed for 1 turn, so every hit on you deals ×1.25."
+    },
+    {
+      "id": "rog_five_finger_discount", "name": "Five-Finger Discount", "archetype": "rogue", "unlock": 59, "tier": 6,
+      "type": "physical", "stat": "AGI", "power": 3, "acc": 5, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 1300, "limit": 0 }, "mpShare": 0.06,
+      "tags": ["melee"],
+      "effects": [
+        { "kind": "cleanse", "what": "mods" },
+        { "kind": "limit", "amount": 12, "target": "self" }
+      ],
+      "text": "You bump into them and leave with more than you arrived with. Damage to one enemy at +5 to hit; its buffs are removed and you gain 12 Limit."
+    },
+    {
+      "id": "rog_roast", "name": "Roast", "archetype": "rogue", "unlock": 66, "tier": 7,
+      "type": "stress", "stat": "LCK", "power": 0, "acc": 5, "crit": 0,
+      "element": "phys", "target": "all", "part": "head",
+      "cost": { "mp": 3400, "limit": 0 }, "mpShare": 0.13,
+      "tags": ["embarrassment"],
+      "effects": [
+        { "kind": "stress", "amount": 20, "source": "embarrassment" },
+        { "kind": "status", "id": "taunt", "turns": 1, "target": "self" }
+      ],
+      "text": "Five minutes of material on everyone in the room, rolled at +5 to hit against each enemy: 20 stress to every one it lands on. Then they are all looking at you: you have Taunt until your next turn."
+    },
+    {
+      "id": "rog_all_in", "name": "All In", "archetype": "rogue", "unlock": 73, "tier": 8,
+      "type": "physical", "stat": "LCK", "power": 10, "acc": -20, "crit": 20,
+      "element": "phys", "target": "one", "part": "none",
+      "cost": { "mp": 4200, "limit": 0 }, "mpShare": 0.13,
+      "tags": ["melee"],
+      "effects": [{ "kind": "status", "id": "exposed", "turns": 2, "target": "self" }],
+      "text": "No plan, one throw. Huge damage to one enemy from your Luck at −20 to hit and +20 to crit. Win or lose you are Exposed for 2 turns. It uses no body part, so no bind can seal it."
+    },
+    {
+      "id": "rog_gift_wrap", "name": "Gift Wrap", "archetype": "rogue", "unlock": 80, "tier": 8,
+      "type": "physical", "stat": "AGI", "power": 4, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 3500, "limit": 0 }, "mpShare": 0.09,
+      "tags": ["melee"],
+      "effects": [
+        { "kind": "bind", "part": "head", "chance": 35, "turns": 2 },
+        { "kind": "bind", "part": "arms", "chance": 35, "turns": 2 },
+        { "kind": "bind", "part": "legs", "chance": 35, "turns": 2 }
+      ],
+      "text": "Rope, ribbon and a bow. Damage to one enemy from your Finesse, and a 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll."
+    },
+    {
+      "id": "rog_punchline", "name": "Punchline", "archetype": "rogue", "unlock": 90, "tier": 9,
+      "type": "physical", "stat": "AGI", "power": 5, "acc": 0, "crit": 0,
+      "element": "phys", "target": "one", "part": "head",
+      "cost": { "mp": 4400, "limit": 0 }, "mpShare": 0.09,
+      "tags": ["melee", "scripted"],
+      "effects": [],
+      "text": "The joke lands, then you do. Power 5 from your Finesse, plus 1 for every 20 stress the target is carrying, up to Power 11 at 120 stress."
+    },
+    {
+      "id": "rog_the_big_score", "name": "The Big Score", "archetype": "rogue", "unlock": 98, "tier": 10,
+      "type": "physical", "stat": "LCK", "power": 20, "acc": 10, "crit": 20,
+      "element": "phys", "target": "one", "part": "arms",
+      "cost": { "mp": 0, "limit": 100 },
+      "tags": ["ultimate", "melee", "scripted"],
+      "effects": [],
+      "text": "Ultimate. The whole plan, in one move: Power 20 from your Luck at +10 to hit and +20 to crit. If the target has any bound part, a hit is an automatic crit."
+    }
+  ]
+}
