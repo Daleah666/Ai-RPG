@@ -14,11 +14,11 @@
         "STR": 96,
         "INT": 36,
         "AGI": 80,
-        "CON": 64,
+        "CON": 54,
         "WIL": 58,
         "LCK": 52
       },
-      "hp": 153600,
+      "hp": 129600,
       "mp": 696,
       "look": "A river troll the size of a hay cart: moss on his shoulders, reading spectacles on a chain, and a toll signpost for a club.",
       "arena": "Underbridge Toll: a narrow stone bridge over a gorge, an iron toll box, and Exhibit A cocked and creaking at the far end.",
@@ -170,11 +170,11 @@
             },
             {
               "kind": "stress",
-              "amount": 5,
+              "amount": 6,
               "source": "embarrassment"
             }
           ],
-          "text": "Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 5 embarrassment stress and has a 30% chance of a legs bind for 2 turns."
+          "text": "Sweeps one row onto its backside: Power 3.2 physical, +5 to hit; each hero hit takes 6 embarrassment stress and has a 30% chance of a legs bind for 2 turns."
         },
         {
           "id": "boss_bolgrim_exact_change",
@@ -200,7 +200,7 @@
           "type": "stress",
           "stat": "STR",
           "power": 0,
-          "acc": 10,
+          "acc": 0,
           "crit": 0,
           "element": "phys",
           "target": "all",
@@ -215,7 +215,8 @@
               "source": "horror"
             }
           ],
-          "text": "A roar that shakes the planks, rolled against every hero at +10 to hit: 10 horror stress to each one it lands on."
+          "auto": true,
+          "text": "A roar that shakes the planks. Cannot miss: 10 horror stress to every hero."
         },
         {
           "id": "boss_bolgrim_i_was_there",
@@ -241,13 +242,13 @@
             },
             {
               "kind": "stress",
-              "amount": 5,
+              "amount": 6,
               "source": "mental",
               "target": "others"
             }
           ],
           "auto": true,
-          "text": "Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 5 mental stress."
+          "text": "Describes, accurately and in detail, how she tripped. Cannot miss: Valerie takes 12 realization stress (ignores Willpower, Airhead −10) and every other hero takes 6 mental stress."
         },
         {
           "id": "boss_bolgrim_wind_the_proof",
@@ -273,13 +274,13 @@
             },
             {
               "kind": "stress",
-              "amount": 6,
+              "amount": 8,
               "source": "horror",
               "target": "heroes"
             }
           ],
           "auto": true,
-          "text": "Cranks Exhibit A, loudly. Cannot miss: 6 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first."
+          "text": "Cranks Exhibit A, loudly. Cannot miss: 8 horror stress to every hero, and The Proof fires as his first action next round unless his arms are bound or the machine is set off first."
         },
         {
           "id": "boss_bolgrim_the_proof",
@@ -585,11 +586,11 @@
             },
             {
               "kind": "stress",
-              "amount": 8,
+              "amount": 10,
               "source": "mental"
             }
           ],
-          "text": "One finger to her lips, aimed at a row at +10 to hit: each hero it lands on takes 8 mental stress and has a 45% chance of a head bind for 2 turns."
+          "text": "One finger to her lips, aimed at a row at +10 to hit: each hero it lands on takes 10 mental stress and has a 45% chance of a head bind for 2 turns."
         },
         {
           "id": "boss_vellum_stacks_remember",
@@ -608,11 +609,12 @@
           "effects": [
             {
               "kind": "stress",
-              "amount": 16,
-              "source": "horror"
+              "amount": 20,
+              "source": "horror",
+              "target": "heroes"
             }
           ],
-          "text": "Every face ever written down looks out of the shelves at once: Power 2.5 dark magic and 16 horror stress to every hero it lands on."
+          "text": "Every face ever written down looks out of the shelves at once: Power 2.5 dark magic to each hero it lands on, and 20 horror stress to every hero whether it lands or not."
         },
         {
           "id": "boss_vellum_reshelve",
@@ -661,13 +663,13 @@
             },
             {
               "kind": "stress",
-              "amount": 8,
+              "amount": 10,
               "source": "mental",
               "target": "others"
             }
           ],
           "auto": true,
-          "text": "Reads Valerie's true entry aloud. Cannot miss: Valerie takes 16 realization stress (ignores Willpower, Airhead −10) and every other hero takes 8 mental stress."
+          "text": "Reads Valerie's true entry aloud. Cannot miss: Valerie takes 16 realization stress (ignores Willpower, Airhead −10) and every other hero takes 10 mental stress."
         },
         {
           "id": "boss_vellum_errata",
@@ -686,12 +688,12 @@
           "effects": [
             {
               "kind": "stress",
-              "amount": 18,
+              "amount": 20,
               "source": "embarrassment"
             }
           ],
           "auto": true,
-          "text": "Reads out one hero's most embarrassing true entry. Cannot miss: 18 embarrassment stress (Valerie takes half again as much, unless she is a Total Airhead, who takes none)."
+          "text": "Reads out one hero's most embarrassing true entry. Cannot miss: 20 embarrassment stress (Valerie takes half again as much, unless she is a Total Airhead, who takes none)."
         },
         {
           "id": "boss_vellum_dip_the_quill",
@@ -849,11 +851,11 @@
         "STR": 500,
         "INT": 640,
         "AGI": 640,
-        "CON": 400,
+        "CON": 370,
         "WIL": 700,
         "LCK": 600
       },
-      "hp": 24000000,
+      "hp": 22200000,
       "mp": 70000,
       "look": "A stately woman in her sixties with dark brown skin and silver locs pinned under a green eyeshade, in pinstriped robes, with an abacus for a halo and a set of brass scales standing where her shadow should be.",
       "arena": "The Counting House at the End of Luck: a marble floor ruled like a ledger, a wall of pigeonholes holding everyone's odds, and the Great Wheel, chained since the day she took office.",
@@ -1070,7 +1072,7 @@
           "type": "stress",
           "stat": "INT",
           "power": 0,
-          "acc": 10,
+          "acc": 0,
           "crit": 0,
           "element": "phys",
           "target": "all",
@@ -1085,7 +1087,8 @@
               "source": "horror"
             }
           ],
-          "text": "Shows each hero the exact odds that they die today, rolled against every hero at +10 to hit: 20 horror stress to each one it lands on."
+          "auto": true,
+          "text": "Shows each hero the exact odds that they die today. Cannot miss: 20 horror stress to every hero."
         },
         {
           "id": "boss_parity_itemised_statement",
@@ -1192,25 +1195,26 @@
         {
           "id": "boss_parity_final_notice",
           "name": "Final Notice",
-          "type": "stress",
+          "type": "magical",
           "stat": "INT",
-          "power": 0,
-          "acc": 15,
+          "power": 4,
+          "acc": 10,
           "crit": 0,
-          "element": "phys",
+          "element": "holy",
           "target": "one",
           "part": "head",
           "tags": [
+            "ranged",
             "death"
           ],
           "effects": [
             {
               "kind": "stress",
-              "amount": 32,
+              "amount": 28,
               "source": "death"
             }
           ],
-          "text": "Hands one hero a black-edged envelope at +15 to hit: 32 death stress if it lands."
+          "text": "Hands one hero a black-edged envelope: Power 4 holy magic, +10 to hit, and 28 death stress if it lands."
         },
         {
           "id": "boss_parity_closing_bell",

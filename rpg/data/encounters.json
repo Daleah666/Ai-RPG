@@ -317,7 +317,7 @@
             "STR": 0.9,
             "INT": 0.3,
             "AGI": 0.7,
-            "CON": 0.8,
+            "CON": 0.6,
             "WIL": 0.6,
             "LCK": 0.5
           },
@@ -489,7 +489,7 @@
               "type": "stress",
               "stat": "STR",
               "power": 0,
-              "acc": 10,
+              "acc": 0,
               "crit": 0,
               "element": "phys",
               "target": "all",
@@ -500,7 +500,7 @@
               "effects": [
                 {
                   "kind": "stress",
-                  "amount": 6,
+                  "amount": 5,
                   "source": "horror"
                 },
                 {
@@ -509,7 +509,8 @@
                   "target": "enemies"
                 }
               ],
-              "text": "Raps out an order in a dead language, rolled against every hero at +10 to hit: 6 horror stress to each one it lands on, and a broken formation re-forms."
+              "auto": true,
+              "text": "Raps out an order in a dead language. Cannot miss: 5 horror stress to every hero, and a broken formation re-forms."
             }
           ],
           "text": "The only skeleton giving orders. While it stands a broken formation re-forms; drop it and the hoplites stop locking shields."
@@ -563,7 +564,7 @@
           "actions": 2,
           "rank": "elite",
           "factors": {
-            "STR": 1.2,
+            "STR": 1.1,
             "INT": 1,
             "AGI": 0.9,
             "CON": 1.2,
@@ -644,7 +645,7 @@
               "name": "Bellows Breath",
               "type": "magical",
               "stat": "INT",
-              "power": 3,
+              "power": 2.8,
               "acc": 0,
               "crit": 0,
               "element": "fire",
@@ -657,10 +658,11 @@
                 {
                   "kind": "stress",
                   "amount": 8,
-                  "source": "horror"
+                  "source": "horror",
+                  "target": "heroes"
                 }
               ],
-              "text": "Breathes like a forge across the whole cave: Power 3 fire magic and 8 horror stress to every hero it lands on."
+              "text": "Breathes like a forge across the whole cave: Power 2.8 fire magic to each hero it lands on, and 8 horror stress to every hero whether it lands or not."
             },
             {
               "id": "enemy_hoard_drake_that_one_is_mine",
@@ -718,7 +720,7 @@
       "id": "horde_at_the_gate",
       "name": "The Horde at the Gate",
       "level": "party",
-      "text": "A raiding horde hitting a town gate at dusk: eighteen raiders, six slingers and two war drummers, far more than fit through the gap at once. Only six raiders and three slingers can act each round, and a fresh one steps up as each falls; if the party has the advantage, the militia holds the flanks and only four raiders can act.",
+      "text": "A raiding horde hitting a town gate at dusk: eighteen raiders, six slingers and two war drummers, far more than fit through the gap at once. Only five raiders and three slingers can act each round, and a fresh one steps up as each falls; if the party has the advantage, the militia holds the flanks and only three raiders can act.",
       "keys": [
         "horde",
         "gate",
@@ -734,10 +736,10 @@
           "id": "enemy_horde_raider",
           "name": "Horde Raider",
           "count": 18,
-          "acting": 6,
+          "acting": 5,
           "rank": "minion",
           "factors": {
-            "STR": 0.8,
+            "STR": 0.7,
             "INT": 0.3,
             "AGI": 0.8,
             "CON": 0.4,
@@ -881,7 +883,7 @@
               "type": "stress",
               "stat": "STR",
               "power": 0,
-              "acc": 10,
+              "acc": 0,
               "crit": 0,
               "element": "phys",
               "target": "all",
@@ -892,11 +894,12 @@
               "effects": [
                 {
                   "kind": "stress",
-                  "amount": 6,
+                  "amount": 5,
                   "source": "horror"
                 }
               ],
-              "text": "A beat the party feels in its teeth, rolled against every hero at +10 to hit: 6 horror stress to each one it lands on."
+              "auto": true,
+              "text": "A beat the party feels in its teeth. Cannot miss: 5 horror stress to every hero."
             },
             {
               "id": "enemy_horde_drummer_drive_them_on",
@@ -923,7 +926,7 @@
               "text": "Shouts the front line forward: every raider gains Might ×1.2 for 2 turns."
             }
           ],
-          "text": "Keeps the horde coming and the party rattled. With both drummers down the raiders stop pressing and only four can act each round."
+          "text": "Keeps the horde coming and the party rattled. With both drummers down the raiders stop pressing and only three can act each round."
         }
       ],
       "contraption": {

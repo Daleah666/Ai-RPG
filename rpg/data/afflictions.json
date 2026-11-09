@@ -1,0 +1,318 @@
+{
+  "version": 1,
+  "side": "affliction",
+  "table": {
+    "die": "d100",
+    "range": [26, 100],
+    "reading": "One d100 answers the whole Resolve Check. The band picks the entry. An even roll swaps in the character's personal entry if they have one. Doubles (11, 22 ... 99, 100) make it permanent: the Affliction leaves its Scar when it ends.",
+    "rescale": "A shift moves the Virtue edge by up to 15 either way. Each side keeps its entries in order and stretches or squeezes them evenly: engine/stress.js resolveBands()."
+  },
+  "afflictions": [
+    {
+      "id": "aff_martyr_complex",
+      "name": "Martyr Complex",
+      "range": [26, 36],
+      "quote": "No, no. You go on. I'll just bleed here.",
+      "text": "Decides the party's pain is theirs to carry: Constitution ×0.85, and about one turn in three they spend the turn shielding the most hurt ally and refuse healing until their next turn. Allies take 5 stress when it starts.",
+      "want": "To suffer the most, where everyone can see it.",
+      "cost": "Takes hits nobody asked them to take, then turns the healing down.",
+      "effects": [
+        { "kind": "mod", "stat": "CON", "mult": 0.85 },
+        { "kind": "stressMult", "source": "wound", "mult": 0.5 }
+      ],
+      "behavior": {
+        "actOut": 30,
+        "act": {
+          "id": "take_me_instead",
+          "name": "Take Me Instead",
+          "action": "cover",
+          "target": "weakest_ally",
+          "refuses": ["heal"],
+          "text": "Spends the turn standing in front of the most hurt ally: single-target attacks aimed at that ally hit the martyr instead until their next turn. Refuses healing until then."
+        },
+        "meltdown": {
+          "id": "look_what_you_made_me_do",
+          "name": "Look What You Made Me Do",
+          "action": "pass",
+          "selfHpPct": -10,
+          "allyStress": { "amount": 4, "who": "all" },
+          "refuses": ["heal"],
+          "text": "Walks into the nearest hazard on purpose: loses the turn and 10% of max HP, and every ally takes 4 stress from the guilt."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 5 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_im_fine",
+        "kind": "scar",
+        "name": "No, No, I'm Fine",
+        "text": "The first heal an ally aims at them in each battle is waved off and wasted.",
+        "effects": [{ "kind": "refuseFirst", "what": "heal" }]
+      }
+    },
+    {
+      "id": "aff_spooked",
+      "name": "Spooked",
+      "range": [37, 47],
+      "quote": "That barrel moved. That barrel DEFINITELY moved.",
+      "text": "Sees a mimic in every barrel: Might and Arcana ×0.8, Finesse ×1.1, horror stress ×1.5, and about one turn in three they Guard instead of acting. Allies take 6 stress when it starts.",
+      "want": "To be behind something. Preferably someone.",
+      "cost": "Hides at the moment the party needs a hit landed.",
+      "effects": [
+        { "kind": "mod", "stat": "STR", "mult": 0.8 },
+        { "kind": "mod", "stat": "INT", "mult": 0.8 },
+        { "kind": "mod", "stat": "AGI", "mult": 1.1 },
+        { "kind": "stressMult", "source": "horror", "mult": 1.5 }
+      ],
+      "behavior": {
+        "actOut": 35,
+        "act": {
+          "id": "duck_and_cover",
+          "name": "Duck and Cover",
+          "action": "guard",
+          "target": "self",
+          "refuses": [],
+          "text": "Guards instead of acting."
+        },
+        "meltdown": {
+          "id": "every_hero_for_themselves",
+          "name": "Every Hero for Themselves",
+          "action": "pass",
+          "allyStress": { "amount": 6, "who": "all" },
+          "refuses": [],
+          "text": "Shrieks and hides behind the nearest ally: loses the turn, and every ally takes 6 stress."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 6 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_flinch",
+        "kind": "scar",
+        "name": "Flinch",
+        "text": "Takes 25% more stress from horror, for good.",
+        "effects": [{ "kind": "stressMult", "source": "horror", "mult": 1.25 }]
+      }
+    },
+    {
+      "id": "aff_loot_goblin",
+      "name": "Loot Goblin",
+      "range": [48, 58],
+      "quote": "Finder's fee.",
+      "text": "Decides the loot, the potions and the credit are all theirs: Willpower ×0.85, Luck ×1.1, they will not use items or single-target skills on anyone else, they skim 10% of battle gold, and about one turn in three they down the party's best healing item whether they need it or not. Allies take 5 stress when it starts.",
+      "want": "To have the most. Of anything.",
+      "cost": "Spends the party's supplies on themselves and their turns on nobody else.",
+      "effects": [
+        { "kind": "mod", "stat": "WIL", "mult": 0.85 },
+        { "kind": "mod", "stat": "LCK", "mult": 1.1 },
+        { "kind": "refuse", "what": "ally_item" },
+        { "kind": "refuse", "what": "ally_skill" },
+        { "kind": "gold", "mult": 0.9 }
+      ],
+      "behavior": {
+        "actOut": 30,
+        "act": {
+          "id": "mine",
+          "name": "Mine",
+          "action": "item",
+          "target": "self",
+          "pick": "best_heal",
+          "fallback": "guard",
+          "refuses": [],
+          "text": "Uses the party's best healing item on themselves, hurt or not. With no item to take, they Guard."
+        },
+        "meltdown": {
+          "id": "hazard_pay",
+          "name": "Hazard Pay",
+          "action": "pass",
+          "goldPerLevel": -10,
+          "refuses": [],
+          "text": "Refuses to lift a finger until paid: loses the turn, and the party loses 10 gold per level of the goblin."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 5 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_sticky_fingers",
+        "kind": "scar",
+        "name": "Sticky Fingers",
+        "text": "The party's gold from every battle they fight in is 5% lighter.",
+        "effects": [{ "kind": "gold", "mult": 0.95 }]
+      }
+    },
+    {
+      "id": "aff_tinfoil_helm",
+      "name": "Tinfoil Helm",
+      "range": [59, 69],
+      "quote": "The healer is in on it. They're ALL in on it.",
+      "text": "Certain the party is plotting against them: Willpower ×0.8, mental stress ×1.25, ally buffs never land on them, and about one turn in three they accuse an ally (6 stress) and refuse healing, comfort and items until their next turn. Allies take 8 stress when it starts.",
+      "want": "To owe nobody anything.",
+      "cost": "Turns help down at the exact moment it is needed.",
+      "effects": [
+        { "kind": "mod", "stat": "WIL", "mult": 0.8 },
+        { "kind": "stressMult", "source": "mental", "mult": 1.25 },
+        { "kind": "refuse", "what": "buff" }
+      ],
+      "behavior": {
+        "actOut": 30,
+        "act": {
+          "id": "i_know_what_you_did",
+          "name": "I Know What You Did",
+          "action": "none",
+          "allyStress": { "amount": 6, "who": "one" },
+          "refuses": ["heal", "relief", "item"],
+          "text": "Accuses an ally read off the dice (6 stress to them), then acts as normal but refuses healing, comfort and items until their next turn."
+        },
+        "meltdown": {
+          "id": "pre_emptive_strike",
+          "name": "Pre-emptive Strike",
+          "action": "attack",
+          "target": "random_ally",
+          "skill": "basic_attack",
+          "refuses": ["heal", "relief", "item"],
+          "text": "Basic attack on an ally read off the dice, for real damage. Refuses all help until their next turn."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 8 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_trust_issues",
+        "kind": "scar",
+        "name": "Trust Issues",
+        "text": "The first buff an ally aims at them in each battle is refused and wasted.",
+        "effects": [{ "kind": "refuseFirst", "what": "buff" }]
+      }
+    },
+    {
+      "id": "aff_backseat_hero",
+      "name": "Backseat Hero",
+      "range": [70, 80],
+      "quote": "Oh, GOOD swing. Really. Have you considered aiming?",
+      "text": "Appoints themselves the party's critic: Might and Arcana ×1.1, Finesse ×0.85, any ally who misses or fumbles takes 3 stress, and about one turn in three they give an ally notes (8 stress). Allies take 8 stress when it starts.",
+      "want": "To be right, loudly.",
+      "cost": "Wears the party down faster than the monsters do.",
+      "effects": [
+        { "kind": "mod", "stat": "STR", "mult": 1.1 },
+        { "kind": "mod", "stat": "INT", "mult": 1.1 },
+        { "kind": "mod", "stat": "AGI", "mult": 0.85 },
+        { "kind": "heckle", "on": ["miss", "fumble"], "stress": 3 }
+      ],
+      "behavior": {
+        "actOut": 30,
+        "act": {
+          "id": "notes",
+          "name": "Notes",
+          "action": "none",
+          "allyStress": { "amount": 8, "who": "one" },
+          "refuses": [],
+          "text": "Gives an ally read off the dice notes on their technique: 8 stress to them. Then acts as normal."
+        },
+        "meltdown": {
+          "id": "ill_do_it_myself",
+          "name": "Fine, I'll Do It Myself",
+          "action": "attack",
+          "target": "random_enemy",
+          "skill": "basic_attack",
+          "allyStress": { "amount": 6, "who": "all" },
+          "refuses": [],
+          "text": "Shoves everyone aside: every ally takes 6 stress, and the critic makes a basic attack on an enemy read off the dice."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 8 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_running_commentary",
+        "kind": "scar",
+        "name": "Running Commentary",
+        "text": "Any ally who fumbles while this character is in the fight takes 3 extra stress.",
+        "effects": [{ "kind": "heckle", "on": ["fumble"], "stress": 3 }]
+      }
+    },
+    {
+      "id": "aff_doomsayer",
+      "name": "Doomsayer",
+      "range": [81, 90],
+      "quote": "We had a good run. Well. We had a run.",
+      "text": "Has read the ending and it is bad: Finesse and Luck ×0.8, stress relief works half as well on them, and about one turn in three they do nothing at all. Allies take 10 stress when it starts, and their own Virtue chance is 10 lower while it lasts.",
+      "want": "To be allowed to give up.",
+      "cost": "Stops trying, and makes stopping sound sensible.",
+      "effects": [
+        { "kind": "mod", "stat": "AGI", "mult": 0.8 },
+        { "kind": "mod", "stat": "LCK", "mult": 0.8 },
+        { "kind": "reliefMult", "mult": 0.5 },
+        { "kind": "resolveShift", "allies": -5 }
+      ],
+      "behavior": {
+        "actOut": 35,
+        "act": {
+          "id": "whats_the_point",
+          "name": "What's the Point",
+          "action": "pass",
+          "refuses": [],
+          "text": "Does nothing. Sighs."
+        },
+        "meltdown": {
+          "id": "eulogy",
+          "name": "Eulogy",
+          "action": "pass",
+          "allyStress": { "amount": 8, "who": "all" },
+          "refuses": [],
+          "text": "Delivers the party's eulogy, in advance: loses the turn, and every ally takes 8 stress."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 10 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_glass_half_empty",
+        "kind": "scar",
+        "name": "Glass Half Empty",
+        "text": "Stress relief works 20% less well on them, for good.",
+        "effects": [{ "kind": "reliefMult", "mult": 0.8 }]
+      }
+    },
+    {
+      "id": "aff_lost_the_plot",
+      "name": "Lost the Plot",
+      "range": [91, 100],
+      "quote": "The moon owes me money.",
+      "text": "Has left the conversation and possibly the genre: Arcana and Willpower ×0.8, they fumble on 91 or higher, and about two turns in five they make a basic attack on a target read off the dice, friend or foe. Allies take 8 stress when it starts.",
+      "want": "Unknowable. Possibly soup.",
+      "cost": "Nobody, including them, knows what their turn will be.",
+      "effects": [
+        { "kind": "mod", "stat": "INT", "mult": 0.8 },
+        { "kind": "mod", "stat": "WIL", "mult": 0.8 },
+        { "kind": "attack", "fumbleShift": -5 }
+      ],
+      "behavior": {
+        "actOut": 40,
+        "act": {
+          "id": "improvisation",
+          "name": "Improvisation",
+          "action": "attack",
+          "target": "random_any",
+          "skill": "basic_attack",
+          "refuses": [],
+          "text": "Basic attack on a target read off the dice, friend or foe."
+        },
+        "meltdown": {
+          "id": "interpretive_dance",
+          "name": "Interpretive Dance",
+          "action": "skill",
+          "pick": "random",
+          "target": "random_any",
+          "allyStress": { "amount": 5, "who": "all" },
+          "refuses": [],
+          "text": "Uses one of their own skills, read off the dice, on a target read off the dice. Every ally takes 5 stress watching."
+        }
+      },
+      "onStart": { "selfStress": 0, "partyStress": 8 },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_loose_screw",
+        "kind": "scar",
+        "name": "Loose Screw",
+        "text": "Their own fumble band is one wider: they fumble on 95 or higher, for good.",
+        "effects": [{ "kind": "attack", "fumbleShift": -1 }]
+      }
+    }
+  ]
+}
