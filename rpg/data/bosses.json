@@ -3,66 +3,79 @@
   "statuses": [
     {
       "id": "guard",
+      "polarity": "good",
       "name": "Guard",
       "text": "Takes half damage from every hit. Lasts as long as the move that grants it says, and a Chaos Wave strips it at once."
     },
     {
       "id": "proof_wound",
+      "polarity": "neutral",
       "name": "Proof Wound",
       "text": "Bolgrim has cranked Exhibit A: The Proof fires as his first action next round. Ends when it fires, or early if his arms are bound, Exhibit A is set off or the party concedes."
     },
     {
       "id": "windup_cancelled",
+      "polarity": "bad",
       "name": "Wind-up Cancelled",
       "text": "The boss's telegraphed move is called off and the wind-up is wasted: it must spend the wind-up action again before the move can fire. Instant."
     },
     {
       "id": "vindicated",
+      "polarity": "neutral",
       "name": "Vindicated",
       "text": "Bolgrim has heard someone admit she tripped: he stops fighting and the battle ends as a win. Permanent."
     },
     {
       "id": "draft_begun",
+      "polarity": "neutral",
       "name": "Draft Begun",
       "text": "Vellum has dipped the quill: The Final Draft lands as her first action next round. Ends when it lands, or early if her arms are bound, the Rolling Ladder is set off or Valerie goes on the record."
     },
     {
       "id": "book_exposed",
+      "polarity": "bad",
       "name": "Book Exposed",
       "text": "Vellum's heart-book is lying in plain sight: she loses Guard and cannot use Re-shelve. Lasts 2 rounds."
     },
     {
       "id": "on_the_record",
+      "polarity": "neutral",
       "name": "On the Record",
       "text": "Vellum has a true account to print: she closes the book and the battle ends as a win. Permanent."
     },
     {
       "id": "ledger_flipped",
+      "polarity": "bad",
       "name": "Ledger Flipped",
       "text": "Valerie's accidents read 100 minus the Airhead gauge, so her luck works only while the gauge is low; which skills she can use still depends on the real gauge. Lasts 3 rounds; I'm Just a Good Hero! overrides it and a spin of the Great Wheel ends it."
     },
     {
       "id": "ledger_restored",
+      "polarity": "good",
       "name": "Ledger Restored",
       "text": "Removes Ledger Flipped from Valerie at once. Instant."
     },
     {
       "id": "buffs_repossessed",
+      "polarity": "bad",
       "name": "Repossessed",
       "text": "Every buff the heroes had is removed from them and applied to Madam Parity's own attributes instead. Her copies last 2 turns."
     },
     {
       "id": "bell_rung",
+      "polarity": "neutral",
       "name": "Bell Rung",
       "text": "Madam Parity has rung the closing bell: Balance Due lands as her first action two rounds later. Ends when it lands, or early if her arms are bound, the Great Wheel is spun or Valerie shares the luck."
     },
     {
       "id": "surprised",
+      "polarity": "bad",
       "name": "Surprised",
       "text": "Loses its next action. Ends once that action has been skipped."
     },
     {
       "id": "lucky_once",
+      "polarity": "neutral",
       "name": "Lucky, Once",
       "text": "Madam Parity has won a spin of the Great Wheel: she marks the account settled and the battle ends as a win. Permanent."
     }
