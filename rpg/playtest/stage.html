@@ -443,6 +443,23 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
 .settled i{font-family:var(--f-serif);font-style:italic;font-size:1.05rem;color:var(--pink);text-transform:none;letter-spacing:0;margin-right:4px}
 .settled span{display:block}
 .dots{margin:0;padding-left:16px;display:grid;gap:3px;font-size:.8rem;color:var(--muted);line-height:1.4}
+.hud.l .sheet{zoom:var(--zoomL,1)}
+:root{--hudR:264px}
+body.alone{--col:620px}
+.clock.head{color:var(--text);font-weight:500}
+.thought{padding:3px 12px}
+.mcard.locked{opacity:.6;border-style:dashed}
+.mcard.locked b i{color:var(--muted)}
+.qrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--edge)}
+.qrow b{display:block;font-size:.86rem;font-weight:600}
+.qrow small{font-size:.68rem;color:var(--faint)}
+.qrow.done b{color:var(--muted)}
+.tagrow{display:grid;grid-template-columns:5rem minmax(0,1fr);gap:8px;align-items:start}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:6px}
+.thumb{padding:0;border-radius:10px;overflow:hidden;aspect-ratio:3/4;background:#000;border:1px solid var(--edge)}
+.thumb.on{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink)}
+.thumb img,.thumb video{display:block;width:100%;height:100%;object-fit:cover;object-position:center top}
+.pot small{color:var(--faint);margin-left:4px}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -481,6 +498,7 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
         <button role="tab" type="button" data-view="tavern" aria-selected="false">SillyTavern</button>
       </div>
       <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
+      <span class="clock head" id="headline"></span>
       <span class="clock" id="clock"></span>
       <button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false">Debugger</button>
       <select class="dbg" id="place" aria-label="Place"></select>
@@ -489,11 +507,11 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
       <button class="sm quiet dbg" id="rest" type="button">Rest</button>
     </div>
     <div class="dbgtop" id="dbgTop" hidden></div>
+    <div class="thought" id="thought" hidden></div>
     <div class="tray" id="tray" hidden aria-live="polite"></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
     <section class="panel" id="tavern" hidden aria-label="SillyTavern guide"></section>
-    <div class="thought" id="thought" hidden></div>
     <div class="composer" id="composer">
       <div id="rowsCombat" hidden>
         <div class="crow">
@@ -770,7 +788,7 @@ const S = {
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
   dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'over'),
   order: store.get('order', {}), secured: store.get('secured', {}),
-  perks: store.get('perks', {}), count: store.get('count', {}),
+  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1), talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1075,7 +1093,7 @@ function seat() { // whoever is here takes the right side of the stage
 function refreshWho() { const was = S.who; seat(); if (S.who === was) return; S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${S.who ? `${esc(S.nameR)} turns up.` : `${esc(castOf(was).name)} heads off.`}` }); }
 function setPlace(id) {
   const place = PLACES.find((x) => x.id === id) ?? PLACES[0];
-  S.place = place.id; store.set('place', place.id); S.used = {}; S.spot = null;
+  S.place = place.id; store.set('place', place.id); S.used = {}; S.spot = null; S.talking = false;
   $('scene').innerHTML = place.src ? `<img src="${esc(place.src)}" alt="">` : '';
   $('place').value = place.id; seat();
 }
@@ -1106,7 +1124,7 @@ function levelUp() {
 function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
 function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
 function useStam(amount, why) { const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
-function decency(delta, why) { if (!delta) return; delta = swung(delta); if (delta < 0 && hasPerk('refitted')) delta = Math.min(0, delta + 1); if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
+function decency(delta, why) { if (!delta) return; delta = swung(delta); if (delta < 0 && hasPerk('attention')) delta -= 1; if (delta < 0 && hasPerk('refitted')) delta = Math.min(0, delta + 1); if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
 const GROW_SAY = {
   warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
   mage: 'The spare mana has to go somewhere. It goes where it always goes. The breastplate creaks and lets a strap out a notch.',
@@ -1179,7 +1197,7 @@ function meet(kind) {
   const c = castOf(id), a = APPROACH[kind], rec = npcOf(id), b = meetBonus(kind);
   const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts });
   if (a.tempt) conduct('lewd', 1);
-  rec.met = true; rec.rapport = Math.max(0, Math.min(100, 20 + { crit: 35, hit: 22, miss: 6, fumble: -8 }[r.degree])); saveNpc(); S.meet = null;
+  S.talking = true; rec.met = true; rec.rapport = Math.max(0, Math.min(100, 20 + { crit: 35, hit: 22, miss: 6, fumble: -8 }[r.degree])); saveNpc(); S.meet = null;
   note(`${c.name}: respect ${rec.rapport} (${tierOf(rec.rapport)})`);
   post({ who: 'me', dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
   post({ who: 'her', say: r.success ? c.warm : c.cold, spoken: true, fx: [r.success ? `${c.name} respects that` : `${c.name} is not impressed`] });
@@ -1257,7 +1275,7 @@ function arrive(from, to, mins) {
   const q = eventPool(to).length;
   post({ who: 'sys', plate: to.name, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: openNow(to.hours) ? to.text : `${to.text} It is shut until ${to.hours[0]}:00.`, fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(q ? [`${q} quest${q === 1 ? '' : 's'} around here`] : [])] });
   if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
-  else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+  else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
 }
 function explore() {
   const p = placeNow(), pool = eventPool(p); passTime(30); useStam(5, 'exploring'); if (S.fallen) return;
@@ -1274,7 +1292,7 @@ const STAND_SAY = {
   tempt: ['You smile, the armor catches the light, and three of them forget what they were holding. One of them pays you to go away happy.', 'You strike a pose. Your foot finds the only loose stone for a mile.'],
   run: ['You run. The sword steers. Against all odds it steers the right way.', 'You turn to run and the cloak decides to stay.'] };
 function fallDown() {
-  S.fallen = true; S.spot = null; decency(-6, 'fell over in public'); vol(1, 'fell over');
+  S.fallen = true; S.spot = null; count('falls', 'falling over'); if (!hasPerk('floor')) decency(-6, 'fell over in public'); vol(1, 'fell over');
   post({ who: 'sys', plate: 'Out of stamina', dice: '<b>DOWN</b> · stamina 0', tone: 'crit', say: 'Your legs file a complaint and the armor seconds it. You are on the ground, and getting up is going to take willpower.' }); pop('l', 'DOWN', 'var(--crit)');
 }
 function getUp() {
@@ -1305,7 +1323,7 @@ function doAct(id) {
   if (id.startsWith('opt:')) return doSpot(+id.slice(4));
   if (id.startsWith('use:')) return drink(id.slice(4));
   if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
-  if (id === 'talk') { if (!who) return; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
+  if (id === 'talk') { if (!who) return; S.talking = true; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
   if (id === 'board') return setView('guild');
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
@@ -1393,7 +1411,8 @@ function renderDebugger() {
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
 }
 /* ---------- the left panel: tabs over her bars, settings and save under them ---------- */
-function chem(delta, why) { if (!delta) return; delta = swung(delta); if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+function chem(delta, why) { if (!delta) return; delta = swung(delta); if (delta > 0 && hasPerk('noticed')) delta += 1; if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+  if (was < 60 && S.chem >= 60) count('chemHigh', 'her face went pink');
   if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
 function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
 function bioTab() {
@@ -1436,7 +1455,8 @@ function pickThought() {
   const band = V.airheadBand(V.airheadOf(S.hero));
   const key = S.fallen ? 'fallen' : S.battle || S.standoff ? 'combat' : S.meet ? 'meet' : S.stam < 25 ? 'tired' : S.decency < 35 ? 'rough' : band;
   const list = THOUGHTS[key]; S.thoughtN = (S.thoughtN ?? 0) + 1;
-  S.thought = { text: list[S.thoughtN % list.length], voice: band === 'lucid' ? 'you' : 'her' };
+  const marks = Object.keys(PERKS).filter((id) => hasPerk(id) && PERKS[id].quote);
+  S.thought = marks.length && S.thoughtN % 3 === 0 ? { text: PERKS[marks[Math.floor(S.thoughtN / 3) % marks.length]].quote, voice: 'her' } : { text: list[S.thoughtN % list.length], voice: band === 'lucid' ? 'you' : 'her' };
   if (S.aiThoughts) thinkAloud(key, band);
 }
 async function thinkAloud(key, band) {
@@ -1524,7 +1544,8 @@ function leftPanel(h, top, gauge, band, locked) {
     <div class="vitals">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Stamina', S.stam, 100, 'var(--gold)')}</div>
     <div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
     ${body}
-    ${underTabs()}</div></div>`;
+    ${underTabs()}
+    ${document.body.classList.contains('sheetL') ? moreSections() : ''}</div></div>`;
 }
 function exitCells(here) {
   return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
@@ -1541,6 +1562,8 @@ function repBonus(kind) { // gossip changes how people take her. Each label help
   if (l === 'Layabout') { if (['friendly', 'bold', 'persuade'].includes(kind)) add(-5, 'nobody knows what she is for'); }
   if (kind === 'strike' && hasPerk('duelist')) add(5, 'dueled a rival');
   if (kind === 'sway' && hasPerk('crowd')) add(5, 'crowd pleaser');
+  if (kind === 'sway' && hasPerk('attention')) add(5, 'likes the attention');
+  if (kind === 'strike' && hasPerk('bruiser')) add(5, 'short fuse');
   return { total, parts };
 }
 
@@ -1579,8 +1602,9 @@ function heckle(so) {
     return post({ who: 'her', plate: so.name, dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
   }
   if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) }, 'jeering'); return post({ who: 'her', plate: so.name, dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
-  const cut = Math.max(1, Math.round(4 * soft * hard)); decency(-cut, 'catcalls'); chem(6, 'catcalls'); conduct('lewd', 0.5);
-  const fx = applyFx({ stress: 3 }, 'catcalls'); post({ who: 'her', plate: so.name, dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [`decency −${cut}`, 'chemistry +6', ...fx] });
+  count('catcalls', 'being whistled at');
+  const cut = hasPerk('shameless') ? 0 : Math.max(1, Math.round(4 * soft * hard)) + (hasPerk('blush') ? 1 : 0); if (cut) decency(-cut, 'catcalls'); chem(hasPerk('blush') ? 8 : 6, 'catcalls'); conduct('lewd', hasPerk('shameless') ? 1 : 0.5);
+  const fx = applyFx({ stress: hasPerk('blush') ? 1 : 3 }, 'catcalls'); post({ who: 'her', plate: so.name, dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [cut ? `decency −${cut}` : 'decency holds', 'chemistry up', ...fx] });
 }
 function endStandoff(how, last) {
   const so = S.standoff, area = areaOf(placeNow()); S.standoff = null; S.mode = 'travel'; passTime(20);
@@ -1603,8 +1627,8 @@ function standoffAct(kind) {
     else {
       const hit = r.degree === 'crit' ? { strike: 45, sway: 55, persuade: 100 }[kind] : r.success ? { strike: 25, sway: 30, persuade: 30 }[kind] : 0;
       so.nerve = Math.max(0, so.nerve - hit);
-      if (kind === 'strike') conduct('mean', 1);
-      if (kind === 'sway') { conduct('lewd', 1); if (r.success) chem(4, 'swaying'); }
+      if (kind === 'strike') { conduct('mean', hasPerk('bruiser') ? 2 : 1); count('strikes', 'hitting first'); }
+      if (kind === 'sway') { conduct('lewd', 1); count('sways', 'swaying on purpose'); if (r.success) chem(4, 'swaying'); }
       if (r.degree === 'fumble') decency(-4, `${label} fumbled`);
       post({ who: 'me', dice, tone: r.degree, say: HECKLE_SAY[kind][r.success ? 0 : 1], fx: [hit ? `their nerve −${hit}` : 'their nerve holds'] });
       if (hit) pop('f', `−${hit}`, 'var(--pink)');
@@ -1673,7 +1697,7 @@ function overviewTab() {
     <p class="lbl">Her bars · right now</p><div class="pills bars2">${bars.map(([k, v]) => `<span><i>${k}</i> ${esc(v ?? '')}</span>`).join('')}</div>`;
 }
 function underTabs() {
-  const c = DATA.card ?? {}, p = c.profile ?? {}, tabs = [['bio', 'Bio'], ['drives', 'Drives'], ['pers', 'Personality'], ['rel', 'Relationships'], ['moments', 'Moments'], ['body', 'Body']], open = S.ltab2, wide = document.body.classList.contains('sheetL');
+  const c = DATA.card ?? {}, p = c.profile ?? {}, tabs = [['bio', 'Bio'], ['drives', 'Drives'], ['pers', 'Personality'], ['rel', 'Relationships'], ['moments', 'Moments'], ['passives', 'Passives'], ['body', 'Body']], open = S.ltab2, wide = document.body.classList.contains('sheetL');
   const f = (k, v) => `<div class="fcell"><span>${esc(k)}</span><b>${esc(v)}</b></div>`, card = (title, text, sub) => `<div class="mcard"><b>${esc(title)}${sub ? `<i>${esc(sub)}</i>` : ''}</b>${text ? `<p>${esc(text)}</p>` : ''}</div>`;
   const edit = (key, label, fallback, rows = 3) => (wide ? `<label class="ed"><span class="lbl">${label}</span><textarea data-edit="${key}" rows="${rows}">${esc(sheetOf(key, fallback))}</textarea></label>` : `<div class="fcell"><span>${label}</span><b>${esc(sheetOf(key, fallback))}</b></div>`);
   let body = '';
@@ -1696,6 +1720,7 @@ function underTabs() {
       ${met.length ? `<p class="lbl">People you have met · how much they respect you</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}
       ${(c.people ?? []).length ? `<p class="lbl">Her party, from her sheet</p>${c.people.map((x) => card(x.name, x.dyn ?? '', x.rel)).join('')}` : ''}`;
   } else if (open === 'moments') body = momentsTab();
+  else if (open === 'passives') body = passiveBank();
   else if (open === 'body') body = `<div class="fgrid">${(c.body?.stats ?? []).map((x) => f(x.k, x.v)).join('')}</div>${(c.body?.notes ?? []).map((x) => card(x.k, x.v)).join('')}`;
   return `<div class="rtabs under" role="tablist" aria-label="More about her">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab2="${id}" aria-selected="${id === open}">${name}</button>`).join('')}</div>${body}`;
 }
@@ -1723,17 +1748,47 @@ const PERKS = {
 const hasPerk = (id) => Boolean(S.perks[id]);
 function grantPerk(id, why) {
   if (!PERKS[id] || hasPerk(id)) return; S.perks[id] = true; store.set('perks', S.perks); note(`perk: ${PERKS[id].name}`);
-  post({ who: 'sys', plate: 'New perk', dice: `<b>${esc(PERKS[id].name.toUpperCase())}</b> · from a moment: ${esc(why)}`, tone: 'virtue', say: `${PERKS[id].does} It is on her Kit tab now, and it is always on.` }); pop('l', 'PERK', 'var(--mint)');
+  post({ who: 'sys', plate: 'New perk', dice: `<b>${esc(PERKS[id].name.toUpperCase())}</b> · from a moment: ${esc(why)}`, tone: 'virtue', say: `${PERKS[id].quote ? `“${PERKS[id].quote}” ` : ''}${PERKS[id].does} It is ${PERKS[id].quote ? 'in her passives' : 'on her Kit tab'} now, and it is always on.` }); pop('l', PERKS[id].quote ? 'PASSIVE' : 'PERK', 'var(--mint)');
+  if (PERKS[id].quote) S.thought = { text: PERKS[id].quote, voice: 'her' };
 }
 function tally(key, perk, at, why) { S.count[key] = (S.count[key] ?? 0) + 1; store.set('count', S.count); if (S.count[key] >= at) grantPerk(perk, why); }
 function kitTab() {
-  const have = Object.keys(PERKS).filter(hasPerk), todo = Object.keys(PERKS).filter((id) => !hasPerk(id)), moves = DATA.valerie.skills.filter((s) => s.unlock <= S.level);
+  const kit = Object.keys(PERKS).filter((id) => !PERKS[id].quote), have = kit.filter(hasPerk), todo = kit.filter((id) => !hasPerk(id)), moves = DATA.valerie.skills.filter((s) => s.unlock <= S.level);
   const gear = String(DATA.card?.profile?.rpg_gear ?? '').split(/,\s+(?![^(]*\))/).map((x) => x.trim()).filter(Boolean);
-  return `<p class="lbl">Perks · always on · ${have.length} of ${Object.keys(PERKS).length}</p>
+  return `<p class="lbl">Perks · always on · ${have.length} of ${kit.length}</p>
     ${have.length ? have.map((id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p>${esc(PERKS[id].does)}</p></div>`).join('') : '<p>None yet. Perks come from moments: things she does, and quests she finishes.</p>'}
     ${todo.length ? `<p class="lbl">Still to earn</p><ul class="feats">${todo.map((id) => `<li><b>${esc(PERKS[id].name)}</b> ${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</li>`).join('')}</ul>` : ''}
     <p class="lbl">Moves · rolled on her stats</p><div class="pills">${moves.map((s) => `<span title="${esc(s.text ?? '')}">${esc(s.name)}</span>`).join('')}</div>
     ${gear.length ? `<p class="lbl">Gear · counts while equipped</p><div class="pills gear">${gear.map((g) => `<span>${esc(g)}</span>`).join('')}</div>` : ''}`;
+}
+/* ---------- the passives bank: things that happen to her leave a mark, and a thought ---------- */
+// Each one unlocks when a counter reaches a number, changes one or two rules, and adds a line to her inner voice.
+Object.assign(PERKS, {
+  noticed: { name: 'They Are Looking', quote: 'People keep looking at the armor. At the front of the armor, specifically.', does: 'Chemistry gains are 1 bigger.', from: 'Get whistled at twice', need: ['catcalls', 2] },
+  blush: { name: 'Blushes Easily', quote: 'My face is doing the thing again. Everyone can see my face doing the thing.', does: 'Catcalls cost 2 less stress but 1 more decency, and raise chemistry faster.', from: 'Let chemistry reach 60', need: ['chemHigh', 1] },
+  attention: { name: 'Likes the Attention', quote: 'I did the sway on purpose that time. Since when do I do that?', does: 'Sway +5. Every decency loss is 1 bigger.', from: 'Sway at a crowd three times', need: ['sways', 3] },
+  shameless: { name: 'Shameless', quote: 'Whistle all you like. I have a sword and a very good breastplate.', does: 'Catcalls no longer cost decency. The gossip grows twice as fast.', from: 'Get whistled at six times', need: ['catcalls', 6] },
+  bruiser: { name: 'Short Fuse', quote: 'I hit first now. That is new, and I am not sure I love it.', does: 'Strike +5. Rough conduct counts double.', from: 'Strike at a crowd four times', need: ['strikes', 4] },
+  floor: { name: 'Friend of the Floor', quote: 'The ground and I have an understanding. It is always there for me.', does: 'Falling over no longer costs decency.', from: 'Fall down three times', need: ['falls', 3] },
+});
+function count(key, why) { S.count[key] = (S.count[key] ?? 0) + 1; store.set('count', S.count); for (const id of Object.keys(PERKS)) { const need = PERKS[id].need; if (need && need[0] === key && S.count[key] >= need[1]) grantPerk(id, why); } }
+function passiveBank() {
+  const ids = Object.keys(PERKS).filter((id) => PERKS[id].quote), have = ids.filter(hasPerk), todo = ids.filter((id) => !hasPerk(id));
+  return `<p>Things that keep happening to her leave a mark. Each passive changes a rule and joins her inner voice. They are not all good for her.</p>
+    ${have.map((id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p><i>“${esc(PERKS[id].quote)}”</i></p><p>${esc(PERKS[id].does)}</p></div>`).join('')}
+    ${todo.length ? `<p class="lbl">In the bank · ${todo.length} locked</p>${todo.map((id) => { const [k, n1] = PERKS[id].need; return `<div class="mcard locked"><b>${esc(PERKS[id].name)}<i>${Math.min(n1, S.count[k] ?? 0)} / ${n1}</i></b><p>${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</p></div>`; }).join('')}` : ''}`;
+}
+function moreSections() { // pulled out to the middle, the sheet keeps going as you scroll
+  const c = DATA.card ?? {}, L = Math.max(1, S.level), groups = {};
+  for (const t of c.tags ?? []) (groups[t.group ?? 'other'] ??= []).push(t.tag);
+  const quests = events.map((e) => { const lv = e.when?.level ?? [1, 100], done = doneQuests.has(e.id);
+    return `<div class="qrow${done ? ' done' : ''}"><div><b>${esc(e.title)}</b><small>${esc((e.where ?? ['anywhere']).join(' · '))} · levels ${lv[0]}–${lv[1]}${done ? ' · done' : ''}</small></div><button class="sm${done ? ' quiet' : ''}" type="button" data-quest="${esc(e.id)}">${done ? 'Again' : 'Go'}</button></div>`; }).join('');
+  const lib = [...LOOKS.filter((l) => l.src), ...Object.values(S.custom)].map((l) => `<button class="thumb${l.id === S.lookL ? ' on' : ''}" type="button" data-look="${esc(l.id)}" title="${esc(l.name)}" aria-label="Wear this look: ${esc(l.name)}" aria-pressed="${l.id === S.lookL}">${l.video ? `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(l.src)}" alt="" loading="lazy">`}</button>`).join('');
+  return `<div class="over"><h3>Tags</h3>${Object.keys(groups).length ? Object.entries(groups).map(([g, list]) => `<div class="tagrow"><span class="lbl">${esc(g)}</span><div class="pills">${list.map((t) => `<span>${esc(t)}</span>`).join('')}</div></div>`).join('') : '<p>No tags on her sheet.</p>'}</div>
+    <div class="over"><h3>Items</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0} <small>${esc(x.hint)}</small></span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>
+    <div class="over"><h3>Quests · ${events.filter((e) => doneQuests.has(e.id)).length} of ${events.length} done</h3>${quests}</div>
+    <div class="over"><h3>Passives</h3>${passiveBank()}</div>
+    <div class="over"><h3>Picture library · ${LOOKS.filter((l) => l.src).length + Object.keys(S.custom).length}</h3><div class="lib">${lib}</div><p>Pick one and she wears it. Add your own under Settings.</p></div>`;
 }
 function renderHuds() {
   const h = S.hero, t = S.them;
@@ -1941,6 +1996,7 @@ function checkDown() {
 /* ---------- talking: Claude answers as the other character when the page is allowed to ask ---------- */
 let sampler; // undefined = not asked yet, null = unavailable
 async function say(text) {
+  if (S.who) S.talking = true;
   post({ who: 'me', say: text, spoken: true }); render();
   if (!S.who && S.lookR === 'none') { post({ who: 'sys', say: 'Nobody is here to answer. Walk to a bubble with a pink dot, or move someone in from the Here tab.', spoken: true }); return render(); }
   if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
@@ -2003,6 +2059,8 @@ function render() {
   $('rattle').textContent = `Rattle ${S.nameR}`;
   const combat = S.mode === 'combat';
   document.body.classList.toggle('combat', combat);
+  const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = !engaged; document.body.classList.toggle('alone', !engaged);
+  $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
   document.body.classList.toggle('debug', S.debug); document.body.dataset.phase = phaseNow(); $('clock').textContent = clockText();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
   renderTray(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
@@ -2077,6 +2135,7 @@ function debugClick(what) {
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.look) { S.lookL = b.dataset.look; if (!S.lookL.startsWith('custom')) store.set('lookL', S.lookL); drawn.l = null; return render(); }
   if (b.dataset.sheet) { const k = b.dataset.sheet; if (k === 'ai') { writeBio(); return; } if (k.startsWith('len:')) { S.descLen = k.slice(4); store.set('descLen', S.descLen); } return render(); }
   if (b.dataset.ltab2) { S.ltab2 = S.ltab2 === b.dataset.ltab2 ? null : b.dataset.ltab2; return render(); }
   if (b.dataset.ltab) { S.ltab = b.dataset.ltab; store.set('ltab', S.ltab); return render(); }
@@ -2140,9 +2199,11 @@ setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place'
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
 reset(false); $('sprL').dataset.name = heroName;
+document.documentElement.style.setProperty('--zoomL', S.zoomL);
+$('hudL').addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDefault(); S.zoomL = Math.max(0.8, Math.min(1.6, Math.round((S.zoomL + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set('zoomL', S.zoomL); document.documentElement.style.setProperty('--zoomL', S.zoomL); }, { passive: false });
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
-else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
 window.__stage = { S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();

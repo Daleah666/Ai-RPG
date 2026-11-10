@@ -47,7 +47,7 @@ const data = {
   encounters: read('encounters'),
   packs: readdirSync(packsDir).filter((f) => f.endsWith('.events.json')).map((f) => JSON.parse(readFileSync(path.join(packsDir, f), 'utf8'))),
   modules,
-  card: (() => { const f = path.join(root, 'sillytavern/src/valerie.card-profile.json'); if (!existsSync(f)) return null; const c = JSON.parse(readFileSync(f, 'utf8')); return { profile: c.profile, secondary: c.secondary, trackers: c.trackers, moments: c.moments, body: c.body, noticed: c.noticed, emotions: c.emotions, people: c.people, highlights: c.highlights, motives: c.motives }; })(),
+  card: (() => { const f = path.join(root, 'sillytavern/src/valerie.card-profile.json'); if (!existsSync(f)) return null; const c = JSON.parse(readFileSync(f, 'utf8')); return { profile: c.profile, secondary: c.secondary, trackers: c.trackers, moments: c.moments, body: c.body, noticed: c.noticed, emotions: c.emotions, people: c.people, highlights: c.highlights, motives: c.motives, tags: c.tags }; })(),
   persona: existsSync(path.join(root, 'sillytavern/out/Valerie.persona.txt')) ? readFileSync(path.join(root, 'sillytavern/out/Valerie.persona.txt'), 'utf8').trim() : '',
 };
 
