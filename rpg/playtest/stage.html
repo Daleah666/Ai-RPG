@@ -983,6 +983,44 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .charface{position:relative}.charface-name{position:absolute;left:12px;bottom:10px;display:grid;font-size:1.5rem;line-height:1.05;text-shadow:0 2px 10px #000,0 0 3px #000}.charface-name i{font:500 .6rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
 .pcswitch{margin:8px 0;align-items:center;gap:6px;flex-wrap:wrap}
 #charmenu .char-top .tabs button{font-size:1rem;padding:9px 16px}
+/* v44: sections that fold away */
+.fbox{display:grid;gap:8px;min-width:0}
+.fhead{display:flex;align-items:center;justify-content:flex-start;gap:8px;width:100%;padding:7px 2px;border:0;border-bottom:1px solid var(--edge);border-radius:0;background:none;color:var(--muted);text-align:left;font:600 .8rem var(--f-body);cursor:pointer}
+.fhead:hover,.fbox.on>.fhead{color:var(--text)}
+.fhead svg{flex:none;rotate:-90deg;transition:rotate .2s}
+.fbox.on>.fhead svg{rotate:0deg;color:var(--pink)}
+.fhead i{margin-left:auto;font:500 .62rem var(--f-mono);font-style:normal;letter-spacing:.08em;color:var(--gold)}
+.fbody{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));align-items:start}
+.fbody>p{grid-column:1/-1;margin:0}
+/* v44: her page, one tab at a time */
+.her{display:grid;grid-template-columns:minmax(200px,300px) minmax(0,1fr);gap:18px;align-items:start}
+.her-main{display:grid;gap:14px;min-width:0}
+.htabs{justify-self:start;flex-wrap:wrap;border-radius:18px}
+#charmenu .htabs button{font-size:.95rem;padding:8px 18px}
+.her-pane{display:grid;gap:16px;align-items:start;grid-template-columns:repeat(3,minmax(0,1fr))}
+.her-pane.story{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+.her-pane.gauges,.her-pane.passives,.her-pane.pics{grid-template-columns:minmax(0,1fr)}
+.her-pane .gcol{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);align-items:start}
+@media (max-width:1250px){.her-pane,.her-pane.story,.her-pane .gcol{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:820px){.her{grid-template-columns:minmax(0,1fr)}.her .char-col.pic{max-width:260px}}
+/* v44: everyone in the fight, above the buttons */
+.bwho{display:grid;gap:6px;margin-bottom:8px}
+.bw-row{display:flex;gap:6px;align-items:stretch;min-width:0}
+.bw{flex:1 1 0;min-width:0;display:flex;justify-content:flex-start;gap:8px;align-items:center;padding:5px 9px 5px 5px;border-radius:12px;background:var(--glass);border:1px solid var(--edge);color:inherit;font:inherit;text-align:left}
+.bw .face{width:38px;height:38px;border-radius:10px}
+.bw.bwme{flex:2 1 0}
+.bw.bwme .face{width:52px;height:52px;border-radius:12px}
+.bw .face.glyph{display:grid;place-items:center;font:700 1rem var(--f-head);color:var(--muted);background:var(--box)}
+.bw .tok{width:38px;height:38px}
+.bw-b{display:grid;gap:3px;min-width:0;flex:1}
+.bw-b b{display:block;min-width:0;font:700 .76rem/1.15 var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bw-b b i{margin-left:6px;font:500 .5rem var(--f-mono);font-style:normal;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.bw-b .track{height:4px}
+.bw-b small{font:400 .54rem var(--f-mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bw.bwturn{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 14px color-mix(in srgb,var(--gold) 30%,transparent)}
+.bw.out{opacity:.42}
+button.bw{cursor:pointer}
+button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
 /* a question mark that opens an explanation */
 .qm{flex:none;display:inline-grid;place-items:center;width:18px;height:18px;min-width:0;min-height:0;padding:0;border-radius:50%;border:1px solid var(--edge2);background:transparent;color:var(--muted);font:600 .66rem var(--f-mono);line-height:1;cursor:pointer;vertical-align:middle;text-transform:none;letter-spacing:0;box-shadow:none}
 .qm[aria-expanded="true"]{background:var(--text);color:#111;border-color:var(--text)}
@@ -1107,6 +1145,7 @@ body.dragging .rail .sizes button{height:6px}
         </div>
       </div>
       <div id="rowsBattle" hidden>
+        <div class="bwho" id="bWho" aria-label="Everyone in this fight"></div>
         <div class="crow"><span class="turn" id="bTurn"></span>
           <div class="seg" id="bStance" role="group" aria-label="Stance"><button type="button" data-bst="wing">Wing It</button><button type="button" data-bst="think">Think It Through</button></div></div>
         <div class="crow" id="bTargets"></div>
@@ -1764,8 +1803,8 @@ function renderBattleRow() {
   for (const x of $('bStance').children) x.setAttribute('aria-pressed', x.dataset.bst === S.stance);
   const foes = st.enemies.map((id) => st.combatants[id]).filter((f) => f.hp > 0 && !f.fled);
   if (!foes.some((f) => f.id === b.target)) b.target = foes[0]?.id ?? null;
-  $('bTargets').hidden = foes.length < 2;
-  $('bTargets').innerHTML = foes.length < 2 ? '' : `<span class="lbl">Target</span>${foes.map((f) => `<button class="sm${f.id === b.target ? '' : ' quiet'}" type="button" data-btarget="${esc(f.id)}" aria-pressed="${f.id === b.target}">${esc(f.name)} · ${pctOf(f.hp, f.maxHp)}</button>`).join('')}`;
+  $('bTargets').hidden = true; $('bWho').innerHTML = fightStrip(st, actor, foes, b.target);
+  $('bTargets').innerHTML = '';
   const bare = (l) => l.replace(/^(Wing It|Think It Through): /, '');
   const note = (a) => a.disabled ? (a.why ?? 'sealed') : a.cost?.mp ? `${n(a.cost.mp)} MP` : a.cost?.limit ? `${a.cost.limit} MCE` : a.kind === 'guard' ? 'brace for it' : a.kind === 'breather' ? 'shed some stress' : a.kind === 'concede' ? 'end it, at a price' : 'free';
   $('bGrid').innerHTML = acts.map((a, i) => (a.stance && a.stance !== S.stance) ? '' : `<button class="cell${a.kind === 'attack' ? ' primary' : ''}" type="button" data-bi="${i}"${a.disabled ? ' disabled' : ''} title="${esc(st.defs.skills[a.skillId]?.text ?? '')}"><b>${esc(bare(a.label))}</b><small>${esc(note(a))}</small></button>`).join('');
@@ -2750,13 +2789,6 @@ Object.assign(PERKS, {
 });
 function count(key, why) { const c = (S.count[key] = (S.count[key] ?? 0) + 1); store.set('count', S.count); // halfway and one short, a note says a passive is in reach
   for (const id of Object.keys(PERKS)) { const need = PERKS[id].need; if (!need || need[0] !== key || hasPerk(id)) continue; if (c >= need[1]) grantPerk(id, why); else if (c === Math.ceil(need[1] / 2) || c === need[1] - 1) toast('A passive is in reach', `${PERKS[id].name} · ${c} of ${need[1]} · ${PERKS[id].does}`, 'gold'); } }
-function passiveBank() {
-  const ids = Object.keys(PERKS).filter((id) => PERKS[id].quote), have = ids.filter(hasPerk), todo = ids.filter((id) => !hasPerk(id));
-  return `<p>Things that keep happening to her leave a mark. Each passive changes a rule and joins her inner voice. They are not all good for her.</p>
-    <div class="bars">${bar(`Passive rank · her second level`, have.length, ids.length, 'var(--pink)')}</div><p>Each rank puts one more in every crowd, and makes a second voice in the crowd likelier each round (8% a rank). With a bad name, each rank also adds 2% to trouble on safe streets.</p>
-    ${have.map((id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p><i>“${esc(PERKS[id].quote)}”</i></p><p>${esc(PERKS[id].does)}</p></div>`).join('')}
-    ${todo.length ? `<p class="lbl">In the bank · ${todo.length} locked</p>${todo.map((id) => { const [k, n1] = PERKS[id].need; return `<div class="mcard locked"><b>${esc(PERKS[id].name)}<i>${Math.min(n1, S.count[k] ?? 0)} / ${n1}</i></b><p>${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</p></div>`; }).join('')}` : ''}`;
-}
 function moreSections() { // pulled out to the middle, the sheet keeps going as you scroll
   const c = DATA.card ?? {}, L = Math.max(1, S.level), groups = {};
   for (const t of c.tags ?? []) (groups[t.group ?? 'other'] ??= []).push(t.tag);
@@ -3581,12 +3613,12 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v43', NEW_UI = [
-  ['#sprL img, #sprL video', 'Right-click a character: her name, her mood out of ten, how many pictures she has, flip her, or frame her upper body. Right-click again for her pictures.'],
-  ['#pcBtn', 'Who you are playing is first on the bar. The arrow switches: Valerie, Ember, Pip, or Meme the cat mage.'],
-  ['#mode', 'The clock is here while you travel.'],
-  ['#whoFoot', 'Bottom right: who is standing there, with her level, class and state. A rarer or stronger character has a coloured name and a nickname.'],
-  ['[data-ctab="debug"]', 'Debug has Cinematic: the opening, or a simulated fight, plays by itself in one small box.'],
+const NEW_VER = 'v44', NEW_UI = [
+  ['.top [data-menu="her"]', 'Her page has tabs now: Sheet, Story, Gauges, Passives, Pictures. One thing on screen at a time, and it opens on the tab you left.'],
+  ['[data-htab="passives"]', 'Passives are sorted: earned, nearly there, and the locked ones folded away.'],
+  ['[data-fold]', 'Anything with an arrow folds away, and stays how you left it.'],
+  ['#bWho', 'In a fight, everyone has a face above the buttons. Yours is first, the gold ring is whose turn it is, and you click an enemy to aim at it.'],
+  ['#sprL img, #sprL video', 'Still here from last time: right-click a character for her name, her mood, her pictures, and to flip her.'],
 ];
 function hideNew() { clearTimeout(S.newT); $('newLayer')?.remove(); }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -3876,7 +3908,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -3942,14 +3974,47 @@ function openCell() { const L = Math.max(1, S.level); S.loose = dayNow(); store.
 }
 // The full-screen menus behind the top tabs: her sheet, everyone, the lore the world runs on, and settings.
 const MENUS = { her: heroName, cast: 'Everyone', lore: 'Lore', api: 'API', settings: 'Settings' };
-function herHtml() { const h = S.hero, p = DATA.card?.profile ?? {};
+/* ---------- v44: sections that fold away, tabs on her page, and faces above the fight buttons ---------- */
+function fold(key, title, body, open = true, count = '') { const on = S.folds?.[key] ?? open;
+  return `<div class="fbox${on ? ' on' : ''}"><button class="fhead" type="button" data-fold="${esc(key)}" aria-expanded="${on}"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${title}</b>${count === '' ? '' : `<i>${count}</i>`}</button><div class="fbody"${on ? '' : ' hidden'}>${body}</div></div>`; }
+function passiveBank() {
+  const ids = Object.keys(PERKS).filter((id) => PERKS[id].quote), have = ids.filter(hasPerk), todo = ids.filter((id) => !hasPerk(id));
+  const part = (id) => { const [k, n1] = PERKS[id].need; return Math.min(n1, S.count[k] ?? 0) / Math.max(1, n1); };
+  const near = todo.filter((id) => part(id) >= 0.5), far = todo.filter((id) => part(id) < 0.5);
+  const got = (id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p><i>“${esc(PERKS[id].quote)}”</i></p><p>${esc(PERKS[id].does)}</p></div>`;
+  const lock = (id) => { const [k, n1] = PERKS[id].need; return `<div class="mcard locked"><b>${esc(PERKS[id].name)}<i>${Math.min(n1, S.count[k] ?? 0)} / ${n1}</i></b><p>${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</p></div>`; };
+  return `<p>Things that keep happening to her leave a mark. Each passive changes a rule and joins her inner voice. They are not all good for her.</p>
+    <div class="bars">${bar(`Passive rank · her second level`, have.length, ids.length, 'var(--pink)')}</div>
+    ${fold('pk-how', 'What a rank does', `<p>Each rank puts one more in every crowd, and makes a second voice in the crowd likelier each round (8% a rank). With a bad name, each rank also adds 2% to trouble on safe streets.</p>`, false)}
+    ${fold('pk-have', 'Earned', have.length ? have.map(got).join('') : '<p class="more">None yet. They come from what keeps happening to her.</p>', true, have.length)}
+    ${near.length ? fold('pk-near', 'Nearly there', near.map(lock).join(''), true, near.length) : ''}
+    ${far.length ? fold('pk-far', 'In the bank · locked', far.map(lock).join(''), false, far.length) : ''}`;
+}
+const HTABS = { sheet: 'Sheet', story: 'Story', gauges: 'Gauges', passives: 'Passives', pics: 'Pictures' };
+function herHtml() { const h = S.hero, p = DATA.card?.profile ?? {}, tab = HTABS[S.htab] ? S.htab : 'sheet';
   const ed = (key, label, fallback, rows) => `<label class="ed"><span class="lbl">${label}</span><textarea data-edit="${key}" rows="${rows}">${esc(sheetOf(key, fallback))}</textarea></label>`;
-  return `<div class="char-grid"><div class="char-col pic"><div class="charface">${face()}<b class="charface-name">${heroName}<i>${esc(calling().name)} · level ${S.level}</i></b></div><div class="crow pcswitch"><span class="lbl">Switch to</span>${Object.entries(PCS).filter(([k]) => k !== PC_ID).map(([k, x]) => `<button class="sm quiet" type="button" data-pc="${k}">${esc(x.name)}</button>`).join('')}</div>${lookPicker()}</div>
-      <div class="char-col"><div class="over"><h3>Who she is</h3><div class="crow"><span class="lbl">You are playing</span>${Object.entries(PCS).map(([k, x]) => `<button class="sm${k === PC_ID ? '' : ' quiet'}" type="button" data-pc="${k}" aria-pressed="${k === PC_ID}">${esc(x.full)}</button>`).join('')}</div><p class="more">Same save and same rules for now. Switching changes the name, the pictures, the calling and the story, and reloads the page.</p><div class="crow">${Object.entries(CALLINGS).map(([k, x]) => `<button class="sm${k === S.cls ? '' : ' quiet'}" type="button" data-calling="${k}" aria-pressed="${k === S.cls}"${S.battle || S.standoff ? ' disabled' : ''}>${esc(x.short)}</button>`).join('')}</div>
-        <label class="walkto"><span class="lbl">Strangers take her for</span><select data-race="1">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label></div>
-        ${combatBlock(h)}<div class="over"><h3>At a glance</h3>${overviewTab()}</div></div>
-      <div class="char-col"><div class="over"><h3>Her story · type to change it</h3>${ed('desc', 'Description', p.description, 6)}${ed('want', 'Wants', p.want, 2)}${ed('need', 'Needs', p.need, 2)}${ed('lie', 'The lie she believes', p.lie, 2)}${ed('fears', 'Fears', p.fears, 2)}</div><div class="over"><h3>Let Claude fill it in</h3>${fillBox()}</div></div>
-      <div class="char-col"><div class="over"><h3>Gauges</h3>${dashboard()}</div><div class="over"><h3>Passives</h3>${passiveBank()}</div></div></div>`; }
+  const panes = {
+    sheet: () => `<div class="char-col"><div class="over"><h3>Who she is</h3><div class="crow"><span class="lbl">You are playing</span>${Object.entries(PCS).map(([k, x]) => `<button class="sm${k === PC_ID ? '' : ' quiet'}" type="button" data-pc="${k}" aria-pressed="${k === PC_ID}">${esc(x.full)}</button>`).join('')}</div><p class="more">Same save and same rules for now. Switching changes the name, the pictures, the calling and the story, and reloads the page.</p><div class="crow">${Object.entries(CALLINGS).map(([k, x]) => `<button class="sm${k === S.cls ? '' : ' quiet'}" type="button" data-calling="${k}" aria-pressed="${k === S.cls}"${S.battle || S.standoff ? ' disabled' : ''}>${esc(x.short)}</button>`).join('')}</div>
+        <label class="walkto"><span class="lbl">Strangers take her for</span><select data-race="1">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label></div></div>
+      <div class="char-col">${combatBlock(h)}</div><div class="char-col"><div class="over"><h3>At a glance</h3>${overviewTab()}</div></div>`,
+    story: () => `<div class="char-col"><div class="over"><h3>Her story · type to change it</h3>${ed('desc', 'Description', p.description, 6)}${ed('want', 'Wants', p.want, 2)}${ed('need', 'Needs', p.need, 2)}${ed('lie', 'The lie she believes', p.lie, 2)}${ed('fears', 'Fears', p.fears, 2)}</div></div><div class="char-col"><div class="over"><h3>Let Claude fill it in</h3>${fillBox()}</div></div>`,
+    gauges: () => `<div class="char-col gcol">${dashboard()}</div>`,
+    passives: () => `<div class="char-col"><div class="over"><h3>Passives</h3>${passiveBank()}</div></div>`,
+    pics: () => `<div class="char-col"><div class="over"><h3>Her pictures</h3>${lookPicker()}</div></div>`,
+  };
+  return `<div class="her"><div class="char-col pic"><div class="charface">${face()}<b class="charface-name">${heroName}<i>${esc(calling().name)} · level ${S.level}</i></b></div><div class="crow pcswitch"><span class="lbl">Switch to</span>${Object.entries(PCS).filter(([k]) => k !== PC_ID).map(([k, x]) => `<button class="sm quiet" type="button" data-pc="${k}">${esc(x.name)}</button>`).join('')}</div></div>
+    <div class="her-main"><div class="tabs htabs" role="tablist" aria-label="Her page">${Object.entries(HTABS).map(([k, v]) => `<button role="tab" type="button" data-htab="${k}" aria-selected="${k === tab}">${v}</button>`).join('')}</div><div class="her-pane ${tab}" role="tabpanel">${panes[tab]()}</div></div></div>`; }
+function stillFace(lookId) { const l = S.custom[lookId] ?? LOOKS.find((x) => x.id === lookId); if (!l?.src) return '';
+  const still = l.video ? LOOKS.find((x) => !x.video && x.src && (l.loopFor ?? []).includes(x.id)) : l; // a clip's own still, where it has one; a paused clip shows its first frame
+  return `<span class="face">${still ? `<img src="${esc(still.src)}" alt="">` : `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>`}</span>`; }
+function fightStrip(st, actor, foes, target) { // everyone in the fight, above the buttons: you first, then your side, then theirs
+  const glyph = (c) => `<span class="face glyph" aria-hidden="true">${esc(String(c.name ?? '?').trim().slice(0, 1).toUpperCase())}</span>`;
+  const mine = st.heroes.map((id) => { const c = st.combatants[id], you = id === 'valerie', out = c.hp <= 0 || c.fled, pic = you ? stillFace(S.faceL || growFace() || S.lookL) : id === 'companion' ? stillFace(S.lookR) : '';
+    return `<div class="bw${you ? ' bwme' : ''}${id === actor ? ' bwturn' : ''}${out ? ' out' : ''}">${pic || glyph(c)}<div class="bw-b"><b>${esc(c.name)}${you ? '<i>you</i>' : ''}</b>${miniBar(c.hp, c.maxHp, 'var(--hp)')}${miniBar(c.mp ?? 0, Math.max(1, c.maxMp ?? 1), 'var(--mp)')}<small>${out ? (c.fled ? 'fled' : 'down') : you ? `${n(c.hp)}/${n(c.maxHp)} HP · ${n(c.mp ?? 0)}/${n(c.maxMp ?? 0)} MP` : `${n(c.hp)} HP`}</small></div></div>`; }).join('');
+  const theirs = st.enemies.map((id) => { const c = st.combatants[id], out = c.hp <= 0 || c.fled, aim = !out && foes.length > 1;
+    const body = `${tokenFor(c.name)}<div class="bw-b"><b>${esc(c.name)}</b>${miniBar(c.hp, c.maxHp, 'var(--hp)')}<small>${out ? (c.fled ? 'fled' : 'down') : `${pctOf(c.hp, c.maxHp)}${aim ? (c.id === target ? ' · target' : ' · aim') : ''}`}</small></div>`;
+    return aim ? `<button class="bw foe${c.id === actor ? ' bwturn' : ''}" type="button" title="${esc(c.name)}${c.id === target ? ': your target' : ': click to aim at it'}" data-btarget="${esc(c.id)}" aria-pressed="${c.id === target}">${body}</button>` : `<div class="bw foe${c.id === actor ? ' bwturn' : ''}${out ? ' out' : ''}">${body}</div>`; }).join('');
+  return `<div class="bw-row">${mine}</div><div class="bw-row">${theirs}</div>`; }
 // Lore is what the world engine reads. The built-in entries are fixed; yours are added to them and sent along when Claude writes the news.
 const LORE = [
   { area: 'city', title: 'Gooseford', text: 'A walled market town that runs on gossip, geese and the Guild. Nothing jumps you inside the walls unless you look like easy prey. The Back Alley is the exception, and Big Hobb collects a toll there.' },
@@ -4007,7 +4072,7 @@ function loreClick(key) {
 }
 function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Screen</h3><div class="crow"><button class="sm" type="button" data-full="1">Full screen</button></div></div><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
 function renderMenu() { const el = $('charmenu'); el.hidden = !S.menu; for (const b of document.querySelectorAll('.top [data-menu]')) b.setAttribute('aria-selected', b.dataset.menu === S.menu); if (!S.menu) { el.dataset.menu = ''; return; }
-  const mkey = `${S.menu}:${S.menu === 'cast' ? S.viewing ?? '' : ''}`, same = el.dataset.menu === mkey, a = document.activeElement; if (same && a && el.contains(a) && a.matches('textarea, input[type="text"]') && !S.menuForce) return; S.menuForce = false;
+  const mkey = `${S.menu}:${S.menu === 'cast' ? S.viewing ?? '' : S.menu === 'her' ? S.htab : ''}`, same = el.dataset.menu === mkey, a = document.activeElement; if (same && a && el.contains(a) && a.matches('textarea, input[type="text"]') && !S.menuForce) return; S.menuForce = false;
   const keep = el.querySelector('.char-body')?.scrollTop ?? 0, body = S.menu === 'cast' ? (S.viewing ? viewerHtml() : castHtml()) : S.menu === 'lore' ? loreHtml() : S.menu === 'api' ? apiHtml() : S.menu === 'settings' ? settingsHtml() : herHtml();
   el.innerHTML = `<div class="char-in" role="dialog" aria-modal="true" aria-label="${esc(MENUS[S.menu])}"><div class="char-top"><div class="tabs" role="tablist" aria-label="Menus">${Object.entries(MENUS).map(([k, v]) => `<button role="tab" type="button" data-menu="${k}" aria-selected="${k === S.menu}">${esc(v)}</button>`).join('')}</div><span class="lbl">the game is paused</span><button class="sm primary" type="button" data-menu="">Back to the game</button></div><div class="char-body">${body}</div></div>`;
   el.dataset.menu = mkey; if (same) el.querySelector('.char-body').scrollTop = keep; cvApply(); }
@@ -4518,6 +4583,8 @@ document.addEventListener('click', (e) => {
   if (b.dataset.cinestart) return void cineStart(b.dataset.cinestart);
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
   if (b.dataset.shownew) return void showNew(60000);
+  if (b.dataset.htab) { S.htab = b.dataset.htab; store.set('htab', S.htab); S.menuForce = true; return render(); }
+  if (b.dataset.fold) { S.folds[b.dataset.fold] = b.getAttribute('aria-expanded') !== 'true'; store.set('folds', S.folds); S.menuForce = true; return render(); }
   if (b.dataset.help) { S.help[b.dataset.help] = !S.help[b.dataset.help]; store.set('help', S.help); S.menuForce = true; return render(); }
   if (b.dataset.opening) { S.menu = ''; S.viewing = null; playOpening(); return render(); }
   if (b.dataset.heartthink) return void heartThink(b.dataset.heartthink);

@@ -106,6 +106,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | The cast as files | `rpg/characters/*.json`, `rpg/characters/README.md`, `tools/build-playtest.mjs` (reads them into `DATA.characters`), `CHARS`, `CHAR`, and the lines that build `PCS`, `SECOND` and merge into `PROFILE`, `WANTS`, `LOOKTXT`, `BARKS`, `LOOPS` |
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
+| Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
 | Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
 | Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
 | The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
@@ -304,7 +305,24 @@ From Del's long voice note at the end of the previous pass. Built:
 - "Her name will be in her portrait, the very bottom left. Under the portrait, the characters I could switch into": done in her menu.
 - "Make the category tabs a little bit bigger": the menu tabs.
 
-Still **not built** from that note: a portrait for a character in a real fight (fights show name plates); tabs inside her menu so it is not one long page; collapsible sections for the passive bank and the rest.
+The three things that note still asked for were built in the next pass (below).
+
+### Faces in a fight, tabs in her menu, folds (v44, artifact version 37)
+
+The rest of the same voice note. Built:
+
+- "When I have combat, she should have her own portrait... above the chat bar": `#bWho`, two rows above the fight buttons. Her card has her portrait (a still: `stillFace` uses a clip's own still when it has one, otherwise the paused clip), health in red, mana in blue. Enemies have their token and a health bar, and are the target buttons now.
+- "A few tabs at the top when I'm in the menu... not a wall of text": her menu has five tabs. The pose and face pickers moved from under the portrait to the Pictures tab.
+- "Collapse certain things like in the bank and locked stuff": `fold()`. Used in the passives bank only. Any other long section can be wrapped the same way: `fold('a-key', 'Title', html, openAtFirst, count)`.
+
+Choices made here that Del has not seen yet:
+
+- Locked passives start folded; "nearly there" (half-way or more) starts open.
+- Party members without pictures show the first letter of their name. Enemies still show the drawn tokens, not pictures (see the bestiary item below).
+- The right panel in a fight still lists the enemies and the party with more detail. The strip is the short version.
+- Two class names collided with older styles while building this (`you`, `me` and `turn` are taken). The strip uses `bwme` and `bwturn`.
+
+Tests that needed a change: `drive29` now opens the Story tab before typing in a box, and `drive32` and `drive34` open the Pictures tab before reading the poses.
 
 ## What Del asked for that is not built, in suggested order
 
