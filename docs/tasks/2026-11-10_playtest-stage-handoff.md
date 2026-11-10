@@ -265,6 +265,16 @@ Decisions made in that pass:
 
 Loose ends from that pass: the Right now tab is only on the right panel, not on the character page; the regulars are not in it; `heartThink` and the extra line in the conversation prompt have only been run against a stand-in for Claude; the test `drive22` can fail when a night visit opens after it sleeps at an inn (it passes when run again).
 
+### A blank page, and what was done about it (v40, artifact version 34)
+
+Del sent a screenshot of the page with both side panels empty, no buttons, no scene, and only two lines in the chat, and asked "did I accidentally delete you". Del then said the cause might be a Unity add-on that kept downloading things, and reminded the assistant that the Debug request had been for a way to see the beginning of the game.
+
+- **Not reproduced.** The page was loaded with Valerie and with Ember as lead, at Del's window shape, with the big layout, after long random play and a reload, after switching the lead, and after the old reset. It drew completely every time. The cause of that one blank screen is unknown.
+- **One real weakness found on the way**: a saved panel size the page did not know stopped start-up dead. Fixed (`sizeL` and the start-up line check the name).
+- **The page now reports its own errors** (the first script in `stage.html`): a red box with the message and line, and buttons to reload or to reset only the layout. If Del sends a screenshot of that box, the line number is a line of the built page.
+- **Start from the beginning** (`startOver`) is what Del had asked for. The old *Reset my save* reset some of the game in memory and left the rest (wanderers, hearts, chapters, layout) as it was; it now clears the save and reloads.
+- The Unity add-on is Unity's own plugin for coding agents, synced into Del's sessions. It has no start-up scripts; one of its skills can install Unity editors, which are large downloads. It was never used in this session and the game does not need it. Whatever was downloading was on Del's own computer, which this session cannot see.
+
 ## What Del asked for that is not built, in suggested order
 
 1. **A small dungeon between places.** Del wants a short stretch to cross when moving between two places, with gold and EXP in it. Roads now have one to four stretches with signs and one-roll events, which is the first half of this. Still missing: a named crawl of 3 to 5 rooms with its own reward at the end.
