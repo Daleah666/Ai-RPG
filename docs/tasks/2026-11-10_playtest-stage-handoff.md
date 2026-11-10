@@ -61,6 +61,11 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Inner voice | `pickThought`, `thinkAloud` (asks Claude's quick model when the toggle is on) |
 | Road stretches, signs, suspicion | `goTo`, `jointsOf`, `stretchRows`, `sign`, `micro`, `MICRO`, `ENV`, `ENV_NIGHT`, `SUSPECT`, `FOLLOW`, `heat` |
 | Conditions | `COND`, `cond`, `condOf`, `stepOf`, `resistOf`, `nightConditions` (called from `newDay`), and the lines in `repBonus`, `dangerOf`, `useStam`, `heckle` and `aroundHere` that read them |
+| Portrait column, folds, three sizes | `leftPanel`, `underTabs` (the fold row), `lookPicker`, `face`, `SIZES`, `sizeL`, `snapL`, the `.pcol` and `@container (min-width:490px)` rules |
+| Vitals rail, dice drawer, world plate | `railHtml`, `renderTray`, `worldPlate`, `MONTHS` |
+| Backdrops by time of day | `TOWN_SCENES`, `sceneOf`, `drawScene` |
+| Collapsing in the open | `fallDown`, `spent`, `S.waiting`, the first line of `getUp` |
+| Asking Claude, and counting it | `metered`, `meter`, `aiUsage`, `gaugeDigest`, `FILL`, `fillPrompt`, `fillSheet`, `fillBox` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -83,6 +88,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - The personality types on the sheet are a glimpse for now. Del wants them to become a system later.
 - The left panel is Del's character sheet in miniature. Pulled wide it should read like the Character Card page: picture on the left, tabbed sheet on the right. Del wants the right-hand panel to get the same treatment later.
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
+- The left panel copies the left side of Del's Character Card: portrait, a row of folds, then the sheet, with no boxed info cards. HP, mana and stamina live beside the panel, not in it, and opening them shows her mood. The panel has exactly three sizes (min, half, full) and pushes the chat column over. The dice come out of the chat box. Del asked for the look to be "a bit more RPG": the gold double frame, the corner studs, the cursor on the buttons and the die are that.
+- Del's pictures: 27 town backdrops are all in use. Of 12 character cutouts, six are in use (four as poses for Valerie, two as new regulars), one is a duplicate, and five were left out; the reply to Del on 2026-11-10 says which and why. Do not add the five without asking Del again.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
 
@@ -119,6 +126,9 @@ Also asked for and not built: three or four playable characters, one per calling
 
 ## Known loose ends
 
+- Dragging the panel edge inward used to die after the first nudge because the browser started dragging the picture under the pointer. `dragstart` is now cancelled while resizing. If resizing ever feels sticky again, look there first.
+- AI fill and the token tally were tested with a stand-in for Claude that returns fixed text. They have not been run against the real model. The token numbers are estimates and say so.
+- Seasons are display only. Nothing reads the month yet.
 - Del reported being stuck with nothing to press on the version before Jiggle free. A 700-click random walk through the new version found no dead end, so the cause was not reproduced. If Del reports it again, ask what the mode badge in the top bar said.
 - The left panel still sets the `sheetL` body class when it is 544px or wider; it now only decides whether the extra sheet sections show. The sprite no longer slides.
 - The page's own rules have no tests. If one hardens, move it to `engine/` with a test.
