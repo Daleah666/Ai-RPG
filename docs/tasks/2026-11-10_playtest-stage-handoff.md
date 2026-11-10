@@ -86,6 +86,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Amaranth and Corruption | `maybeVisit`, `visitChance`, `dreamCells`, `dreamAct`, `DREAM_*`, the `corrupt` row of `COND`, the `bless` act, `S.dream` |
 | News, notifications, big trouble | `WORLD`, `worldEvent`, `worldTick` (called from `passTime` when the phase changes), `toast`, `newsBox`, `REACT_W`, `BADDIES`, `baddieAt`, `baddieCheck`, `bigResult`, `openCell`, `S.news`, `S.baddieDown`, `S.loose` |
 | Del's secondary cast, rivals who turn, playing as Pip | `SECOND`, `HOSTILE`, `rivalFight`, `turnRival`, `secPose`, the `ally` branch in `hail`, `S.turned`, `S.secMet`; `PCS`, `PC_ID`, `SHEET_KEY`, `playAs` |
+| API tab, vault, share codes | `apiHtml`, `apiClick`, `apiTest`, `VAULT`, `vaultConnect`, `vaultSave`, `vaultLoad`, `vaultTick` (called from `passTime`), `shareMake`, `shareLook`, `shareUse`, `shareDrop`, `cleanShare` |
+| The character page | `PROFILE`, `LOOKTXT`, `viewData`, `viewList`, `openViewer`, `viewerHtml`, `viewerClick`, `cvZoom`, `cvApply`, `S.viewing`, `S.cv` |
 | The Town Girls | `TOWN` (generated from Del's `Town_Girls` dialogue files), the `town` kind in `hail`, `S.townMet`, the Cast section in `castHtml` |
 | Wanderers and the movement maps | `countsFor` (the big map), `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
 | Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
@@ -178,6 +180,10 @@ Decisions made in that pass:
 - Del then sent three roster archives (four witches, six rogues, plus two bosses sent earlier) and said one is playable: "the ginger rogue", which is **Pip Copperfinch**. All twelve are in `SECOND`. The seven written as enemies or rivals start hostile and turn ally the first time she beats them, which is what their cards say happens. Pip is playable as a second name, face, calling and story on the same save.
 - A courier wanderer used to be called Pip Quickpenny. He is Dash Quickpenny now so there is one Pip. His key in `WANDER` is still `pip`; Pip Copperfinch's is `copper`.
 - Not used from those archives: the "torn" pictures, the second copies of each pose, Vexa's three clips, and the `prompt.txt` / `card.json` files.
+
+- Del asked for an API tab that "connects, memorises, vaults and shares securely", from a key or "from your vault". Built without any key entry: a page in a browser cannot keep a key safe and this one cannot reach outside services. The credentials stay with the viewer's Claude account; the page gets `sample`, `db` and `user`. **Publishing must now declare all three capabilities** (`{sample:{}, db:{}, user:{}}`) or the vault stops working.
+- The vault and share codes have only been run against a stand-in database in the browser tests, not the real one.
+- Del asked to "zoom in on the main characters", with body dimensions and "a reveal or secret". That is the character page. Body numbers are tiers and a height, not measurements.
 
 Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
 
