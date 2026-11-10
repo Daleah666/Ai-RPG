@@ -13,6 +13,7 @@ This folder holds the whole design: the rules as running code, the data, the wri
 | `handoff/` | One note per role: what they built, what they changed, what the next person needs. |
 | `events/README.md` | How to write an event pack and plug it in. |
 | `sillytavern/README.md` | How to play it in SillyTavern. |
+| `playtest/README.md` | The playable page and how to build it. |
 
 ## Layout
 
@@ -34,6 +35,7 @@ data/        archetypes, skills, passives, items, bosses, encounters, affliction
 events/      event packs (drop new ones in events/packs/)
 blueprint/   one document per role, plus the compiled master
 sillytavern/ Game Master card, Valerie persona, lorebook, and the card-creator card
+playtest/    the playable page: a town, residents, real fights (npm run playtest)
 test/        the anchors from FOUNDATION.md, as tests
 tools/       cross-reference check, event validator, blueprint builder
 ```

@@ -10,6 +10,7 @@
     "check": "node tools/check-data.mjs",
     "events": "node tools/validate-events.mjs",
     "build": "node tools/build-blueprint.mjs && node sillytavern/build.mjs",
+    "playtest": "node tools/build-playtest.mjs . playtest/stage.html playtest/out/oops-playtest.html",
     "all": "npm test && npm run check && npm run events && npm run build"
   }
 }
