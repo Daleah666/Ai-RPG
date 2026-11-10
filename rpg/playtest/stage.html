@@ -947,6 +947,8 @@ body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);t
 .cv-secret .blur{filter:blur(3px);letter-spacing:1px;color:var(--muted);user-select:none;word-break:break-all}
 @media (max-width:1100px){.cv{grid-template-columns:1fr}.cv-left{position:static}.cv-stage{height:60vh}.char-grid.api{grid-template-columns:1fr}}
 @media (max-width:1700px){.top .tabs button{padding:5px 6px}.topend .sm{padding:5px 6px}}
+#thought.asst{left:auto;right:calc(var(--hudR) + 22px);border-radius:12px 12px 2px 12px}#thought.asst::after{left:auto;right:18px}
+.ccard.asst{order:2}
 </style>
 
 <div class="stage" id="stage">
@@ -1069,13 +1071,20 @@ const pick = (list, roll) => list[roll % list.length];
 const store = { get(k, f) { try { const v = localStorage.getItem('oops-' + k); return v === null ? f : JSON.parse(v); } catch { return f; } }, set(k, v) { try { localStorage.setItem('oops-' + k, JSON.stringify(v)); } catch {} } };
 // Who is being played. Pip Copperfinch is a second name, face, calling and story on the same save and the same rules; a kit of her own is not built.
 const PCS = { valerie: { name: 'Valerie', full: 'Valerie', look: 'knight', cls: 'knight' },
-  pip: { name: 'Pip', full: 'Pip Copperfinch', look: 's-copper', cls: 'rogue', card: { highlights: ['A cheat-level STEAL skill', 'Chaotic good', 'Roxy\'s apprentice'], motives: ['loot', 'a level up', 'somebody to sleep next to'], people: [], moments: [], noticed: { pers: [] }, emotions: {}, body: {},
+  pip: { name: 'Pip', full: 'Pip Copperfinch', look: 's-copper', cls: 'rogue', poses: { x: 's-copper-f', d: 's-copper-d' }, card: { highlights: ['A cheat-level STEAL skill', 'Chaotic good', 'Roxy\'s apprentice'], motives: ['loot', 'a level up', 'somebody to sleep next to'], people: [], moments: [], noticed: { pers: [] }, emotions: {}, body: {},
     profile: { age: 'Adult', gender: 'Female', pronouns: 'She/her', height: '5\'3"', hair: 'Copper-red wavy bob with a braid', eyes: 'Amber', build: 'Short, soft and very curvy; freckles everywhere', occupation: 'Isekai thief heroine', status: 'New in this world', talent: 'Stealing things that should not be stealable',
       description: 'Pip was hit by a truck on her way to a boba shop and woke up here with a status window. She has exactly one skill, STEAL, and it is broken: she has stolen a dragon\'s nap and a king\'s socks. Bubbly, impulsive and chaotic good, she giggles when she is nervous, which is often. Green hooded cape, brown leather, a dagger that glows blue. Roxy calls her "my lil apprentice" and steals from her constantly.',
       want: 'Loot, a level up, and somebody to sleep next to in a scary world.', need: 'To find out she is more than one broken skill.', lie: 'If I stop being useful the status window closes and I go home.', fears: 'The dark. Being left behind. Trucks.', cost: 'She takes things first and thinks about whose they were later.',
       likes: 'boba, loot, shiny daggers, naps, being praised', dislikes: 'trucks, chests she cannot open, being told to wait', hobbies: 'pickpocketing practice, counting coins, naming her daggers', quirks: 'Giggles when nervous. Says her skill names out loud.', habits: 'Checks her status window every few minutes. Pockets things without noticing.',
-      zodiac: 'Gemini', mbti: 'ENFP', enneagram: '7w6', disc: 'I (Influence)', education: 'Half a term of college, one world ago', iq_word: 'Street-quick', smart_at: 'Locks and pockets' } } } };
-const PC_ID = PCS[store.get('pc', 'valerie')] ? store.get('pc', 'valerie') : 'valerie', PC = PCS[PC_ID], SHEET_KEY = PC_ID === 'valerie' ? 'sheet' : `sheet-${PC_ID}`;
+      zodiac: 'Gemini', mbti: 'ENFP', enneagram: '7w6', disc: 'I (Influence)', education: 'Half a term of college, one world ago', iq_word: 'Street-quick', smart_at: 'Locks and pockets' } } },
+  ember: { name: 'Ember', full: 'Ember Vale', look: 's-ember', cls: 'knight', callingName: 'Ember Knight', poses: { x: 's-ember-x', d: 's-ember-d' }, card: { highlights: ['A sword that lights itself', 'Earnest to a fault', 'Blushes at everything'], motives: ['keep her oath', 'be worthy of the flame', 'protect whoever asks'], people: [], moments: [], noticed: { pers: [] }, emotions: {}, body: {},
+    profile: { age: 'Adult (24)', gender: 'Female', pronouns: 'She/her', height: '5\'9"', hair: 'Flame-orange, in a high ponytail', eyes: 'Green', build: 'Tall and strong; armour polished, cape singed', occupation: 'Hedge paladin', status: 'Sworn to an oath she cannot quite remember', talent: 'Charging in',
+      description: 'Ember Vale is a hedge paladin in white-and-gold plate with a red cape and a sword that burns along its edge. It lit itself the day she swore her oath, and she has been trying to live up to it ever since. Brave, earnest and stubborn, she blushes at almost everything and charges at the rest. She walks everywhere, because her horse left.',
+      want: 'To deserve the sword.', need: 'To forgive herself for the days it will not light.', lie: 'A real paladin is never afraid.', fears: 'The flame going out. Being laughed at. Horses, now.', cost: 'She says yes to every plea for help and sleeps very little.',
+      likes: 'oaths, campfires, polishing things, being thanked', dislikes: 'liars, damp firewood, compliments she has to answer', hobbies: 'polishing armour, practising speeches, feeding strays', quirks: 'Says "Halt!" by reflex. Goes red to the ears when teased.', habits: 'Checks the sword is still lit. Takes first watch every night.',
+      zodiac: 'Leo', mbti: 'ESFJ', enneagram: '2w1', disc: 'S (Steadiness)', education: 'A village temple and a great deal of road', iq_word: 'Earnest', smart_at: 'Reading who needs help' } } } };
+if (store.get('pc', null) === null) { store.set('pc', 'ember'); store.set('lookL', 's-ember'); store.set('faceL', ''); store.set('cls', 'knight'); store.set('path', 'warrior'); } // Ember Vale is the lead now
+const PC_ID = PCS[store.get('pc', 'ember')] ? store.get('pc', 'ember') : 'ember', PC = PCS[PC_ID], ASSIST = PC_ID === 'valerie' ? null : { id: 'valerie', name: 'Valerie', role: `${PCS[PC_ID].name}'s assistant`, look: 'knight' }, SHEET_KEY = PC_ID === 'valerie' ? 'sheet' : `sheet-${PC_ID}`;
 
 /* ---------- the cast: art is swappable per side; the right side also picks a class ---------- */
 const LOOKS = [
@@ -1178,6 +1187,19 @@ const LOOKS = [
   { id: 's-copper', name: 'Pip Copperfinch', src: 'art/s/copper-s.webp', hero: PC_ID === 'pip', w: PC_ID !== 'pip' },
   { id: 's-copper-f', name: 'Pip Copperfinch, flirting', src: 'art/s/copper-f.webp', hero: PC_ID === 'pip', w: PC_ID !== 'pip' },
   { id: 's-copper-a', name: 'Pip Copperfinch, fighting', src: 'art/s/copper-a.webp', hero: PC_ID === 'pip', w: PC_ID !== 'pip' },
+  { id: 's-vexa-d', name: 'Vexa Ashmaw, knocked flat', src: 'art/s/vexa-d.webp', w: true },
+  { id: 's-nyxara-d', name: 'Nyxara, knocked flat', src: 'art/s/nyxara-d.webp', w: true },
+  { id: 's-marisol-d', name: 'Queen Marisol Thornecrown, knocked flat', src: 'art/s/marisol-d.webp', w: true },
+  { id: 's-sylvie-d', name: 'Sylvie Shadebloom, knocked flat', src: 'art/s/sylvie-d.webp', w: true },
+  { id: 's-raven-d', name: 'Raven Redfang, knocked flat', src: 'art/s/raven-d.webp', w: true },
+  { id: 's-kestra-d', name: 'Kestra Nightshade, knocked flat', src: 'art/s/kestra-d.webp', w: true },
+  { id: 's-juno-d', name: 'Juno Starhook, knocked flat', src: 'art/s/juno-d.webp', w: true },
+  { id: 's-copper-d', name: 'Pip Copperfinch, knocked flat', src: 'art/s/copper-d.webp', hero: PC_ID === 'pip', w: PC_ID !== 'pip' },
+  { id: 's-ember', name: 'Ember Vale', src: 'art/s/ember-s.webp', hero: PC_ID === 'ember', w: PC_ID !== 'ember' },
+  { id: 's-ember-x', name: 'Ember Vale, shy', src: 'art/s/ember-x.webp', hero: PC_ID === 'ember', w: PC_ID !== 'ember' },
+  { id: 's-ember-f', name: 'Ember Vale, lounging', src: 'art/s/ember-f.webp', hero: PC_ID === 'ember', w: PC_ID !== 'ember' },
+  { id: 's-ember-d', name: 'Ember Vale, worn out', src: 'art/s/ember-d.webp', boxed: true, hero: PC_ID === 'ember', w: PC_ID !== 'ember' },
+  { id: 's-ember-walk', name: 'Ember Vale, walking (clip)', src: 'art/ember-walk.mp4', video: true, boxed: true, hero: PC_ID === 'ember', w: PC_ID !== 'ember' },
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
@@ -1420,7 +1442,7 @@ const S = {
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
 };
-if (PC.card) DATA.card = PC.card;
+const VAL_CARD = DATA.card; if (PC.card) DATA.card = PC.card;
 const heroName = PC.name;
 
 function freshHero(keep) {
@@ -1437,7 +1459,7 @@ const skillById = (id) => heroSkills().find((s) => s.id === id) || BASIC_ATTACK;
 
 /* ---------- sprites ---------- */
 function drawSprite(el, lookId) {
-  const look = S.custom[lookId] ?? LOOKS.find((l) => l.id === lookId) ?? LOOKS[0];
+  const look = S.custom[lookId] ?? LOOKS.find((l) => l.id === lookId) ?? (el.id === 'sprL' ? LOOKS[0] : LOOKS.find((l) => l.id === 'none'));
   const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${look.ghost ? ' ghost' : ''}${S.flips[lookId] ? ' flip' : ''}`;
   el.innerHTML = !look.src ? '' : look.video
     ? `<video src="${esc(look.src)}" class="${cls}" autoplay muted loop playsinline></video>`
@@ -1736,7 +1758,7 @@ function residentOf(placeId) {
 function seat() { // whoever is here takes the right side of the stage
   S.who = residentOf(S.place); S.retest = false; S.passed = null;
   if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
-  else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
+  else { S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; S.classR = 'warrior'; S.lookR = ASSIST ? ASSIST.look : 'none'; }
   S.meet = S.who && !npcOf(S.who).met ? S.who : null; if (S.meet) setTimeout(() => thoughtPops(pickN(REACT.meet[composure()], 2)), 500);
 }
 function refreshWho() { const was = S.who; seat(); if (S.who === was) return; S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${S.who ? `${esc(S.nameR)} turns up.` : `${esc(castOf(was).name)} heads off.`}` }); }
@@ -1911,7 +1933,7 @@ function pathTo(id) { // the shortest walk along the lines on the map
 function eventPool(p) { return questsAt(p).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); }); }
 function luckyFind(plate) { const fx = applyFx({ gold: 4, exp: 0.02 }, 'a lucky find'); post({ who: 'me', plate, dice: '[event] a lucky find', tone: 'hit', say: 'Half buried by the path: a dropped purse, and a map with one useful corner left.', fx }); }
 function goTo(id) {
-  const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return;
+  const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return; S.convo = null;
   if (S.dream) return post({ who: 'sys', dice: 'You are asleep. She is waiting for an answer.' });
   if (S.battle || S.standoff) return post({ who: 'sys', plate: 'Combat', dice: '<b>COMBAT</b> · you cannot walk away', tone: 'crit', say: 'Fight, talk them down, tempt them, or run. Those are the ways out.' });
   if (S.fallen) return post({ who: 'sys', dice: 'You are on the ground. Get up first.' });
@@ -2000,6 +2022,9 @@ function doAct(id) {
   if (id === 'jobopen') { S.jobOpen = true; return; }
   if (id === 'jobback') { S.jobOpen = false; return; }
   if (id.startsWith('job:')) return doJob(+id.slice(4));
+  if (id.startsWith('asst:')) return assist(id.slice(5));
+  if (id.startsWith('talk:')) return void talkPick(id.slice(5));
+  if (id === 'talkleave') return convoEnd('[you say goodbye]');
   if (id === 'evleave') { S.event = null; return post({ who: 'sys', dice: '[story] You leave it be.', say: 'Whatever that was, it can be somebody else\'s afternoon.' }); }
   if (['search', 'listen', 'wait', 'watch', 'provoke', 'lielow'].includes(id)) return streetAct(id);
   if (id === 'cell9') { if (!S.loose) openCell(); return; }
@@ -2033,6 +2058,8 @@ function travelGrid() {
   if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; const cl = calling(), so = S.standoff, tell = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : ''; return cell('so:strike', cl.verb, `${odds(cl.stat, dc, rb('strike'))} · nerve −25${tell}`, 'primary') + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
   if (S.dream) return dreamCells();
   if (S.event) return eventCells();
+  if (S.convo && S.wander[S.convo.id]?.at !== S.place) S.convo = null;
+  if (S.convo) return convoCells();
   if (S.jobOpen && jobNow()?.place === S.place) return jobCells();
   if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
   const closed = !openNow(here.hours);
@@ -2126,13 +2153,13 @@ function settingsBlock() {
   return `<div class="over"><h3>Settings</h3><div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
       <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
       <label><span class="lbl">What strangers take her for</span><select id="race">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
-      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}${tog('growFace', 'Her card follows her growth', S.growFace)}${tog('closeups', 'Close-ups while people talk', S.closeups)}${tog('tpRow', 'Jump buttons in the Debug tab', S.tpRow)}</div></div>
+      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}${tog('growFace', 'Her card follows her growth', S.growFace)}${tog('closeups', 'Close-ups while people talk', S.closeups)}${tog('aiTalk', 'Claude writes what people say back', S.aiTalk)}${tog('tpRow', 'Jump buttons in the Debug tab', S.tpRow)}</div></div>
     <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
 }
 function settingClick(key) {
   if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
   if (key === 'import') { try { const data = JSON.parse($('saveBox').value); for (const [k, v] of Object.entries(data)) if (k.startsWith('oops-') && typeof v === 'string') localStorage.setItem(k, v); location.reload(); } catch { post({ who: 'sys', dice: '[save] That did not read as a save. Paste the whole thing.' }); } return; }
-  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights', 'idle', 'growFace', 'closeups', 'tpRow'].includes(key)) return;
+  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights', 'idle', 'growFace', 'closeups', 'tpRow', 'aiTalk'].includes(key)) return;
   S[key] = !S[key]; store.set(key, S[key]);
 }
 
@@ -2166,10 +2193,10 @@ async function thinkAloud(key, band) {
   } catch (e) { if (e?.code === 'not_granted') { S.aiThoughts = false; store.set('aiThoughts', false); } }
   finally { S.thinking = false; }
 }
-function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; placeThought(); setTimeout(placeThought, 450); }
+function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : ASSIST ? 'Valerie, helpfully' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; placeThought(); setTimeout(placeThought, 450); }
 function placeThought() { // just above the top of her picture, wherever that is for this pose and size
-  const el = $('thought'); if (el.hidden) return; const fig = $('sprL'), pic = fig.firstElementChild, st = $('stage').getBoundingClientRect(), fb = fig.getBoundingClientRect(); let top = fb.top + fb.height * 0.4;
-  if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * (S.sprL ?? 1); }
+  const el = $('thought'); if (el.hidden) return; const onR = Boolean(ASSIST) && S.lookR === ASSIST.look && !$('sprR').hidden; el.classList.toggle('asst', onR); const fig = $(onR ? 'sprR' : 'sprL'), pic = fig.firstElementChild, st = $('stage').getBoundingClientRect(), fb = fig.getBoundingClientRect(); let top = fb.top + fb.height * 0.4;
+  if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * ((onR ? S.sprR : S.sprL) ?? 1); }
   el.style.top = `${Math.max(54, Math.round(top - st.top - el.offsetHeight - 4))}px`;
 }
 /* ---------- the four domains: a knight keeps order ---------- */
@@ -2249,7 +2276,7 @@ function leftPanel(h, top, gauge, band, locked) {
 }
 /* ---------- asking Claude: every call is counted under what it was for ---------- */
 // The page is never told real token counts, so these are estimates: characters ÷ 4, both ways.
-const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town', news: 'World news', test: 'Connection test' };
+const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town', news: 'World news', test: 'Connection test', talk: 'What people say back' };
 const tok = (text) => Math.ceil(String(text ?? '').length / 4);
 function meter(seg, prompt, reply) { const m = (S.ai[seg] ??= { calls: 0, in: 0, out: 0 }); m.calls += 1; m.in += tok(prompt); m.out += tok(reply); m.last = clockText(); store.set('ai', S.ai); }
 async function metered(seg, prompt, opts) { const out = await sampler(prompt, opts); meter(seg, prompt, out?.text ?? ''); return out; }
@@ -2311,12 +2338,13 @@ function fillBox() {
     ${S.fillNote ? `<p class="simrow">${esc(S.fillNote)}</p>` : ''}${S.sheet.now ? `<p class="lbl">How she comes across now</p><p class="prose">${esc(S.sheet.now)}</p>` : ''}`;
 }
 function lookPicker() {
-  const all = [...LOOKS.filter((l) => l.src && !l.w), ...Object.values(S.custom)].sort((a, b) => Number(Boolean(b.hero)) - Number(Boolean(a.hero)));
+  const mine = (l) => (PC_ID === 'valerie' ? Boolean(l.hero) && !String(l.id).startsWith('s-') : String(l.id).startsWith(PC.look));
+  const all = [...LOOKS.filter((l) => l.src && !l.w), ...Object.values(S.custom)].sort((a, b) => Number(mine(b)) - Number(mine(a)));
   const pic = (l) => (l.video ? `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(l.src)}" alt="" loading="lazy">`);
   const row = (attr, cur) => all.map((l) => `<button class="thumb${l.id === cur ? ' on' : ''}" type="button" data-${attr}="${esc(l.id)}" title="${esc(l.name)}" aria-label="${esc(l.name)}" aria-pressed="${l.id === cur}">${pic(l)}</button>`).join('');
   return `<div class="lookpick"><p class="lbl">Her pose on the stage</p><div class="lib">${row('look', S.lookL)}</div>
     <p class="lbl">Her face on this card</p><div class="lib"><button class="thumb same${S.faceL ? '' : ' on'}" type="button" data-face="" aria-pressed="${!S.faceL}">same as her pose</button>${row('face', S.faceL)}</div>
-    <p class="more">The first seven are hers. Add your own under Settings.</p></div>`;
+    <p class="more">Hers come first. Add your own under Settings.</p></div>`;
 }
 function railHtml(h, gauge, band, locked) {
   const hb = (g, name, v, max, color, low) => `<span class="hbar${low ? ' low' : ''}" style="--k:${color};--p:${Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100))}%"><em>${g}</em><i><u></u><b><span>${name}</span><span>${n(v)} / ${n(max)}</span></b></i></span>`, m = mood(h, true);
@@ -2378,7 +2406,7 @@ function startStandoff(why, encId, opt = {}) {
   const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
   const fkey = opt.key ?? (safe ? 'opportunists' : enc.id), named = opt.name ?? (safe ? 'Opportunists' : enc.name), level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) + foeRec(fkey).rank + (opt.plus ?? 0), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
   const kinds = ['slash', 'strike', 'thrust'], weak = kinds[Math.floor(Math.random() * 3)], tough = kinds[(kinds.indexOf(weak) + 1 + Math.floor(Math.random() * 2)) % 3];
-  once(`foe:${fkey}`); S.bigKey = null;
+  once(`foe:${fkey}`); S.bigKey = null; S.convo = null;
   S.standoff = { id: enc.id, key: fkey, name: foeName(fkey, named), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
     foe: makeCombatant({ id: 'heckler', name: named, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
@@ -2668,6 +2696,7 @@ function renderGuild() {
 function composerTabs(tab) { return `<div class="ctabs" role="tablist" aria-label="What to do">${[['resp', 'Responses'], ['social', 'Social'], ['items', 'Items'], ['debug', 'Debug']].map(([id, name]) => `<button type="button" role="tab" data-ctab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>`; }
 function socialCells(here, who) {
   const closed = !openNow(here.hours), spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
+  if (!who && ASSIST && !S.guest) return cell('asst:tip', 'Ask Valerie what to do', 'she keeps the notes', 'primary') + cell('asst:cheer', 'Let Valerie cheer you up', S.asstDay === dayNow() ? 'done today, but she will anyway' : 'stress −5 · once a day') + (closed ? '' : (SPOTS[here.id] ?? []).map((sp) => cell(`spot:${sp.id}`, sp.name, `${sp.opts.length} things to do`, 'spot')).join(''));
   const talk = who ? cell('talk', `Talk to ${who.name.length <= 12 ? who.name : who.name.split(' ')[0]}`, `respect: ${tierOf(npcOf(S.who).rapport).toLowerCase()}`, 'primary') : cell('x', 'Nobody to talk to', 'find a bubble with a dot', '', true);
   return talk + spots.join('');
 }
@@ -2688,6 +2717,7 @@ const CALLINGS = {
   courtesan: { name: 'Courtesan', short: 'Courtesan', arche: () => COURTESAN, type: null, verb: 'Slap', stat: 'STR', path: 'rogue', line: 'She plays the dice. Flirt, Sway and Persuade +5. The first failed Sway or Persuade in a fight is rolled again. She can push her luck: triple the crit band, fumble from 86. She reads what a stranger likes before she speaks. Her Slap has no type.' },
 };
 const calling = () => CALLINGS[S.cls] ?? CALLINGS.knight;
+if (PC.callingName && CALLINGS[PC.cls]) CALLINGS[PC.cls].name = PC.callingName;
 const TYPE_WORD = { slash: 'a blade', strike: 'a hard knock', thrust: 'a point' };
 /* ---------- little portraits for whoever she is up against: drawn here, no picture files ---------- */
 const TOKENS = {
@@ -2780,7 +2810,7 @@ const FOLLOW = ['Two lads have found a reason to walk the same way you are walki
 // Jiggle free: the one button that always works. It drops whatever is holding her and puts her back on her feet where she stands.
 function jiggle(auto) {
   const was = S.battle ? 'a fight' : S.standoff ? 'a standoff' : S.fallen || S.down ? 'the floor' : S.meet ? 'a first meeting' : S.spot ? 'a corner of the room' : S.talking ? 'a conversation' : S.mode === 'combat' ? 'the sparring ring' : 'nothing you could point at';
-  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.event = null; S.jobOpen = false; if (S.dream) { S.dream = null; seat(); } S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
+  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.event = null; S.jobOpen = false; S.convo = null; if (S.dream) { S.dream = null; seat(); } S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
   if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(S.hero.maxHp * 0.25)), stress: Math.min(S.hero.stress, 90) };
   if (S.stam < 20) { S.stam = 20; store.set('stam', S.stam); }
@@ -2969,14 +2999,14 @@ function castHtml() {
   const rank = passiveRank();
   const wcard = ([id, w]) => { const me = S.wander[id]; return card(w.look ? pic(w.look) : shade(HOSTILE.has(w.kind) ? 4 : 2), esc(w.name), esc(w.role), [`${KIND[w.kind][1]} · ${S.calm ? 'the world is held still' : wanderOut(id) ? 'not about today' : `now at ${esc(placeById(me.at).name)}`}`, HOSTILE.has(w.kind) ? `you won ${S.foes[id]?.w ?? 0}, lost ${S.foes[id]?.l ?? 0}` : S.hailed[id] ? 'You have spoken.' : 'Hail them when your paths cross.'], HOSTILE.has(w.kind) ? 'foe' : '', w.leaver ? `sis:${id}` : ''); };
   const bcard = ([id, b]) => { const known = S.seen[`foe:${id}`] || (b.loose && S.loose), at = baddieAt(id); return card(shade(5), known ? esc(foeName(id, b.name)) : '???', known ? esc(b.title) : b.loose ? 'behind a door nobody opens' : b.roam ? 'goes where he likes' : `somewhere in ${esc(AREAS[b.area].name)}`, [b.loose && !S.loose ? 'Not in the world. Yet.' : at ? `now at ${esc(placeById(at).name)}` : S.calm ? 'the world is held still' : 'licking his wounds', `+${b.plus} levels on anything else there`], known ? 'foe' : 'foe unmet'); };
-  const scard = ([id, x]) => { const me = S.wander[id], playing = x.playable === PC_ID; return card(pic(`s-${id}`), esc(x.name), esc(x.role), [`${esc(x.cls)} · ${esc(x.temper)}`, `${esc(x.trope)}.`, esc(x.lore), playing ? 'You are playing her.' : S.calm ? 'the world is held still' : wanderOut(id) ? 'not about today' : `now at ${esc(placeById(me.at).name)}`, x.playable && !playing ? 'Playable: switch on the first tab of this menu.' : x.enemy ? (S.turned[id] ? `On your side since day ${S.turned[id]}.` : `+${x.plus} levels. Beat her once and she comes round.`) : ''], x.enemy && !S.turned[id] ? 'foe' : x.playable ? 'main' : '', `sec:${id}`); };
+  const scard = ([id, x]) => { const me = S.wander[id], playing = x.playable === PC_ID; return card(pic(`s-${id}`), esc(x.name), esc(x.role), [`${esc(x.cls)} · ${esc(x.temper)}`, `${esc(x.trope)}.`, esc(x.lore), playing ? 'You are playing her.' : S.calm ? 'the world is held still' : wanderOut(id) ? 'not about today' : `now at ${esc(placeById(me.at).name)}`, x.lead ? 'A main character.' : '', x.drafted ? 'Her words are a first draft written for her. Change them on her own tab.' : '', x.playable && !playing ? 'Playable: switch on the first tab of this menu.' : x.enemy ? (S.turned[id] ? `On your side since day ${S.turned[id]}.` : `+${x.plus} levels. Beat her once and she comes round.`) : ''], x.enemy && !S.turned[id] ? 'foe' : x.playable ? 'main' : '', `sec:${id}`); };
   const wsec = (cat) => Object.entries(WANDER).filter(([id]) => catOf(id) === cat).map(wcard).join('');
   return `<div class="castwrap">
-    <h3>Her</h3><div class="cgrid">${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
+    <h3>${ASSIST ? 'The lead, and her assistant' : 'Her'}</h3><div class="cgrid">${ASSIST ? card(pic('knight'), 'Valerie', esc(ASSIST.role), ['The klutz knight, now carrying the bags and keeping the notes.', 'When nobody else is about she stands beside you. Ask her things on the Social tab.', 'She can be the lead instead: switch on the first tab of this menu.'], 'main asst', 'asst:valerie') : ''}${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
     <h3>Regulars · ${regs.filter(([id]) => S.npc[id]?.met).length} of ${regs.length} met</h3><div class="cgrid">${regs.map(person).join('')}</div>
     <h3>Innkeepers · ${inns.filter(([id]) => S.npc[id]?.met).length} of ${inns.length} met</h3><div class="cgrid">${inns.map(person).join('')}</div>
     <p class="cnote">Click anyone with a picture for her own page: a view you can zoom, her numbers, her lines and a secret to unlock.</p>
-    <h3>Your own cast · allies</h3><div class="cgrid">${Object.entries(SECOND).filter(([id]) => WANDER[id].kind === 'ally').map(scard).join('')}</div>
+    <h3>Your own cast · allies</h3><div class="cgrid">${Object.entries(SECOND).filter(([id]) => WANDER[id].kind === 'ally').sort((a, b) => Number(Boolean(b[1].lead)) - Number(Boolean(a[1].lead)) || Number(Boolean(b[1].playable)) - Number(Boolean(a[1].playable))).map(scard).join('')}</div>
     ${Object.keys(SECOND).some((id) => WANDER[id].kind === 'nemesis') ? `<h3>Rivals · they come at you until you beat them once, then they are yours</h3><div class="cgrid">${Object.entries(SECOND).filter(([id]) => WANDER[id].kind === 'nemesis').map(scard).join('')}</div>` : ''}
     <h3>Townsfolk · the twelve Town Girls · they live in Gooseford and never fight</h3><div class="cgrid">${TOWN.map((t) => { const me = S.wander[t.id], met = S.townMet[t.id]; return card(pic(`t-${t.id}`), esc(t.name), esc(`${t.role} · ${t.race}`), [`${esc(t.temper)} · ${esc(t.trope)}`, S.calm ? 'the world is held still' : `now at ${esc(placeById(me.at).name)}`, met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'Hail her when your paths cross.', t.main ? 'A main character: she has a story of her own, for later.' : ''], t.main ? 'main' : '', `town:${t.id}`); }).join('')}</div>
     <h3>Wanderers · peaceful · they never start a fight</h3><div class="cgrid">${wsec('peaceful')}</div>
@@ -3200,7 +3230,7 @@ function dreamAct(kind) {
   else { cor(15, 'she said yes'); count('yeses', 'saying yes to her'); grow(30, 'her gift'); chem(12, 'her gift'); fx.push(...applyFx({ stress: -15 }, 'her gift'), 'bust +30%', 'chemistry up'); S.stam = S.spent ? 50 : 100; store.set('stam', S.stam); say = 'You say yes. You wake rested, glowing, and with the breastplate a notch tighter than you left it.'; hers = 'Good girl. See how easy that was?'; }
   post({ big: { auto: false, why: `Amaranth can visit whenever Valerie sleeps: tonight the chance was ${visitChance()}% (18, plus half her corruption, plus 15 if her chemistry is 60 or more, plus 5 for each step of pheromones). Saying no rolls Willpower, and each step of corruption makes it 5 harder. A bargain rolls Arcana and pays gold either way it costs. Asking rolls Luck and writes one true thing in the Backlog. Saying yes needs no roll: full stamina, less stress, 30% of a bust tier, and 15 corruption. Corruption per 25: Flirt and Sway +3, Be friendly and Persuade −3, and it pulls her composure down. It fades each night by half her Willpower's resistance, and a blessing at the Wishing Well takes 20 off.` }, who: 'me', plate: 'A dream', dice, tone, say, fx });
   post({ who: 'her', plate: 'Amaranth', say: hers, spoken: true });
-  S.dream = null; seat(); S.them = freshThem(); if (!S.who) { S.lookR = 'corrupter3'; S.nameR = 'Amaranth'; setTimeout(() => { if (S.lookR === 'corrupter3') { S.lookR = 'none'; S.nameR = 'Practice Dummy'; render(); } }, 5200); }
+  S.dream = null; seat(); S.them = freshThem(); if (!S.who) { S.lookR = 'corrupter3'; S.nameR = 'Amaranth'; setTimeout(() => { if (S.lookR === 'corrupter3') { S.lookR = ASSIST ? ASSIST.look : 'none'; S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; render(); } }, 5200); }
   post({ who: 'sys', dice: `[morning] ${clockText()}`, say: 'You wake. The room is the room. There is a faint smell of violets that has no business being there.' });
 }
 const n2 = (v) => n(v);
@@ -3421,7 +3451,8 @@ async function say(text) {
   if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
   if (!sampler) { post({ who: 'sys', say: 'Replies need this page to be allowed to ask Claude. Open it on claude.ai and allow it, or keep playing with the buttons.', spoken: true }); return render(); }
   const state = `Valerie: level ${S.level}, Airhead ${V.airheadOf(S.hero)}/100 (${V.airheadBand(V.airheadOf(S.hero))}), stress ${S.hero.stress}/200. ${S.nameR}: a ${arche(S.classR).name}, stress ${S.them.stress}/200.`;
-  const prompt = `You are ${S.nameR}, ${S.who ? castOf(S.who).role : `a ${arche(S.classR).name}`} in the town of Gooseford, talking with Dame Valerie Bellweather at ${placeNow().name} in a light fantasy comedy. Valerie is a brave, kind, spectacularly clumsy knight who is absurdly lucky without knowing it. The person talking to you is inside Valerie. Reply in character in one to three short sentences, warm and playful, PG-13, no narration of Valerie's actions. What drives Valerie, for subtext only, never quoted: ${drivesText()} In this part of the world she is seen as: ${repLabel()}. Current state: ${state}\n\nValerie says: ${text}`;
+  const hero = PC_ID === 'valerie' ? 'Dame Valerie Bellweather' : PC.full, heroIs = PC_ID === 'valerie' ? 'Valerie is a brave, kind, spectacularly clumsy knight who is absurdly lucky without knowing it.' : `${PC.name} is the hero of this story: ${String(DATA.card?.profile?.description ?? '').split('. ').slice(0, 2).join('. ')}.`, me = !S.who && ASSIST && S.lookR === ASSIST.look ? `Valerie, ${PC.name}'s assistant: a sweet, bubbly, spectacularly clumsy knight who carries the bags, keeps muddled notes and adores her boss` : `${S.nameR}, ${S.who ? castOf(S.who).role : `a ${arche(S.classR).name}`}`;
+  const prompt = `You are ${me} in the town of Gooseford, talking with ${hero} at ${placeNow().name} in a light fantasy comedy. ${heroIs} The person talking to you is inside ${PC.name}. Reply in character in one to three short sentences, warm and playful, PG-13, no narration of ${PC.name}'s actions. What drives ${PC.name}, for subtext only, never quoted: ${drivesText()} In this part of the world she is seen as: ${repLabel()}. Current state: ${state}\n\n${PC.name} says: ${text}`;
   const idx = S.lines.length; post({ who: 'her', say: '…', spoken: true }); render();
   try {
     const out = await metered('chat', prompt, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(t)}</p></div>`; renderLog(); } });
@@ -3455,7 +3486,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), aiTalk: store.get('aiTalk', true), vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
 // News has a weight from 1 (a cart lost a wheel) to 5 (a wall came down). Weight decides who hears of it and how hard they take it.
@@ -3665,10 +3696,10 @@ for (const t of TOWN) WANDER[t.id] = { name: t.name, short: t.name.split(' ')[0]
 // Del's own secondary cast: twelve characters from the witch, boss and rogue rosters. Names, tropes, lore and every line are Del's.
 // enemy: true means she comes at you (a standoff, three or four levels up) until you beat her once; after that she is an ally for good.
 const SECOND = {
-  nyxara: { name: 'Nyxara', role: 'the Fallen Eclipse Priestess', cls: 'Dark cleric', trope: 'The corrupted saint who is a softie underneath', temper: 'Smug, sultry, dramatic, secretly soft', enemy: true, plus: 4, poses: 'sfax', start: 'vault', range: ['vault', 'ruins'], zones: ['wild'],
+  nyxara: { name: 'Nyxara', role: 'the Fallen Eclipse Priestess', cls: 'Dark cleric', trope: 'The corrupted saint who is a softie underneath', temper: 'Smug, sultry, dramatic, secretly soft', enemy: true, plus: 4, poses: 'sfaxd', start: 'vault', range: ['vault', 'ruins'], zones: ['wild'],
     lore: 'The Sun Temple\'s brightest saint until she fell for a demon prince and was thrown out of heaven for "excessive passion". She runs the Eclipse Cathedral, tries hard to be the villain, and always heals the heroes she beats.',
     lines: { meet: 'Your little goddess can\'t hear you down here, sweetie~', flirty: 'Mm, you came all this way just to see me? I\'m flattered... come closer. 😘', battle: 'ECLIPSE! Kneel, darling, it\'s a good look on you!', soft: '...Fine. Take this healing potion. Don\'t tell anyone I\'m nice.' } },
-  vexa: { name: 'Vexa Ashmaw', role: 'the Ash Warlord Queen', cls: 'Barbarian', trope: 'The rival who becomes the frenemy, then the clingy bestie', temper: 'Smug, loud, ultra competitive, fiercely loyal once you earn it', enemy: true, plus: 4, poses: 'sfax', start: 'outskirts', range: ['outskirts', 'hollow', 'road'], zones: ['wild', 'risky'],
+  vexa: { name: 'Vexa Ashmaw', role: 'the Ash Warlord Queen', cls: 'Barbarian', trope: 'The rival who becomes the frenemy, then the clingy bestie', temper: 'Smug, loud, ultra competitive, fiercely loyal once you earn it', enemy: true, plus: 4, poses: 'sfaxd', start: 'outskirts', range: ['outskirts', 'hollow', 'road'], zones: ['wild', 'risky'],
     lore: 'She rules the Ashmaw clans of the burned Cinder Pass, and won the crown at 19 by out-drinking, out-wrestling and out-flirting every chieftain. She hunts summoned heroes because a chosen one once humiliated her. She always keeps her word and always pays her debts.',
     lines: { meet: 'Cute lil adventurer... u wanna cross my pass? Beat me first, sweetie, or u\'re carrying my axe for a week.', flirty: 'Put ur sword away, cutie. I don\'t bite... much.', battle: 'RAAAH! U ripped my cape?! Ur DEAD, cutie!', turn: 'Mmm, u actually scratched me... kinda hot, ngl. Fine. I\'m coming with u.', soft: 'Nobody touches my party. Nobody. Get behind me, babe.' } },
   vexara: { name: 'Vexara Nightveil', role: 'the Void Sorceress', cls: 'Void mage', trope: 'The scary final boss who is secretly a big softie', temper: 'Smug, dramatic and possessive, fiercely loyal once she likes you', enemy: true, plus: 4, poses: 'sfax', start: 'quad', range: ['quad', 'lecture', 'archive'], zones: ['risky', 'safe'],
@@ -3677,13 +3708,13 @@ const SECOND = {
   scarlet: { name: 'Scarlet Ashbourne', role: 'the Ember Witch Queen', cls: 'Fire witch', trope: 'The tsundere fire queen', temper: 'Proud, fiery and quick-tempered, with a huge heart under the smoke', enemy: true, plus: 3, poses: 'sfax', start: 'hollow', range: ['hollow', 'road', 'bridge'], zones: ['wild', 'risky'],
     lore: 'She rules the volcanic Cinder Crown and was set up to be the big bad. It turns out she was only burning the forest to keep the monster hordes out. She rides along "temporarily" and bosses everyone around.',
     lines: { meet: 'Ooh, a lost lil traveler~ Stay a while. It\'s gonna get hot 🔥', flirty: 'Careful, darling. Play with fire and you might like it.', battle: 'You DARE scorch my hat?! Inferno Spiral!', soft: 'Hmph. I wasn\'t worried. My eyes are just watery from the... smoke.' } },
-  kestra: { name: 'Kestra Nightshade', role: 'an assassin of the Quiet Knives', cls: 'Assassin', trope: 'The assassin who falls for her target', temper: 'Cool, smug and teasing; secretly lonely and clingy once she likes you', enemy: true, plus: 2, poses: 'sfa', start: 'alley', range: ['alley', 'bar', 'tavern'], zones: ['risky', 'safe'],
+  kestra: { name: 'Kestra Nightshade', role: 'an assassin of the Quiet Knives', cls: 'Assassin', trope: 'The assassin who falls for her target', temper: 'Cool, smug and teasing; secretly lonely and clingy once she likes you', enemy: true, plus: 2, poses: 'sfad', start: 'alley', range: ['alley', 'bar', 'tavern'], zones: ['risky', 'safe'],
     lore: 'The Guild of Quiet Knives sent her to steal the summoned hero\'s heart, literally. She collects one trophy kiss from every mark she lets live.',
     lines: { meet: 'Shh... you never saw me. But I saw allll of you.', flirty: 'Put your sword down, cutie. I bite softer than my dagger.', battle: 'Blink and you\'re done, hero.', soft: '...Fine. I missed on purpose. Don\'t make it weird.' } },
-  marisol: { name: 'Queen Marisol Thornecrown', short: 'Marisol', role: 'the thief queen of the Underbazaar', cls: 'Thief queen', trope: 'The glam villain queen who wants you in her court', temper: 'Regal, possessive, dramatic; generous to anyone she claims', enemy: true, plus: 3, poses: 'sfa', start: 'bar', range: ['bar', 'alley'], zones: ['risky', 'safe'],
+  marisol: { name: 'Queen Marisol Thornecrown', short: 'Marisol', role: 'the thief queen of the Underbazaar', cls: 'Thief queen', trope: 'The glam villain queen who wants you in her court', temper: 'Regal, possessive, dramatic; generous to anyone she claims', enemy: true, plus: 3, poses: 'sfad', start: 'bar', range: ['bar', 'alley'], zones: ['risky', 'safe'],
     lore: 'She rules the Underbazaar, where every coin in the city ends up sooner or later. She steals crowns for fun and keeps the prettiest adventurers as "court guests". Her chain whip is gold-plated, because of course it is.',
     lines: { meet: 'Kneel, darling. Everyone does eventually.', flirty: 'You look expensive. I\'m keeping you.', battle: 'My chain, my rules.', soft: 'Stay in my court tonight. I\'ll even let you win at cards.' } },
-  raven: { name: 'Raven Redfang', role: 'the bandit queen of the Redfangs', cls: 'Bandit', trope: 'The wild bandit rival who turns ally', temper: 'Loud, wild, greedy, fearless; loyal once she owes you', enemy: true, plus: 2, poses: 'sfa', start: 'bridge', range: ['bridge', 'road', 'hollow'], zones: ['wild', 'risky'],
+  raven: { name: 'Raven Redfang', role: 'the bandit queen of the Redfangs', cls: 'Bandit', trope: 'The wild bandit rival who turns ally', temper: 'Loud, wild, greedy, fearless; loyal once she owes you', enemy: true, plus: 2, poses: 'sfad', start: 'bridge', range: ['bridge', 'road', 'hollow'], zones: ['wild', 'risky'],
     lore: 'She leads the Redfang crew out of the Crimson Woods and taxes every pretty traveller. Her coin belt jingles, so you hear her coming if she wants you to.',
     lines: { meet: 'Toll road, sweetheart. Pay up in gold or kisses.', flirty: 'Ooh, you\'re shiny. I\'m gonna steal you.', battle: 'Redfangs, take EVERYTHING!', soft: '...You saved me. Ugh. Fine, I\'m yours now.' } },
   lumi: { name: 'Lumi Starling', role: 'the Summoned Hero Mage', cls: 'Mage', trope: 'The isekai girl with a cheat-level grimoire', temper: 'Bubbly, brave, a little overconfident and very affectionate', poses: 'sax', start: 'guild', zones: ['safe', 'risky'],
@@ -3692,23 +3723,26 @@ const SECOND = {
   juniper: { name: 'Juniper Moonwhisper', role: 'the Moonlit Apprentice Witch', cls: 'Witch', trope: 'The clumsy sleepy apprentice who is secretly the chosen one', temper: 'Sweet, dreamy, cuddly and secretly very powerful', poses: 'sfax', start: 'lecture', zones: ['safe', 'risky'],
     lore: 'The sleepiest apprentice at the Moon Tower failed every exam until an eclipse showed she can pull down real moonbeams. Her owl familiar Pip-Pip keeps her on schedule, badly. She came for the snacks and naps and stayed for the company.',
     lines: { meet: 'Oopsie, did my moon spell just level up the whole map? 🌙✨', flirty: 'Shh~ the moon\'s watching. Wanna give it a show? 😉', battle: 'Crescent Beam! ...okay that was so cool, did u see that??', soft: '*yawn* five more minutes... unless u\'re coming to cuddle 💤' } },
-  juno: { name: 'Juno Starhook', role: 'a treasure hunter off the floating isles', cls: 'Treasure hunter', trope: 'The sunny adventurer who flirts like breathing', temper: 'Upbeat, brave, playful, big-sister energy', poses: 'sfa', start: 'yard', zones: ['safe', 'risky', 'wild'],
+  juno: { name: 'Juno Starhook', role: 'a treasure hunter off the floating isles', cls: 'Treasure hunter', trope: 'The sunny adventurer who flirts like breathing', temper: 'Upbeat, brave, playful, big-sister energy', poses: 'sfad', start: 'yard', zones: ['safe', 'risky', 'wild'],
     lore: 'An ex-sky-pirate who mapped every ruin on the floating isles. She wants the legendary Star Vault, mostly to buy the whole party snacks.',
     lines: { meet: 'Ruins, traps, treasure? Best date ever.', flirty: 'Catch me? I\'m falling for you. Literally.', battle: 'Hook, line and SMASH!', soft: 'Wanna watch the stars from the airship tonight?' } },
-  sylvie: { name: 'Sylvie Shadebloom', role: 'an elf shadow dancer', cls: 'Shadow dancer', trope: 'The shy elf who is deadly in the dark', temper: 'Quiet, blushy, poetic; fierce when her friends are hurt', poses: 'sfa', start: 'tankard', zones: ['safe', 'risky', 'wild'],
+  sylvie: { name: 'Sylvie Shadebloom', role: 'an elf shadow dancer', cls: 'Shadow dancer', trope: 'The shy elf who is deadly in the dark', temper: 'Quiet, blushy, poetic; fierce when her friends are hurt', poses: 'sfad', start: 'tankard', zones: ['safe', 'risky', 'wild'],
     lore: 'Exiled from the moon elves for dancing with shadows instead of fighting them. She joined the first person who asked her to dance.',
     lines: { meet: 'I\'ve been here the whole time... sorry.', flirty: 'My shadow wants to hold your hand. Um. So do I.', battle: 'Dance with the dark, then.', soft: 'Stay close tonight? The moon makes me brave.' } },
-  copper: { name: 'Pip Copperfinch', short: 'Pip', role: 'an isekai thief with one broken skill', cls: 'Thief', trope: 'The isekai girl with a cheat STEAL skill', temper: 'Bubbly, impulsive, chaotic good; giggles when nervous', playable: 'pip', poses: 'sfa', start: 'shop', zones: ['safe', 'risky'],
+  ember: { name: 'Ember Vale', role: 'the Ember Knight', cls: 'Paladin', trope: 'The earnest knight who blushes at everything', temper: 'Brave, earnest, stubborn, easily flustered', playable: 'ember', drafted: true, lead: true, poses: 'sfxd', start: 'yard', zones: ['safe', 'risky', 'wild'],
+    lore: 'A hedge paladin whose sword lit itself the day she swore her oath. She has been trying to live up to it ever since, on foot, because her horse left. Very good at charging in; less good at what comes next.',
+    lines: { meet: 'Halt! ...Sorry. Habit. Hello, I\'m Ember. Do you need rescuing? You look like you might.', flirty: 'I-is my armour on straight? You keep looking at it.', battle: 'By the Ember! ...Light, you stubborn thing, light!', soft: 'Sit by the fire a while. I\'ll take first watch. I always do.' } },
+  copper: { name: 'Pip Copperfinch', short: 'Pip', role: 'an isekai thief with one broken skill', cls: 'Thief', trope: 'The isekai girl with a cheat STEAL skill', temper: 'Bubbly, impulsive, chaotic good; giggles when nervous', playable: 'pip', poses: 'sfad', start: 'shop', zones: ['safe', 'risky'],
     lore: 'Hit by a truck on her way to a boba shop, she woke up here with a status window and exactly one skill. STEAL is broken: she has stolen a dragon\'s nap and a king\'s socks. Roxy calls her "my lil apprentice" and steals from her constantly.',
     lines: { meet: 'Wait, is this a dungeon? Do I get loot?!', flirty: 'SKILL: STEAL... oops, I stole your heart. Is that bad?', battle: 'Level up, baby!', soft: 'Can I sleep next to you? This world is kinda scary.' } },
 };
 for (const [id, x] of Object.entries(SECOND)) WANDER[id] = { name: x.name, short: x.short ?? x.name.split(' ')[0], role: x.role, kind: x.enemy && !S.turned[id] ? 'nemesis' : 'ally', sec: x, plus: x.plus, look: `s-${id}`, zones: x.zones, pace: 45, start: x.start, range: x.range };
 const HOSTILE = new Set(['hostile', 'nemesis']);
-const secPose = (id, p) => (SECOND[id].poses.includes(p) ? `s-${id}-${p}` : `s-${id}`);
+const secPose = (id, p) => (p && p !== 's' && SECOND[id].poses.includes(p) ? `s-${id}-${p}` : `s-${id}`);
 function rivalFight(id, why) { const w = WANDER[id]; return startStandoff(why, null, { key: id, name: w.name, plus: w.plus, look: w.sec ? secPose(id, 'a') : null, line: w.sec ? (S.foes[id] ? w.sec.lines.battle : w.sec.lines.meet) : null }); }
 function turnRival(id) { const w = WANDER[id], area = areaOf(placeNow()); S.turned[id] = dayNow(); store.set('turned', S.turned); w.kind = 'ally'; S.secMet[id] = 1; store.set('secMet', S.secMet); rep(5, `${w.name} came round`); order(area, 6, `${w.name} stopped hunting`);
   worldEvent(area, 3, `${w.name} has stopped hunting Dame ${heroName} and started following her about instead.`, 'her');
-  setTimeout(() => { if (S.guest === id) S.lookR = secPose(id, 'x'); post({ who: 'her', plate: w.name, dice: '[she comes round]', say: w.sec.lines.turn ?? w.sec.lines.soft, spoken: true, fx: ['on your side from now on'] }); S.closeUntil = Date.now() + 7000; render(); }, 80); }
+  setTimeout(() => { if (S.guest === id) S.lookR = secPose(id, SECOND[id].poses.includes('d') ? 'd' : 'x'); post({ who: 'her', plate: w.name, dice: '[she comes round]', say: w.sec.lines.turn ?? w.sec.lines.soft, spoken: true, fx: ['on your side from now on'] }); S.closeUntil = Date.now() + 7000; render(); }, 80); }
 const LEAVERS = Object.keys(WANDER).filter((id) => WANDER[id].leaver);
 const inTown = (id) => (SECOND[id]?.playable ? SECOND[id].playable !== PC_ID : true) && (!WANDER[id].leaver || (dayNow() * 3 + LEAVERS.indexOf(id) * 2) % 7 < 3); // each sister is about for three days in seven, never all at once
 const catOf = (id) => (['hostile', 'nemesis', 'ally', 'town'].includes(WANDER[id].kind) ? WANDER[id].kind : WANDER[id].leaver ? 'leaver' : 'peaceful');
@@ -3729,7 +3763,7 @@ function wanderNotice() { // a wanderer who walks in while she is standing still
   S.wSeen = { place: S.place, ids };
   if (S.who || S.dream || S.battle) { S.guest = null; return; }
   const g = ids.find((id) => WANDER[id].look) ?? null;
-  if (g) { if (!String(S.lookR).startsWith(WANDER[g].look)) { S.lookR = WANDER[g].look; S.nameR = WANDER[g].name; } } else if (S.guest) { S.lookR = 'none'; S.nameR = 'Practice Dummy'; }
+  if (g) { if (S.lookR === ASSIST?.look || !String(S.lookR).startsWith(WANDER[g].look)) { S.lookR = WANDER[g].look; S.nameR = WANDER[g].name; } } else if (S.guest) { S.lookR = ASSIST ? ASSIST.look : 'none'; S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; }
   S.guest = g; }
 const pose = (id, p) => { const want = `${WANDER[id].look}${p ? `-${p}` : ''}`; if (WANDER[id].look && S.guest === id && LOOKS.some((l) => l.id === want)) S.lookR = want; };
 function arriveCheck(to) { if (S.calm) return; const ids = wanderersAt(to.id);
@@ -3740,12 +3774,12 @@ function arriveCheck(to) { if (S.calm) return; const ids = wanderersAt(to.id);
 function tipOff() { const live = Object.keys(BADDIES).map((id) => [id, baddieAt(id)]).filter(([, at]) => at), loud = S.news.find((x) => x.w >= 3);
   if (live.length) { const [id, at] = live[Math.floor(Math.random() * live.length)], p = placeById(at); return `${BADDIES[id].name} is at ${p.name}, in ${AREAS[areaOf(p)].name}, as of this ${phaseNow().toLowerCase()}.`; }
   return loud ? `The talk is all about ${AREAS[loud.area].name}: ${loud.text}` : 'Nothing worth a warning today. Enjoy it.'; }
-const hailBusy = () => Boolean(S.battle || S.standoff || S.fallen || S.dream || S.meet || S.event || S.down || S.jobOpen);
+const hailBusy = () => Boolean(S.battle || S.standoff || S.fallen || S.dream || S.meet || S.event || S.down || S.jobOpen || S.convo);
 function hail(id) { const w = WANDER[id], L = Math.max(1, S.level); if (!w || S.wander[id].at !== S.place || wanderOut(id) || hailBusy()) return;
   if (HOSTILE.has(w.kind)) return rivalFight(id, 'you called her out');
-  if (w.kind === 'ally') { const x = w.sec, first = S.hailed[id] !== dayNow(), key = !S.secMet[id] ? 'meet' : composure() >= 1 ? 'flirty' : 'soft'; S.secMet[id] = (S.secMet[id] ?? 0) + 1; store.set('secMet', S.secMet); S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(5); if (S.guest === id) S.lookR = secPose(id, key === 'flirty' ? 'f' : key === 'soft' ? 'x' : 's');
+  if (w.kind === 'ally') { const x = w.sec, first = S.hailed[id] !== dayNow(), key = !S.secMet[id] ? 'meet' : composure() >= 1 ? 'flirty' : 'soft'; S.secMet[id] = (S.secMet[id] ?? 0) + 1; store.set('secMet', S.secMet); S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(5); if (S.guest === id) S.lookR = secPose(id, key === 'flirty' ? 'f' : key === 'soft' ? 'x' : 's'); convoOpen(id, key);
     return post({ who: 'her', plate: w.name, dice: `[${{ meet: 'first meeting', flirty: 'she is flirting', soft: 'a soft moment' }[key]}] ${esc(x.temper.split(/[;,]/)[0].toLowerCase())}`, say: x.lines[key], spoken: true, fx: first ? applyFx({ stress: -3 }, w.name) : [] }); }
-  if (w.kind === 'town') { const t = w.town, c = composure(), i = !S.townMet[id] ? 0 : c >= 2 ? 2 : c === 1 ? 1 : 3, first = S.hailed[id] !== dayNow(); S.townMet[id] = (S.townMet[id] ?? 0) + 1; store.set('townMet', S.townMet); S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(5); pose(id, i === 1 || i === 2 ? 'f' : '');
+  if (w.kind === 'town') { const t = w.town, c = composure(), i = !S.townMet[id] ? 0 : c >= 2 ? 2 : c === 1 ? 1 : 3, first = S.hailed[id] !== dayNow(); S.townMet[id] = (S.townMet[id] ?? 0) + 1; store.set('townMet', S.townMet); S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(5); pose(id, i === 1 || i === 2 ? 'f' : ''); convoOpen(id, i === 0 ? 'meet' : '');
     return post({ who: 'her', plate: w.name, dice: `[${['she does not know you', 'you are being a bit much', 'you are being very loud about it', 'hello'][i]}] ${esc(t.temper.toLowerCase())}`, say: t.lines[i], spoken: true, fx: first ? applyFx({ stress: -2 }, w.name) : [] }); }
   if (S.hailed[id] === dayNow()) return post({ who: 'her', plate: w.name, say: `${w.short} has already had today's conversation with you and is visibly pacing themselves.` });
   S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(10); count('hails', 'stopping to talk');
@@ -3797,7 +3831,7 @@ wanderInit();
 function closeFit() { for (const id of ['sprL', 'sprR']) { const fig = $(id), pic = fig.querySelector('img, video'); if (!pic) continue; const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight, W = pic.clientWidth, H = pic.clientHeight; if (!nw || !W || !H) continue; const head = H - Math.min(H, (W * nh) / nw); fig.style.setProperty('--headY', `${((head / H) * 100).toFixed(1)}%`); fig.style.setProperty('--liftY', `${Math.round(Math.min(0, H * 0.2 - head))}px`); } }
 document.addEventListener('load', (e) => { if (e.target?.closest?.('.sprite')) closeFit(); }, true); document.addEventListener('loadedmetadata', (e) => { if (e.target?.closest?.('.sprite')) closeFit(); }, true); window.addEventListener('resize', closeFit);
 function playAs(id) { if (!PCS[id] || id === PC_ID) return; store.set('pc', id); store.set('lookL', PCS[id].look); store.set('faceL', ''); store.set('cls', PCS[id].cls); store.set('path', CALLINGS[PCS[id].cls].path); location.reload(); }
-function jumpTo(id) { if (!placeById(id) || id === S.place) return; S.standoff = null; S.fallen = false; S.mode = 'travel'; const from = placeNow(); setPlace(id); S.them = freshThem(); arrive(from, placeNow(), 0, true); } // the debug way to move: no road, no rolls, no ambush
+function jumpTo(id) { if (!placeById(id) || id === S.place) return; S.convo = null; S.standoff = null; S.fallen = false; S.mode = 'travel'; const from = placeNow(); setPlace(id); S.them = freshThem(); arrive(from, placeNow(), 0, true); } // the debug way to move: no road, no rolls, no ambush
 function statStrip() { // the same tile the card creator uses: what it is, the number, what it just did, and a thin bar
   const h = S.hero, now = Date.now(), rows = [['stress', 'Stress', h.stress ?? 0, 100, 'var(--pink)', -1], ['level', 'Level', S.level, null, 'var(--violet)', 1], ['gold', 'Gold', S.gold, null, 'var(--gold)', 1], ['rep', 'Reputation', repOf(areaOf(placeNow())), 100, 'var(--mint)', 1], ['heat', 'Suspicion', S.heat, 100, 'var(--crit)', -1], ['dec', 'Decency', S.decency, 100, 'var(--cyan)', 1]];
   const tiles = rows.map(([key, label, v, max, k, good]) => { const prev = S.statPrev[key]; if (prev !== undefined && prev.v !== v) S.statPrev[key] = { v, d: v - prev.v, t: now }; else if (prev === undefined) S.statPrev[key] = { v, d: 0, t: 0 }; const rec = S.statPrev[key], live = rec.d && now - rec.t < 6000, up = live && rec.d * good > 0, p = key === 'level' ? (S.exp / Math.max(1, needExp())) * 100 : max ? (v / max) * 100 : 0;
@@ -3904,19 +3938,22 @@ const PROFILE = {
   juniper: { h: "5'3\"", build: 'Soft and sleepy under a very large hat', bust: 9, hips: 7, secret: 'The naps are not laziness. The moonbeams only come to her when she is half asleep.' },
   juno: { h: "5'7\"", build: 'Athletic; always lands on her feet', bust: 8, hips: 9, secret: 'Her hook has never missed. Every time it "missed", she was aiming for somebody\'s arms.' },
   sylvie: { h: "5'6\"", build: 'Slight and silent; her shadow stands closer than she does', bust: 8, hips: 8, secret: 'Her shadow has a mind of its own and is far more forward than she is. It has been flirting on her behalf.' },
+  ember: { h: "5'9\"", build: 'Tall and strong; the armour is polished and the cape is singed', bust: 9, hips: 9, secret: 'She has forgotten the exact words of the oath that lit her sword, and is terrified the sword will notice.' },
   copper: { h: "5'3\"", build: 'Short, freckled and all pockets', bust: 9, hips: 8, secret: 'She once stole a dragon\'s nap. She still has it, and is saving it for an emergency.' },
 };
 const LOOKTXT = {"nyxara": "Jet-black blunt bob with bangs, deep brown skin, glowing violet eyes, plum lips, small horns, cracked black halo, black-and-silver eclipse vestment, eclipse staff.", "vexa": "Dark brown skin, amber eyes, red war-paint stripe, long silver-white braids, black spiked iron crown, fang necklace, black fur and iron armor, tattered red cape, ember obsidian greataxe \"Cinderjaw\".", "vexara": "black blunt bangs, curled horns, violet eyes, pale skin, black obsidian corset gown with slit, glowing void orb.", "scarlet": "fiery copper hair, amber eyes, olive skin, enormous black-and-crimson witch hat, cropped crimson corset with underboob, flame staff.", "lumi": "pink curly pigtails, freckles, green eyes, warm tan skin, white-and-teal cropped hero coat, glowing gold grimoire.", "juniper": "lavender hair with side braid, enormous crescent-moon witch hat, owl familiar Pip-Pip, cropped lilac top with big underboob, striped thigh-highs.", "juno": "Black space buns, dimples, brown eyes, deep brown skin, teal bandeau top, cropped white hooded jacket with star patch, pouch belt, grappling hook, thigh-high boots.", "kestra": "Black high ponytail with a silver streak, sharp violet eyes, fair skin, black leather assassin crop corset and hood, glowing green poison dagger.", "marisol": "Long dark glam curls, gold circlet, deep brown skin, golden eyes, plum cape over black-and-gold corset crop top, gold chain whip.", "copper": "Copper-red wavy bob with a braid, freckles, amber eyes, green hooded cape, brown leather corset crop top, pouch shorts, glowing blue dagger.", "raven": "Wild long red hair, gold fox eyes, berry lipstick, black leather crop corset, crimson tattered cape, gold coin belt, twin daggers.", "sylvie": "Silver hair with blunt bangs, pointed elf ears, pale skin, ice-blue eyes, navy shadow-dancer outfit, twin crescent daggers.", "tansy": "Copper-red hair in a long side braid, bright blue eyes, pointed ears, brown-and-cream laced dirndl with a ruffled apron, black spade choker. Usually carrying two overflowing tankards and a look like she already won the argument.", "elna": "Warm brown hair in a high ponytail tied with a floral scarf, soft blue eyes, pointed ears, brown laced bodice, cream apron, black choker. She waves with her free hand and hides behind a wicker basket of loaves when talk gets hard.", "seraphine": "Lavender-lilac hair swept into a polished updo, one icy-blue eye winking, pointed ears, ivory lace bodysuit with sheer stockings and a floating silk robe, gold door at her back and a come-hither finger curl. Everything about her looks expensive on purpose.", "kessa": "Deep brown skin, long black box braids with gold cuffs, gold hoop earrings, warm brown eyes, off-shoulder cream blouse and brown laced corset, sitting sidesaddle on a barrel with a foaming mug and a tongue-out grin.", "marigold": "Copper-red hair in a flour-dusted bun, green eyes, freckles, pointed ears, flour on her cheeks and tied cream blouse, brown laced apron, one hand on her hip beside a stool of fresh loaves.", "brenna": "Auburn hair in a high ponytail, steel-blue eyes, soot smudged on her cheek and forearms, tied cream crop, heavy leather work skirt with gloves at the hip, hammer over one shoulder and a smirk she would deny.", "lira": "Long dark waves under a wild crown of pink and white blossoms, green eyes, light freckles, pointed ears, off-shoulder cream tie-top, green embroidered skirt with a rose wrap, looking back over her shoulder with a flower basket on her arm.", "anya": "Long black ponytail tied with a burgundy bow, amber-brown eyes, cream blouse under a wine-red laced dress, a big brass key hanging at her hip, leaning on the inn counter with a knowing smile and a finger at her chin.", "imani": "Deep brown skin, dark curls in a high puff with soft baby hairs, gold-amber eyes, pointed ears, a simple white towel-dress, seated on a wooden bench with one finger to her lips and a almost-smile she barely permits.", "juni": "Short black bob with bangs, warm brown eyes, a measuring tape slung around her, maroon laced corset, pinstripe mini skirt, pincushion on her wrist, a bolt of gold-and-purple cloth over one arm, blowing a kiss that is probably an insult.", "poppy": "Deep brown hair in a side braid with a white plumeria tucked in, warm brown eyes, gold drop earrings, cream tied blouse and wine-red skirt with a little apron, a wooden milk pail in one hand, pointing at herself like she just remembered she exists.", "zariah": "Wild copper-red curls, gold-amber eyes, pointed ears, gold hoops and stacked bangles, an unbuttoned cream shirt under a patterned shawl, a coin-and-silk hip scarf, seated at a small table with a crystal ball and a fan of tarot."};
-function viewList() { return [...Object.keys(SECOND).map((id) => `sec:${id}`), ...TOWN.map((t) => `town:${t.id}`), ...LEAVERS.map((id) => `sis:${id}`), ...Object.keys(CAST).filter((id) => S.npc[id]?.met && LOOKS.some((l) => l.id === CAST[id].look && l.src)).map((id) => `cast:${id}`)]; }
+LOOKTXT.ember = 'Flame-orange hair in a high ponytail, green eyes, freckles, white-and-gold plate over a blue pleated skirt, a red cape, white thigh boots and a sword that burns along its edge.';
+function viewList() { return [...(ASSIST ? ['asst:valerie'] : []), ...Object.keys(SECOND).map((id) => `sec:${id}`), ...TOWN.map((t) => `town:${t.id}`), ...LEAVERS.map((id) => `sis:${id}`), ...Object.keys(CAST).filter((id) => S.npc[id]?.met && LOOKS.some((l) => l.id === CAST[id].look && l.src)).map((id) => `cast:${id}`)]; }
 function viewData(vid) { const [kind, id] = String(vid).split(':'), posesOf = (base) => LOOKS.filter((l) => l.src && (l.id === base || l.id.startsWith(`${base}-`))).map((l) => l.id), at = (wid) => (S.calm ? 'The world is held still.' : wanderOut(wid) ? 'Not about today.' : `Now at ${placeById(S.wander[wid].at).name}.`), pr = PROFILE[id];
-  if (kind === 'sec' && SECOND[id]) { const x = SECOND[id], w = WANDER[id], rival = w.kind === 'nemesis', met = S.secMet[id] ?? 0, playing = x.playable === PC_ID, open = x.enemy ? Boolean(S.turned[id]) : met >= 3;
-    return { name: x.name, role: x.role, chips: [x.cls, rival ? 'rival' : 'ally', x.playable ? 'playable' : ''], looks: posesOf(`s-${id}`), pr, look: LOOKTXT[id], lore: x.lore, temper: x.temper, trope: x.trope,
+  if (kind === 'sec' && SECOND[id]) { const x = SECOND[id], w = WANDER[id], rival = w.kind === 'nemesis', met = S.secMet[id] ?? 0, playing = x.playable === PC_ID, open = Boolean(S.secretKnown[id]);
+    return { name: x.name, role: x.role, chips: [x.cls, x.lead ? 'main character' : '', rival ? 'rival' : 'ally', x.playable ? 'playable' : ''], looks: posesOf(`s-${id}`), pr, look: LOOKTXT[id], lore: x.lore, temper: x.temper, trope: x.trope,
       lines: [['When you meet', x.lines.meet], ['Flirting', x.lines.flirty], ['In a fight', x.lines.battle], ...(x.lines.turn ? [['When she loses', x.lines.turn]] : []), ['A soft moment', x.lines.soft]],
       where: playing ? 'You are playing her.' : at(id), bond: playing ? '' : rival ? `A rival, ${x.plus} levels up. Beat her once and she comes round.` : x.enemy ? `On your side since day ${S.turned[id]}.` : met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'You have not spoken yet.',
-      secret: { open, how: x.enemy ? 'Beat her once.' : `Talk to her three times (${Math.min(3, met)} of 3).` } }; }
+      secret: { open, how: x.enemy ? 'Beat her once, then ask her.' : `Talk to her three times (${Math.min(3, met)} of 3), then ask her.` } }; }
   if (kind === 'town') { const t = TOWN.find((x) => x.id === id); if (!t) return null; const met = S.townMet[id] ?? 0;
     return { name: t.name, role: t.role, chips: [t.race, 'townsfolk', t.main ? 'main character' : ''], looks: posesOf(`t-${id}`), pr, look: LOOKTXT[id], temper: t.temper, trope: t.trope, voice: t.voice,
-      lines: [['She does not know you', t.lines[0]], ['You are being a bit much', t.lines[1]], ['You are being very loud about it', t.lines[2]], ['Hello', t.lines[3]]], where: at(id), bond: met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'You have not spoken yet.', secret: { open: met >= 3, how: `Talk to her three times (${Math.min(3, met)} of 3).` } }; }
+      lines: [['She does not know you', t.lines[0]], ['You are being a bit much', t.lines[1]], ['You are being very loud about it', t.lines[2]], ['Hello', t.lines[3]]], where: at(id), bond: met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'You have not spoken yet.', secret: { open: Boolean(S.secretKnown[id]), how: `Talk to her three times (${Math.min(3, met)} of 3), then ask her.` } }; }
+  if (kind === 'asst' && ASSIST) { const vp = VAL_CARD?.profile ?? {}; return { name: 'Valerie', role: ASSIST.role, chips: ['Klutz Knight', 'assistant'], looks: ['knight', 'forest', 'val-close', 'val-guard', 'val-bar', 'val-offduty', 'val-jailer'].filter((l) => LOOKS.some((x) => x.id === l && x.src)), temper: 'Brave, kind, bubbly, spectacularly clumsy', trope: 'The airhead who is luckier than she knows', lore: String(vp.description ?? '').split(/(?<=[.!?])\s+/).slice(0, 3).join(' '), lines: [['Helping', `${VAL_OPEN[0]} the Guild Hall has notices nobody has taken.${VAL_CLOSE[2]}`], ['Cheering you up', VAL_CHEER[0]], ['More cheering', VAL_CHEER[3]]], where: 'Right behind you, holding the bags.', bond: 'Ask her what to do, or for a pep talk, on the Social tab.' }; }
   if (kind === 'sis' && WANDER[id]) { const w = WANDER[id]; return { name: w.name, role: w.role, chips: ['a Vantari sister', KIND[w.kind][1]], looks: posesOf(w.look), lore: 'One of seven sisters who look exactly alike and chose seven different callings. About three of them are in the world on any one day.', lines: [['When it goes well', w.good], ...(w.bad ? [['When it does not', w.bad]] : [])], where: at(id), bond: S.hailed[id] ? 'You have spoken.' : 'You have not spoken yet.' }; }
   if (kind === 'cast' && CAST[id]) { const c = castOf(id), rec = npcOf(id), home = PLACES.find((p) => p.who === id);
     return { name: c.name, role: c.role, chips: [arche(c.cls).name, c.guarded ? 'guarded' : 'easy company'], looks: posesOf(c.look), lines: [], where: home ? `Lives at ${home.name}${c.hours ? `, ${hr12(c.hours[0])} to ${hr12(c.hours[1] % 24)}` : ''}.` : 'No fixed place.', bond: `Respect: ${tierOf(rec.rapport).toLowerCase()}. Likes it when you ${APPROACH[c.likes].label.toLowerCase()}.` }; }
@@ -3943,6 +3980,69 @@ document.addEventListener('wheel', (e) => { if (!e.target.closest?.('[data-cvsta
   document.addEventListener('pointermove', (e) => { if (!drag) return; S.cv.x = e.clientX - drag.x; S.cv.y = e.clientY - drag.y; cvApply(); });
   for (const ev of ['pointerup', 'pointercancel']) document.addEventListener(ev, () => { if (drag) { drag = null; document.querySelector('[data-cvstage]')?.classList.remove('grab'); } }); }
 
+/* ---------- Valerie, the assistant: when somebody else is the lead, she carries the bags, keeps the notes and cheers ---------- */
+const VAL_OPEN = ['Okay so! I wrote it on my hand:', 'Ooh, I know this one!', 'Hang on, it is in my notes, under the jam stain:', 'I asked a pigeon and then a person, and the person said:', 'Assistant report!'];
+const VAL_CLOSE = ['', ' ...I think.', ' Good job, me!', ' Was that helpful? I am trying to be helpful.', ''];
+const VAL_CHEER = ['You are doing SO well. I fell over twice this morning and you have fallen over no times!', 'I polished your pauldron while you were not looking. And a bit of your face. Sorry.', 'If the sword will not light, I could hold a candle near it? For morale?', 'I made you a sandwich. I sat on it. It is a flat sandwich now, which is more portable.', 'Everybody in town likes you. I asked. Well, I asked two people and a goose.'];
+function asstTip() { const here = placeNow(), area = areaOf(here), job = jobNow(), bad = baddiesIn(area)[0], ids = wanderersAt(S.place), bed = PLACES.find((p) => areaOf(p) === area && p.acts.includes('rest'));
+  if (S.stam < 30 && bed) return `you look wobbly, and there is a bed at ${bed.name}.`;
+  if (job) return `the guild notice wants you at ${placeById(job.place)?.name ?? 'the place on the notice'}.`;
+  if (bad) return `${BADDIES[bad].name} is at ${placeById(baddieAt(bad)).name}. I would go the other way. I usually do.`;
+  if (ids.length) return `${ids.slice(0, 2).map((id) => WANDER[id].name).join(' and ')} ${ids.length > 1 ? 'are' : 'is'} right here. You could say hello!`;
+  if (!S.jobsDone || !Object.keys(S.jobsDone).length) return 'the Guild Hall has notices nobody has taken. The Guild tab, top of the page.';
+  return tipOff().replace(/^./, (ch) => ch.toLowerCase()); }
+function assist(kind) { if (!ASSIST) return; const pickOf = (a) => a[Math.floor(Math.random() * a.length)]; S.closeUntil = Date.now() + 6000; setTimeout(render, 6100);
+  if (kind === 'tip') return post({ who: 'her', plate: 'Valerie', dice: '[your assistant] she checks her notes', say: `${pickOf(VAL_OPEN)} ${asstTip()}${pickOf(VAL_CLOSE)}`, spoken: true });
+  if (kind === 'cheer') { const first = S.asstDay !== dayNow(); S.asstDay = dayNow(); store.set('asstDay', S.asstDay); return post({ who: 'her', plate: 'Valerie', dice: '[your assistant] a pep talk', say: pickOf(VAL_CHEER), spoken: true, fx: first ? applyFx({ stress: -5 }, 'Valerie') : ['she already cheered you up today, but she means it'] }); } }
+/* ---------- conversations: choices that read the situation, replies that change her face ---------- */
+// Hailing an ally or a Town Girl opens a short conversation. The four things you can say are picked from what is true right now
+// (first meeting, night, where she is, the news, big trouble nearby, the state Valerie is in, whether she trusts you yet).
+// Her reply comes with a mood, and the mood picks her picture. Claude writes the reply when it is allowed to; otherwise her own lines are used.
+const MOODS = { warm: ['she looks pleased', ['x', 's']], flirty: ['she is flirting', ['f', 'x', 's']], cross: ['she bristles', ['a', 's']], shy: ['she goes pink', ['x', 'f', 's']], down: ['her face falls', ['d', 'x', 's']] };
+const talker = (id) => { const w = WANDER[id]; if (!w) return null; if (w.kind === 'town') { const t = w.town; return { id, w, name: t.name, role: t.role, temper: t.temper, trope: t.trope, voice: t.voice, lore: '', base: `t-${id}`, met: S.townMet[id] ?? 0, ex: t.lines, meet: t.lines[0], flirty: t.lines[1], soft: t.lines[3], turn: null, home: t.home[0] }; }
+  if (w.sec) { const x = w.sec; return { id, w, name: x.name, role: x.role, temper: x.temper, trope: x.trope, voice: '', lore: x.lore, base: `s-${id}`, met: S.secMet[id] ?? 0, ex: Object.values(x.lines), meet: x.lines.meet, flirty: x.lines.flirty, soft: x.lines.soft, turn: x.enemy ? x.lines.turn ?? x.lines.soft : null, home: x.start }; } return null; };
+const moodLook = (t, mood) => { for (const p of (MOODS[mood] ?? MOODS.warm)[1]) { const id = p === 's' ? t.base : `${t.base}-${p}`; if (LOOKS.some((l) => l.id === id && l.src)) return id; } return t.base; };
+function convoOptions(id) { const t = talker(id), here = placeNow(), area = areaOf(here), c = S.convo, out = [], add = (k, label, hint) => { if (!c.used.includes(k) && out.length < 4) out.push([k, label, hint]); };
+  const loud = S.news.find((x) => x.area === area && x.w >= 2 && dayNow() - x.d <= 1), bad = baddiesIn(area)[0], known = S.secretKnown[id], trust = t.w.sec?.enemy ? Boolean(S.turned[id]) : t.met >= 3;
+  if (t.met <= 1) add('intro', 'Introduce yourself', 'you have only just met');
+  if (t.turn && S.turned[id] && dayNow() - S.turned[id] <= 3) add('why', 'Ask why she stopped hunting you', 'she was a rival days ago');
+  if (trust && !known && PROFILE[id]) add('secret', 'Ask what she is not telling you', 'she trusts you now');
+  if (loud) add('news', 'Ask if she heard the news', loud.text.length > 44 ? `${loud.text.slice(0, 42)}…` : loud.text);
+  if (bad) add('warn', `Warn her about ${BADDIES[bad].name}`, 'big trouble is close');
+  if (phaseNow() === 'Night') add('night', 'Ask what she is doing out this late', 'it is night');
+  if (here.id !== t.home) add('place', `Ask what brings her to the ${here.short}`, 'not where she usually is');
+  if (composure() >= 1) add('fluster', 'Try to act normal', `you are ${COMPOSURE[composure()].toLowerCase()} · ${STAT_INFO.WIL.name} ${oddsOf('WIL', dcFor(S.level, 'normal'))}%`);
+  if (S.decency < 50) add('state', 'Apologise for the state of you', 'you look a mess');
+  add('kind', 'Say something kind', 'always works a little'); add('tease', 'Tease her', 'see how she takes it'); add('help', 'Ask if she needs anything', 'she may know something');
+  return out; }
+const INTENT = { intro: 'introduces herself properly, a little too formally', why: 'asks why she stopped hunting her and started tagging along', secret: 'gently asks what she has been keeping to herself. She decides to tell it now, in her own words', news: 'asks whether she has heard the news', warn: 'warns her that someone dangerous is close by', night: 'asks what she is doing out this late', place: 'asks what brings her to this part of the world', fluster: 'is visibly flustered and trying very hard to act normal', state: 'apologises for looking such a mess', kind: 'says something kind to her', tease: 'teases her', help: 'asks whether she needs anything' };
+function convoCells() { const c = S.convo, t = talker(c.id); if (!t) { S.convo = null; return ''; } const opts = convoOptions(c.id);
+  return `<span class="prow">Say to ${esc(t.name.split(' ')[0])} · ${c.max - c.turns} left</span>${opts.map(([k, label, hint], i) => cell(`talk:${k}`, label, hint, i === 0 ? 'primary' : '', Boolean(c.busy))).join('')}${Array(Math.max(0, 4 - opts.length)).fill(blank).join('')}<span class="prow">Or</span>${cell('talkleave', 'Say goodbye', 'end the conversation', 'go', Boolean(c.busy))}`; }
+function convoOpen(id, greetKey) { const t = talker(id); if (!t) return; S.convo = { id, turns: 0, max: 3, used: greetKey === 'meet' ? ['intro'] : [], busy: false }; S.ctab = 'resp'; S.closeUntil = Date.now() + 600000; }
+function convoEnd(line) { const c = S.convo; if (!c) return; const t = talker(c.id); S.convo = null; S.closeUntil = Date.now() + 1500; setTimeout(render, 1600); if (t && S.guest === c.id) S.lookR = t.base; if (line) post({ who: 'sys', dice: line }); }
+function convoFallback(t, k) { const L = (text, mood) => ({ line: text, mood }), loud = S.news.find((x) => x.area === areaOf(placeNow()) && x.w >= 2);
+  return { intro: L(t.meet, 'warm'), kind: L(t.soft, 'warm'), tease: L(t.flirty, 'flirty'), why: L(t.turn ?? t.soft, 'shy'), secret: L('...Fine. Since it is you.', 'shy'), news: L(loud ? `I heard. ${REACT_W[loud.w][0].toUpperCase()}${REACT_W[loud.w].slice(1)} round here.` : 'News? Nothing reaches me.', loud && loud.w >= 4 ? 'down' : 'warm'),
+    warn: L('Then I will keep to the lit streets. See that you do too.', 'shy'), night: L('I could ask you the same thing.', 'flirty'), place: L('Even I get out sometimes.', 'warm'), state: L('I have seen worse. Not much worse.', 'cross'), help: L('Nothing I cannot handle. But here is something for you.', 'warm') }[k] ?? L(t.soft, 'warm'); }
+async function convoAsk(t, k, extra) { if (!S.aiTalk) return null; if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } } if (!sampler) return null;
+  const here = placeNow(), area = areaOf(here), loud = S.news.find((x) => x.area === area && x.w >= 2), bad = baddiesIn(area)[0];
+  const prompt = `You are voicing one character in a light fantasy comedy game. Stay in her voice. PG-13. One or two sentences, spoken aloud. No narration, no stage directions.\n\nHER\n${t.name}, ${t.role}. Temperament: ${t.temper}. Trope: ${t.trope}.${t.voice ? ` Voice: ${t.voice}` : ''}${t.lore ? `\n${t.lore}` : ''}\nHow she talks: ${t.ex.slice(0, 4).map((x) => `"${x}"`).join(' / ')}${k === 'secret' && PROFILE[t.id] ? `\nThe thing she has kept to herself: ${PROFILE[t.id].secret}` : ''}\n\nRIGHT NOW\n${here.name}, ${AREAS[area].name}. Day ${dayNow()}, ${phaseNow().toLowerCase()}. ${t.met <= 1 ? 'They have only just met.' : `They have spoken ${t.met} times.`}${S.turned[t.id] ? ` She was this knight's rival until day ${S.turned[t.id]}.` : ''}\nThe knight is ${PC.full}, a ${calling().name}: ${COMPOSURE[composure()].toLowerCase()}, ${S.decency >= 50 ? 'presentable' : 'looking a mess'}, known here as ${repLabel()}.${loud ? `\nLocal news: ${loud.text}` : ''}${bad ? `\nNearby and dangerous: ${BADDIES[bad].name}, ${BADDIES[bad].title}.` : ''}${extra ? `\n${extra}` : ''}\n\nTHE KNIGHT ${INTENT[k].toUpperCase()}.\n\nReply as ${t.name.split(' ')[0]}, and make the reply fit the place, the hour and what is going on. Return ONLY JSON: {"line": what she says, "mood": one of "warm", "flirty", "cross", "shy", "down"}. The mood is the look on her face as she says it.`;
+  try { const out = await metered('talk', prompt, { modelTier: 'quick', cache: false }), found = String(out?.text ?? '').match(/\{[\s\S]*\}/), r = JSON.parse(found ? found[0] : '{}'); if (typeof r.line !== 'string' || !r.line.trim()) return null; return { line: r.line.trim().slice(0, 320), mood: MOODS[r.mood] ? r.mood : 'warm', ai: true }; }
+  catch (e) { if (e?.code === 'not_granted') sampler = null; return null; } }
+async function talkPick(k) { const c = S.convo; if (!c || c.busy) return; const t = talker(c.id); if (!t) { S.convo = null; return; } const opt = convoOptions(c.id).find((o) => o[0] === k); if (!opt) return;
+  c.busy = true; post({ who: 'me', say: opt[1], spoken: false }); passTime(3); let fx = [], extra = '', roll = null;
+  if (k === 'fluster') { roll = rollCheck({ title: `Act normal · ${t.name}`, stat: 'WIL', dc: dcFor(S.level, 'normal') }); extra = roll.success ? 'She very nearly pulls it off.' : 'It is not working at all, and it shows.'; fx = roll.success ? applyFx({ stress: -3 }, 'held it together') : applyFx({ stress: 3 }, 'did not hold it together'); }
+  if (k === 'kind' && !c.used.includes('kind')) fx = applyFx({ stress: -2 }, t.name);
+  if (k === 'help') fx = [`word on the road: ${tipOff()}`];
+  if (k === 'warn') { order(areaOf(placeNow()), 1, 'a warning passed on'); fx = ['order +1']; }
+  render();
+  let r = await convoAsk(t, k, extra); if (!S.convo || S.convo !== c) return; // she walked off, or the game moved on, while Claude was thinking
+  if (!r) { r = convoFallback(t, k); if (k === 'fluster') r = roll.success ? { line: 'You are doing fine. Mostly.', mood: 'warm' } : { line: t.flirty, mood: 'flirty' }; }
+  if (k === 'secret' && PROFILE[t.id]) { S.secretKnown[t.id] = true; store.set('secretKnown', S.secretKnown); fx = ['a secret, told', ...(r.ai ? [] : [PROFILE[t.id].secret])]; }
+  if (S.guest === t.id) S.lookR = moodLook(t, r.mood);
+  post({ who: 'her', plate: t.name, dice: `[${MOODS[r.mood][0]}]${roll ? ` · d100 ${roll.roll} vs ${roll.pct}: <b>${roll.degree}</b>` : ''}`, tone: roll?.degree, say: r.line, spoken: true, fx });
+  c.used.push(k); c.turns += 1; c.busy = false; if (c.turns >= c.max) convoEnd(`[${t.name.split(' ')[0]} has somewhere to be]`); render(); }
+
+const heroLook = () => { const p = PC.poses; if (!p || S.lookL !== PC.look) return S.lookL; if ((S.fallen || S.down) && p.d) return p.d; if (composure() >= 1 && p.x) return p.x; return S.lookL; }; // a played character with her own poses shows how she is doing
 /* ---------- render and wiring ---------- */
 function render() {
   drawSpriteOnce(); drawScene();
@@ -3980,7 +4080,7 @@ function render() {
 let drawn = {};
 function drawSpriteOnce() {
   const bust = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.bust), keyed = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.keyed);
-  if (drawn.l !== S.lookL) { drawSprite($('sprL'), S.lookL); drawn.l = S.lookL; $('sprL').classList.toggle('bust', bust(S.lookL)); $('sprL').classList.toggle('keyedfig', keyed(S.lookL)); }
+  const L = heroLook(); if (drawn.l !== L) { drawSprite($('sprL'), L); drawn.l = L; $('sprL').classList.toggle('bust', bust(L)); $('sprL').classList.toggle('keyedfig', keyed(L)); }
   if (drawn.r !== S.lookR) { drawSprite($('sprR'), S.lookR); drawn.r = S.lookR; $('sprR').classList.toggle('bust', bust(S.lookR)); $('sprR').classList.toggle('keyedfig', keyed(S.lookR)); }
 }
 function reset(keepGauge) {
@@ -4152,13 +4252,13 @@ $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}
 setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'gates') : 'gates');
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
-reset(false); $('sprL').dataset.name = heroName; document.querySelector('.top [data-menu="her"]').textContent = heroName; if (store.get('vaultOn', false)) setTimeout(() => void vaultConnect(true), 1500);
+reset(false); $('sprL').dataset.name = heroName; document.querySelector('.top [data-menu="her"]').textContent = heroName; $('say').placeholder = `Say something as ${heroName}…`; if (store.get('vaultOn', false)) setTimeout(() => void vaultConnect(true), 1500);
 document.documentElement.style.setProperty('--zoomL', S.zoomL);
 $('hudL').addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDefault(); S.zoomL = Math.max(0.8, Math.min(1.6, Math.round((S.zoomL + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set('zoomL', S.zoomL); document.documentElement.style.setProperty('--zoomL', S.zoomL); }, { passive: false });
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
