@@ -308,6 +308,96 @@ body[data-phase="Night"] .scene img{filter:brightness(.5) saturate(.7) hue-rotat
 .dom .h{display:flex;justify-content:space-between;gap:8px;font-size:.76rem}
 .dom .h span{font-family:var(--f-mono);font-size:.54rem;color:var(--muted);white-space:nowrap}
 .dom .track{height:5px}
+/* ---- v9: the clean pass. One hairline, rationed colour, and a left panel that opens into her sheet when pulled wide ---- */
+.top .title span{display:none}
+.hud{border:1px solid var(--edge);border-radius:16px;background:color-mix(in srgb,var(--box) 90%,transparent);gap:10px;padding:14px 13px;container-type:inline-size}
+.hud .over{border-top:1px solid var(--edge);padding-top:10px}
+.emo{background:none;border:0;border-bottom:1px solid var(--edge);border-radius:0;padding:2px 0 9px}
+.rtabs{position:sticky;top:-14px;z-index:2;display:flex;gap:2px;padding:0;border-radius:0;background:var(--box);border-bottom:1px solid var(--edge);overflow-x:auto;scrollbar-width:none}
+.rtabs button{flex:none;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;color:var(--faint);padding:7px 8px 6px;font-family:var(--f-mono);font-weight:500;font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+.rtabs button:hover{color:var(--muted)}
+.rtabs button[aria-selected="true"]{background:none;color:var(--text);border-bottom-color:var(--c)}
+.sheet-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sheet-h h2{margin:0;font-family:var(--f-head);font-weight:700;font-size:1.3rem;line-height:1.05;letter-spacing:-.01em}
+.sheet-h .role{margin:3px 0 0;font-family:var(--f-serif);font-style:italic;font-size:1.05rem;color:var(--pink);line-height:1.2}
+.sheet-h .lv{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--text);color:var(--ground);font-family:var(--f-head);font-weight:700;font-size:.82rem;box-shadow:0 0 0 2px var(--pink)}
+.range{display:grid;gap:3px}
+.range .t{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.8rem;font-weight:600}
+.range .t span:first-child{color:var(--pink)}
+.range .t span:last-child{color:var(--gold)}
+.range .t b{font-family:var(--f-head);font-size:1.25rem;font-variant-numeric:tabular-nums}
+#gauge{-webkit-appearance:none;appearance:none;display:block;width:100%;height:8px;margin:5px 0 3px;padding:0;border:0;border-radius:999px;background:linear-gradient(90deg,var(--pink),var(--gold))}
+#gauge::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:6px;height:20px;border-radius:3px;background:#fff;box-shadow:0 0 0 2px var(--ground);cursor:ew-resize}
+#gauge::-moz-range-thumb{width:6px;height:20px;border:0;border-radius:3px;background:#fff;box-shadow:0 0 0 2px var(--ground);cursor:ew-resize}
+#gauge:disabled{opacity:.65}
+.fgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:0 18px}
+.fcell{display:grid;gap:1px;padding:7px 0 8px;border-bottom:1px solid var(--edge);min-width:0}
+.fcell span{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.fcell b{font-weight:500;font-size:.94rem;line-height:1.3;overflow-wrap:anywhere}
+.abox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.abox div{display:grid;justify-items:center;padding:8px 2px 7px;border-radius:12px;border:1px solid var(--edge);background:var(--glass);min-width:0}
+.abox span{max-width:100%;font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.abox b{font-family:var(--f-head);font-weight:700;font-size:1.02rem;line-height:1.25;font-variant-numeric:tabular-nums}
+.abox small{font-size:.68rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.abox .cut b{color:var(--crit)}
+.mcard{display:grid;gap:5px;padding:10px 12px;border-radius:14px;border:1px solid color-mix(in srgb,var(--pink) 28%,var(--edge));background:color-mix(in srgb,var(--pink) 5%,transparent)}
+.mcard b{font-size:.92rem;line-height:1.25}
+.mcard b i{font-style:normal;color:var(--gold);font-size:.56rem;letter-spacing:.14em;vertical-align:middle;margin-left:4px}
+.mcard p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.4}
+.mcard .chips span{--k:var(--pink)}
+.hud p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.45}
+.hud p.lbl,.hud .lbl{font-size:.56rem;color:var(--faint)}
+/* pulled wide, the panel becomes the sheet: two columns of fields, six attribute boxes, bars side by side */
+@container (min-width:330px){
+  .sheet-h h2{font-size:2rem}
+  .sheet-h .role{font-size:1.3rem}
+  .sheet-h .lv{width:42px;height:42px;font-size:.95rem}
+  .fgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .abox{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .hud .bars{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px}
+  .fcell b{font-size:1.02rem}
+  .rtabs button{font-size:.66rem;padding:8px 10px 7px}
+  .bio{grid-template-columns:5.5rem minmax(0,1fr)}
+}
+@container (min-width:460px){.abox b{font-size:1.3rem}.abox div{padding:11px 4px 9px}.abox span{font-size:.56rem}}
+/* the picture: full height, feet on the floor, one soft shadow, nothing framing it */
+.sprite{height:100%}
+.sprite img,.sprite video{height:100%;width:auto;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom}
+.sprite .boxed{height:auto}
+.sprite img{filter:drop-shadow(0 30px 40px rgba(0,0,0,.6))}
+body.sway .sprite>*{animation:breathe9 5.5s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes breathe9{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012) scaleX(1.004)}}
+.scene::after{height:38%;background:linear-gradient(transparent,rgba(11,13,18,.8))}
+/* the middle column: quieter boxes */
+.composer{border-color:var(--edge2)}
+.tray{border-color:var(--edge2);padding:7px 12px 6px}
+.cell.bubble{background:var(--glass);border-color:var(--edge)}
+.cell.bubble.primary{background:var(--pink);border-color:transparent}
+.cell.spot{background:var(--glass);border-color:color-mix(in srgb,var(--cyan) 45%,var(--edge))}
+.cell.look{border-color:var(--edge)}
+.exits{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:5px;padding-top:6px;border-top:1px solid var(--edge)}
+.exits .lbl{margin-right:2px}
+.exits button{padding:4px 11px;font-size:.74rem;font-weight:500;background:none;border-color:var(--edge)}
+.exits button small{color:var(--faint);font-weight:400;margin-left:5px}
+.exits button:hover{border-color:var(--edge2)}
+@media (prefers-reduced-motion:reduce){body.sway .sprite>*{animation:none}}
+.hud p.more{font-size:.54rem}
+.sheet,.sheet-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
+.sheet-pic{display:none;margin:0}
+@container (min-width:520px){
+  .sheet{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:18px;align-items:start}
+  .sheet-pic{display:block;position:sticky;top:0;height:calc(100vh - 56px);border-right:1px solid var(--edge);padding-right:10px;overflow:hidden}
+  .sheet-pic>img,.sheet-pic>video{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:drop-shadow(0 24px 34px rgba(0,0,0,.6))}
+  .sheet-pic>video{mix-blend-mode:screen}
+  .sheet-pic .flip{scale:-1 1}
+  .sheet-pic figcaption{position:absolute;left:4px;bottom:8px;font-family:var(--f-head);font-weight:700;font-size:1.9rem;line-height:1;text-shadow:0 2px 16px rgba(0,0,0,.8)}
+  .sheet-body .sheet-h h2{font-size:2.3rem}
+}
+body.sheetL .sprite.l{display:none}
+@media (min-width:901px){
+  .dialog{margin:0;margin-left:max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2));width:min(var(--col),calc(100% - max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) - var(--hudR) - 30px))}
+  .sprite.r{left:calc(max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) + var(--col) - 104px)}
+}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -316,7 +406,7 @@ body[data-phase="Night"] .scene img{filter:brightness(.5) saturate(.7) hue-rotat
   .stage{height:auto;min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-content:start}
   .hud,.hud.l,.hud.r{position:static;width:auto;max-height:none}
   .grip,.foe{display:none}
-  .hud .attrs,.hud .set,.hud .over,.hud .more{display:none}
+  .hud .attrs,.hud .set,.hud .over,.hud .more,.hud:not(.open) .fgrid,.hud:not(.open) .abox,.hud:not(.open) .mcard,.hud:not(.open) .moves,.hud:not(.open) .rtabs,.hud:not(.open) .bars{display:none}
   .hud.open .attrs,.hud.open .set,.hud.open .over{display:grid}
   .dialog{grid-column:1/-1;width:100%;height:auto;padding:0}
   .log{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none;padding-top:14px}
@@ -1197,10 +1287,6 @@ function doAct(id) {
   if (id === 'soak') { S.used[id] = true; passTime(60); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
 }
 function cell(act, label, hint, cls = '', off = false) { return `<button class="cell bubble ${cls}" type="button" data-act="${esc(act)}"${off ? ' disabled' : ''}><b>${esc(label)}</b><small>${esc(hint)}</small></button>`; }
-function exitCells(here) {
-  return here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
-    return `<button class="cell bubble go" type="button" data-go="${id}"><b>→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}</b><small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('');
-}
 function travelGrid() {
   const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
   const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
@@ -1277,7 +1363,6 @@ function renderDebugger() {
 function chem(delta, why) { if (!delta) return; const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
   if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
 function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
-function leftTabs() { return `<div class="rtabs" role="tablist" aria-label="Your panel">${[['stats', 'Stats'], ['bio', 'Bio'], ['spicy', 'Spicy']].map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === S.ltab}">${name}</button>`).join('')}</div>`; }
 function bioTab() {
   const p = DATA.card?.profile ?? {}, rows = [['Age', p.age], ['Height', p.height], ['Build', p.build], ['Hair', p.hair], ['Eyes', p.eyes], ['Job', p.occupation], ['From', p.hometown], ['Likes', p.likes], ['Dislikes', p.dislikes], ['Fears', p.fears], ['Good at', p.smart_at], ['Bad at', p.bad_at], ['Says', p.catchphrases]].filter((r) => r[1]);
   return `${overviewHero()}${rows.length ? `<div class="over"><h3>From her character sheet</h3><dl class="bio">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>` : ''}`;
@@ -1364,7 +1449,7 @@ function mapTab() {
   const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
   return `<div class="who"><p class="lbl">${S.battle || S.standoff ? 'In combat' : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${clockText()}</p><h2>${esc(here.name)}</h2><p class="role">${esc(A.name)}${who ? ` · ${esc(who.name)} is here` : ''}</p></div>
     <svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg>
-    <p class="more">click a bubble to walk there · a box leads to another map · red ring: danger · ★: a stronghold</p>
+    <p class="more">bubble: walk there · box: another map · ★ stronghold</p>
     <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
     ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `You are ${tierOf(npcOf(S.who).rapport).toLowerCase()} with them.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
     <div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`;
@@ -1388,19 +1473,43 @@ function knightAct(id) { // the things only the outer domains offer
   }
 }
 const actLabel = (id, here) => (id === 'boss' ? `Challenge ${DATA.bosses.bosses.find((x) => x.id === here.boss)?.name.split(' ')[0] ?? 'the boss'}` : id === 'explore' && areaOf(here) !== 'city' ? 'Patrol' : ACTS[id].label);
+/* ---------- the left panel as her sheet ---------- */
+function rpgTab(h) {
+  const p = PATHS[S.path], f = (k, v) => `<div class="fcell"><span>${k}</span><b>${v}</b></div>`, have = DATA.valerie.skills.filter((s) => s.unlock <= S.level).sort((a, b) => a.unlock - b.unlock);
+  return `<div class="fgrid">${f('Class', 'Klutz Knight')}${f('Level', h.level)}${f('XP', `${n(S.exp)} / ${n(needExp())}`)}${f('Path', `${esc(p.name)} · ${esc(p.cls)}`)}${f('Purse', `${n(S.gold)} gold`)}${f('Training', `${S.points} point${S.points === 1 ? '' : 's'} to spend`)}</div>
+    <p class="lbl">Attributes · against the norm for her level</p>
+    <div class="abox">${STAT_KEYS.map((k) => { const v = effectiveStat(h, k), off = v - __m.stats.benchmarkStat(h.level);
+      return `<div class="${v < h.stats[k] ? 'cut' : ''}" title="${esc(STAT_INFO[k].drives)}"><span>${STAT_INFO[k].name}</span><b>${off >= 0 ? '+' : '−'}${n(Math.abs(off))}</b><small>${n(v)}</small></div>`; }).join('')}</div>
+    <p class="lbl">Moves she has · ${have.length}</p><ul class="moves">${have.map((s) => `<li><b>${esc(s.name)}</b><span>${s.cost?.mp ? `${n(s.cost.mp)} MP` : s.cost?.limit ? `${s.cost.limit} MCE` : 'free'}</span><small>${esc(s.text ?? '')}</small></li>`).join('')}</ul>`;
+}
+function momentsTab() {
+  const card = (m) => `<div class="mcard"><b>${esc(m.title)}<i>${'●'.repeat(Math.min(3, m.imp ?? 1))}${'○'.repeat(Math.max(0, 3 - (m.imp ?? 1)))}</i></b><p>${esc(m.t)}</p>${(m.tags ?? []).length ? `<div class="chips">${m.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}</div>`;
+  const mine = events.filter((e) => doneQuests.has(e.id)).map((e) => ({ title: e.title, t: e.t, tags: ['this run'], imp: 2 })), old = DATA.card?.moments ?? [];
+  return `${mine.length ? `<p class="lbl">This run · ${mine.length}</p>${mine.map(card).join('')}` : '<p>Nothing yet this run. Quests you finish land here.</p>'}${old.length ? `<p class="lbl">Before you arrived</p>${old.map(card).join('')}` : ''}`;
+}
+function leftPanel(h, top, gauge, band, locked) {
+  const tabs = [['stats', 'Overview'], ['rpg', 'RPG'], ['bio', 'Bio'], ['spicy', 'Spicy'], ['moments', 'Moments'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'stats';
+  const body = tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
+    : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
+  const look = S.custom[S.lookL] ?? LOOKS.find((l) => l.id === S.lookL) ?? LOOKS[0], flip = S.flips[S.lookL] ? ' class="flip"' : '';
+  const pic = !look.src ? '' : look.video ? `<video src="${esc(look.src)}"${flip} autoplay muted loop playsinline></video>` : `<img src="${esc(look.src)}"${flip} alt="">`;
+  return `<div class="sheet"><figure class="sheet-pic" aria-hidden="true">${pic}<figcaption>${heroName}</figcaption></figure><div class="sheet-body"><div class="sheet-h"><div><h2>${heroName}</h2><p class="role">Klutz Knight</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
+    <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
+      <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}></div>
+    ${emo(h, true)}
+    <div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
+    ${body}</div></div>`;
+}
+function exitCells(here) {
+  return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
+    return `<button class="go" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('')}</div>`;
+}
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
   const gauge = V.airheadOf(h), band = DATA.valerie.gauge.bands.find((b) => b.id === V.airheadBand(gauge)), locked = V.airheadLock(h) !== null;
   const stressBand = t.stress >= 100 ? 'Cracking' : t.stress >= 50 ? 'Tense' : 'Steady';
-  $('hudL').innerHTML = `
-    <div class="who"><p class="lbl">You · level ${h.level}</p><h2>${heroName}</h2><p class="role">Klutz Knight</p></div>
-    <div class="dial">${dial(gauge, 100, [[0, 33, .1], [33, 66, .16], [66, 100, .24]], 'var(--lime)')}<div class="num"><b>${gauge}</b><span>${esc(band.name)}</span></div></div>
-    <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
-    ${emo(h, true)}
-    ${leftTabs()}
-    ${S.ltab === 'bio' ? bioTab() : S.ltab === 'spicy' ? spicyTab() : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${attrs(h, top)}${dashboard()}`}
-    ${settingsBlock()}`;
+  $('hudL').innerHTML = leftPanel(h, top, gauge, band, locked);
   $('hudR').innerHTML = rightPanel();
 }
 
@@ -1781,8 +1890,8 @@ $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $
 
 for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
-  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.36), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); };
-  const saved = store.get(`hud${side}`, null); if (saved) root.style.setProperty(key, `${saved}px`);
+  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') document.body.classList.toggle('sheetL', v >= 544); };
+  const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') document.body.classList.toggle('sheetL', saved >= 544); }
   grip.addEventListener('pointerdown', (e) => { grip.setPointerCapture(e.pointerId); grip.classList.add('on');
     const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
     const up = () => { grip.classList.remove('on'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); };

@@ -12,7 +12,7 @@ That writes `playtest/out/oops-playtest.html` (ignored by git). Open it from a f
 
 | Part | What it does |
 |---|---|
-| Left panel | Valerie. Airhead gauge and mood on top, then three tabs: **Stats** (bars, attributes, stamina, decency, purse and potions), **Bio** (her character sheet), **Spicy** (bust, hips, size, chemistry and how she feels). Settings and Save sit under the tabs. |
+| Left panel | Valerie's sheet. Name, the Airhead range bar and her mood on top, then tabs: **Overview** (bars, stamina, decency, purse and potions), **RPG** (class, level, XP, attribute boxes, moves), **Bio**, **Spicy**, **Moments**, **Settings** (look, toggles, save). Drag its edge toward the middle and it opens into a two-column sheet with her picture beside it; the story column moves over to make room. |
 | Top of the middle | The clock, the mode pill (Travelling, Combat, Down), the **Debugger** toggle, and the **dice tray**: every roll lands there with its bands and its arithmetic. |
 | Middle | The story, then her inner voice, then a grid of what you can do where you stand. Out of combat the buttons are bubbles; in a fight they are square. |
 | Right panel, Map | The city and the wilds as bubbles. Click one to walk there; time passes with distance. Red rings are the wilds. |
