@@ -348,7 +348,7 @@ body[data-phase="Night"] .scene img{filter:brightness(.5) saturate(.7) hue-rotat
 .hud p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.45}
 .hud p.lbl,.hud .lbl{font-size:.56rem;color:var(--faint)}
 /* pulled wide, the panel becomes the sheet: two columns of fields, six attribute boxes, bars side by side */
-@container (min-width:330px){
+@container (min-width:290px){
   .sheet-h h2{font-size:2rem}
   .sheet-h .role{font-size:1.3rem}
   .sheet-h .lv{width:42px;height:42px;font-size:.95rem}
@@ -385,7 +385,7 @@ body.sway .sprite>*{animation:breathe9 5.5s ease-in-out infinite;transform-origi
 .sheet,.sheet-body{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0}
 .sheet-pic{display:none;margin:0}
 @container (min-width:520px){
-  .sheet{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:18px;align-items:start}
+  
   .sheet-pic{display:block;position:sticky;top:0;height:calc(100vh - 56px);border-right:1px solid var(--edge);padding-right:10px;overflow:hidden}
   .sheet-pic>img,.sheet-pic>video{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;filter:drop-shadow(0 24px 34px rgba(0,0,0,.6))}
   .sheet-pic>video{mix-blend-mode:screen}
@@ -393,7 +393,30 @@ body.sway .sprite>*{animation:breathe9 5.5s ease-in-out infinite;transform-origi
   .sheet-pic figcaption{position:absolute;left:4px;bottom:8px;font-family:var(--f-head);font-weight:700;font-size:1.9rem;line-height:1;text-shadow:0 2px 16px rgba(0,0,0,.8)}
   .sheet-body .sheet-h h2{font-size:2.3rem}
 }
-body.sheetL .sprite.l{display:none}
+:root{--picL:calc(var(--hudL) * .44)}
+.sprite.l,.sprite.r{transition:left .5s cubic-bezier(.2,.8,.2,1),right .5s cubic-bezier(.2,.8,.2,1),filter .4s,transform .4s}
+.hud.l{transition:left .5s cubic-bezier(.2,.8,.2,1),width .5s cubic-bezier(.2,.8,.2,1)}
+.dialog{transition:margin-left .5s cubic-bezier(.2,.8,.2,1)}
+body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
+@media (min-width:901px){
+  body.sheetL .hud.l{left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--picL));width:calc(var(--hudL) - var(--picL))}
+  body.sheetL .sprite.l{left:12px;right:calc(100% - 12px - var(--picL));justify-content:center}
+  body.sheetL .sprite.l>img,body.sheetL .sprite.l>video{width:100%;height:100%;max-width:none;object-fit:cover;object-position:center top}
+  body.sheetL .sprite.l::after{content:attr(data-name);position:absolute;left:8px;bottom:14px;font-family:var(--f-head);font-weight:700;font-size:2rem;line-height:1;text-shadow:0 2px 18px rgba(0,0,0,.85)}
+}
+.quick{display:flex;flex-wrap:wrap;gap:4px 16px}
+.hud p.quick{font-size:.86rem}
+.quick b{font-family:var(--f-head);color:var(--text);font-size:.95rem;font-variant-numeric:tabular-nums}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.pills span{padding:4px 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--cyan) 35%,var(--edge));background:color-mix(in srgb,var(--cyan) 7%,transparent);font-size:.8rem}
+.pills.gear span{border-color:color-mix(in srgb,var(--gold) 40%,var(--edge));background:color-mix(in srgb,var(--gold) 6%,transparent)}
+.feats{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.feats li{position:relative;padding-left:20px;font-size:.84rem;color:var(--muted);line-height:1.4}
+.feats li::before{content:"✦";position:absolute;left:0;color:var(--faint)}
+.feats li b{color:var(--text)}
+.rtabs.under{position:static;margin-top:8px;border-top:1px solid var(--edge)}
+.mcard b i{font-family:var(--f-mono);text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.sprite.l,.sprite.r,.hud.l,.dialog{transition:none}}
 @media (min-width:901px){
   .dialog{margin:0;margin-left:max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2));width:min(var(--col),calc(100% - max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) - var(--hudR) - 30px))}
   .sprite.r{left:calc(max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) + var(--col) - 104px)}
@@ -725,6 +748,7 @@ const S = {
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
   dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'stats'),
   order: store.get('order', {}), secured: store.get('secured', {}),
+  rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
 };
 const heroName = 'Valerie';
@@ -996,7 +1020,8 @@ const PHASE_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night'];
 function passTime(mins) {
   if (!(mins > 0)) return;
   const before = phaseNow(), full = S.hero.mp >= S.hero.maxMp, hrs = mins / 60;
-  S.clock += Math.round(mins); store.set('clock', S.clock);
+  const day0 = dayNow(); S.clock += Math.round(mins); store.set('clock', S.clock);
+  for (let day = day0 + 1; day <= dayNow(); day++) newDay(day);
   if (!S.battle && S.hero.hp > 0) S.hero = { ...S.hero, mp: Math.min(S.hero.maxMp, Math.round(S.hero.mp + S.hero.maxMp * 0.04 * hrs)) };
   if (S.path === 'mage' && full) grow(Math.round(6 * hrs), 'mana with nowhere to go');
   if (phaseNow() !== before) { post({ who: 'sys', dice: `[time] ${clockText()}`, say: PHASE_LINE[phaseNow()] }); refreshWho(); }
@@ -1121,15 +1146,17 @@ function applyFx(fx, why) {
 function meetBonus(kind) {
   const c = castOf(S.meet), a = APPROACH[kind], g = V.airheadOf(S.hero);
   const like = c.likes === kind ? 20 : c.dislikes === kind ? -20 : 0, tilt = Math.round(((g - 50) / 5) * a.tilt), tb = a.tempt ? temptBonus() : 0, low = S.decency < 40 ? -10 : 0;
-  return { total: like + tilt + tb + low, parts: [like && `${like > 0 ? '+' : '−'}20 they ${like > 0 ? 'like' : 'hate'} that`, tilt && `${tilt > 0 ? '+' : '−'}${Math.abs(tilt)} Airhead`, tb && `+${tb} bust`, low && '−10 low decency'].filter(Boolean) };
+  const rb = repBonus(kind);
+  return { total: like + tilt + tb + low + rb.total, parts: [...rb.parts, like && `${like > 0 ? '+' : '−'}20 they ${like > 0 ? 'like' : 'hate'} that`, tilt && `${tilt > 0 ? '+' : '−'}${Math.abs(tilt)} Airhead`, tb && `+${tb} bust`, low && '−10 low decency'].filter(Boolean) };
 }
 function meet(kind) {
   const id = S.meet; if (!id || !APPROACH[kind]) return;
   const c = castOf(id), a = APPROACH[kind], rec = npcOf(id), b = meetBonus(kind);
-  const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts, hidden: true });
+  const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts });
+  if (a.tempt) conduct('lewd', 1);
   rec.met = true; rec.rapport = Math.max(0, Math.min(100, 20 + { crit: 35, hit: 22, miss: 6, fumble: -8 }[r.degree])); saveNpc(); S.meet = null;
   note(`${c.name}: rapport ${rec.rapport} (${tierOf(rec.rapport)})`);
-  post({ who: 'me', dice: `[d100 ${r.roll}${S.dbgTop ? ` vs ${r.pct}` : ''}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
+  post({ who: 'me', dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
   post({ who: 'her', say: r.success ? c.warm : c.cold, spoken: true, fx: [r.success ? `${c.name} warms to you` : `${c.name} is not sure about you`] });
   if (r.degree === 'fumble') decency(-4, 'a first impression gone wrong');
   if (r.success) grow(S.path === 'warrior' ? 20 : a.tempt && S.path === 'rogue' ? 12 : 0, `meeting ${c.name}`);
@@ -1220,27 +1247,6 @@ const STAND_SAY = {
   persuade: ['You explain, earnestly and at length, why nobody here wants this. Somewhere in the third minute they agree just to make it stop.', 'You open with "Now, listen." They do not.'],
   tempt: ['You smile, the armor catches the light, and three of them forget what they were holding. One of them pays you to go away happy.', 'You strike a pose. Your foot finds the only loose stone for a mile.'],
   run: ['You run. The sword steers. Against all odds it steers the right way.', 'You turn to run and the cloak decides to stay.'] };
-function startStandoff(why, encId) {
-  const all = DATA.encounters.encounters, pool = all.filter((x) => x.id !== 'hoard_drake' && x.id !== 'horde_at_the_gate'), safe = placeNow().zone === 'safe';
-  const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
-  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level: Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) }; S.mode = 'combat'; S.spot = null;
-  post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : enc.text ?? 'They have seen you.'} You cannot walk on: fight, talk them down, tempt them, or run.` });
-  pop('l', 'COMBAT', 'var(--crit)');
-}
-function standoffAct(kind) {
-  const so = S.standoff; if (!so) return;
-  const begin = () => { S.standoff = null; startBattle({ encounter: so.id, level: so.level }); };
-  if (kind === 'fight') return begin();
-  const stat = { persuade: 'WIL', tempt: 'LCK', run: 'AGI' }[kind], label = { persuade: 'Persuade', tempt: 'Tempt', run: 'Run' }[kind]; if (!stat) return;
-  const tb = kind === 'tempt' ? temptBonus() : 0, r = rollCheck({ title: `${label} · ${so.name}`, stat, dc: dcFor(so.level), bonus: tb, parts: tb ? [`+${tb} bust`] : [] });
-  const dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
-  if (!r.success) { const fx = applyFx({ stress: kind === 'tempt' ? 5 : 4 }, `${label} failed`); if (r.degree === 'fumble') decency(-4, `${label} fumbled`); post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][1], fx }); return begin(); }
-  S.standoff = null; S.mode = 'travel'; order(areaOf(placeNow()), kind === 'persuade' ? 5 : 2, `${label} worked`);
-  const fx = applyFx(kind === 'persuade' ? { exp: 0.04 } : kind === 'tempt' ? { gold: 6, airhead: 5, grow: 12, growPath: 'rogue' } : { stress: 2 }, label);
-  post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][0], fx });
-  if (kind === 'run') { useStam(8, 'running'); if (S.prev && S.prev !== S.place && !S.fallen) { setPlace(S.prev); S.them = freshThem(); } }
-  post({ who: 'sys', dice: `<b>TRAVELLING</b> · no fight · ${esc(placeNow().name)}`, tone: 'virtue' });
-}
 function fallDown() {
   S.fallen = true; S.spot = null; decency(-6, 'fell over in public');
   post({ who: 'sys', plate: 'Out of stamina', dice: '<b>DOWN</b> · stamina 0', tone: 'crit', say: 'Your legs file a complaint and the armor seconds it. You are on the ground, and getting up is going to take willpower.' }); pop('l', 'DOWN', 'var(--crit)');
@@ -1256,6 +1262,7 @@ function getUp() {
 function afterFight(won, r) {
   if (won && r?.gold) gainGold(r.gold, 'spoils');
   if (won && S.path === 'warrior') grow(15, 'a fight won');
+  if (won) { if (S.fightTag?.job) job('a guild hunt'); else rep(3, 'a fight won'); }
   if (!won) decency(-10, 'carried out of a fight');
   const area = S.fightTag?.area ?? areaOf(placeNow()); order(area, won ? 8 : -6, won ? 'a fight won' : 'a fight lost'); if (won && S.fightTag?.secure) secure(area);
   S.afterStam = won ? 15 : Math.max(1, S.stam - 5);
@@ -1282,7 +1289,7 @@ function doAct(id) {
   }
   if (id === 'explore') return explore();
   if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
-  if (id === 'hunt') { const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
+  if (id === 'hunt') { S.fightTag = { area: areaOf(here), job: here.id === 'guild' }; const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
   if (id === 'study') { S.used[id] = true; passTime(120); useStam(4, 'study'); const fx = applyFx({ airhead: -15, exp: 0.05, grow: 15, growPath: 'mage' }, 'Study'); return post({ who: 'me', plate: 'Study', dice: '[no roll] Two hours with a book', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.', fx }); }
   if (id === 'soak') { S.used[id] = true; passTime(60); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
 }
@@ -1291,8 +1298,8 @@ function travelGrid() {
   const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
   const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
   if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy')), 'primary');
-  if (S.standoff) { const dc = dcFor(S.standoff.level); return cell('so:fight', 'Fight', 'a real fight, alone', 'primary') + cell('so:persuade', 'Persuade', odds('WIL', dc)) + cell('so:tempt', 'Tempt', odds('LCK', dc, temptBonus())) + cell('so:run', 'Run', odds('AGI', dc)) + own; }
-  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, S.dbgTop ? odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total) : `${STAT_INFO[a.stat].name} · ?`, i === 0 ? 'primary' : '')).join('') + own + exitCells(here);
+  if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; return cell('so:strike', 'Strike', `${odds('STR', dc, rb('strike'))} · their nerve −25`, 'primary') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
+  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total), i === 0 ? 'primary' : '')).join('') + own + exitCells(here);
   const closed = !openNow(here.hours);
   if (S.spot) { const spot = (SPOTS[here.id] ?? []).find((s) => s.id === S.spot);
     return spot.opts.map((o, i) => o.buy
@@ -1307,8 +1314,8 @@ function travelGrid() {
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
-  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
-    <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''}</p></div>
+  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation · ${repLabel()}`, S.rep, 100, 'var(--mint)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
+    <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''} ${{ Heroine: 'The town thinks she is a heroine.', Knight: 'The town thinks she is a decent knight.', 'Town scandal': 'The town is gossiping about her. Do some guild work.', Villain: 'The town is afraid of her. Do some guild work.', Layabout: 'The town is not sure what she is for. Do some guild work.' }[repLabel()]}</p></div>
     <div class="over"><h3>Purse and satchel</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0}</span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>`;
 }
 
@@ -1355,12 +1362,12 @@ function renderDebugger() {
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
     <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · rapport ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
-    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p></div>
+    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>reputation ${S.rep} (${repLabel()}) · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     <div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
 }
 /* ---------- the left panel: tabs over her bars, settings and save under them ---------- */
-function chem(delta, why) { if (!delta) return; const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+function chem(delta, why) { if (!delta) return; if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
   if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
 function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
 function bioTab() {
@@ -1378,13 +1385,13 @@ function settingsBlock() {
   const tog = (key, label, on) => `<button class="sm${on ? '' : ' quiet'}" type="button" data-set="${key}" aria-pressed="${on}">${label}: ${on ? 'on' : 'off'}</button>`;
   return `<div class="over"><h3>Settings</h3><div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
       <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
-      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}</div></div>
+      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}</div></div>
     <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
 }
 function settingClick(key) {
   if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
   if (key === 'import') { try { const data = JSON.parse($('saveBox').value); for (const [k, v] of Object.entries(data)) if (k.startsWith('oops-') && typeof v === 'string') localStorage.setItem(k, v); location.reload(); } catch { post({ who: 'sys', dice: '[save] That did not read as a save. Paste the whole thing.' }); } return; }
-  if (!['dbgTop', 'debug', 'party', 'aiThoughts'].includes(key)) return;
+  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights'].includes(key)) return;
   S[key] = !S[key]; store.set(key, S[key]);
 }
 
@@ -1427,7 +1434,7 @@ function order(area, delta, why) {
   if (S.order[area] !== was) note(`${AREAS[area].name}: order ${delta > 0 ? '+' : '−'}${Math.abs(S.order[area] - was)} · ${why}`);
 }
 function secure(area) {
-  if (area === 'city' || S.secured[area]) return; S.secured[area] = true; store.set('secured', S.secured); order(area, 30, 'the stronghold fell');
+  if (area === 'city' || S.secured[area]) return; S.secured[area] = true; store.set('secured', S.secured); order(area, 30, 'the stronghold fell'); rep(15, 'a stronghold broken');
   post({ who: 'sys', plate: AREAS[area].name, dice: `<b>SECURED</b> · ${esc(AREAS[area].name)} · fights there are far rarer now`, tone: 'virtue', say: 'Word goes round faster than you can walk: the knight in the gold armor did it. Probably by accident. It still counts.' });
   pop('l', 'SECURED', 'var(--mint)');
 }
@@ -1462,7 +1469,7 @@ function knightAct(id) { // the things only the outer domains offer
     S.used[id] = true; passTime(30); useStam(6, 'the stockade gate'); if (S.fallen) return;
     const r = rollCheck({ title: 'The Stockade · Open the gate', stat: 'LCK', dc: dcFor(S.level, 'hard') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Open the gate`;
     if (!r.success) { post({ who: 'me', plate: 'The Stockade', dice, tone: r.degree, say: 'You try the lock with the sword. The sword tries the alarm bell.' }); return startStandoff('the guards heard the bell'); }
-    order(area, 10, 'captives freed'); const fx = applyFx({ exp: 0.06, decency: 5, stress: -8 }, 'captives freed');
+    order(area, 10, 'captives freed'); job('captives freed'); const fx = applyFx({ exp: 0.06, decency: 5, stress: -8 }, 'captives freed');
     return post({ who: 'me', plate: 'The Stockade', dice, tone: r.degree, say: 'You lean on the gate to think and the whole rotten hinge gives way. Forty people walk out past you into the trees. One of them salutes.', fx: [`${AREAS[area].name}: order +10`, ...fx] });
   }
   if (id === 'camp') {
@@ -1474,35 +1481,145 @@ function knightAct(id) { // the things only the outer domains offer
 }
 const actLabel = (id, here) => (id === 'boss' ? `Challenge ${DATA.bosses.bosses.find((x) => x.id === here.boss)?.name.split(' ')[0] ?? 'the boss'}` : id === 'explore' && areaOf(here) !== 'city' ? 'Patrol' : ACTS[id].label);
 /* ---------- the left panel as her sheet ---------- */
-function rpgTab(h) {
-  const p = PATHS[S.path], f = (k, v) => `<div class="fcell"><span>${k}</span><b>${v}</b></div>`, have = DATA.valerie.skills.filter((s) => s.unlock <= S.level).sort((a, b) => a.unlock - b.unlock);
-  return `<div class="fgrid">${f('Class', 'Klutz Knight')}${f('Level', h.level)}${f('XP', `${n(S.exp)} / ${n(needExp())}`)}${f('Path', `${esc(p.name)} · ${esc(p.cls)}`)}${f('Purse', `${n(S.gold)} gold`)}${f('Training', `${S.points} point${S.points === 1 ? '' : 's'} to spend`)}</div>
-    <p class="lbl">Attributes · against the norm for her level</p>
-    <div class="abox">${STAT_KEYS.map((k) => { const v = effectiveStat(h, k), off = v - __m.stats.benchmarkStat(h.level);
-      return `<div class="${v < h.stats[k] ? 'cut' : ''}" title="${esc(STAT_INFO[k].drives)}"><span>${STAT_INFO[k].name}</span><b>${off >= 0 ? '+' : '−'}${n(Math.abs(off))}</b><small>${n(v)}</small></div>`; }).join('')}</div>
-    <p class="lbl">Moves she has · ${have.length}</p><ul class="moves">${have.map((s) => `<li><b>${esc(s.name)}</b><span>${s.cost?.mp ? `${n(s.cost.mp)} MP` : s.cost?.limit ? `${s.cost.limit} MCE` : 'free'}</span><small>${esc(s.text ?? '')}</small></li>`).join('')}</ul>`;
-}
 function momentsTab() {
   const card = (m) => `<div class="mcard"><b>${esc(m.title)}<i>${'●'.repeat(Math.min(3, m.imp ?? 1))}${'○'.repeat(Math.max(0, 3 - (m.imp ?? 1)))}</i></b><p>${esc(m.t)}</p>${(m.tags ?? []).length ? `<div class="chips">${m.tags.map((t) => `<span>${esc(t)}</span>`).join('')}</div>` : ''}</div>`;
   const mine = events.filter((e) => doneQuests.has(e.id)).map((e) => ({ title: e.title, t: e.t, tags: ['this run'], imp: 2 })), old = DATA.card?.moments ?? [];
   return `${mine.length ? `<p class="lbl">This run · ${mine.length}</p>${mine.map(card).join('')}` : '<p>Nothing yet this run. Quests you finish land here.</p>'}${old.length ? `<p class="lbl">Before you arrived</p>${old.map(card).join('')}` : ''}`;
 }
 function leftPanel(h, top, gauge, band, locked) {
-  const tabs = [['stats', 'Overview'], ['rpg', 'RPG'], ['bio', 'Bio'], ['spicy', 'Spicy'], ['moments', 'Moments'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'stats';
+  const tabs = [['stats', 'Overview'], ['rpg', 'RPG'], ['bio', 'Bio'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'stats';
   const body = tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
     : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
-  const look = S.custom[S.lookL] ?? LOOKS.find((l) => l.id === S.lookL) ?? LOOKS[0], flip = S.flips[S.lookL] ? ' class="flip"' : '';
-  const pic = !look.src ? '' : look.video ? `<video src="${esc(look.src)}"${flip} autoplay muted loop playsinline></video>` : `<img src="${esc(look.src)}"${flip} alt="">`;
-  return `<div class="sheet"><figure class="sheet-pic" aria-hidden="true">${pic}<figcaption>${heroName}</figcaption></figure><div class="sheet-body"><div class="sheet-h"><div><h2>${heroName}</h2><p class="role">Klutz Knight</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
+  return `<div class="sheet"><div class="sheet-body"><div class="sheet-h"><div><h2>${heroName}</h2><p class="role">Klutz Knight</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
     <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
       <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}></div>
     ${emo(h, true)}
     <div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
-    ${body}</div></div>`;
+    ${body}
+    ${underTabs()}</div></div>`;
 }
 function exitCells(here) {
   return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
     return `<button class="go" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('')}</div>`;
+}
+/* ---------- reputation: what the town says about her ---------- */
+function repLabel() { return S.rep >= 70 ? 'Heroine' : S.rep >= 35 ? 'Knight' : S.lewd > S.mean && S.lewd > 0 ? 'Town scandal' : S.mean > 0 ? 'Villain' : 'Layabout'; }
+function rep(delta, why) { if (!delta) return; const was = S.rep; S.rep = Math.max(0, Math.min(100, S.rep + delta)); store.set('rep', S.rep); if (S.rep !== was) note(`reputation ${delta > 0 ? '+' : '−'}${Math.abs(S.rep - was)} · ${why}`); }
+function job(why) { S.jobDay = dayNow(); store.set('jobDay', S.jobDay); rep(6, why); }
+function conduct(kind, amount = 1) { S[kind] = Math.max(0, (S[kind] ?? 0) + amount); store.set(kind, S[kind]); }
+function repBonus(kind) { // gossip changes how people take her. Each label helps one thing and hurts another.
+  const l = repLabel(), parts = []; let total = 0; const add = (n, t) => { total += n; parts.push(`${n > 0 ? '+' : '−'}${Math.abs(n)} ${t}`); };
+  if (l === 'Heroine') { if (['friendly', 'flirt', 'bold', 'clever', 'persuade'].includes(kind)) add(5, 'they have heard of her'); }
+  if (l === 'Villain') { if (['friendly', 'flirt', 'clever'].includes(kind)) add(-10, 'they have heard things'); if (['persuade', 'strike', 'bold'].includes(kind)) add(10, 'they are a little afraid'); }
+  if (l === 'Town scandal') { if (['friendly', 'clever', 'bold', 'persuade'].includes(kind)) add(-10, 'they have heard the gossip'); if (['flirt', 'sway'].includes(kind)) add(10, 'the gossip helps'); }
+  if (l === 'Layabout') { if (['friendly', 'bold', 'persuade'].includes(kind)) add(-5, 'nobody knows what she is for'); }
+  return { total, parts };
+}
+function newDay(day) { // every morning the town checks whether the knight did any guild work
+  if ((S.jobDay ?? 0) < day - 1) rep(-4, 'no guild work yesterday');
+  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd);
+}
+
+/* ---------- hecklers: a crowd with nerve, not a stat block ---------- */
+const HECKLES = { city: ['mental', 'mental', 'lewd', 'lewd', 'thrown', 'melee'], forest: ['melee', 'melee', 'thrown', 'mental'], castle: ['melee', 'thrown', 'mental', 'mental'], academy: ['mental', 'mental', 'mental', 'thrown', 'lewd'], camps: ['melee', 'melee', 'thrown', 'lewd', 'mental'] };
+const HECKLE_SAY = {
+  strike: ['Happenstance comes round flat-side first and takes two of them off their feet. The rest reconsider.', 'You swing. The sword swings you. Everyone watches you go past.'],
+  sway: ['You shift your weight, the armor catches the light, and the whole front row forgets what they were shouting.', 'You go for a sway and get a wobble. Somebody laughs. It is not the good kind.'],
+  persuade: ['You tell them, kindly and at length, that they are better than this. Several of them go home to think about it.', 'You open with "Now, listen." They do not.'],
+  run: ['You run. The sword steers. Against all odds it steers the right way.', 'You turn to run and the cloak decides to stay.'],
+  melee: { crit: 'A shove from behind, timed for the one moment you were off balance. You go down on one knee.', hit: 'Somebody shoulders into you, hard. The armor rings and you take a step you did not plan.', miss: 'A shove meets the place you were standing before you tripped out of it.', fumble: 'One of them lunges, misses, and takes two of his friends down with him.', bounce: 'It glances off the breastplate and back into the crowd.' },
+  thrown: { crit: 'A thrown cup catches you square on the ear. It was a heavy cup.', hit: 'Something sails out of the crowd and thumps off your pauldron.', miss: 'A turnip goes by. You were bending down to look at a beetle.', fumble: 'The thrower winds up, lets go early, and hits his own side.', bounce: 'It hits the breastplate dead centre, reconsiders, and goes home at speed. Somebody in the crowd yelps.' },
+  mental: ['"Call that a knight?" "My nan stands straighter!" It should not sting. It stings.', 'They are chanting something about the mill fire, and not the version you tell.'],
+  lewd: ['Wolf-whistles, and a very detailed suggestion about what the armor is for. Your ears go pink.', 'Somebody yells that the breastplate deserves its own title. People cheer. Not for you, exactly.'],
+};
+function startStandoff(why, encId) {
+  const all = DATA.encounters.encounters, pool = all.filter((x) => x.id !== 'hoard_drake' && x.id !== 'horde_at_the_gate'), safe = placeNow().zone === 'safe';
+  const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
+  const level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
+  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level, nerve: 100, round: 1, brace: false, exposed: false,
+    foe: makeCombatant({ id: 'heckler', name: safe ? 'Opportunists' : enc.name, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
+  S.mode = 'combat'; S.spot = null;
+  post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
+  pop('l', 'COMBAT', 'var(--crit)');
+}
+function heckle(so) {
+  const pool = HECKLES[areaOf(placeNow())] ?? HECKLES.city, kind = pool[Math.floor(Math.random() * pool.length)], soft = so.brace ? 0.5 : 1, hard = so.exposed ? 1.5 : 1; const braced = so.brace; so.brace = false; so.exposed = false;
+  if (kind === 'melee' || kind === 'thrown') {
+    const sk = kind === 'melee' ? CLASSES.warrior.skill : CLASSES.rogue.skill, roll = d(), r = VC.enemyAttacksValerie(so.foe, S.hero, sk, fixedRolls([roll, d()]), { guarding: braced }), fx = [];
+    const dmg = Math.round((r.damage ?? 0) * hard);
+    if (dmg) { S.hero = { ...S.hero, hp: Math.max(0, S.hero.hp - dmg) }; fx.push(`HP −${pctOf(dmg, S.hero.maxHp)}`); bump('l', 'hit'); pop('l', `−${pctOf(dmg, S.hero.maxHp)}`, r.outcome === 'crit' ? 'var(--crit)' : 'var(--gold)'); }
+    if (r.reflected || r.selfBind) { so.nerve = Math.max(0, so.nerve - 15); fx.push('their nerve −15'); pop('l', r.reflected ? 'BOUNCE' : 'OOPS', 'var(--cyan)'); }
+    if (r.outcome === 'miss') { bump('l', 'hop'); pop('l', 'MISS', 'var(--muted)'); }
+    if (r.limitGain) { S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + r.limitGain) }; fx.push(`MCE +${r.limitGain}`); }
+    S.lastRoll = { title: `${so.name} · ${kind === 'melee' ? 'a shove' : 'something thrown'}`, pct: r.hitPct, roll, degree: r.outcome, bands: { pct: r.hitPct, critPct: r.critPct, fumbleFrom: r.fumbleFrom }, math: `they hit on ${r.hitPct} or less · crit on ${r.critPct} or less · fumble on ${r.fumbleFrom}+ · rolled ${roll}` }; S.trayFresh = true;
+    return post({ who: 'her', plate: so.name, dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
+  }
+  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard)) }, 'jeering'); return post({ who: 'her', plate: so.name, dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
+  const cut = Math.max(1, Math.round(4 * soft * hard)); decency(-cut, 'catcalls'); chem(6, 'catcalls'); conduct('lewd', 0.5);
+  const fx = applyFx({ stress: 3 }, 'catcalls'); post({ who: 'her', plate: so.name, dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [`decency −${cut}`, 'chemistry +6', ...fx] });
+}
+function endStandoff(how) {
+  const so = S.standoff, area = areaOf(placeNow()); S.standoff = null; S.mode = 'travel'; passTime(20);
+  if (how === 'won') { order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
+  if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
+  if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
+  decency(-10, 'beaten by a crowd'); rep(-3, 'beaten by a crowd'); order(area, -4, 'hecklers won'); S.down = S.hero.hp <= 0;
+  post({ who: 'sys', plate: 'Combat over', dice: `<b>THEY WON</b> · ${esc(so.name)}`, tone: 'crit', say: 'They take your coin purse off its hook, think better of it when they feel how light it is, and leave you sitting in the road.' });
+}
+function standoffAct(kind) {
+  const so = S.standoff; if (!so) return;
+  if (kind === 'fight') { S.standoff = null; return startBattle({ encounter: so.id, level: so.level }); }
+  let ended = null;
+  if (kind === 'brace') { so.brace = true; useStam(-5, 'bracing'); post({ who: 'me', dice: '[no roll] Brace', say: 'You set your feet and get the shield arm up. Whatever comes next, half of it stays on the armor.' }); }
+  else {
+    const stat = { strike: 'STR', sway: 'LCK', persuade: 'WIL', run: 'AGI' }[kind], label = { strike: 'Strike', sway: 'Sway', persuade: 'Persuade', run: 'Run' }[kind]; if (!stat) return;
+    const tb = kind === 'sway' ? temptBonus() : 0, rb = repBonus(kind);
+    const r = rollCheck({ title: `${label} · ${so.name}`, stat, dc: dcFor(so.level), bonus: tb + rb.total, parts: [tb && `+${tb} bust`, ...rb.parts].filter(Boolean) }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
+    if (kind === 'run') { if (r.success) ended = 'ran'; else so.exposed = true; post({ who: 'me', dice, tone: r.degree, say: HECKLE_SAY.run[r.success ? 0 : 1], fx: r.success ? [] : ['their next one lands harder'] }); useStam(6, 'running'); }
+    else {
+      const hit = r.degree === 'crit' ? { strike: 45, sway: 55, persuade: 100 }[kind] : r.success ? { strike: 25, sway: 30, persuade: 30 }[kind] : 0;
+      so.nerve = Math.max(0, so.nerve - hit);
+      if (kind === 'strike') conduct('mean', 1);
+      if (kind === 'sway') { conduct('lewd', 1); if (r.success) chem(4, 'swaying'); }
+      if (r.degree === 'fumble') decency(-4, `${label} fumbled`);
+      post({ who: 'me', dice, tone: r.degree, say: HECKLE_SAY[kind][r.success ? 0 : 1], fx: [hit ? `their nerve −${hit}` : 'their nerve holds'] });
+      if (hit) pop('f', `−${hit}`, 'var(--pink)');
+      if (so.nerve <= 0) ended = 'won';
+      useStam(kind === 'strike' ? 4 : 2, label);
+    }
+  }
+  if (!ended && S.fallen) ended = 'lost';
+  if (!ended) heckle(so);
+  if (!ended && so.nerve <= 0) ended = 'won';
+  if (!ended && S.hero.hp <= 0) ended = 'lost';
+  if (!ended && so.round >= 8) ended = 'bored';
+  if (ended) return endStandoff(ended);
+  so.round += 1;
+  if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
+}
+
+/* ---------- the sheet: what opens under the tabs ---------- */
+function rpgTab(h) {
+  const p = PATHS[S.path], f = (k, v) => `<div class="fcell"><span>${k}</span><b>${v}</b></div>`, have = DATA.valerie.skills.filter((s) => s.unlock <= S.level).sort((a, b) => a.unlock - b.unlock);
+  const gear = String(DATA.card?.profile?.rpg_gear ?? '').split(/,\s+(?![^(]*\))/).map((x) => x.trim()).filter(Boolean);
+  return `<div class="fgrid">${f('Class', 'Klutz Knight')}${f('Level', h.level)}${f('XP', `${n(S.exp)} / ${n(needExp())}`)}${f('Path', `${esc(p.name)} · ${esc(p.cls)}`)}${f('Standing', `${repLabel()} · ${S.rep}`)}${f('Training', `${S.points} point${S.points === 1 ? '' : 's'} to spend`)}</div>
+    <p class="lbl">Attributes · against the norm for her level</p>
+    <div class="abox">${STAT_KEYS.map((k) => { const v = effectiveStat(h, k), off = v - __m.stats.benchmarkStat(h.level);
+      return `<div class="${v < h.stats[k] ? 'cut' : ''}" title="${esc(STAT_INFO[k].drives)}"><span>${STAT_INFO[k].name}</span><b>${off >= 0 ? '+' : '−'}${n(Math.abs(off))}</b><small>${n(v)}</small></div>`; }).join('')}</div>
+    <p class="quick"><span>♥ HP <b>${n(h.hp)}</b></span><span>◈ Mana <b>${n(h.mp)}</b></span><span>⚡ Stamina <b>${S.stam}</b></span><span>★ Tempt <b>+${temptBonus()}</b></span></p>
+    <p class="lbl">Accidents · always on</p><div class="pills">${DATA.valerie.abilities.map((a) => `<span title="${esc(a.rule ?? a.gm ?? '')}">${esc(a.name)}</span>`).join('')}</div>
+    <p class="lbl">Moves · ${have.length}</p><ul class="feats">${have.map((s) => `<li><b>${esc(s.name)}</b> ${esc(s.text ?? '')}</li>`).join('')}</ul>
+    ${gear.length ? `<p class="lbl">Equipment</p><div class="pills gear">${gear.map((g) => `<span>${esc(g)}</span>`).join('')}</div>` : ''}`;
+}
+function underTabs() {
+  const c = DATA.card ?? {}, tabs = [['body', 'Body'], ['pers', 'Personality'], ['rel', 'Relationships'], ['moments', 'Moments']], open = S.ltab2;
+  const f = (k, v) => `<div class="fcell"><span>${esc(k)}</span><b>${esc(v)}</b></div>`, card = (title, text, sub) => `<div class="mcard"><b>${esc(title)}${sub ? `<i>${esc(sub)}</i>` : ''}</b><p>${esc(text)}</p></div>`;
+  const met = Object.keys(CAST).filter((id) => S.npc[id]?.met);
+  const body = open === 'body' ? `<div class="fgrid">${(c.body?.stats ?? []).map((x) => f(x.k, x.v)).join('')}</div>${(c.body?.notes ?? []).map((x) => card(x.k, x.v)).join('')}`
+    : open === 'pers' ? `<p class="lbl">Resting mood · ${esc(c.emotions?.resting ?? 'Cheerful')}</p><div class="pills">${[...(c.emotions?.often ?? []), ...(c.emotions?.rare ?? [])].map((e) => `<span>${esc(e)}</span>`).join('')}</div>${(c.noticed?.pers ?? []).map((x) => card(x.t, `Noticed by ${x.by}.`)).join('')}`
+    : open === 'rel' ? `${met.length ? `<p class="lbl">People you have met here</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}${(c.people ?? []).length ? `<p class="lbl">Her party, from her sheet</p>${c.people.map((x) => card(x.name, x.dyn ?? '', x.rel)).join('')}` : ''}`
+    : open === 'moments' ? momentsTab() : '';
+  return `<div class="rtabs under" role="tablist" aria-label="More about her">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab2="${id}" aria-selected="${id === open}">${name}</button>`).join('')}</div>${body}`;
 }
 function renderHuds() {
   const h = S.hero, t = S.them;
@@ -1688,7 +1805,7 @@ function chooseEvent(evId, choiceId) {
   }
   const firstTime = !doneQuests.has(evId);
   S.hero = hero; doneQuests.add(evId); store.set('quests', [...doneQuests]);
-  if (firstTime) { const xp = Math.round(needExp() * 0.15); fx.push(`${n(xp)} EXP`); gainExp(xp, ev.title); }
+  if (firstTime) { const xp = Math.round(needExp() * 0.15); fx.push(`${n(xp)} EXP`); gainExp(xp, ev.title); job(`quest: ${ev.title}`); }
   const good = r.branch === 'success' || r.branch === 'crit';
   post({ who: 'me', dice: r.roll === null ? `[no roll] ${esc(choice.label)}` : `[d100 ${r.roll} vs ${pct}: <b>${r.branch}</b>] ${esc(choice.label)}`, tone: r.roll === null ? null : good ? 'hit' : 'fumble', say: r.text, fx });
   if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
@@ -1780,7 +1897,9 @@ function render() {
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
   $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : `Travelling · ${placeNow().short}`;
-  if (S.battle) renderBattleRow(); else $('foe').hidden = true;
+  if (S.battle) renderBattleRow();
+  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<small>their nerve · round ${Math.min(8, so.round)} of 8</small><b>${esc(so.name)}</b>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
+  else $('foe').hidden = true;
   $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
   $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
   $('s-wing').setAttribute('aria-pressed', S.stance === 'wing'); $('s-think').setAttribute('aria-pressed', S.stance === 'think');
@@ -1835,7 +1954,7 @@ function debugClick(what) {
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {} }); doneQuests.clear(); seen = 0; drawn = {};
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
     setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
@@ -1843,6 +1962,7 @@ function debugClick(what) {
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ltab2) { S.ltab2 = S.ltab2 === b.dataset.ltab2 ? null : b.dataset.ltab2; return render(); }
   if (b.dataset.ltab) { S.ltab = b.dataset.ltab; store.set('ltab', S.ltab); return render(); }
   if (b.dataset.set) { settingClick(b.dataset.set); return render(); }
   if (b.id === 'dbgBtn') { settingClick('dbgTop'); return render(); }
@@ -1892,9 +2012,9 @@ for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
   const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') document.body.classList.toggle('sheetL', v >= 544); };
   const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') document.body.classList.toggle('sheetL', saved >= 544); }
-  grip.addEventListener('pointerdown', (e) => { grip.setPointerCapture(e.pointerId); grip.classList.add('on');
+  grip.addEventListener('pointerdown', (e) => { grip.setPointerCapture(e.pointerId); grip.classList.add('on'); document.body.classList.add('dragging');
     const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
-    const up = () => { grip.classList.remove('on'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); };
+    const up = () => { grip.classList.remove('on'); document.body.classList.remove('dragging'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); };
     grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); });
   grip.addEventListener('keydown', (e) => { const now = parseInt(getComputedStyle(root).getPropertyValue(key), 10) || 224; const step = (e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0) * (side === 'L' ? 1 : -1); if (step) { e.preventDefault(); apply(now + step); } });
 }
@@ -1903,7 +2023,7 @@ $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}
 setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'gates') : 'gates');
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
-reset(false);
+reset(false); $('sprL').dataset.name = heroName;
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
