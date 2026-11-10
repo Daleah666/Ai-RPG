@@ -1,0 +1,47 @@
+{
+  "id": "lumi",
+  "name": "Lumi Starling",
+  "title": "the Summoned Hero Mage",
+  "rarity": 4,
+  "class": "Mage",
+  "trope": "The isekai girl with a cheat-level grimoire",
+  "temper": "Bubbly, brave, a little overconfident and very affectionate",
+  "lore": "A normal girl until an accident landed her in a fantasy world with a grimoire that levels up when she is happy. The kingdom thinks she is a legendary hero. She thinks everyone here is unfairly good-looking.",
+  "want": "to be the hero the summoning promised.",
+  "cost": "she says yes to every quest and reads the warning afterwards.",
+  "secret": "Her grimoire only levels up when she is happy. On the bad days she has been faking the smile so it does not notice.",
+  "body": {
+    "height": "5'4\"",
+    "build": "Bouncy; twin tails and a book bigger than her head",
+    "bust": 8,
+    "hips": 7
+  },
+  "look": "pink curly pigtails, freckles, green eyes, warm tan skin, white-and-teal cropped hero coat, glowing gold grimoire.",
+  "lines": {
+    "meet": "Wait, I got reincarnated as THIS?! Okay, stats maxed, let's go save the world, bestie! ...you're coming too, right? 🥺",
+    "flirty": "My grimoire says my charm stat is 99. Wanna test it? 😘",
+    "battle": "Golden Rune Barrage! Nobody hurts my friends!",
+    "soft": "I-I didn't mean to cast a love spell! Probably! Maybe a little!"
+  },
+  "barks": [
+    "Stats check! ...Still cute.",
+    "Grimoire says today is a good day. It says that every day."
+  ],
+  "world": {
+    "side": "ally",
+    "poses": "sax",
+    "start": "guild",
+    "zones": [
+      "safe",
+      "risky"
+    ],
+    "routine": [
+      "guild",
+      "square",
+      "shop",
+      "square",
+      "tavern",
+      "square"
+    ]
+  }
+}

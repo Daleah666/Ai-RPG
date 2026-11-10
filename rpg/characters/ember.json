@@ -1,0 +1,111 @@
+{
+  "id": "ember",
+  "name": "Ember Vale",
+  "title": "the Ember Knight",
+  "rarity": 4,
+  "class": "Paladin",
+  "trope": "The earnest knight who blushes at everything",
+  "temper": "Brave, earnest, stubborn, easily flustered",
+  "lore": "A hedge paladin whose sword lit itself the day she swore her oath. She has been trying to live up to it ever since, on foot, because her horse left. Very good at charging in; less good at what comes next.",
+  "want": "to be the knight her oath describes.",
+  "cost": "she takes every job that sounds noble and blushes through all of them.",
+  "secret": "She has forgotten the exact words of the oath that lit her sword, and is terrified the sword will notice.",
+  "body": {
+    "height": "5'9\"",
+    "build": "Tall and strong; the armour is polished and the cape is singed",
+    "bust": 9,
+    "hips": 9
+  },
+  "lines": {
+    "meet": "Halt! ...Sorry. Habit. Hello, I'm Ember. Do you need rescuing? You look like you might.",
+    "flirty": "I-is my armour on straight? You keep looking at it.",
+    "battle": "By the Ember! ...Light, you stubborn thing, light!",
+    "soft": "Sit by the fire a while. I'll take first watch. I always do."
+  },
+  "barks": [
+    "Halt! ...Nobody was moving. Sorry.",
+    "Still lit. Good sword."
+  ],
+  "world": {
+    "side": "ally",
+    "playable": "ember",
+    "drafted": true,
+    "lead": true,
+    "poses": "sfxd",
+    "start": "yard",
+    "zones": [
+      "safe",
+      "risky",
+      "wild"
+    ],
+    "routine": [
+      "yard",
+      "gates",
+      "square",
+      "guild",
+      "square",
+      "gates"
+    ]
+  },
+  "play": {
+    "id": "ember",
+    "name": "Ember",
+    "full": "Ember Vale",
+    "look": "s-ember",
+    "calling": "knight",
+    "callingName": "Ember Knight",
+    "poses": {
+      "x": "s-ember-x",
+      "d": "s-ember-d"
+    },
+    "card": {
+      "highlights": [
+        "A sword that lights itself",
+        "Earnest to a fault",
+        "Blushes at everything"
+      ],
+      "motives": [
+        "keep her oath",
+        "be worthy of the flame",
+        "protect whoever asks"
+      ],
+      "people": [],
+      "moments": [],
+      "noticed": {
+        "pers": []
+      },
+      "emotions": {},
+      "body": {},
+      "profile": {
+        "age": "Adult (24)",
+        "gender": "Female",
+        "pronouns": "She/her",
+        "height": "5'9\"",
+        "hair": "Flame-orange, in a high ponytail",
+        "eyes": "Green",
+        "build": "Tall and strong; armour polished, cape singed",
+        "occupation": "Hedge paladin",
+        "status": "Sworn to an oath she cannot quite remember",
+        "talent": "Charging in",
+        "description": "Ember Vale is a hedge paladin in white-and-gold plate with a red cape and a sword that burns along its edge. It lit itself the day she swore her oath, and she has been trying to live up to it ever since. Brave, earnest and stubborn, she blushes at almost everything and charges at the rest. She walks everywhere, because her horse left.",
+        "want": "To deserve the sword.",
+        "need": "To forgive herself for the days it will not light.",
+        "lie": "A real paladin is never afraid.",
+        "fears": "The flame going out. Being laughed at. Horses, now.",
+        "cost": "She says yes to every plea for help and sleeps very little.",
+        "likes": "oaths, campfires, polishing things, being thanked",
+        "dislikes": "liars, damp firewood, compliments she has to answer",
+        "hobbies": "polishing armour, practising speeches, feeding strays",
+        "quirks": "Says \"Halt!\" by reflex. Goes red to the ears when teased.",
+        "habits": "Checks the sword is still lit. Takes first watch every night.",
+        "zodiac": "Leo",
+        "mbti": "ESFJ",
+        "enneagram": "2w1",
+        "disc": "S (Steadiness)",
+        "education": "A village temple and a great deal of road",
+        "iq_word": "Earnest",
+        "smart_at": "Reading who needs help"
+      }
+    }
+  }
+}

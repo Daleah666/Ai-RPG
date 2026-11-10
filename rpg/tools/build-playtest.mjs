@@ -35,6 +35,18 @@ const read = (name) => {
   return existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')) : null;
 };
 const packsDir = path.join(root, 'events/packs');
+// One file per character in rpg/characters. index.json gives the order; a file it does not name comes after, by name.
+const charDir = path.join(root, 'characters');
+const characters = (() => {
+  if (!existsSync(charDir)) return [];
+  const names = readdirSync(charDir).filter((f) => f.endsWith('.json') && f !== 'index.json').map((f) => f.slice(0, -5));
+  const order = existsSync(path.join(charDir, 'index.json')) ? JSON.parse(readFileSync(path.join(charDir, 'index.json'), 'utf8')).order ?? [] : [];
+  return [...order.filter((id) => names.includes(id)), ...names.filter((id) => !order.includes(id)).sort()].map((id) => {
+    const c = JSON.parse(readFileSync(path.join(charDir, `${id}.json`), 'utf8'));
+    if (c.id !== id || !c.name) throw new Error(`characters/${id}.json needs "id": "${id}" and a name`);
+    return c;
+  });
+})();
 const data = {
   valerie: read('valerie'),
   archetypes: read('archetypes'),
@@ -45,6 +57,7 @@ const data = {
   items: read('items'),
   bosses: read('bosses'),
   encounters: read('encounters'),
+  characters,
   packs: readdirSync(packsDir).filter((f) => f.endsWith('.events.json')).map((f) => JSON.parse(readFileSync(path.join(packsDir, f), 'utf8'))),
   modules,
   card: (() => { const f = path.join(root, 'sillytavern/src/valerie.card-profile.json'); if (!existsSync(f)) return null; const c = JSON.parse(readFileSync(f, 'utf8')); return { profile: c.profile, secondary: c.secondary, trackers: c.trackers, moments: c.moments, body: c.body, noticed: c.noticed, emotions: c.emotions, people: c.people, highlights: c.highlights, motives: c.motives, tags: c.tags }; })(),

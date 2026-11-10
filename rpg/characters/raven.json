@@ -1,0 +1,51 @@
+{
+  "id": "raven",
+  "name": "Raven Redfang",
+  "title": "the bandit queen of the Redfangs",
+  "rarity": 4,
+  "class": "Bandit",
+  "trope": "The wild bandit rival who turns ally",
+  "temper": "Loud, wild, greedy, fearless; loyal once she owes you",
+  "lore": "She leads the Redfang crew out of the Crimson Woods and taxes every pretty traveller. Her coin belt jingles, so you hear her coming if she wants you to.",
+  "want": "to owe nobody and be owed by everybody.",
+  "cost": "she keeps a tally on her friends and pays every debt back twice as loud.",
+  "secret": "She bites every coin to test it. Every new crush gets the same test.",
+  "body": {
+    "height": "5'8\"",
+    "build": "Wild hair, loud voice, a coin belt that jingles",
+    "bust": 8,
+    "hips": 9
+  },
+  "look": "Wild long red hair, gold fox eyes, berry lipstick, black leather crop corset, crimson tattered cape, gold coin belt, twin daggers.",
+  "lines": {
+    "meet": "Toll road, sweetheart. Pay up in gold or kisses.",
+    "flirty": "Ooh, you're shiny. I'm gonna steal you.",
+    "battle": "Redfangs, take EVERYTHING!",
+    "soft": "...You saved me. Ugh. Fine, I'm yours now."
+  },
+  "barks": [
+    "Jingle, jingle. That is your purse leaving.",
+    "Toll is double for staring."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 2,
+    "poses": "sfad",
+    "start": "bridge",
+    "range": [
+      "bridge",
+      "road",
+      "hollow"
+    ],
+    "zones": [
+      "wild",
+      "risky"
+    ],
+    "routine": [
+      "bridge",
+      "road",
+      "hollow",
+      "road"
+    ]
+  }
+}

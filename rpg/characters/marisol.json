@@ -1,0 +1,49 @@
+{
+  "id": "marisol",
+  "name": "Queen Marisol Thornecrown",
+  "title": "the thief queen of the Underbazaar",
+  "rarity": 5,
+  "class": "Thief queen",
+  "trope": "The glam villain queen who wants you in her court",
+  "temper": "Regal, possessive, dramatic; generous to anyone she claims",
+  "lore": "She rules the Underbazaar, where every coin in the city ends up sooner or later. She steals crowns for fun and keeps the prettiest adventurers as \"court guests\". Her chain whip is gold-plated, because of course it is.",
+  "want": "a court that stays because it wants to.",
+  "cost": "she commands instead of asking, then wonders why it feels the same.",
+  "secret": "She lets the people she likes win at cards. Roxy owes her a fortune, and she has stopped counting.",
+  "body": {
+    "height": "5'11\"",
+    "build": "Regal; takes up the whole doorway",
+    "bust": 9,
+    "hips": 9
+  },
+  "look": "Long dark glam curls, gold circlet, deep brown skin, golden eyes, plum cape over black-and-gold corset crop top, gold chain whip.",
+  "lines": {
+    "meet": "Kneel, darling. Everyone does eventually.",
+    "flirty": "You look expensive. I'm keeping you.",
+    "battle": "My chain, my rules.",
+    "soft": "Stay in my court tonight. I'll even let you win at cards."
+  },
+  "barks": [
+    "Kneeling is free today, darlings.",
+    "Somebody count my crowns. Again."
+  ],
+  "world": {
+    "side": "rival",
+    "short": "Marisol",
+    "plus": 3,
+    "poses": "sfad",
+    "start": "bar",
+    "range": [
+      "bar",
+      "alley"
+    ],
+    "zones": [
+      "risky",
+      "safe"
+    ],
+    "routine": [
+      "bar",
+      "alley"
+    ]
+  }
+}

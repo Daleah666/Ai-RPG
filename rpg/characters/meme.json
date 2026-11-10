@@ -1,0 +1,81 @@
+{
+  "id": "meme",
+  "name": "Meme",
+  "title": "the Cat Priestess",
+  "rarity": 4,
+  "race": "Catfolk",
+  "class": "Priestess",
+  "trope": "The smug little oracle who has read everything and helps anyway",
+  "temper": "Playful, smug, purrs when she is right",
+  "lore": "Meme keeps the scroll room under the Guild Hall and has read every scroll in Gooseford, twice. She answers questions for a living and for fun, and she is very rarely wrong, which she will mention.",
+  "want": "to be asked.",
+  "cost": "she cannot leave a wrong answer alone, even when nobody wanted the right one.",
+  "drafted": true,
+  "helper": true,
+  "barks": [
+    "Mrrp. Ask me anything. I have read every scroll, twice.",
+    "I know what that number means. Do you?",
+    "*purr* The scrolls say you should drink some water."
+  ],
+  "play": {
+    "id": "meme",
+    "name": "Meme",
+    "full": "Meme",
+    "look": "meme",
+    "calling": "mage",
+    "callingName": "Cat Priestess",
+    "race": "Catfolk",
+    "poses": {
+      "d": "meme-prone"
+    },
+    "card": {
+      "highlights": [
+        "Has read every scroll, twice",
+        "Heals with a purr and a page reference",
+        "Smug when right, soft when you are wrong"
+      ],
+      "motives": [
+        "be asked",
+        "be right",
+        "find a warm windowsill"
+      ],
+      "people": [],
+      "moments": [],
+      "noticed": {
+        "pers": []
+      },
+      "emotions": {},
+      "body": {},
+      "profile": {
+        "age": "Adult",
+        "gender": "Female",
+        "pronouns": "She/her",
+        "height": "5'2\"",
+        "hair": "Honey-blonde and long, under a hood with cat ears",
+        "eyes": "Amber, behind round glasses",
+        "build": "Short and soft; her tail is always moving",
+        "occupation": "Scroll-keeper and priestess",
+        "status": "On loan from the scroll room",
+        "talent": "Knowing where it is written down",
+        "description": "Meme is a cat-eared priestess who keeps the scroll room under the Guild Hall. She has read every scroll in Gooseford twice and answers questions for a living. Out on the road she fights with small, precise spells and patches people up with a purr and a page reference. She is smug about being right and soft about everyone else being wrong.",
+        "want": "To be asked.",
+        "need": "To find out what she thinks when no scroll covers it.",
+        "lie": "If it is not written down, it is not my business.",
+        "fears": "Water. Empty shelves. A question with no answer.",
+        "cost": "She corrects people who did not ask.",
+        "likes": "warm windowsills, footnotes, being scratched behind the ears",
+        "dislikes": "damp, dog-eared pages, being picked up",
+        "hobbies": "alphabetising, napping on open books, knocking small things off desks",
+        "quirks": "Says mrrp. Pushes her glasses up when she is about to be right.",
+        "habits": "Cites her sources. Curls up wherever the sun lands.",
+        "zodiac": "Virgo",
+        "mbti": "INTP",
+        "enneagram": "5w6",
+        "disc": "C (Conscientiousness)",
+        "education": "Every scroll in Gooseford, twice",
+        "iq_word": "Well-read",
+        "smart_at": "Finding the rule that applies"
+      }
+    }
+  }
+}

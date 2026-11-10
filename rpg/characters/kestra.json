@@ -1,0 +1,51 @@
+{
+  "id": "kestra",
+  "name": "Kestra Nightshade",
+  "title": "an assassin of the Quiet Knives",
+  "rarity": 3,
+  "class": "Assassin",
+  "trope": "The assassin who falls for her target",
+  "temper": "Cool, smug and teasing; secretly lonely and clingy once she likes you",
+  "lore": "The Guild of Quiet Knives sent her to steal the summoned hero's heart, literally. She collects one trophy kiss from every mark she lets live.",
+  "want": "to stop being alone without admitting that she is.",
+  "cost": "she follows you about and calls it surveillance.",
+  "secret": "Every killing blow she has missed was on purpose.",
+  "body": {
+    "height": "5'7\"",
+    "build": "Lean and quiet; built to not be there",
+    "bust": 8,
+    "hips": 8
+  },
+  "look": "Black high ponytail with a silver streak, sharp violet eyes, fair skin, black leather assassin crop corset and hood, glowing green poison dagger.",
+  "lines": {
+    "meet": "Shh... you never saw me. But I saw allll of you.",
+    "flirty": "Put your sword down, cutie. I bite softer than my dagger.",
+    "battle": "Blink and you're done, hero.",
+    "soft": "...Fine. I missed on purpose. Don't make it weird."
+  },
+  "barks": [
+    "...You did not see me.",
+    "I was here first. You were just not looking."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 2,
+    "poses": "sfad",
+    "start": "alley",
+    "range": [
+      "alley",
+      "bar",
+      "tavern"
+    ],
+    "zones": [
+      "risky",
+      "safe"
+    ],
+    "routine": [
+      "alley",
+      "bar",
+      "alley",
+      "tavern"
+    ]
+  }
+}

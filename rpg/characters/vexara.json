@@ -1,0 +1,51 @@
+{
+  "id": "vexara",
+  "name": "Vexara Nightveil",
+  "title": "the Void Sorceress",
+  "rarity": 5,
+  "class": "Void mage",
+  "trope": "The scary final boss who is secretly a big softie",
+  "temper": "Smug, dramatic and possessive, fiercely loyal once she likes you",
+  "lore": "Banished to the Void for being \"too much\" for the Mage Academy, she came back with horns, a dark orb and a grudge. Then she got distracted by how cute the heroes were and rather forgot to be evil.",
+  "want": "one person who is not afraid of her.",
+  "cost": "she gets possessive of that person and frightens off the rest.",
+  "secret": "She makes tea for the people she likes, and will deny it to her grave.",
+  "body": {
+    "height": "5'9\"",
+    "build": "Tall, pale and extremely dramatic",
+    "bust": 9,
+    "hips": 8
+  },
+  "look": "black blunt bangs, curled horns, violet eyes, pale skin, black obsidian corset gown with slit, glowing void orb.",
+  "lines": {
+    "meet": "A summoned hero? How adorable~ Kneel... or, actually, come closer. I wanna see if you're as cute up close 💜",
+    "flirty": "Put the sword down, sweetie. I've got way more fun spells than fireball.",
+    "battle": "NOBODY touches my party! Void, swallow them whole!",
+    "soft": "...I made you tea. Don't tell anyone. I have a reputation."
+  },
+  "barks": [
+    "Nobody look at the tea.",
+    "I am being ominous. Do not interrupt."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 4,
+    "poses": "sfax",
+    "start": "quad",
+    "range": [
+      "quad",
+      "lecture",
+      "archive"
+    ],
+    "zones": [
+      "risky",
+      "safe"
+    ],
+    "routine": [
+      "quad",
+      "lecture",
+      "quad",
+      "archive"
+    ]
+  }
+}

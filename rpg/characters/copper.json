@@ -1,0 +1,109 @@
+{
+  "id": "copper",
+  "name": "Pip Copperfinch",
+  "title": "an isekai thief with one broken skill",
+  "rarity": 3,
+  "class": "Thief",
+  "trope": "The isekai girl with a cheat STEAL skill",
+  "temper": "Bubbly, impulsive, chaotic good; giggles when nervous",
+  "lore": "Hit by a truck on her way to a boba shop, she woke up here with a status window and exactly one skill. STEAL is broken: she has stolen a dragon's nap and a king's socks. Roxy calls her \"my lil apprentice\" and steals from her constantly.",
+  "want": "the big score that proves her skill is real.",
+  "cost": "she shouts the plan out loud while she is doing it.",
+  "secret": "She once stole a dragon's nap. She still has it, and is saving it for an emergency.",
+  "body": {
+    "height": "5'3\"",
+    "build": "Short, freckled and all pockets",
+    "bust": 9,
+    "hips": 8
+  },
+  "look": "Copper-red wavy bob with a braid, freckles, amber eyes, green hooded cape, brown leather corset crop top, pouch shorts, glowing blue dagger.",
+  "lines": {
+    "meet": "Wait, is this a dungeon? Do I get loot?!",
+    "flirty": "SKILL: STEAL... oops, I stole your heart. Is that bad?",
+    "battle": "Level up, baby!",
+    "soft": "Can I sleep next to you? This world is kinda scary."
+  },
+  "barks": [
+    "SKILL: SNACK. ...Aw, it did not work.",
+    "Is this loot? Can I loot this?"
+  ],
+  "world": {
+    "side": "ally",
+    "short": "Pip",
+    "playable": "pip",
+    "poses": "sfad",
+    "start": "shop",
+    "zones": [
+      "safe",
+      "risky"
+    ],
+    "routine": [
+      "shop",
+      "square",
+      "bar",
+      "alley",
+      "tavern",
+      "square"
+    ]
+  },
+  "play": {
+    "id": "pip",
+    "name": "Pip",
+    "full": "Pip Copperfinch",
+    "look": "s-copper",
+    "calling": "rogue",
+    "poses": {
+      "x": "s-copper-f",
+      "d": "s-copper-d"
+    },
+    "card": {
+      "highlights": [
+        "A cheat-level STEAL skill",
+        "Chaotic good",
+        "Roxy's apprentice"
+      ],
+      "motives": [
+        "loot",
+        "a level up",
+        "somebody to sleep next to"
+      ],
+      "people": [],
+      "moments": [],
+      "noticed": {
+        "pers": []
+      },
+      "emotions": {},
+      "body": {},
+      "profile": {
+        "age": "Adult",
+        "gender": "Female",
+        "pronouns": "She/her",
+        "height": "5'3\"",
+        "hair": "Copper-red wavy bob with a braid",
+        "eyes": "Amber",
+        "build": "Short, soft and very curvy; freckles everywhere",
+        "occupation": "Isekai thief heroine",
+        "status": "New in this world",
+        "talent": "Stealing things that should not be stealable",
+        "description": "Pip was hit by a truck on her way to a boba shop and woke up here with a status window. She has exactly one skill, STEAL, and it is broken: she has stolen a dragon's nap and a king's socks. Bubbly, impulsive and chaotic good, she giggles when she is nervous, which is often. Green hooded cape, brown leather, a dagger that glows blue. Roxy calls her \"my lil apprentice\" and steals from her constantly.",
+        "want": "Loot, a level up, and somebody to sleep next to in a scary world.",
+        "need": "To find out she is more than one broken skill.",
+        "lie": "If I stop being useful the status window closes and I go home.",
+        "fears": "The dark. Being left behind. Trucks.",
+        "cost": "She takes things first and thinks about whose they were later.",
+        "likes": "boba, loot, shiny daggers, naps, being praised",
+        "dislikes": "trucks, chests she cannot open, being told to wait",
+        "hobbies": "pickpocketing practice, counting coins, naming her daggers",
+        "quirks": "Giggles when nervous. Says her skill names out loud.",
+        "habits": "Checks her status window every few minutes. Pockets things without noticing.",
+        "zodiac": "Gemini",
+        "mbti": "ENFP",
+        "enneagram": "7w6",
+        "disc": "I (Influence)",
+        "education": "Half a term of college, one world ago",
+        "iq_word": "Street-quick",
+        "smart_at": "Locks and pockets"
+      }
+    }
+  }
+}
