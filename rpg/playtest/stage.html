@@ -254,6 +254,51 @@ body.combat .composer{border-color:color-mix(in srgb,var(--crit) 55%,var(--edge2
 .sprite .flip{scale:-1 1}
 body:not(.debug) .dbg{display:none!important}
 #gridTravel[hidden],#rowsBattle[hidden]{display:none!important}
+/* ---- v7: dice tray, debugger, calmer chat, bubbles, clock ---- */
+.tray{flex:none;display:grid;grid-template-columns:minmax(0,1fr);gap:4px;padding:8px 12px 7px;border-radius:14px;background:var(--box2);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--edge2));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.tray-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tray-h .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tray .deg{font-family:var(--f-head);font-size:.78rem;letter-spacing:.06em;padding:1px 9px;border-radius:7px;color:var(--ink);opacity:0;transform:scale(.8);transition:opacity .25s,transform .25s}
+.tray.land .deg{opacity:1;transform:none}
+.tray .strip{padding-top:15px}
+.tray .key{display:none}
+.tray-m{margin:0;font-family:var(--f-mono);font-size:.6rem;color:var(--muted);overflow-wrap:anywhere}
+.dbgtop{flex:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:24vh;overflow:auto;padding:8px;border-radius:12px;background:var(--box2);border:1px dashed color-mix(in srgb,var(--gold) 70%,transparent);font-family:var(--f-mono);font-size:.62rem;line-height:1.45;scrollbar-width:thin}
+.dbgtop .dg{padding:6px 8px;border-radius:8px;background:var(--glass)}
+.dbgtop h4{margin:0 0 3px;font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.dbgtop p{margin:0;color:var(--muted);overflow-wrap:anywhere}
+.clock{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.06em;color:var(--muted);white-space:nowrap}
+.thought{flex:none;display:grid;gap:1px;padding:5px 12px;border-left:2px solid var(--lc);margin-left:4px}
+.thought i{font-family:var(--f-serif);font-size:.98rem;color:var(--muted)}
+.scene img{transition:opacity .6s ease,filter 1.2s ease}
+body[data-phase="Morning"] .scene img{filter:brightness(1.12) saturate(1.05)}
+body[data-phase="Evening"] .scene img{filter:sepia(.35) saturate(1.2) brightness(.85)}
+body[data-phase="Night"] .scene img{filter:brightness(.5) saturate(.7) hue-rotate(12deg)}
+/* the chat: smaller cards, and plain captions for the narrator's bookkeeping */
+.log{gap:13px}
+.line{padding:16px 13px 10px;gap:6px;max-width:86%;background:color-mix(in srgb,var(--box) 82%,transparent)}
+.say{font-size:1.04rem;line-height:1.42}
+.say.spoken{font-size:.95rem}
+.dice{font-size:.66rem}
+.line.me{border-radius:6px 18px 18px 18px}
+.line.her{border-radius:18px 6px 18px 18px}
+.line.cap{align-self:stretch;max-width:100%;padding:5px 10px;background:none;border:0;border-left:2px solid color-mix(in srgb,var(--gold) 60%,transparent);border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none}
+.line.cap .plate{display:none}
+.line.cap .say{font-family:var(--f-body);font-size:.84rem;color:var(--muted)}
+/* out of combat the buttons are bubbles; in a fight they stay square */
+.cell.bubble{border-radius:20px;padding:7px 13px}
+.cell.spot{border-color:color-mix(in srgb,var(--cyan) 60%,transparent);background:color-mix(in srgb,var(--cyan) 9%,transparent)}
+.cell.look{border-color:color-mix(in srgb,var(--lime) 55%,transparent)}
+.map .node.wild circle:first-child,.map .node.risky circle:first-child{stroke:var(--crit);stroke-dasharray:1.5 1}
+.map .node.shut{opacity:.5}
+.map .node .res.roam{fill:var(--gold)}
+.map line.wild{stroke:color-mix(in srgb,var(--crit) 55%,transparent)}
+.pot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.76rem}
+.bio{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 9px;margin:0;font-size:.74rem}
+.bio dt{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);padding-top:2px}
+.bio dd{margin:0;color:var(--muted)}
+.hud textarea{width:100%;font-family:var(--f-mono);font-size:.6rem;border-radius:8px;background:var(--glass);color:var(--text);border:1px solid var(--edge2);padding:5px;resize:vertical}
+@media (prefers-reduced-motion:reduce){.tray .deg,.scene img{transition:none}}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -292,14 +337,19 @@ body:not(.debug) .dbg{display:none!important}
         <button role="tab" type="button" data-view="tavern" aria-selected="false">SillyTavern</button>
       </div>
       <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
+      <span class="clock" id="clock"></span>
+      <button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false">Debugger</button>
       <select class="dbg" id="place" aria-label="Place"></select>
       <label class="lbl dbg" for="level">Level</label>
       <input class="dbg" type="number" id="level" min="1" max="100" step="1" style="width:4.6em">
       <button class="sm quiet dbg" id="rest" type="button">Rest</button>
     </div>
+    <div class="dbgtop" id="dbgTop" hidden></div>
+    <div class="tray" id="tray" hidden aria-live="polite"></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
     <section class="panel" id="tavern" hidden aria-label="SillyTavern guide"></section>
+    <div class="thought" id="thought" hidden></div>
     <div class="composer" id="composer">
       <div id="rowsCombat" hidden>
         <div class="crow">
@@ -386,71 +436,141 @@ const LOOKS = [
   { id: 'librarian', name: 'Nyx, archive clip', src: 'art/librarian-idle.mp4', video: true, boxed: true },
   { id: 'none', name: 'Nobody', src: '' },
 ];
-// The town of Gooseford: every bubble on the map is a place with its own backdrop, things to do, and maybe a resident.
-// x and y place the bubble on a 100 by 100 map. Tags tie a place to the story events that can happen there.
+// The city of Gooseford and the wilds outside its gates. Every bubble on the map is a place.
+// zone: safe (nothing attacks), risky (a small chance), wild (travel and exploring roll for a fight or an event).
+// foe is how strong the enemies there are, as a share of her level (the road is gentle, the ruins are not).
+// enc and evt are percent chances on one d100: 1..enc is a fight, the next evt is an event, the rest is quiet.
 const PLACES = [
-  { id: 'square', name: 'Wishing Well Square', short: 'Well', x: 50, y: 40, src: 'art/bg/bg-lanterns.webp', tags: ['town', 'market', 'camp'], who: 'lune', acts: ['wish', 'explore'], links: ['guild', 'tavern', 'archive', 'baths', 'bar', 'gate'],
-    text: 'Lanterns in the trees and an old stone well in the middle of everything. Every road in Gooseford ends up here sooner or later, and so do you.' },
-  { id: 'guild', name: 'Guild Hall', short: 'Guild', x: 16, y: 28, src: 'art/bg/chat-classroom.webp', tags: ['castle'], who: 'sable', acts: ['board', 'hunt'], links: ['square', 'yard'],
-    text: 'Long benches, a wall of notices, and a ledger nobody is allowed to touch. The briefing room still smells of chalk and wet boots.' },
-  { id: 'tavern', name: 'The Gilded Goose', short: 'Tavern', x: 84, y: 28, src: 'art/bg/bg-stacks.webp', tags: ['inn', 'tavern', 'shrine'], who: 'bambi', acts: ['rest', 'explore'], links: ['square', 'alley'],
-    text: 'Warm lamps, a deep armchair by the window, and the sun going down over the rooftops. The upstairs parlour is yours for the price of a meal.' },
-  { id: 'archive', name: 'The Old Archive', short: 'Archive', x: 50, y: 10, src: 'art/bg/bg-dungeon.webp', tags: ['dungeon', 'ruin'], who: 'nyx', acts: ['study', 'explore'], links: ['square'],
-    text: 'Torchlight on wet stone and shelves that go further back than the building does. Something drips. Something else stops dripping when you look at it.' },
-  { id: 'yard', name: 'Training Yard', short: 'Yard', x: 14, y: 60, src: 'art/bg/bg-arena.webp', tags: [], who: null, acts: ['spar', 'hunt'], links: ['guild', 'gate'],
-    text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.' },
-  { id: 'baths', name: 'Lagoon Baths', short: 'Baths', x: 34, y: 66, src: 'art/bg/chat-pool.webp', tags: [], who: null, acts: ['soak'], links: ['square'],
-    text: 'Still water and warm stones under the palms. For once nothing is trying to kill you. Give it a minute.' },
-  { id: 'bar', name: 'The Low Lantern', short: 'Bar', x: 68, y: 66, src: 'art/bg/bg-nightpark.webp', tags: [], who: 'velvet', acts: ['drink'], links: ['square', 'alley'],
-    text: 'One lamp, a lot of shadow, and a bar that is longer on the inside. Nobody here has ever asked to see a guild badge.' },
-  { id: 'alley', name: 'Back Alley', short: 'Alley', x: 90, y: 52, src: 'art/bg/chat-graffiti.webp', tags: ['town'], who: null, acts: ['explore'], links: ['tavern', 'bar'],
-    text: 'Painted walls, stacked crates, and the short way between the two places in town that sell drinks.' },
-  { id: 'gate', name: 'Town Gate', short: 'Gate', x: 50, y: 86, src: 'art/bg/bg-forest.webp', tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['explore', 'hunt'], links: ['square', 'yard'],
-    text: 'Green light, old trunks, and a road that keeps deciding to be somewhere else. Everything past the gate is the wilds.' },
+  { id: 'gates', name: 'Castle Gates', short: 'Gates', x: 50, y: 58, src: 'art/bg/bg-forest.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look'], links: ['square', 'yard', 'road'],
+    text: 'The great gates of Gooseford, where the forest road ends and the cobbles begin. Inside the walls nothing will jump you. Outside, something probably will.',
+    look: ['Two guards are arguing about whether your armor counts as a weapon. A cart of turnips rolls in past all three of you.', 'From here you can see the whole main street: the well, the Goose, and a great deal of laundry.'] },
+  { id: 'square', name: 'Wishing Well Square', short: 'Well', x: 50, y: 24, src: 'art/bg/bg-lanterns.webp', zone: 'safe', tags: ['town', 'market', 'camp'], who: 'lune', acts: ['look'], links: ['guild', 'tavern', 'archive', 'shop', 'baths', 'bar', 'gates'],
+    text: 'Lanterns in the trees and an old stone well in the middle of everything. Every street in Gooseford ends up here sooner or later, and so do you.',
+    look: ['A pigeon is sitting on the rim of the well like it owns the place. It might.', 'Somebody has chalked a tally on the well stones. It is headed WISHES THAT WORKED and it is short.'] },
+  { id: 'guild', name: 'Guild Hall', short: 'Guild', x: 15, y: 24, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: ['castle'], who: null, hours: [6, 22], acts: ['look', 'board', 'hunt'], links: ['square', 'yard'],
+    text: 'Long benches, a wall of notices, and a ledger nobody is allowed to touch. The briefing room still smells of chalk and wet boots.',
+    look: ['Half the notices are hunts. The other half are complaints about the people who took the hunts.', 'There is a chalk outline on the floor shaped like a knight who tripped. It is labelled DO NOT.'] },
+  { id: 'tavern', name: 'The Gilded Goose', short: 'Tavern', x: 85, y: 24, src: 'art/bg/bg-stacks.webp', zone: 'safe', tags: ['inn', 'tavern'], who: 'bambi', acts: ['look', 'rest'], links: ['square', 'alley'],
+    text: 'Warm lamps, a deep armchair by the window, and the sun going down over the rooftops. The best place in town to get social, or drunk, or both.',
+    look: ['A bard is tuning up in the corner. He sees you, winces, and moves his lute off the floor.', 'The chandelier has a dent in it roughly the size of your helmet.'] },
+  { id: 'archive', name: 'The Old Archive', short: 'Archive', x: 50, y: 8, src: 'art/bg/bg-dungeon.webp', zone: 'safe', tags: ['shrine'], who: 'nyx', hours: [8, 24], acts: ['look', 'study'], links: ['square'],
+    text: 'Torchlight on old stone and shelves that go further back than the building does. Something drips. Something else stops dripping when you look at it.',
+    look: ['A book on the nearest shelf is slowly turning its own pages. It stops when you look.', 'Every candle in here has a small sign next to it with your name crossed out.'] },
+  { id: 'shop', name: 'Fizz and Fettle', short: 'Shop', x: 32, y: 42, src: 'art/bg/bg-candy.webp', zone: 'safe', tags: ['market'], who: null, hours: [7, 21], acts: ['look'], links: ['square'],
+    text: 'An adventurer supply shop the colour of boiled sweets. Bottles to the ceiling, a bell on the door, and a shopkeeper who is mostly a voice behind the shelves.',
+    look: ['One whole shelf is labelled PROBABLY FINE. The shelf under it is labelled the other thing.', 'The bottles hum faintly when you walk past. The red ones hum at you in particular.'] },
+  { id: 'baths', name: 'Lagoon Baths', short: 'Baths', x: 12, y: 42, src: 'art/bg/chat-pool.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'soak'], links: ['square'],
+    text: 'Still water and warm stones under the palms. For once nothing is trying to kill you. Give it a minute.',
+    look: ['A sign says NO ARMOR IN THE WATER. Someone has added AGAIN underneath.', 'Steam, palm shadows, and one very relaxed duck.'] },
+  { id: 'bar', name: 'The Low Lantern', short: 'Bar', x: 68, y: 42, src: 'art/bg/bg-nightpark.webp', zone: 'safe', tags: [], who: 'velvet', hours: [17, 4], acts: ['look'], links: ['square', 'alley'],
+    text: 'One lamp, a lot of shadow, and a bar that is longer on the inside. It opens at dusk. Nobody here has ever asked to see a guild badge.',
+    look: ['Three people at the card table stop talking until you look away.', 'The bottles behind the bar are arranged by colour. The colours do not all have names.'] },
+  { id: 'alley', name: 'Back Alley', short: 'Alley', x: 90, y: 40, src: 'art/bg/chat-graffiti.webp', zone: 'risky', enc: 10, evt: 20, foe: 0.6, tags: ['town'], who: null, acts: ['look', 'explore'], links: ['tavern', 'bar'],
+    text: 'Painted walls, stacked crates, and the short way between the two places in town that sell drinks. Mostly safe. Mostly.',
+    look: ['Someone has painted a very flattering mural of a knight falling over. The armor is gold.', 'A cat watches you from a crate with the patience of a creditor.'] },
+  { id: 'yard', name: 'Training Yard', short: 'Yard', x: 16, y: 60, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'spar'], links: ['guild', 'gates'],
+    text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.',
+    look: ['One dummy has a helmet on. On closer inspection it is your helmet, from last week.', 'The sand has been raked into neat lines. You have about a minute before that stops being true.'] },
+  { id: 'road', name: 'Greenwood Road', short: 'Road', x: 50, y: 77, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'ruins'],
+    text: 'Green light, old trunks, and a road that keeps deciding to be somewhere else. You are outside the walls now.',
+    look: ['Fresh tracks cross the road ahead: small, many, and in a hurry.', 'A signpost points five ways. Four of them say GOOSEFORD. The fifth just says NO.'] },
+  { id: 'ruins', name: 'The Sunken Ruins', short: 'Ruins', x: 22, y: 86, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 45, evt: 20, foe: 1, tags: ['dungeon', 'ruin'], who: null, acts: ['look', 'explore', 'hunt'], links: ['road'],
+    text: 'Wet stone, dead torches, and doors that were barred from the outside. Whatever lives down here has had a long time to get comfortable.',
+    look: ['Something scraped these walls at about shoulder height. Your shoulder height.', 'There is a lever. There is always a lever.'] },
 ];
-// The regulars. Each lives at one place until you move them (Here tab), and can be renamed, re-classed and re-dressed.
+// The regulars. Their numbers are hidden from the player; the Debugger at the top shows them.
+// likes and dislikes move a first impression by 20. hours is when they are at their place.
 const CAST = {
-  bambi: { name: 'Bambi Soft', role: 'the barmaid at the Gilded Goose', cls: 'rogue', look: 'bambi-idle', greet: [
-    'Val! Sit, sit. You look like you fought a door again. Did the door win?',
-    'There she is, the hero who paid her tab in goblin teeth. Usual table?',
-    'Careful with the sword near the chandelier this time, hon. It has only just stopped swinging.'] },
-  sable: { name: 'Sable', role: 'the guild quartermaster', cls: 'rogue', look: 'ranger', greet: [
-    'Board is on the wall, hunts are on me. Try not to bring one back alive again.',
-    'You again. The paperwork from your last accident has its own shelf now.',
-    'Pick a job, sign the ledger, and please read what it says first.'] },
-  lune: { name: 'Sister Lune', role: 'the keeper of the Wishing Well', cls: 'mage', look: 'priestess', greet: [
-    'The well listens, Dame Valerie. It has asked me to tell you it also has opinions.',
-    'A coin for a wish. Most people aim for the water.',
-    'You glow oddly tonight. The moon noticed. So did I.'] },
-  velvet: { name: 'Velvet', role: 'the bartender at the Low Lantern', cls: 'mage', look: 'succubus', greet: [
-    'Well, well. The luckiest knight in Gooseford. The first one is on the house. The second one is usually on you.',
-    'Sit anywhere that is not holding the roof up, darling.',
-    'I do not judge. I do keep score.'] },
-  nyx: { name: 'Nyx Inkwell', role: 'the night archivist of the Old Archive', cls: 'mage', look: 'librarian', greet: [
-    'Shh. No, quieter than that. The armor, dear. The armor is shouting.',
-    'Returns go on the left. Screaming books go on the right. You go nowhere near the candles.',
-    'I filed a note about you. It is under M, for miracle, clerical error, or both.'] },
+  bambi: { name: 'Bambi Soft', role: 'the barmaid at the Gilded Goose', cls: 'rogue', look: 'bambi-idle', likes: 'friendly', dislikes: 'clever',
+    warm: 'Oh, I like you. Sit down before you fall down, I will bring you something.', cold: 'Mm-hm. Coasters are on the bar, hon. Please use one this time.',
+    greet: ['Val! Sit, sit. You look like you fought a door again. Did the door win?', 'There she is, the hero who paid her tab in goblin teeth. Usual table?', 'Careful with the sword near the chandelier this time, hon. It has only just stopped swinging.'] },
+  sable: { name: 'Sable', role: 'a ranger who never stays in one place', cls: 'warrior', look: 'ranger', likes: 'bold', dislikes: 'flirt',
+    warm: 'Ha. Straight to it. Good. I am Sable; I go where the work is.', cold: 'Save it. I have a road to walk and you are standing on it.',
+    greet: ['You again. I was two streets over an hour ago. Funny how that works.', 'Road east is crawling. Take a friend or take a lot of potions.', 'I do not live anywhere. I am just here until I am not.'] },
+  lune: { name: 'Sister Lune', role: 'the keeper of the Wishing Well', cls: 'mage', look: 'priestess', likes: 'friendly', dislikes: 'bold',
+    warm: 'How kind. The well has been wondering when you would say hello.', cold: 'Gently, Dame Valerie. The well startles easily, and so do I.',
+    greet: ['The well listens, Dame Valerie. It has asked me to tell you it also has opinions.', 'A coin for a wish. Most people aim for the water.', 'You glow oddly today. The moon noticed. So did I.'] },
+  velvet: { name: 'Velvet', role: 'the bartender at the Low Lantern', cls: 'mage', look: 'succubus', hours: [17, 4], likes: 'flirt', dislikes: 'friendly',
+    warm: 'Oh, you are trouble. Good. The first one is on the house.', cold: 'Sweet. I do not do sweet, darling. Order something.',
+    greet: ['Well, well. The luckiest knight in Gooseford. The first one is on the house. The second one is usually on you.', 'Sit anywhere that is not holding the roof up, darling.', 'I do not judge. I do keep score.'] },
+  nyx: { name: 'Nyx Inkwell', role: 'the night archivist of the Old Archive', cls: 'mage', look: 'librarian', hours: [8, 24], likes: 'clever', dislikes: 'flirt',
+    warm: 'A reader. In armor. Well. Come in, then, and touch nothing that hums.', cold: 'Shh. No. Whatever that was, the answer is the returns desk.',
+    greet: ['Shh. No, quieter than that. The armor, dear. The armor is shouting.', 'Returns go on the left. Screaming books go on the right. You go nowhere near the candles.', 'I filed a note about you. It is under M, for miracle, clerical error, or both.'] },
 };
 const ACTS = {
-  rest: { label: 'Take a room', hint: 'everything refills' },
+  look: { label: 'Look around', hint: 'see what is here' },
+  rest: { label: 'Take a room', hint: 'sleep till morning' },
   board: { label: 'Quest board', hint: 'quests and bounties' },
   hunt: { label: 'Take a hunt', hint: 'a real fight' },
-  wish: { label: 'Make a wish', hint: 'stress −15', once: true },
-  drink: { label: 'Buy a round', hint: 'Airhead +15', once: true },
   study: { label: 'Study', hint: 'Airhead −15, a little EXP', once: true },
   soak: { label: 'Soak', hint: 'HP +30%, stress −20', once: true },
   spar: { label: 'Spar', hint: 'the practice ring' },
   explore: { label: 'Explore', hint: 'see what happens' },
 };
-function setPlace(id) {
-  const place = PLACES.find((x) => x.id === id) ?? PLACES[0];
-  S.place = place.id; store.set('place', place.id); S.used = {};
-  $('scene').innerHTML = place.src ? `<img src="${esc(place.src)}" alt="">` : '';
-  $('place').value = place.id;
-  S.who = residentOf(place.id);
-  if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
-  else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
-}
+// The four ways to answer someone. tilt: +1 gets easier the more airheaded she is, −1 gets harder.
+const APPROACH = {
+  friendly: { label: 'Be friendly', stat: 'WIL', vs: 'WIL', tilt: 1, say: ['You say hello like you mean it, because you do.', 'You say hello. It comes out as three hellos and an apology to a chair.'] },
+  flirt: { label: 'Flirt', stat: 'LCK', vs: 'WIL', tilt: 1, tempt: true, say: ['You lean on the nearest thing and it holds. Your smile does the rest.', 'You lean on the nearest thing. It was not load-bearing.'] },
+  bold: { label: 'Be bold', stat: 'STR', vs: 'CON', tilt: 0, say: ['You plant your feet and say exactly what you came for.', 'You plant your feet. One of them is on your own cloak.'] },
+  clever: { label: 'Be clever', stat: 'INT', vs: 'INT', tilt: -1, say: ['You notice the one thing about them worth noticing, and say it well.', 'You had a clever line. It left through the other ear on the way out.'] },
+};
+// Spots inside a place: sit down somewhere and it offers three things to do.
+// stat rolls her attribute against the place (easy, normal or hard for her level). gold amounts are per level.
+const SPOTS = {
+  tavern: [
+    { id: 'counter', name: 'Bar counter', opts: [
+      { label: 'Order the stew', cost: 3, mins: 30, win: { say: 'It is mostly potato. It is exactly what you needed.', hp: 20, stress: -5, rest: 15 } },
+      { label: 'Arm-wrestle a regular', stat: 'STR', diff: 'normal', mins: 20, win: { say: 'His hand hits the bar. So does a small stack of his coins. The room approves.', gold: 6, grow: 10, growPath: 'warrior' }, lose: { say: 'You lose, then your elbow slides in spilled ale and you lose a second time.', stress: 4 } },
+      { label: 'Ask what is new', stat: 'WIL', diff: 'easy', mins: 20, win: { say: 'Tracks on the east road, a new lock on the ruins, and somebody paying well for goblin teeth.', exp: 0.03 }, lose: { say: 'The gossip is about you. All of it. You nod along anyway.', airhead: 5 } }] },
+    { id: 'table', name: 'Corner table', opts: [
+      { label: 'Join the card game', stat: 'LCK', diff: 'normal', cost: 4, mins: 40, win: { say: 'You do not know the rules. You win three hands in a row. Nobody is happy about this but you.', gold: 10, grow: 10, growPath: 'rogue' }, lose: { say: 'You are told, kindly, that those were not even the right cards.' } },
+      { label: 'Listen in', stat: 'INT', diff: 'normal', mins: 30, win: { say: 'Two merchants, one map, and a shortcut they should not be discussing out loud.', exp: 0.04, airhead: -5 }, lose: { say: 'You lean in to listen and end up listening to a long story about a goat.', airhead: 5 } },
+      { label: 'Tell a heroic story', stat: 'LCK', diff: 'hard', mins: 30, win: { say: 'You get the ending wrong and it is better that way. Someone buys you a drink.', limit: 10, stress: -8 }, lose: { say: 'Halfway through you realise it is the bard\'s story, and he is right there.', stress: 5, decency: -3 } }] },
+    { id: 'hearth', name: 'The hearth', opts: [
+      { label: 'Warm your hands', mins: 30, win: { say: 'The fire pops. Your shoulders come down from around your ears.', stress: -8, rest: 8 } },
+      { label: 'Polish the armor', stat: 'AGI', diff: 'easy', mins: 30, win: { say: 'It gleams. For one whole minute you look like the paintings.', stress: -5, limit: 5, decency: 8 }, lose: { say: 'You polish your own foot straight into the coal scuttle.', stress: 3, decency: -2 } },
+      { label: 'Nap in the armchair', mins: 120, win: { say: 'You wake up with a blanket on you and a cat on the blanket.', hp: 15, mana: 20, rest: 25 } }] },
+  ],
+  bar: [
+    { id: 'stools', name: 'Bar stools', opts: [
+      { label: 'Order the pink one', cost: 4, mins: 30, win: { say: 'It is pink, it is fizzy, and it has a tiny sword in it. Halfway down, thinking starts to feel optional.', airhead: 15, stress: -5, decency: -3, chem: 8 } },
+      { label: 'Order something sensible', cost: 4, mins: 30, win: { say: 'Black, bitter, and it tastes like a library. Your head clears with an almost audible click.', airhead: -10, mana: 15 } },
+      { label: 'Chat up the stranger', stat: 'LCK', diff: 'normal', tempt: true, mins: 30, win: { say: 'You say something. You are not sure what. They laugh, blush, and pay for your drink.', gold: 5, grow: 10, growPath: 'rogue', chem: 10 }, lose: { say: 'You wink. It uses both eyes.', stress: 4, decency: -3 } }] },
+    { id: 'cards', name: 'Card table', opts: [
+      { label: 'Play it straight', stat: 'INT', diff: 'normal', cost: 5, mins: 40, win: { say: 'You count, you wait, and you fold when you should. It is slow and it works.', gold: 12 }, lose: { say: 'You count the cards perfectly. They were playing dice.' } },
+      { label: 'Wing it', stat: 'LCK', diff: 'normal', cost: 5, mins: 40, win: { say: 'You drop your whole hand on the table face up. It is, somehow, the winning one.', gold: 14, airhead: 5, grow: 10, growPath: 'rogue' }, lose: { say: 'You bet on the wrong game at the wrong table.', stress: 3 } },
+      { label: 'Watch the dealer', stat: 'AGI', diff: 'hard', mins: 30, win: { say: 'There: the second card from the bottom. Now you know how it is done.', exp: 0.05 }, lose: { say: 'You watch the dealer\'s hands. The dealer watches yours right back.', stress: 5 } }] },
+    { id: 'booth', name: 'Back booth', opts: [
+      { label: 'Eavesdrop', stat: 'INT', diff: 'hard', mins: 30, win: { say: 'A name, a price, and a door in the ruins that opens from this side.', exp: 0.06 }, lose: { say: 'The booth goes quiet. Somebody slides a note under your glass: NO.', stress: 4 } },
+      { label: 'Sit in the dark a while', mins: 30, win: { say: 'Nobody needs a hero in here. It is restful, and a little unsettling how restful.', stress: -10, airhead: -5, rest: 8 } },
+      { label: 'Ask about work', stat: 'WIL', diff: 'normal', mins: 20, win: { say: 'A courier job, paid up front, no questions. You ask one question anyway. They pay you extra to stop.', gold: 8 }, lose: { say: 'They look at the gold armor, then at each other, then at the door.' } }] },
+  ],
+  square: [
+    { id: 'well', name: 'The well', opts: [
+      { label: 'Make a wish', cost: 1, mins: 10, win: { say: 'The coin hits the rim, the bucket, a pigeon and the water, in that order. The wish probably still counts.', stress: -15, limit: 5 } },
+      { label: 'Look down it', stat: 'LCK', diff: 'normal', mins: 10, win: { say: 'There is a purse snagged on a ledge, just in reach. Finders, as they say.', gold: 6 }, lose: { say: 'Your reflection waves first.', airhead: 5, stress: 3 } },
+      { label: 'Draw a bucket', stat: 'STR', diff: 'easy', mins: 15, win: { say: 'Cold, clean, and faintly fizzy. Sister Lune says that is normal. She says it quickly.', hp: 10, mana: 10 }, lose: { say: 'The rope wins. You are soaked to the knees and the bucket is back in the well.', stress: 3 } }] },
+    { id: 'bench', name: 'Lantern bench', opts: [
+      { label: 'People-watch', stat: 'INT', diff: 'easy', mins: 30, win: { say: 'You learn who owes whom, who is courting whom, and where the good pies are.', exp: 0.03 }, lose: { say: 'You watch a pigeon for half an hour. It was a good pigeon.', airhead: 5 } },
+      { label: 'Feed the pigeons', mins: 20, win: { say: 'They like you. They like you a lot. There are a great many of them now.', stress: -6, rest: 5 } },
+      { label: 'Sleep on the bench', sleep: 'bench', win: { say: 'It is free, it is lumpy, and somebody tucks a pamphlet about the guild under your arm in the night.', stress: 5 } }] },
+  ],
+  shop: [
+    { id: 'shelf', name: 'Potion shelf', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] },
+  ],
+};
+const POTIONS = {
+  heal: { name: 'Healing Draught', price: 12, hint: 'HP +35%', use: (c) => ({ ...c, hp: Math.min(c.maxHp, Math.round(Math.max(0, c.hp) + c.maxHp * 0.35)) }) },
+  mana: { name: 'Mana Tonic', price: 15, hint: 'Mana +50%', use: (c) => ({ ...c, mp: Math.min(c.maxMp, Math.round(c.mp + c.maxMp * 0.5)) }) },
+  tea: { name: 'Calming Tea', price: 10, hint: 'stress −25', use: (c) => { const r = ST.relieveStress(c, 25, { from: 'self' }); return r.combatant ?? r; } },
+};
+// Why the bust stat grows depends on the path. Every tier: Tempt +2, Finesse −2%, plus the path's own perk.
+const PATHS = {
+  warrior: { name: 'Heartthrob', cls: 'Warrior', why: 'hormones', when: 'when someone properly impressive turns her head, and when she wins', perk: '+3% max HP' },
+  mage: { name: 'Mana Vessel', cls: 'Mage', why: 'mana', when: 'when she holds more mana than she can spend', perk: '+5% max Mana' },
+  rogue: { name: 'Gilded', cls: 'Rogue or courtesan', why: 'greed', when: 'with every coin she pockets and every mark she charms', perk: '+5% gold found' },
+};
+const PHASE_LINE = { Morning: 'Shutters bang open along the main street. Somebody is already selling bread.', Afternoon: 'The sun is high and the cobbles are warm.', Evening: 'The lanterns come on one by one. The Low Lantern unlocks its door.', Night: 'Gooseford goes quiet. The shops are dark, and the wilds are not.' };
 const CLASSES = {
   warrior: { thing: 'blade', skill: { ...BASIC_ATTACK, id: 'x_strike', name: 'Strike', tags: ['melee'] } },
   mage: { thing: 'bolt', skill: { ...BASIC_ATTACK, id: 'x_bolt', name: 'Bolt', type: 'magical', stat: 'INT', element: 'bolt', tags: ['ranged', 'projectile'] } },
@@ -463,11 +583,15 @@ const S = {
   hero: null, them: null, lines: [], custom: {}, down: false, mode: 'travel', battle: null,
   who: null, used: {}, rtab: store.get('rtab', 'map'), debug: store.get('debug', false), party: store.get('party', false),
   exp: store.get('exp', 0), points: store.get('points', 0), bonus: store.get('bonus', {}), flips: store.get('flips', {}),
+  clock: store.get('clock', 540), gold: store.get('gold', 30), bag: store.get('bag', {}), npc: store.get('npc', {}), stam: store.get('stam', 100), decency: store.get('decency', 70),
+  path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
+  dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'stats'),
+  changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
 };
 const heroName = 'Valerie';
 
 function freshHero(keep) {
-  const stats = heroStats(S.level), hp = maxHp(S.level, stats.CON), mp = maxMp(S.level, stats.WIL);
+  const { stats, hp, mp } = heroBars(S.level);
   return makeCombatant({ id: 'valerie', name: heroName, level: S.level, archetype: 'klutz_knight', stats, hp, maxHp: hp, mp, maxMp: mp,
     flags: { airhead: keep && V.airheadLock(keep) === null ? V.airheadOf(keep) : 60 } });
 }
@@ -578,7 +702,12 @@ function battlePanel() {
     ${st.contraption ? `<div class="over"><h3>In the room: ${esc(st.contraption.name)}</h3><p>${st.contraption.used ? 'Already set off this phase.' : 'A Chaos Wave sets it off. Wing It and fumble near it.'}</p></div>` : ''}
     ${st.concession ? `<div class="over"><h3>Another way out: ${esc(st.concession.name)}</h3><p>Opens at ${st.concession.at}% of its HP. ${esc(st.concession.price ?? '')}</p></div>` : ''}`;
 }
-function postEvents(evts) {
+function postEvents(evts) { // the last roll that involved her goes to the tray
+  postEvents0(evts);
+  const e = [...evts].reverse().find((x) => x.type === 'attack' && x.roll && (x.actorYou || x.targetYou)); if (!e) return;
+  S.lastRoll = { title: `${e.actorName} → ${e.targetName} · ${e.skillName}`, pct: e.hitPct, roll: e.roll, degree: e.outcome, bands: { pct: e.hitPct, critPct: e.critPct, fumbleFrom: e.fumbleFrom }, math: `hit ${e.hitPct}% · crit on ${e.critPct} or less · fumble on ${e.fumbleFrom}+ · rolled ${e.roll}` }; S.trayFresh = true;
+}
+function postEvents0(evts) {
   let k = 0;
   for (const e of evts) {
     const who = e.actorYou ? 'me' : e.actorSide === 'enemies' ? 'her' : 'sys';
@@ -608,6 +737,7 @@ function syncBattle() {
   const won = st.result === 'win', r = st.rewards;
   post({ who: 'sys', dice: `<b>${won ? (st.outcome === 'concession' ? 'CONCEDED' : 'VICTORY') : 'DEFEAT'}</b> · ${esc(st.name)} · ${st.round} rounds${r && won ? ` · ${n(r.exp)} EXP · ${n(r.gold)} gold` : ''}`, tone: won ? 'virtue' : 'crit', say: won ? 'The dust settles. You are back on the road, with whatever the fight left on your bars.' : 'You limp out of it. Take a room at the Gilded Goose, or soak at the Baths, before you try anything else.' });
   if (won && r?.exp) gainExp(r.exp, state_name(st));
+  afterFight(won, r);
   leaveBattle();
 }
 const state_name = (st) => st.name;
@@ -615,7 +745,8 @@ function leaveBattle() {
   const st = S.battle.state; S.battle = null; S.mode = 'travel'; if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = carry(freshHero(st.combatants.valerie), st.combatants.valerie);
   S.them = st.combatants.companion && S.who ? { ...carry(freshThem(), st.combatants.companion), flags: {} } : freshThem();
-  S.down = S.hero.hp <= 0 || S.them.hp <= 0;
+  S.down = S.hero.hp <= 0; S.standoff = null;
+  if (S.afterStam) { const a = S.afterStam; S.afterStam = 0; passTime(45); useStam(a, 'the fight'); }
 }
 function battleAdvance() { // the rest of the party plays itself until it is your turn again
   const b = S.battle; let guard = 0;
@@ -626,10 +757,10 @@ function startBattle(spec) {
   if (!BT || S.battle) return;
   const def = spec.boss ? DATA.bosses.bosses.find((x) => x.id === spec.boss) : DATA.encounters.encounters.find((x) => x.id === spec.encounter);
   if (!def) return post({ who: 'sys', dice: `No such fight: ${esc(spec.boss ?? spec.encounter)}` });
-  const solo = !spec.boss && !S.party, level = spec.boss ? def.level : S.level, foeLevel = solo ? Math.max(1, Math.round(level * 0.75)) : level;
+  const solo = !spec.boss && !S.party, level = spec.boss ? def.level : S.level, foeLevel = spec.level ?? (solo ? Math.max(1, Math.round(level * (placeNow().foe ?? 0.75))) : level);
   const classes = ['warrior', 'mage', 'rogue'];
   const allies = S.who ? [BT.makeHero(arche(S.classR), level, { id: 'companion', name: S.nameR }), ...classes.filter((k) => k !== S.classR).map((k) => BT.makeHero(arche(k), level))] : classes.map((k) => BT.makeHero(arche(k), level));
-  const party = [BT.makeHero(DATA.valerie.archetype, level, { id: 'valerie', name: heroName, stats: heroStats(level), flags: { airhead: V.airheadOf(S.hero) } }), ...(solo ? [] : allies)];
+  const party = [BT.makeHero(DATA.valerie.archetype, level, { id: 'valerie', name: heroName, stats: heroBars(level).stats, maxHp: heroBars(level).hp, maxMp: heroBars(level).mp, flags: { airhead: V.airheadOf(S.hero) } }), ...(solo ? [] : allies)];
   const rng = __m.rng.makeRng(Math.floor(Math.random() * 2147483646) + 1);
   let state;
   try { state = BT.createBattle({ party, ...(spec.boss ? { boss: spec.boss } : { encounter: spec.encounter }), level: foeLevel, data: DATA }, rng); }
@@ -662,48 +793,17 @@ function renderBattleRow() {
   const bare = (l) => l.replace(/^(Wing It|Think It Through): /, '');
   const note = (a) => a.disabled ? (a.why ?? 'sealed') : a.cost?.mp ? `${n(a.cost.mp)} MP` : a.cost?.limit ? `${a.cost.limit} MCE` : a.kind === 'guard' ? 'brace for it' : a.kind === 'breather' ? 'shed some stress' : a.kind === 'concede' ? 'end it, at a price' : 'free';
   $('bGrid').innerHTML = acts.map((a, i) => (a.stance && a.stance !== S.stance) ? '' : `<button class="cell${a.kind === 'attack' ? ' primary' : ''}" type="button" data-bi="${i}"${a.disabled ? ' disabled' : ''} title="${esc(st.defs.skills[a.skillId]?.text ?? '')}"><b>${esc(bare(a.label))}</b><small>${esc(note(a))}</small></button>`).join('');
+  if (val) $('bGrid').innerHTML += battleExtras(st);
   $('bWhy').textContent = b.hint ?? (S.stance === 'wing' ? 'Wing It: the gauge climbs, her accidents take over, and a fumble becomes a Chaos Wave.' : 'Think It Through: the gauge drops, you aim better, and it costs you a little stress to be this aware.');
   const foe = $('foe'), f = focusFoe();
   foe.hidden = false; foe.innerHTML = `<small>${foes.length > 1 ? `target · ${foes.length} left` : 'the enemy'}</small><b>${esc(f.name)}</b>${miniBar(f.hp, f.maxHp, 'var(--crit)')}`;
 }
 /* ---------- the town: who lives where, moving, things to do ---------- */
-const placeNow = () => PLACES.find((x) => x.id === S.place) ?? PLACES[0];
-function residentOf(placeId) { const moved = store.get('residents', {}); const id = placeId in moved ? moved[placeId] : PLACES.find((p) => p.id === placeId)?.who ?? null; return id && CAST[id] ? id : null; }
-const castOf = (id) => ({ ...CAST[id], ...(store.get('cast', {})[id] ?? {}) });
-function saveCast() { if (!S.who) return; const all = store.get('cast', {}); all[S.who] = { name: S.nameR, cls: S.classR, ...(S.lookR.startsWith('custom') ? {} : { look: S.lookR }) }; store.set('cast', all); }
-const nextLine = (list) => { S.lineAt = (S.lineAt ?? 0) + 1; return list[S.lineAt % list.length]; };
-const PR = __m.progression, needExp = () => PR.expToNext(S.level), canLevel = () => S.level < 100 && S.exp >= needExp();
-const trainStep = (level) => Math.max(1, Math.round(__m.stats.benchmarkStat(level) * 0.05));
-function heroStats(level) { const base = statsAt(klutz, level), out = {}; for (const k of STAT_KEYS) out[k] = Math.min(1000, base[k] + (S.bonus[k] ?? 0) * trainStep(level)); return out; }
-function gainExp(amount, why) {
-  if (!amount || S.level >= 100) return;
-  const was = canLevel(); S.exp += Math.round(amount); store.set('exp', S.exp);
-  if (!was && canLevel()) post({ who: 'sys', dice: `<b>LEVEL UP READY</b> · ${esc(why)}`, tone: 'virtue', say: 'Something in the armor sits a little easier. Open the Level tab on the right when you want it.' });
-}
-function levelUp() {
-  if (!canLevel() || S.battle) return;
-  S.exp -= needExp(); S.level += 1; S.points += 3; store.set('exp', S.exp); store.set('level', S.level); store.set('points', S.points);
-  S.hero = freshHero(S.hero); S.them = freshThem(); S.down = false;
-  const fresh = DATA.valerie.skills.filter((s) => s.unlock === S.level).map((s) => s.name);
-  post({ who: 'sys', dice: `<b>LEVEL ${S.level}</b> · 3 training points${fresh.length ? ` · new: ${esc(fresh.join(', '))}` : ''}`, tone: 'virtue', say: 'Every bar refills. You feel exactly as clumsy as before, only more so, and somehow that is better.' });
-}
 function rightPanel() {
   const tab = S.battle ? S.rtab : S.rtab === 'fight' ? 'map' : S.rtab;
   const tabs = [...(S.battle ? [['fight', 'Fight']] : []), ['map', 'Map'], ['here', 'Here'], ['level', 'Level'], ['debug', 'Debug']];
   return `<div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
     tab === 'fight' ? battlePanel() : tab === 'here' ? hereTab() : tab === 'level' ? levelTab() : tab === 'debug' ? debugTab() : mapTab()}`;
-}
-function mapTab() {
-  const here = placeNow(), near = new Set(here.links), seen = new Set(), lines = [];
-  for (const p of PLACES) for (const l of p.links) { const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); const q = PLACES.find((x) => x.id === l); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}"/>`); }
-  const nodes = PLACES.map((p) => { const q = questsAt(p).filter((e) => !doneQuests.has(e.id)).length, who = residentOf(p.id);
-    return `<g class="node${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} lives here` : ''}"><circle cx="${p.x}" cy="${p.y}" r="6.2"/>${who ? `<circle class="res" cx="${p.x + 5.2}" cy="${p.y - 5.2}" r="1.9"/>` : ''}${q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">${q}</text>` : ''}<text x="${p.x}" y="${p.y + 11.6}">${esc(p.short)}</text></g>`; }).join('');
-  const who = S.who ? castOf(S.who) : null;
-  return `<div class="who"><p class="lbl">${S.mode === 'combat' ? 'Sparring' : 'Travelling'} · the town of Gooseford</p><h2>${esc(here.name)}</h2><p class="role">${who ? `${esc(who.name)} is here` : 'Nobody lives here yet'}</p></div>
-    <svg class="map" viewBox="0 0 100 100" role="group" aria-label="Map of Gooseford">${lines.join('')}${nodes}</svg>
-    <p class="more">click a bubble to go there · pink dot: someone lives there · number: quests waiting</p>
-    <div class="over"><h3>Here</h3><p>${esc(here.text)}</p></div>
-    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. Talk with the button under the story, or type to them.</p>${emo(S.them, false)}</div>` : ''}`;
 }
 function hereTab() {
   const h = S.hero, t = S.them, top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -730,6 +830,8 @@ function levelTab() {
     <button class="primary" type="button" id="levelUp"${canLevel() && !S.battle ? '' : ' disabled'}>Level up</button>
     <div class="over"><h3>Training points · ${S.points} to spend</h3><div class="train">${STAT_KEYS.map((k) => `<div><span>${STAT_INFO[k].name}</span><b>${h.stats[k]}</b><small>${S.bonus[k] ? `+${S.bonus[k] * step}` : ''}</small><button class="sm" type="button" data-train="${k}"${S.points > 0 && !S.battle && h.stats[k] < 1000 ? '' : ' disabled'} aria-label="Train ${STAT_INFO[k].name}">+${step}</button></div>`).join('')}</div>
       <p>Every level gives 3 points. A point is worth more as you grow, and sits on top of what a Klutz Knight gains by herself. EXP comes from fights and from quests the first time.</p></div>
+    <div class="over"><h3>Path · why the bust grows</h3><div class="crow">${Object.entries(PATHS).map(([k, x]) => `<button class="sm${k === S.path ? '' : ' quiet'}" type="button" data-path="${k}" aria-pressed="${k === S.path}">${esc(x.cls)}</button>`).join('')}</div>
+      <p><b>${esc(PATHS[S.path].name)}</b>: ${esc(PATHS[S.path].why)}. It grows ${esc(PATHS[S.path].when)}. Each tier: Tempt +2, Finesse −2%, ${esc(PATHS[S.path].perk)}. Tier ${S.bust} of 10; tiers stay when you switch.</p></div>
     <div class="over"><h3>Moves</h3><ul class="moves">${list.map((s) => `<li class="${s.unlock > S.level ? 'locked' : ''}"><b>${esc(s.name)}</b><span>${s.unlock > S.level ? `level ${s.unlock}` : s.cost?.mp ? `${n(s.cost.mp)} MP` : s.cost?.limit ? `${s.cost.limit} MCE` : 'free'}</span><small>${esc(s.text ?? '')}</small></li>`).join('')}</ul></div>`;
 }
 function debugTab() {
@@ -745,32 +847,457 @@ function debugTab() {
     <div class="over"><h3>What the old controls are</h3><p>Turn them on and the top bar gets the place list, a level box and Rest, and the story box gets the story-event list, the sparring button and the three ways to stress her. The sparring sandbox (they attack, guard, rattle) is the Spar button at the Training Yard, or the button above.</p></div>
     <div class="over"><h3>Right now</h3><p>${S.battle ? `In a real fight, round ${S.battle.state.round}` : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${esc(placeNow().name)} · level ${S.level} · ${n(S.exp)} / ${n(needExp())} EXP · ${S.points} points · hunts are ${S.party ? 'party of four at your level' : 'solo, enemies at three quarters of your level'}.</p></div>`;
 }
+/* ---------- time: a clock, four phases, opening hours ---------- */
+const hourNow = () => (S.clock / 60) % 24, dayNow = () => Math.floor(S.clock / 1440) + 1;
+const phaseNow = () => { const h = hourNow(); return h >= 22 || h < 6 ? 'Night' : h >= 18 ? 'Evening' : h >= 12 ? 'Afternoon' : 'Morning'; };
+const hhmm = () => `${String(Math.floor(hourNow())).padStart(2, '0')}:${String(Math.floor(S.clock % 60)).padStart(2, '0')}`;
+const clockText = () => `Day ${dayNow()} · ${hhmm()} · ${phaseNow()}`;
+const openNow = (hours) => { if (!hours) return true; const h = hourNow(), [a, b] = hours; return a <= b ? h >= a && h < b : h >= a || h < b; };
+const PHASE_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night'];
+function passTime(mins) {
+  if (!(mins > 0)) return;
+  const before = phaseNow(), full = S.hero.mp >= S.hero.maxMp, hrs = mins / 60;
+  S.clock += Math.round(mins); store.set('clock', S.clock);
+  if (!S.battle && S.hero.hp > 0) S.hero = { ...S.hero, mp: Math.min(S.hero.maxMp, Math.round(S.hero.mp + S.hero.maxMp * 0.04 * hrs)) };
+  if (S.path === 'mage' && full) grow(Math.round(6 * hrs), 'mana with nowhere to go');
+  if (phaseNow() !== before) { post({ who: 'sys', dice: `[time] ${clockText()}`, say: PHASE_LINE[phaseNow()] }); refreshWho(); }
+}
+function sleepUntil(hour) { chem(-20, 'sleep'); passTime(((hour * 60 - (S.clock % 1440) + 1440) % 1440) || 1440); }
+
+/* ---------- people: hidden records, who is where ---------- */
+const placeNow = () => PLACES.find((x) => x.id === S.place) ?? PLACES[0];
+const castOf = (id) => ({ ...CAST[id], ...(store.get('cast', {})[id] ?? {}) });
+function npcOf(id) { S.npc[id] ??= { met: false, rapport: 20, talked: -1 }; return S.npc[id]; }
+const saveNpc = () => store.set('npc', S.npc);
+const tierOf = (r) => (r >= 70 ? 'Close' : r >= 45 ? 'Friendly' : r >= 25 ? 'Acquaintance' : 'Wary');
+function wandererAt() { const pool = PLACES.filter((p) => p.zone === 'safe' && !p.who); return pool[(dayNow() * 5 + PHASE_ORDER.indexOf(phaseNow()) * 3) % pool.length].id; }
+function residentOf(placeId) {
+  const moved = store.get('residents', {}), place = PLACES.find((p) => p.id === placeId);
+  let id = placeId in moved ? moved[placeId] : place?.who ?? null;
+  if (id && CAST[id] && !openNow(castOf(id).hours)) id = null;
+  if (!id && !(placeId in moved) && wandererAt() === placeId) id = 'sable';
+  return id && CAST[id] ? id : null;
+}
+function seat() { // whoever is here takes the right side of the stage
+  S.who = residentOf(S.place);
+  if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
+  else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
+  S.meet = S.who && !npcOf(S.who).met ? S.who : null;
+}
+function refreshWho() { const was = S.who; seat(); if (S.who === was) return; S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${S.who ? `${esc(S.nameR)} turns up.` : `${esc(castOf(was).name)} heads off.`}` }); }
+function setPlace(id) {
+  const place = PLACES.find((x) => x.id === id) ?? PLACES[0];
+  S.place = place.id; store.set('place', place.id); S.used = {}; S.spot = null;
+  $('scene').innerHTML = place.src ? `<img src="${esc(place.src)}" alt="">` : '';
+  $('place').value = place.id; seat();
+}
+function saveCast() { if (!S.who) return; const all = store.get('cast', {}); all[S.who] = { name: S.nameR, cls: S.classR, ...(S.lookR.startsWith('custom') ? {} : { look: S.lookR }) }; store.set('cast', all); }
+const nextLine = (list) => { S.lineAt = (S.lineAt ?? 0) + 1; return list[S.lineAt % list.length]; };
+
+/* ---------- levels, the body, the purse ---------- */
+const PR = __m.progression, needExp = () => PR.expToNext(S.level), canLevel = () => S.level < 100 && S.exp >= needExp();
+const trainStep = (level) => Math.max(1, Math.round(__m.stats.benchmarkStat(level) * 0.05));
+const dcFor = (level, diff = 'normal') => __m.stats.difficultyDc(level, diff);
+const temptBonus = () => 2 * S.bust;
+function heroStats(level) { const base = statsAt(klutz, level), out = {}; for (const k of STAT_KEYS) out[k] = Math.min(1000, base[k] + (S.bonus[k] ?? 0) * trainStep(level)); out.AGI = Math.max(1, Math.round(out.AGI * (1 - 0.02 * S.bust))); return out; }
+function heroBars(level) { const stats = heroStats(level); return { stats, hp: Math.round(maxHp(level, stats.CON) * (1 + (S.path === 'warrior' ? 0.03 * S.bust : 0))), mp: Math.round(maxMp(level, stats.WIL) * (1 + (S.path === 'mage' ? 0.05 * S.bust : 0))) }; }
+function rebuildHero() { if (S.battle) return; const k = S.hero, f = freshHero(k); S.hero = { ...f, hp: Math.min(f.maxHp, k.hp), mp: Math.min(f.maxMp, k.mp), stress: k.stress, limit: k.limit, resolve: k.resolve, binds: k.binds, mods: k.mods }; }
+function note(text) { S.changes.unshift(`${hhmm()} ${text}`); if (S.changes.length > 14) S.changes.pop(); }
+function gainExp(amount, why) {
+  if (!amount || S.level >= 100) return;
+  const was = canLevel(); S.exp += Math.round(amount); store.set('exp', S.exp); note(`EXP +${Math.round(amount)} · ${why}`);
+  if (!was && canLevel()) post({ who: 'sys', dice: `<b>LEVEL UP READY</b> · ${esc(why)}`, tone: 'virtue', say: 'Something in the armor sits a little easier. Open the Level tab on the right when you want it.' });
+}
+function levelUp() {
+  if (!canLevel() || S.battle) return;
+  S.exp -= needExp(); S.level += 1; S.points += 3; store.set('exp', S.exp); store.set('level', S.level); store.set('points', S.points);
+  S.hero = freshHero(S.hero); S.them = freshThem(); S.down = false; S.stam = 100; store.set('stam', 100);
+  const fresh = DATA.valerie.skills.filter((s) => s.unlock === S.level).map((s) => s.name);
+  post({ who: 'sys', plate: 'Level up', dice: `<b>LEVEL ${S.level}</b> · 3 training points${fresh.length ? ` · new: ${esc(fresh.join(', '))}` : ''}`, tone: 'virtue', say: 'Every bar refills. You feel exactly as clumsy as before, only more so, and somehow that is better.' });
+}
+function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
+function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
+function useStam(amount, why) { const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
+function decency(delta, why) { if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
+const GROW_SAY = {
+  warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
+  mage: 'The spare mana has to go somewhere. It goes where it always goes. The breastplate creaks and lets a strap out a notch.',
+  rogue: 'The purse is heavier, and so, by some rule nobody has explained to you, are you. A strap lets itself out a notch.' };
+function grow(points, why) {
+  if (!(points > 0) || S.bust >= 10) return;
+  S.bustXp += points; note(`bust +${points}% · ${why}`);
+  while (S.bustXp >= 100 && S.bust < 10) { S.bustXp -= 100; S.bust += 1; const p = PATHS[S.path];
+    post({ who: 'sys', plate: `${p.name} · ${p.why}`, dice: `<b>BUST · TIER ${S.bust}</b> · Tempt +2 · Finesse −2% · ${esc(p.perk)}`, tone: 'fumble', say: GROW_SAY[S.path] }); pop('l', `TIER ${S.bust}`, 'var(--pink)'); }
+  if (S.bust >= 10) S.bustXp = 0;
+  store.set('bust', S.bust); store.set('bustXp', S.bustXp); rebuildHero();
+}
+
+/* ---------- dice: every roll lands in the tray at the top ---------- */
+const oddsOf = (stat, dc, bonus = 0) => __m.rng.clampPct(__m.rng.contestPct(effectiveStat(S.hero, stat), dc, bonus));
+function rollCheck({ title, stat, dc, bonus = 0, parts = [], hidden = false }) {
+  const mine = effectiveStat(S.hero, stat), r = __m.rng.check(__m.rng.contestPct(mine, dc, bonus), fixedRolls([d()]));
+  S.lastRoll = { title, pct: r.pct, roll: r.roll, degree: r.degree, hidden, math: `${STAT_INFO[stat].name} ${mine}${parts.map((p) => `, ${p}`).join('')} against ${dc}: ${r.pct}% · rolled ${r.roll}` };
+  S.trayFresh = true; note(`d100 ${r.roll} vs ${r.pct}%: ${r.degree} · ${title}`);
+  return r;
+}
+function tableRoll(title, rows) { // one d100 against a table of [label, chance, colour]; whatever is left over is quiet
+  const roll = d(), segs = []; let at = 0, hit = null;
+  for (const [label, chance, cls] of rows) { if (!(chance > 0) || at >= 100) continue; const lo = at + 1, hi = Math.min(100, at + chance); segs.push({ key: label, cls, label, lo, hi }); if (!hit && roll >= lo && roll <= hi) hit = label; at = hi; }
+  if (at < 100) segs.push({ key: 'quiet', cls: 'miss', label: 'quiet', lo: at + 1, hi: 100 });
+  S.lastRoll = { title, roll, degree: hit ?? 'quiet', segs, math: `${rows.filter((r) => r[1] > 0).map(([l, c]) => `${l} ${c}%`).join(' · ') || 'nothing can happen here'} · rolled ${roll}` };
+  S.trayFresh = true; note(`d100 ${roll}: ${hit ?? 'quiet'} · ${title}`);
+  return hit ?? 'quiet';
+}
+function renderTray() {
+  const el = $('tray'), L = S.lastRoll; el.hidden = !L; if (!L) return;
+  const open = !L.hidden || S.dbgTop;
+  const segs = L.segs ?? (open ? segments((r) => { const o = readRoll(r, L.bands ?? { pct: L.pct, critPct: Math.max(1, Math.floor(L.pct / 10)), fumbleFrom: 96 }); return { key: o, cls: o, label: NAMES[o] }; }) : [{ key: 'h', cls: 'miss', label: 'hidden', lo: 1, hi: 100 }]);
+  const tone = { crit: 'crit', hit: 'hit', miss: 'miss', fumble: 'fumble', bounce: 'bounce', fight: 'crit', event: 'hit', quiet: 'miss' }[L.degree] ?? 'hit';
+  el.innerHTML = `<div class="tray-h"><span class="lbl">${esc(L.title)}</span><b class="deg o-${tone}">${esc(String(L.degree).toUpperCase())}</b></div>${stripHtml(segs, L.roll)}<p class="tray-m">${open ? esc(L.math ?? '') : `Rolled ${L.roll}. Their numbers are hidden: get to know them, or open the Debugger.`}</p>`;
+  if (!S.trayFresh) return;
+  S.trayFresh = false; el.classList.remove('land'); const m = el.querySelector('.mark');
+  if (m) { const to = m.style.left; m.style.transition = 'none'; m.style.left = '0%'; void m.offsetWidth; m.style.transition = 'left .8s cubic-bezier(.2,.8,.2,1)'; m.style.left = to; }
+  setTimeout(() => el.classList.add('land'), 820);
+}
+
+/* ---------- effects of a choice ---------- */
+function applyFx(fx, why) {
+  const out = [], say = (t) => { out.push(t); note(`${t} · ${why}`); };
+  if (fx.stress > 0) { const s = VC.applyStressToValerie(S.hero, fx.stress, 'embarrassment'); S.hero = s.combatant; say(s.taken ? `stress +${s.taken}` : 'stress: she did not notice'); }
+  if (fx.stress < 0) { const r = ST.relieveStress(S.hero, -fx.stress, { from: 'self' }); S.hero = r.combatant ?? r; say(`stress −${-fx.stress}`); }
+  if (fx.airhead) { S.hero = V.shiftAirhead(S.hero, fx.airhead); say(`Airhead ${fx.airhead > 0 ? '+' : '−'}${Math.abs(fx.airhead)}`); }
+  if (fx.hp) { S.hero = { ...S.hero, hp: Math.min(S.hero.maxHp, Math.round(Math.max(0, S.hero.hp) + (S.hero.maxHp * fx.hp) / 100)) }; S.down = S.hero.hp <= 0; say(`HP +${fx.hp}%`); }
+  if (fx.mana) { S.hero = { ...S.hero, mp: Math.min(S.hero.maxMp, Math.round(S.hero.mp + (S.hero.maxMp * fx.mana) / 100)) }; say(`Mana +${fx.mana}%`); }
+  if (fx.limit) { S.hero = { ...S.hero, limit: Math.max(0, Math.min(100, S.hero.limit + fx.limit)) }; say(`MCE +${fx.limit}`); }
+  if (fx.gold) out.push(`gold +${n(gainGold(fx.gold * Math.max(1, S.level), why))}`);
+  if (fx.exp) { const xp = Math.round(needExp() * fx.exp); gainExp(xp, why); out.push(`${n(xp)} EXP`); }
+  if (fx.rest) { useStam(-fx.rest, why); fed(Math.round(fx.rest / 2)); out.push(`stamina +${fx.rest}`); }
+  if (fx.chem) chem(fx.chem, why);
+  if (fx.decency) { decency(fx.decency, why); out.push(`decency ${fx.decency > 0 ? '+' : '−'}${Math.abs(fx.decency)}`); }
+  if (fx.grow && (!fx.growPath || fx.growPath === S.path)) grow(fx.grow, why);
+  return out;
+}
+
+/* ---------- meeting someone: four ways to answer, their numbers hidden ---------- */
+function meetBonus(kind) {
+  const c = castOf(S.meet), a = APPROACH[kind], g = V.airheadOf(S.hero);
+  const like = c.likes === kind ? 20 : c.dislikes === kind ? -20 : 0, tilt = Math.round(((g - 50) / 5) * a.tilt), tb = a.tempt ? temptBonus() : 0, low = S.decency < 40 ? -10 : 0;
+  return { total: like + tilt + tb + low, parts: [like && `${like > 0 ? '+' : '−'}20 they ${like > 0 ? 'like' : 'hate'} that`, tilt && `${tilt > 0 ? '+' : '−'}${Math.abs(tilt)} Airhead`, tb && `+${tb} bust`, low && '−10 low decency'].filter(Boolean) };
+}
+function meet(kind) {
+  const id = S.meet; if (!id || !APPROACH[kind]) return;
+  const c = castOf(id), a = APPROACH[kind], rec = npcOf(id), b = meetBonus(kind);
+  const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts, hidden: true });
+  rec.met = true; rec.rapport = Math.max(0, Math.min(100, 20 + { crit: 35, hit: 22, miss: 6, fumble: -8 }[r.degree])); saveNpc(); S.meet = null;
+  note(`${c.name}: rapport ${rec.rapport} (${tierOf(rec.rapport)})`);
+  post({ who: 'me', dice: `[d100 ${r.roll}${S.dbgTop ? ` vs ${r.pct}` : ''}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
+  post({ who: 'her', say: r.success ? c.warm : c.cold, spoken: true, fx: [r.success ? `${c.name} warms to you` : `${c.name} is not sure about you`] });
+  if (r.degree === 'fumble') decency(-4, 'a first impression gone wrong');
+  if (r.success) grow(S.path === 'warrior' ? 20 : a.tempt && S.path === 'rogue' ? 12 : 0, `meeting ${c.name}`);
+  if (r.success) chem(a.tempt ? 14 : 8, `meeting ${c.name}`);
+  pop('r', r.success ? '♥' : '…', r.success ? 'var(--pink)' : 'var(--muted)'); passTime(10);
+}
+
+/* ---------- spots, the shop, potions ---------- */
+function doSpot(i) {
+  const spot = (SPOTS[S.place] ?? []).find((s) => s.id === S.spot), o = spot?.opts[i]; if (!o) return;
+  if (o.buy) return buy(o.buy);
+  const cost = (o.cost ?? 0) * Math.max(1, S.level);
+  if (cost && !spend(cost)) return post({ who: 'sys', dice: `[gold] ${esc(o.label)} costs ${n(cost)}. You have ${n(S.gold)}.` });
+  if (o.sleep) {
+    sleepUntil(7); const f = freshHero(S.hero); S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(f.maxHp * 0.5)), mp: Math.max(S.hero.mp, Math.round(f.maxMp * 0.5)) }; S.down = false;
+    S.stam = Math.max(S.stam, 60); store.set('stam', S.stam); decency(-5, 'slept rough'); const fx = applyFx(o.win, o.label);
+    return post({ who: 'me', plate: spot.name, dice: `[no roll] ${esc(o.label)} · ${clockText()}`, say: o.win.say, fx: ['HP and Mana to half', 'stamina 60', 'decency −5', ...fx] });
+  }
+  let r = null;
+  if (o.stat) r = rollCheck({ title: `${spot.name} · ${o.label}`, stat: o.stat, dc: dcFor(S.level, o.diff), bonus: o.tempt ? temptBonus() : 0, parts: o.tempt && S.bust ? [`+${temptBonus()} bust`] : [] });
+  const res = !r || r.success ? o.win : o.lose ?? { say: 'Nothing comes of it.' };
+  const fx = applyFx(res, o.label); if (cost) fx.unshift(`gold −${n(cost)}`);
+  if (r?.degree === 'fumble') decency(-3, o.label);
+  post({ who: 'me', plate: spot.name, dice: r ? `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(o.label)}` : `[no roll] ${esc(o.label)}`, tone: r ? r.degree : null, say: res.say, fx });
+  if (!res.rest) useStam(2, o.label);
+  if (S.who && cost) { const rec = npcOf(S.who); rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); }
+  passTime(o.mins ?? 20);
+  if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
+}
+function buy(kind) {
+  const p = POTIONS[kind], cost = p.price * Math.max(1, S.level);
+  if (!spend(cost)) return post({ who: 'sys', dice: `[gold] ${esc(p.name)} costs ${n(cost)}. You have ${n(S.gold)}.` });
+  S.bag[kind] = (S.bag[kind] ?? 0) + 1; store.set('bag', S.bag);
+  post({ who: 'me', plate: 'Fizz and Fettle', dice: `[bought] ${esc(p.name)} · ${n(cost)} gold · ${esc(p.hint)}`, say: 'A hand comes out from between the bottles, takes your coins, and puts a corked flask in their place. "Shake it first. Or do not. I am not sure."' });
+}
+function drink(kind) {
+  const p = POTIONS[kind]; if (!p || !(S.bag[kind] > 0) || S.battle) return;
+  const full = kind === 'mana' && S.hero.mp >= S.hero.maxMp;
+  S.bag[kind] -= 1; store.set('bag', S.bag); S.hero = p.use(S.hero); S.down = S.hero.hp <= 0; note(`${p.name}: ${p.hint}`);
+  post({ who: 'me', plate: 'Satchel', dice: `[drink] ${esc(p.name)} · ${esc(p.hint)}`, say: 'It tastes like a colour. A good one.' });
+  if (full && S.path === 'mage') grow(20, 'more mana than she can hold');
+}
+
+/* ---------- getting around: distance, danger, standoffs ---------- */
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+const legMins = (a, b) => Math.round(dist(a, b) * (a.zone === 'wild' || b.zone === 'wild' ? 2.4 : 1.2));
+function dangerOf(p) { // percent chance of a fight on entering or exploring: the place, the hour, and the state she is in
+  if (p.zone === 'safe') return S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0;
+  return Math.min(90, (p.enc ?? 0) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0));
+}
+function pathTo(id) { // the shortest walk along the lines on the map
+  const prev = { [S.place]: null }, queue = [S.place];
+  while (queue.length) { const at = queue.shift(); if (at === id) break; for (const l of PLACES.find((p) => p.id === at).links) if (!(l in prev)) { prev[l] = at; queue.push(l); } }
+  const out = []; for (let at = id; at && at !== S.place; at = prev[at]) out.unshift(at); return out;
+}
+function eventPool(p) { return questsAt(p).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); }); }
+function luckyFind(plate) { const fx = applyFx({ gold: 4, exp: 0.02 }, 'a lucky find'); post({ who: 'me', plate, dice: '[event] a lucky find', tone: 'hit', say: 'Half buried by the path: a dropped purse, and a map with one useful corner left.', fx }); }
+function goTo(id) {
+  const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return;
+  if (S.battle || S.standoff) return post({ who: 'sys', plate: 'Combat', dice: '<b>COMBAT</b> · you cannot walk away', tone: 'crit', say: 'Fight, talk them down, tempt them, or run. Those are the ways out.' });
+  if (S.fallen) return post({ who: 'sys', dice: 'You are on the ground. Get up first.' });
+  if (S.mode === 'combat') S.mode = 'travel';
+  S.prev = S.place; let at = from, total = 0;
+  for (const step of pathTo(id)) {
+    const p = PLACES.find((x) => x.id === step), mins = legMins(at, p), wild = p.zone === 'wild' || at.zone === 'wild';
+    total += mins; passTime(mins); setPlace(step); S.them = freshThem(); S.down = S.hero.hp <= 0; useStam(Math.max(1, Math.round(dist(at, p) / (wild ? 4 : 8))), `walking to ${p.short}`); at = p;
+    const danger = dangerOf(p), evt = p.zone === 'safe' ? 0 : p.evt ?? 0;
+    if (S.fallen) break;
+    if (!danger && !evt) continue;
+    const res = tableRoll(`Travel · ${p.name}`, [['fight', danger, 'crit'], ['event', evt, 'hit']]);
+    if (res === 'fight') { arrive(from, p, total); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : 'they were waiting on the road'); }
+    if (res === 'event') { arrive(from, p, total); const pool = eventPool(p); return pool.length ? showEvent(pool[Math.floor(Math.random() * pool.length)].id) : luckyFind('On the way'); }
+  }
+  arrive(from, placeNow(), total);
+}
+function arrive(from, to, mins) {
+  const q = eventPool(to).length;
+  post({ who: 'sys', plate: to.name, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: openNow(to.hours) ? to.text : `${to.text} It is shut until ${to.hours[0]}:00.`, fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(q ? [`${q} quest${q === 1 ? '' : 's'} around here`] : [])] });
+  if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
+  else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+}
+function explore() {
+  const p = placeNow(), pool = eventPool(p); passTime(30); useStam(5, 'exploring'); if (S.fallen) return;
+  const danger = dangerOf(p);
+  if (p.zone === 'safe' && !danger) return pool.length ? showEvent(pool[Math.floor(Math.random() * pool.length)].id) : post({ who: 'me', plate: 'Explore', say: 'You poke around for a while. Nothing here needs a hero today.' });
+  const res = tableRoll(`Explore · ${p.name}`, [['fight', danger, 'crit'], ['event', p.zone === 'safe' ? 0 : p.evt ?? 20, 'hit']]);
+  if (res === 'fight') return startStandoff('you walked right into them');
+  if (res === 'event') return pool.length ? showEvent(pool[Math.floor(Math.random() * pool.length)].id) : luckyFind('Explore');
+  post({ who: 'me', plate: 'Explore', dice: '[quiet]', say: 'Wind, leaves, and your own armor clanking. Nothing finds you this time.' });
+}
+const STAND_SAY = {
+  persuade: ['You explain, earnestly and at length, why nobody here wants this. Somewhere in the third minute they agree just to make it stop.', 'You open with "Now, listen." They do not.'],
+  tempt: ['You smile, the armor catches the light, and three of them forget what they were holding. One of them pays you to go away happy.', 'You strike a pose. Your foot finds the only loose stone for a mile.'],
+  run: ['You run. The sword steers. Against all odds it steers the right way.', 'You turn to run and the cloak decides to stay.'] };
+function startStandoff(why, encId) {
+  const all = DATA.encounters.encounters, pool = all.filter((x) => x.id !== 'hoard_drake' && x.id !== 'horde_at_the_gate'), safe = placeNow().zone === 'safe';
+  const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
+  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level: Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) }; S.mode = 'combat'; S.spot = null;
+  post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : enc.text ?? 'They have seen you.'} You cannot walk on: fight, talk them down, tempt them, or run.` });
+  pop('l', 'COMBAT', 'var(--crit)');
+}
+function standoffAct(kind) {
+  const so = S.standoff; if (!so) return;
+  const begin = () => { S.standoff = null; startBattle({ encounter: so.id, level: so.level }); };
+  if (kind === 'fight') return begin();
+  const stat = { persuade: 'WIL', tempt: 'LCK', run: 'AGI' }[kind], label = { persuade: 'Persuade', tempt: 'Tempt', run: 'Run' }[kind]; if (!stat) return;
+  const tb = kind === 'tempt' ? temptBonus() : 0, r = rollCheck({ title: `${label} · ${so.name}`, stat, dc: dcFor(so.level), bonus: tb, parts: tb ? [`+${tb} bust`] : [] });
+  const dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
+  if (!r.success) { const fx = applyFx({ stress: kind === 'tempt' ? 5 : 4 }, `${label} failed`); if (r.degree === 'fumble') decency(-4, `${label} fumbled`); post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][1], fx }); return begin(); }
+  S.standoff = null; S.mode = 'travel';
+  const fx = applyFx(kind === 'persuade' ? { exp: 0.04 } : kind === 'tempt' ? { gold: 6, airhead: 5, grow: 12, growPath: 'rogue' } : { stress: 2 }, label);
+  post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][0], fx });
+  if (kind === 'run') { useStam(8, 'running'); if (S.prev && S.prev !== S.place && !S.fallen) { setPlace(S.prev); S.them = freshThem(); } }
+  post({ who: 'sys', dice: `<b>TRAVELLING</b> · no fight · ${esc(placeNow().name)}`, tone: 'virtue' });
+}
+function fallDown() {
+  S.fallen = true; S.spot = null; decency(-6, 'fell over in public');
+  post({ who: 'sys', plate: 'Out of stamina', dice: '<b>DOWN</b> · stamina 0', tone: 'crit', say: 'Your legs file a complaint and the armor seconds it. You are on the ground, and getting up is going to take willpower.' }); pop('l', 'DOWN', 'var(--crit)');
+}
+function getUp() {
+  const r = rollCheck({ title: 'Get up · Willpower', stat: 'WIL', dc: dcFor(S.level, 'easy') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Get up`;
+  passTime(20);
+  if (r.success) { S.fallen = false; S.stam = r.degree === 'crit' ? 30 : 15; store.set('stam', S.stam); return post({ who: 'me', dice, tone: r.degree, say: 'One knee, then the other, then a long negotiation with the sword. You are up.', fx: [`stamina ${S.stam}`] }); }
+  const fx = applyFx({ stress: 6 }, 'could not get up'); post({ who: 'me', dice, tone: r.degree, say: 'You get as far as one elbow. The ground is very persuasive.', fx });
+  const p = placeNow(), danger = dangerOf(p) + (p.zone === 'safe' ? 0 : 15);
+  if (danger && d() <= danger) { S.fallen = false; S.stam = 10; store.set('stam', S.stam); startStandoff('they found you on the ground'); }
+}
+function afterFight(won, r) {
+  if (won && r?.gold) gainGold(r.gold, 'spoils');
+  if (won && S.path === 'warrior') grow(15, 'a fight won');
+  if (!won) decency(-10, 'carried out of a fight');
+  S.afterStam = won ? 15 : Math.max(1, S.stam - 5);
+}
+
+/* ---------- what you can do where you stand ---------- */
 function doAct(id) {
   const who = S.who ? castOf(S.who) : null, here = placeNow();
-  const once = () => { S.used[id] = true; };
-  if (id === 'talk') return who && post({ who: 'her', say: nextLine(who.greet), spoken: true });
+  if (id === 'getup') return getUp();
+  if (id.startsWith('meet:')) return meet(id.slice(5));
+  if (id.startsWith('so:')) return standoffAct(id.slice(3));
+  if (id.startsWith('spot:')) { S.spot = id.slice(5) || null; return; }
+  if (id.startsWith('opt:')) return doSpot(+id.slice(4));
+  if (id.startsWith('use:')) return drink(id.slice(4));
+  if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
+  if (id === 'talk') { if (!who) return; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: rapport ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
   if (id === 'board') return setView('guild');
-  if (id === 'rest') { reset(true); return post({ who: 'sys', dice: '[rest] A night at the Gilded Goose.', tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled. The gauge stays where you left it.' }); }
+  if (id === 'rest') {
+    const cost = 8 * Math.max(1, S.level);
+    if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A room is ${n(cost)} gold. You have ${n(S.gold)}.`, say: 'The bench at the Well is free, if lumpy.' });
+    sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; decency(20, 'a bath and a real bed');
+    return post({ who: 'sys', plate: 'The Gilded Goose', dice: `[rest] A room · ${n(cost)} gold · ${clockText()}`, tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled, armor buffed by someone who knows how. The gauge stays where you left it.' });
+  }
   if (id === 'explore') return explore();
   if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
   if (id === 'hunt') { const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
-  const relief = (amount) => { const r = ST.relieveStress(S.hero, amount, { from: id }); S.hero = r.combatant ?? r; };
-  if (id === 'wish') { once(); relief(15); S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + 5) }; pop('l', '−15 stress', 'var(--mint)');
-    return post({ who: 'sys', dice: '[no roll] Make a wish · stress −15 · MCE +5', tone: 'virtue', say: 'You flick a coin at the well. It hits the rim, the bucket, a pigeon and the water, in that order. The wish probably still counts.' }); }
-  if (id === 'drink') { once(); S.hero = V.shiftAirhead(S.hero, 15); relief(5); pop('l', 'AIRHEAD +15', 'var(--lime)');
-    return post({ who: 'sys', dice: '[no roll] Buy a round · Airhead +15 · stress −5', tone: 'hit', say: 'It is pink, it is fizzy, and it comes with a tiny sword in it. Halfway down, thinking starts to feel optional.' }); }
-  if (id === 'study') { once(); S.hero = V.shiftAirhead(S.hero, -15); const xp = Math.round(needExp() * 0.05); pop('l', 'AIRHEAD −15', 'var(--cyan)'); post({ who: 'sys', dice: `[no roll] Study · Airhead −15 · ${n(xp)} EXP`, tone: 'hit', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.' }); return gainExp(xp, 'an hour in the Archive'); }
-  if (id === 'soak') { once(); S.hero = { ...S.hero, hp: Math.min(S.hero.maxHp, Math.round(S.hero.hp + S.hero.maxHp * 0.3)) }; relief(20); S.down = S.hero.hp <= 0; pop('l', '+30% HP', 'var(--mint)');
-    return post({ who: 'sys', dice: '[no roll] Soak · HP +30% · stress −20', tone: 'virtue', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.' }); }
+  if (id === 'study') { S.used[id] = true; passTime(120); useStam(4, 'study'); const fx = applyFx({ airhead: -15, exp: 0.05, grow: 15, growPath: 'mage' }, 'Study'); return post({ who: 'me', plate: 'Study', dice: '[no roll] Two hours with a book', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.', fx }); }
+  if (id === 'soak') { S.used[id] = true; passTime(60); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
+}
+function cell(act, label, hint, cls = '', off = false) { return `<button class="cell bubble ${cls}" type="button" data-act="${esc(act)}"${off ? ' disabled' : ''}><b>${esc(label)}</b><small>${esc(hint)}</small></button>`; }
+function exitCells(here) {
+  return here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
+    return `<button class="cell bubble go" type="button" data-go="${id}"><b>→ ${esc(p.short)}</b><small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('');
 }
 function travelGrid() {
-  const here = placeNow(), who = S.who ? castOf(S.who) : null, needsLegs = new Set(['explore', 'hunt', 'spar']);
-  const acts = (here.acts ?? []).map((id, i) => { const a = ACTS[id], off = (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
-    return `<button class="cell${i === 0 ? ' primary' : ''}" type="button" data-act="${id}"${off ? ' disabled' : ''}><b>${esc(a.label)}</b><small>${a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : esc(id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : a.hint)}</small></button>`; });
-  if (who) acts.push(`<button class="cell" type="button" data-act="talk"><b>Talk to ${esc(who.name.length <= 12 ? who.name : who.name.split(' ')[0])}</b><small>${esc(who.role)}</small></button>`);
-  const exits = here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id); return `<button class="cell go" type="button" data-go="${id}"><b>→ ${esc(p.short)}</b><small>${esc(r ? castOf(r).name : p.name)}</small></button>`; });
-  return acts.join('') + exits.join('');
+  const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
+  const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
+  if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy')), 'primary');
+  if (S.standoff) { const dc = dcFor(S.standoff.level); return cell('so:fight', 'Fight', 'a real fight, alone', 'primary') + cell('so:persuade', 'Persuade', odds('WIL', dc)) + cell('so:tempt', 'Tempt', odds('LCK', dc, temptBonus())) + cell('so:run', 'Run', odds('AGI', dc)) + own; }
+  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, S.dbgTop ? odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total) : `${STAT_INFO[a.stat].name} · ?`, i === 0 ? 'primary' : '')).join('') + own + exitCells(here);
+  const closed = !openNow(here.hours);
+  if (S.spot) { const spot = (SPOTS[here.id] ?? []).find((s) => s.id === S.spot);
+    return spot.opts.map((o, i) => o.buy
+      ? cell(`opt:${i}`, `Buy ${POTIONS[o.buy].name}`, `${POTIONS[o.buy].hint} · ${n(POTIONS[o.buy].price * L)} gold · have ${S.bag[o.buy] ?? 0}`, i === 0 ? 'primary' : '', S.gold < POTIONS[o.buy].price * L)
+      : cell(`opt:${i}`, o.label, `${o.stat ? odds(o.stat, dcFor(S.level, o.diff), o.tempt ? temptBonus() : 0) : 'no roll'}${o.cost ? ` · ${n(o.cost * L)} gold` : ''}${o.sleep ? 'free · till morning' : ''}`, i === 0 ? 'primary' : '', Boolean(o.cost) && S.gold < o.cost * L)).join('') + cell('spot:', 'Step away', `back to the ${here.short.toLowerCase()}`, 'go'); }
+  const needsLegs = new Set(['explore', 'hunt', 'spar']);
+  const acts = (here.acts ?? []).map((id) => { const a = ACTS[id], shut = closed && id !== 'look', off = shut || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
+    return cell(id, a.label, shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); });
+  const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
+  if (who) acts.push(cell('talk', `Talk to ${who.name.length <= 12 ? who.name : who.name.split(' ')[0]}`, tierOf(npcOf(S.who).rapport), 'primary'));
+  return acts.join('') + spots.join('') + exitCells(here);
 }
+function dashboard() {
+  const p = PATHS[S.path], v = dangerOf(placeNow());
+  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
+    <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''}</p></div>
+    <div class="over"><h3>Purse and satchel</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0}</span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>`;
+}
+
+/* ---------- the map ---------- */
+function mapTab() {
+  const here = placeNow(), near = new Set(here.links), seen = new Set(), lines = [], roam = wandererAt();
+  for (const p of PLACES) for (const l of p.links) { const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); const q = PLACES.find((x) => x.id === l); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}"/>`); }
+  const nodes = PLACES.map((p) => { const q = eventPool(p).length, who = residentOf(p.id), shut = !openNow(p.hours);
+    return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">${q}</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
+  const who = S.who ? castOf(S.who) : null;
+  return `<div class="who"><p class="lbl">${S.battle || S.standoff ? 'In combat' : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${clockText()}</p><h2>${esc(here.name)}</h2><p class="role">${who ? `${esc(who.name)} is here` : 'Nobody else is here'}</p></div>
+    <svg class="map" viewBox="0 0 100 100" role="group" aria-label="Map of Gooseford and the wilds">${lines.join('')}${nodes}</svg>
+    <p class="more">click a bubble to walk there · red ring: the wilds · pink dot: a regular · gold dot: the wanderer · number: quests</p>
+    <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
+    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `You are ${tierOf(npcOf(S.who).rapport).toLowerCase()} with them.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}`;
+}
+
+/* ---------- in a real fight: potions, and the three ways out ---------- */
+function battleOdds(st) {
+  const foes = st.enemies.map((id) => st.combatants[id]).filter((f) => f.hp > 0 && !f.fled), hp = foes.reduce((s, f) => s + f.hp, 0), max = st.enemies.reduce((s, id) => s + st.combatants[id].maxHp, 0) || 1;
+  const dc = dcFor(foes[0]?.level ?? S.level), hurt = Math.round((1 - hp / max) * 30) - 10;
+  return { dc, hurt, persuade: oddsOf('WIL', dc, hurt), tempt: oddsOf('LCK', dc, hurt + temptBonus()), run: oddsOf('AGI', dc, hurt + 10) };
+}
+function battleExtras(st) {
+  const pots = Object.entries(POTIONS).filter(([k]) => (S.bag[k] ?? 0) > 0).map(([k, p]) => `<button class="cell" type="button" data-bx="${k}"><b>Drink ${esc(p.name)}</b><small>${esc(p.hint)} · uses the turn · ×${S.bag[k]}</small></button>`).join('');
+  if (st.boss) return pots;
+  const o = battleOdds(st);
+  return pots + ['persuade', 'tempt', 'run'].map((k) => `<button class="cell go" type="button" data-bx="${k}"><b>${{ persuade: 'Persuade', tempt: 'Tempt', run: 'Run' }[k]}</b><small>${o[k]}% · fail and the turn is gone</small></button>`).join('');
+}
+function battleExtra(kind) {
+  const b = S.battle; if (!b || BT.currentActor(b.state) !== 'valerie') return;
+  const spendTurn = () => { const acts = BT.legalActions(b.state, 'valerie'), a = acts.find((x) => x.kind === 'guard' && !x.disabled) ?? acts.find((x) => x.kind === 'breather' && !x.disabled) ?? acts.find((x) => !x.disabled);
+    const step = BT.act(b.state, { kind: a.kind, skillId: a.skillId, stance: a.stance, ...(a.choose ? { target: a.targets[0] } : {}) }, b.rng); b.state = step.state; postEvents(step.events); battleAdvance(); };
+  if (POTIONS[kind]) {
+    if (!(S.bag[kind] > 0)) return; S.bag[kind] -= 1; store.set('bag', S.bag);
+    b.state = { ...b.state, combatants: { ...b.state.combatants, valerie: POTIONS[kind].use(b.state.combatants.valerie) } };
+    post({ who: 'me', plate: 'Satchel', dice: `[drink] ${esc(POTIONS[kind].name)} · ${esc(POTIONS[kind].hint)} · the turn goes to bracing`, say: 'You drink it one-handed behind your own shield arm. Most of it goes in.' }); return spendTurn();
+  }
+  const stat = { persuade: 'WIL', tempt: 'LCK', run: 'AGI' }[kind], label = { persuade: 'Persuade', tempt: 'Tempt', run: 'Run' }[kind]; if (!stat || b.state.boss) return;
+  const o = battleOdds(b.state), bonus = o.hurt + (kind === 'tempt' ? temptBonus() : kind === 'run' ? 10 : 0);
+  const r = rollCheck({ title: `${label} · ${b.state.name}`, stat, dc: o.dc, bonus, parts: [`${o.hurt >= 0 ? '+' : '−'}${Math.abs(o.hurt)} how hurt they are`, ...(kind === 'tempt' && S.bust ? [`+${temptBonus()} bust`] : []), ...(kind === 'run' ? ['+10 head start'] : [])] });
+  const dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
+  if (!r.success) { post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][1], fx: ['the turn is gone'] }); return spendTurn(); }
+  post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][0] });
+  post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · ${kind === 'run' ? 'you got away' : 'they stood down'} · ${esc(b.state.name)}`, tone: 'virtue' });
+  S.afterStam = kind === 'run' ? 12 : 6; leaveBattle();
+  applyFx(kind === 'persuade' ? { exp: 0.03 } : kind === 'tempt' ? { gold: 4, grow: 12, growPath: 'rogue' } : { stress: 2 }, label);
+}
+
+/* ---------- the debugger: everything the game is hiding ---------- */
+function renderDebugger() {
+  const el = $('dbgTop'); el.hidden = !S.dbgTop; $('dbgBtn').setAttribute('aria-pressed', S.dbgTop); if (!S.dbgTop) return;
+  const here = placeNow(), L = S.lastRoll, ch = (p) => (p.zone === 'safe' && !dangerOf(p) ? 'safe' : `fight ${dangerOf(p)}% · event ${p.zone === 'safe' ? 0 : p.evt ?? 0}%`);
+  const rec = S.who ? npcOf(S.who) : null, c = S.who ? castOf(S.who) : null, t = S.them, path = PATHS[S.path];
+  el.innerHTML = `
+    <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p></div>
+    <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}</p><p>= ${dangerOf(here)}% here</p></div>
+    <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · rapport ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
+    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p></div>
+    <div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
+    <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
+}
+/* ---------- the left panel: tabs over her bars, settings and save under them ---------- */
+function chem(delta, why) { if (!delta) return; const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+  if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
+function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
+function leftTabs() { return `<div class="rtabs" role="tablist" aria-label="Your panel">${[['stats', 'Stats'], ['bio', 'Bio'], ['spicy', 'Spicy']].map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === S.ltab}">${name}</button>`).join('')}</div>`; }
+function bioTab() {
+  const p = DATA.card?.profile ?? {}, rows = [['Age', p.age], ['Height', p.height], ['Build', p.build], ['Hair', p.hair], ['Eyes', p.eyes], ['Job', p.occupation], ['From', p.hometown], ['Likes', p.likes], ['Dislikes', p.dislikes], ['Fears', p.fears], ['Good at', p.smart_at], ['Bad at', p.bad_at], ['Says', p.catchphrases]].filter((r) => r[1]);
+  return `${overviewHero()}${rows.length ? `<div class="over"><h3>From her character sheet</h3><dl class="bio">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(v)}</dd>`).join('')}</dl></div>` : ''}`;
+}
+function spicyTab() {
+  const p = PATHS[S.path], sheet = Object.fromEntries((DATA.card?.secondary ?? []).map((x) => [x.k, x.v]));
+  return `<div class="over"><h3>Body trackers</h3><div class="bars">${bar(`Bust · tier ${S.bust}`, S.bustXp, 100, 'var(--pink)')}${bar(`Hips · tier ${S.hips}`, S.hipsXp, 100, 'var(--violet)')}${bar('Size · how much the armor is losing', (S.bust + S.hips) * 5, 100, 'var(--gold)')}${bar('Chemistry', S.chem, 100, 'var(--crit)')}</div>
+      <p><b>${esc(p.name)}</b> (${esc(p.cls)} path): the bust grows by ${esc(p.why)}, ${esc(p.when)}. Every tier is Tempt +2, Finesse −2% and ${esc(p.perk)}. Change the path on the Level tab.</p>
+      <p>Hips grow with good meals and long sits. Chemistry rises when she flirts, drinks pink things or wins someone over, and cools when she sleeps${S.path === 'warrior' ? '; when it fills, the bust jumps' : ''}. Hips and Size only tick. They ask nothing.</p></div>
+    <div class="over"><h3>How she feels</h3><div class="bars">${bar('Mood', Math.max(0, 100 - Math.round(S.hero.stress / 2)), 100, 'var(--mint)')}${bar('Energy', S.stam, 100, 'var(--gold)')}${bar('Comfort', S.decency, 100, 'var(--cyan)')}${bar('Temper', Math.min(100, Math.round(S.hero.stress / 2)), 100, 'var(--crit)')}${bar('Party trust', sheet.Trust ?? 30, 100, 'var(--violet)')}</div></div>`;
+}
+function settingsBlock() {
+  const tog = (key, label, on) => `<button class="sm${on ? '' : ' quiet'}" type="button" data-set="${key}" aria-pressed="${on}">${label}: ${on ? 'on' : 'off'}</button>`;
+  return `<div class="over"><h3>Settings</h3><div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
+      <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
+      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}</div></div>
+    <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
+}
+function settingClick(key) {
+  if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
+  if (key === 'import') { try { const data = JSON.parse($('saveBox').value); for (const [k, v] of Object.entries(data)) if (k.startsWith('oops-') && typeof v === 'string') localStorage.setItem(k, v); location.reload(); } catch { post({ who: 'sys', dice: '[save] That did not read as a save. Paste the whole thing.' }); } return; }
+  if (!['dbgTop', 'debug', 'party', 'aiThoughts'].includes(key)) return;
+  S[key] = !S[key]; store.set(key, S[key]);
+}
+
+/* ---------- her inner voice: canned for now, optionally written by Claude's quick model ---------- */
+const THOUGHTS = {
+  lucid: ['Okay. Think. What would someone who actually knew how to hold a sword do?', 'These are not my hands. They are very good hands. Focus.', 'There is a plan in here somewhere. I just have to not fall on it.', 'If I act like I meant that, nobody checks.'],
+  ditzy: ['Was I going somewhere? I was going somewhere.', 'The armor is so shiny today. Good job, armor.', 'I should probably be worried. I will schedule it for later.', 'Did I eat? I feel like a person who has not eaten.'],
+  airhead: ['Ooh. Lantern.', 'Everything is fine! Everything is always fine!', 'Hee. Clank clank.', 'I love it here. Where is here?'],
+  combat: ['They look angry. Maybe they are just hungry?', 'Stand in front. That part I know.', 'Sword up. No, the other up.'],
+  fallen: ['The ground is nice, actually. Very supportive.', 'Up. Any moment now. Legs?'],
+  meet: ['New person! Say something normal. What do normal people say?', 'Smile. Not that much. A bit less. There.'],
+  rough: ['People are staring. It is probably the heroism.', 'I think there is a leaf in my hair. I think there has been for a while.'],
+  tired: ['A bench would be lovely. Or a floor. Floors are everywhere.'],
+};
+function pickThought() {
+  const band = V.airheadBand(V.airheadOf(S.hero));
+  const key = S.fallen ? 'fallen' : S.battle || S.standoff ? 'combat' : S.meet ? 'meet' : S.stam < 25 ? 'tired' : S.decency < 35 ? 'rough' : band;
+  const list = THOUGHTS[key]; S.thoughtN = (S.thoughtN ?? 0) + 1;
+  S.thought = { text: list[S.thoughtN % list.length], voice: band === 'lucid' ? 'you' : 'her' };
+  if (S.aiThoughts) thinkAloud(key, band);
+}
+async function thinkAloud(key, band) {
+  if (S.thinking) return; S.thinking = true;
+  try {
+    if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+    if (!sampler) return;
+    const last = (S.lines[S.lines.length - 1] ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 300);
+    const out = await sampler(`Write ONE short inner thought (under 18 words, no quotes) for Dame Valerie Bellweather, a kind, clumsy, absurdly lucky knight in a light fantasy comedy. ${band === 'lucid' ? 'Right now the ordinary modern person inside her body is thinking: dry, a bit overwhelmed, practical.' : 'Right now Valerie herself is thinking: sunny, earnest, a beat behind, never sarcastic.'} PG-13. Situation: ${key}; she is at ${placeNow().name}; Airhead ${V.airheadOf(S.hero)}/100; stamina ${S.stam}; just happened: ${last}`, { modelTier: 'quick', cache: false });
+    const t = (out?.text ?? '').trim().replace(/^["']|["']$/g, ''); if (t) { S.thought = { text: t.slice(0, 160), voice: band === 'lucid' ? 'you' : 'her' }; renderThought(); }
+  } catch (e) { if (e?.code === 'not_granted') { S.aiThoughts = false; store.set('aiThoughts', false); } }
+  finally { S.thinking = false; }
+}
+function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; }
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -781,11 +1308,9 @@ function renderHuds() {
     <div class="dial">${dial(gauge, 100, [[0, 33, .1], [33, 66, .16], [66, 100, .24]], 'var(--lime)')}<div class="num"><b>${gauge}</b><span>${esc(band.name)}</span></div></div>
     <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
     ${emo(h, true)}
-    <div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('MP', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
-    ${stateChips(h)}${attrs(h, top)}
-    <div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
-      <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label></div>
-    <p class="more">scroll for her overview</p>${overviewHero()}`;
+    ${leftTabs()}
+    ${S.ltab === 'bio' ? bioTab() : S.ltab === 'spicy' ? spicyTab() : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${attrs(h, top)}${dashboard()}`}
+    ${settingsBlock()}`;
   $('hudR').innerHTML = rightPanel();
 }
 
@@ -804,7 +1329,7 @@ function stripHtml(segs, mark) {
     <div class="key">${Object.entries(key).map(([k, v]) => `<span><i class="o-${v.cls}"></i>${esc(k)} ${v.n}%</span>`).join('')}</div>`;
 }
 function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '' }) {
-  S.lines.push(`<div class="line ${who}"><span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
+  S.lines.push(`<div class="line ${who}${who === 'sys' && !plate && !extra ? ' cap' : ''}"><span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
     ${dice ? `<p class="dice" style="--k:${TONE[tone] ?? 'var(--text)'}">${dice}</p>` : ''}${strip ?? ''}
     ${say ? `<p class="say${spoken ? ' spoken' : ''}">${esc(say)}</p>` : ''}${fx.length ? `<div class="fx">${fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${extra}</div>`);
   if (S.lines.length > 160) { S.lines.shift(); seen = Math.max(0, seen - 1); }
@@ -942,7 +1467,7 @@ const events = DATA.packs.flatMap((p) => p.events);
 const doneQuests = new Set(store.get('quests', []));
 function showEvent(id) {
   const ev = events.find((e) => e.id === id); if (!ev) return;
-  const spot = PLACES.find((x) => (x.tags ?? []).some((t) => (ev.where ?? []).includes(t))); if (spot && spot.id !== S.place) { setPlace(spot.id); S.them = freshThem(); }
+  const fits = (x) => (x.tags ?? []).some((t) => (ev.where ?? []).includes(t)), spot = fits(placeNow()) ? null : PLACES.find(fits); if (spot) { setPlace(spot.id); S.them = freshThem(); }
   post({ who: 'sys', plate: ev.title, say: ev.scene, extra: `<div class="choices">${ev.choices.map((c) => { const pct = EV.choicePct(c, S.hero);
     return `<button class="choice" type="button" data-ev="${esc(ev.id)}" data-choice="${esc(c.id)}"><small>${c.mode === 'wing' ? 'Wing it' : c.mode === 'think' ? 'Think it through' : 'Either way'}</small>${esc(c.label)}<em>${pct === null ? 'no roll' : `${pct}%`}</em></button>`; }).join('')}</div>` });
 }
@@ -975,20 +1500,6 @@ function setMode(mode, why) {
   S.mode = mode;
   if (mode === 'combat') post({ who: 'sys', dice: `<b>COMBAT</b>${why ? ` · ${esc(why)}` : ''}`, tone: 'crit', say: `${S.nameR} squares up. Initiative, stances and dice from here on: pick how you act.` });
   else post({ who: 'sys', dice: `<b>TRAVELLING</b>${why ? ` · ${esc(why)}` : ''}`, tone: 'virtue', say: 'Weapons down. You can explore, take a quest from the board, or go somewhere else.' });
-}
-function goTo(id) {
-  const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return;
-  if (S.battle) return post({ who: 'sys', dice: 'You are in a fight.', say: 'Finish it, or press the red pill at the top to walk out (debug).' });
-  S.mode = 'travel'; setPlace(id); S.them = freshThem(); S.down = S.hero.hp <= 0;
-  const q = questsAt(to).filter((e) => !doneQuests.has(e.id)).length;
-  post({ who: 'sys', dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b>`, tone: 'virtue', say: to.text, fx: q ? [`${q} quest${q === 1 ? '' : 's'} around here`] : [] });
-  if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
-}
-function explore() {
-  const place = placeNow();
-  const pool = questsAt(place).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); });
-  if (!pool.length) return post({ who: 'sys', dice: `[explore] ${esc(place.name)}`, say: 'You poke around for a while. Nothing here needs a hero today. Try another bubble on the map, or the board at the Guild Hall.' });
-  showEvent(pool[Math.floor(Math.random() * pool.length)].id);
 }
 function checkDown() {
   if (S.hero.hp <= 0 || S.them.hp <= 0) {
@@ -1062,12 +1573,14 @@ function render() {
   $('rattle').textContent = `Rattle ${S.nameR}`;
   const combat = S.mode === 'combat';
   document.body.classList.toggle('combat', combat);
-  document.body.classList.toggle('debug', S.debug);
-  $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat;
-  if (!combat) $('gridTravel').innerHTML = travelGrid();
+  document.body.classList.toggle('debug', S.debug); document.body.dataset.phase = phaseNow(); $('clock').textContent = clockText();
+  if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
+  renderTray(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
+  $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
+  if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
-  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : combat ? 'Sparring' : `Travelling · ${placeNow().short}`;
+  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : `Travelling · ${placeNow().short}`;
   if (S.battle) renderBattleRow(); else $('foe').hidden = true;
   $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
   $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
@@ -1118,18 +1631,25 @@ function debugClick(what) {
   else if (what === 'party') { S.party = !S.party; store.set('party', S.party); }
   else if (what === 'exp') gainExp(Math.max(1, needExp() - S.exp), 'a cheat');
   else if (what === 'heal') { reset(true); post({ who: 'sys', dice: '[debug] Healed and calmed.' }); }
+  else if (what === 'mode' && S.standoff) { S.standoff = null; S.mode = 'travel'; }
   else if (what === 'mode') { if (S.battle) { post({ who: 'sys', dice: '<b>TRAVELLING</b> · you left the fight (debug)', tone: 'virtue', say: 'You walk out of a fight nobody is allowed to walk out of. Your bars come with you as they are.' }); leaveBattle(); } else setMode(S.mode === 'combat' ? 'travel' : 'combat', 'switched by hand'); }
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [] }); doneQuests.clear(); seen = 0; drawn = {};
-    setPlace('square'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, Wishing Well Square, nothing done yet.' });
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null }); doneQuests.clear(); seen = 0; drawn = {};
+    setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
 }
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ltab) { S.ltab = b.dataset.ltab; store.set('ltab', S.ltab); return render(); }
+  if (b.dataset.set) { settingClick(b.dataset.set); return render(); }
+  if (b.id === 'dbgBtn') { settingClick('dbgTop'); return render(); }
+  if (b.dataset.path) { S.path = b.dataset.path; store.set('path', S.path); rebuildHero(); note(`path: ${PATHS[S.path].name}`); return render(); }
+  if (b.dataset.bx) { battleExtra(b.dataset.bx); return render(); }
+  if (b.id === 'mode' && S.standoff) { S.standoff = null; S.mode = 'travel'; post({ who: 'sys', dice: '<b>TRAVELLING</b> · you waved the standoff away (debug)', tone: 'virtue' }); return render(); }
   if (b.dataset.rtab) { S.rtab = b.dataset.rtab; if (b.dataset.rtab !== 'fight') store.set('rtab', S.rtab); $('hudR').scrollTop = 0; return render(); }
   if (b.dataset.act) { doAct(b.dataset.act); return render(); }
   if (b.dataset.dbg) { debugClick(b.dataset.dbg); return render(); }
@@ -1181,12 +1701,13 @@ for (const side of ['L', 'R']) {
 }
 $('level').value = String(S.level);
 $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
-setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'square') : 'square');
+setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'gates') : 'gates');
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
 reset(false);
-post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, on the left, in the town of Gooseford. The map on the right is how you get around: click a bubble and you are there. The buttons under this box are what you can do where you stand. The pill up top always says whether you are travelling or in combat.` });
-if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside, every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
+if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
+else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
 window.__stage = { S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
