@@ -100,6 +100,9 @@ Questions the roles raised, settled here so nobody answers them twice.
 - **The duel anchor (A2) is measured on plain hits:** no crits, variance 1.
 - **Her six accidents are innate at level 1.** Nothing in her kit is gated by level except the skill tree.
 - **Boss phase changes do not fire set-piece stress on their own.** A boss's stress comes from its moves; the boss tables are tuned on that basis.
+- **Durations count the bearer's own turns** and tick at the end of each. Guard is the exception: it lasts until the start of the granter's next turn.
+- **A cleanse or a steal never touches a Resolve state.** Mods whose source is the combatant's own affliction or virtue are skipped.
+- **The Resolve Check is one d100 read three ways:** the band picks the result, an even roll swaps in a personal entry, doubles make it permanent.
 - **Statuses are registered where they are used:** class and hero statuses in `skills.json`, boss and encounter statuses in their own files.
 
 ## Anchors (these become tests)
@@ -137,7 +140,8 @@ Questions the roles raised, settled here so nobody answers them twice.
 - `target`: one, row, all, self, ally, allies
 - `part`: head, arms, legs or none. A bound part seals its skills.
 - `tags` that rules key on: melee, ranged, projectile, mental, horror, embarrassment, realization
-- `effects[].kind`: bind, stress, mod, status, heal, limit, airhead
+- `effects[].kind`: bind, stress, mod, status, heal, limit, airhead, dot, cleanse, revive. An effect lands on the skill's target unless it says `"target": "self"`.
+- Tags `ultimate` (costs Limit) and `scripted` (needs code of its own beyond its effects list)
 - IDs are lowercase snake case with an owner prefix: `war_`, `mag_`, `rog_`, `val_`, `itm_`, `boss_`, `aff_`, `vir_`, `evt_`
 
 **Engine options.** Functions that roll take a trailing `opts` object so passives can move band edges without the engine knowing who they belong to: `hitBonus`, `hitFloor`, `hitCap`, `critBonus`, `fumbleFrom`, `damageMult`.
