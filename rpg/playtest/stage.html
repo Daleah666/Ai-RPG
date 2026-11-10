@@ -1107,6 +1107,20 @@ body.lay1 #hudL .pcol,body.lay1 #statStrip,body.lay1 .mapkey3,body.lay1 .rfolds,
 </div>
 
 <script>
+/* ---------- if anything breaks, say so on the page: a blank screen tells nobody anything ---------- */
+(() => { let shown = 0; const tell = (what) => { if (shown >= 3) return; shown += 1; let box = document.getElementById('crashNote');
+    if (!box) { box = document.createElement('div'); box.id = 'crashNote'; box.setAttribute('role', 'alert'); box.style.cssText = 'position:fixed;left:50%;bottom:14px;translate:-50% 0;z-index:9999;max-width:min(720px,92vw);padding:12px 14px;border-radius:12px;background:#2a0f14;border:1px solid #ff6b81;color:#ffe9ec;font:14px/1.4 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.6)';
+      const head = document.createElement('b'); head.textContent = 'Something on this page broke. A screenshot of this box tells Claude what to fix.';
+      const list = document.createElement('div'); list.id = 'crashList'; list.style.cssText = 'margin:6px 0;font:12px/1.4 ui-monospace,monospace;white-space:pre-wrap;word-break:break-word';
+      const row = document.createElement('div'); row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap';
+      const mk = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = label; b.style.cssText = 'padding:5px 10px;border-radius:8px;border:1px solid #ff6b81;background:transparent;color:inherit;cursor:pointer'; b.addEventListener('click', (e) => { e.stopPropagation(); fn(); }); return b; };
+      row.append(mk('Reload the page', () => location.reload()), mk('Reset the layout and reload (keeps the save)', () => { try { for (const k of ['sizeL', 'hudL', 'hudR', 'lay', 'rtab', 'trayPos', 'zoomL', 'help']) localStorage.removeItem(`oops-${k}`); } catch { /* storage is off */ } location.reload(); }), mk('Hide', () => box.remove()));
+      box.append(head, list, row); (document.body ?? document.documentElement).append(box); }
+    const line = document.createElement('div'); line.textContent = what; document.getElementById('crashList').append(line); };
+  window.addEventListener('error', (e) => { if (e.message && !/ResizeObserver/.test(e.message)) tell(`${e.message}${e.lineno ? ` (line ${e.lineno})` : ''}`); });
+  window.addEventListener('unhandledrejection', (e) => { const r = e.reason; if (r?.code) return; tell(String(r?.message ?? r)); }); })();
+</script>
+<script>
 /*__ENGINE__*/
 /*__DATA__*/
 </script>
@@ -1791,7 +1805,7 @@ function debugTab() {
       <button class="sm" type="button" data-dbg="mode">${S.battle ? 'Leave the fight' : S.mode === 'combat' ? 'Stop sparring' : 'Start sparring here'}</button>
       <button class="sm" type="button" data-dbg="exp">+1 level of EXP</button>
       <button class="sm" type="button" data-dbg="heal">Heal and calm</button>
-      <button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button>
+      <button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Press again: this erases the save' : 'Start from the beginning'}</button>
     </div>
     ${simBlock()}
     <div class="over"><h3>Cheats</h3><div class="set">${CHEATS.filter((c) => c[0] !== 'stir').map(([id, label]) => `<button class="sm" type="button" data-cheat="${id}">${esc(label)}</button>`).join('')}<button class="sm" type="button" data-jiggle="1">Jiggle free</button></div></div>
@@ -2234,7 +2248,7 @@ function settingsBlock() {
       <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
       <label><span class="lbl">What strangers take her for</span><select id="race">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
       ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}${tog('growFace', 'Her card follows her growth', S.growFace)}${tog('closeups', 'Close-ups while people talk', S.closeups)}${tog('loopPrio', 'Loop clips before still pictures', S.loopPrio)}${tog('aiTalk', 'Claude writes what people say back', S.aiTalk)}${tog('tpRow', 'Jump buttons in the Debug tab', S.tpRow)}</div></div>
-    <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
+    <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Press again: this erases the save' : 'Start from the beginning'}</button></div></div>`;
 }
 function settingClick(key) {
   if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
@@ -2785,7 +2799,7 @@ function socialCells(here, who) {
 function itemCells() { return cell('x', `${n(S.gold)} gold`, 'the purse', '', true) + Object.entries(POTIONS).map(([k, p]) => cell(`use:${k}`, `${p.name} ×${S.bag[k] ?? 0}`, p.hint, '', !((S.bag[k] ?? 0) > 0))).join(''); }
 function debugCells() {
   return (S.tpRow ? `<div class="exits"><span class="lbl">Jump to</span>${PLACES.map((p) => `<button class="go" type="button" data-tp="${p.id}"${p.id === S.place ? ' disabled' : ''}>${esc(p.short)}</button>`).join('')}</div>` : '')
-    + cheatCells() + `<button class="cell bubble" type="button" data-opening="1"><b>Play the opening</b><small>the prologue, from the top</small></button><button class="cell bubble" type="button" data-set="dbgTop"><b>Debugger ${S.dbgTop ? 'off' : 'on'}</b><small>the hidden numbers</small></button><button class="cell bubble" type="button" data-sim="walks"><b>Simulators</b><small>open them on the right</small></button><button class="cell bubble" type="button" data-dbg="mode"><b>${S.mode === 'combat' ? 'Stop sparring' : 'Spar here'}</b><small>the old sandbox</small></button>`;
+    + cheatCells() + `<button class="cell bubble" type="button" data-opening="1"><b>Play the opening</b><small>the prologue again · keeps the save</small></button><button class="cell bubble" type="button" data-dbg="wipe"><b>${S.wipeArmed ? 'Press again to erase' : 'Start from the beginning'}</b><small>${S.wipeArmed ? 'the save in this browser goes' : 'a new game · the opening plays'}</small></button><button class="cell bubble" type="button" data-set="dbgTop"><b>Debugger ${S.dbgTop ? 'off' : 'on'}</b><small>the hidden numbers</small></button><button class="cell bubble" type="button" data-sim="walks"><b>Simulators</b><small>open them on the right</small></button><button class="cell bubble" type="button" data-dbg="mode"><b>${S.mode === 'combat' ? 'Stop sparring' : 'Spar here'}</b><small>the old sandbox</small></button>`;
 }
 const MOOD_FACES = {}; // lookId → { Cheerful: 'art/…' }: one portrait per mood, for when the pictures exist
 function face() { const id = S.faceL || growFace() || loopOf(S.lookL), look = S.custom[id] ?? LOOKS.find((l) => l.id === id) ?? LOOKS[0], m = mood(S.hero, true)[1], src = MOOD_FACES[look.id]?.[m] ?? look.src; if (!src) return ''; return `<span class="face" title="${esc(m)}">${look.video && src === look.src ? `<video src="${esc(src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(src)}" alt="">`}</span>`; }
@@ -3536,12 +3550,12 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v39', NEW_UI = [
+const NEW_VER = 'v40', NEW_UI = [
   ['[data-help="attrs"]', 'Her six attributes are one line now. The ? opens the bars and what each one does. Moves, travel, chapters and the numbers have a ? too.'],
   ['[data-fast]', 'Fast travel: to any place she has already reached on foot. Same minutes, no rolls on the way.'],
   ['.passing button', 'Hail someone and a tab with her name opens here: how she feels about you right now, with six bars that move as you talk.'],
   ['.top [data-menu="lore"]', 'Lore opens with the story as Chapters (marks and milestones) and a table of the number system.'],
-  ['[data-ctab="debug"]', 'Debug has Play the opening: the prologue, from the top.'],
+  ['[data-ctab="debug"]', 'Debug has Play the opening (the prologue again) and Start from the beginning (a new game from the first line).'],
 ];
 function hideNew() { clearTimeout(S.newT); $('newLayer')?.remove(); }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -3700,6 +3714,11 @@ const OPENING = () => [
   { who: 'me', say: 'Then we learn it the long way. One place at a time, on foot.', spoken: true },
   { who: 'sys', dice: '[prologue] Walk to a place once and she knows the road. After that she can fast travel there.' },
 ];
+function startOver() { const keep = {}; // a new game: the save goes, the lead and the layout stay, and the page loads again so the opening plays
+  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
+    for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k);
+    for (const [k, v] of Object.entries(keep)) localStorage.setItem(`oops-${k}`, v); } catch { /* storage is off: loading the page again starts fresh anyway */ }
+  location.reload(); }
 function playOpening() { for (const l of OPENING()) { if (l.who === 'sys' && l.say) S.said = S.said.filter((x) => x !== l.say); post(l); } }
 
 /* ---------- more than one answer: the newest written reply keeps its takes; the arrows flip between them and the last arrow asks for a fresh one ---------- */
@@ -4458,12 +4477,7 @@ function debugClick(what) {
   else if (what === 'heal') { reset(true); S.waiting = false; spent(false, 'a cheat'); post({ who: 'sys', dice: '[debug] Healed and calmed.' }); }
   else if (what === 'mode' && S.standoff) { S.standoff = null; S.mode = 'travel'; }
   else if (what === 'mode') { if (S.battle) { post({ who: 'sys', dice: '<b>TRAVELLING</b> · you left the fight (debug)', tone: 'virtue', say: 'You walk out of a fight nobody is allowed to walk out of. Your bars come with you as they are.' }); leaveBattle(); } else setMode(S.mode === 'combat' ? 'travel' : 'combat', 'switched by hand'); }
-  else if (what === 'wipe') {
-    if (!S.wipeArmed) { S.wipeArmed = true; return; }
-    try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, cls: 'knight', heat: 0, cond: {}, resist: {}, journal: [], seen: {}, perks: {}, count: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
-    S.waiting = false; S.spent = false; S.faceL = ''; S.ai = {}; S.sheet = {}; S.fillNote = ''; setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
-  }
+  else if (what === 'wipe') { if (!S.wipeArmed) { S.wipeArmed = true; return; } return startOver(); }
   if (what !== 'wipe') S.wipeArmed = false;
 }
 document.addEventListener('click', (e) => {
@@ -4572,7 +4586,7 @@ document.addEventListener('dragstart', (e) => { if (document.body.classList.cont
 const SIZES = { slim: () => (window.innerWidth <= 1180 ? 150 : Math.round(Math.max(160, Math.min(230, window.innerWidth * 0.105)))), min: () => (window.innerWidth <= 1180 ? 196 : Math.round(Math.max(224, Math.min(340, window.innerWidth * 0.155)))), half: () => Math.round(Math.max(360, Math.min(640, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
 const sizeNear = (v) => Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - v) - Math.abs(SIZES[b]() - v))[0];
 const applyHud = {};
-function sizeL(name) { S.sizeL = name; store.set('sizeL', name); applyHud.L?.(SIZES[name]()); }
+function sizeL(name) { if (!Object.hasOwn(SIZES, name)) return; S.sizeL = name; store.set('sizeL', name); applyHud.L?.(SIZES[name]()); }
 function snapL() { const now = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hudL'), 10) || 224; sizeL(Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - now) - Math.abs(SIZES[b]() - now))[0]); renderHuds(); }
 for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
@@ -4585,7 +4599,7 @@ for (const side of ['L', 'R']) {
     grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up); });
   grip.addEventListener('keydown', (e) => { const now = parseInt(getComputedStyle(root).getPropertyValue(key), 10) || 224; const step = (e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0) * (side === 'L' ? 1 : -1); if (step) { e.preventDefault(); apply(now + step); } });
 }
-S.sizeL = S.sizeL ?? 'min'; applyHud.L(SIZES[S.sizeL]());
+S.sizeL = Object.hasOwn(SIZES, S.sizeL ?? '') ? S.sizeL : 'min'; applyHud.L(SIZES[S.sizeL]());
 window.addEventListener('resize', () => applyHud.L(SIZES[S.sizeL]()));
 $('level').value = String(S.level);
 $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
@@ -4599,7 +4613,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
