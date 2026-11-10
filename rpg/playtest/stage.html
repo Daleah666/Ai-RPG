@@ -477,6 +477,16 @@ body.alone{--col:700px}
 .backlog li span{color:var(--gold)}
 .backlog small{display:block;font-family:var(--f-mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
 @media (min-width:901px){body.sheetL .face{display:none}}
+.tok{flex:none;display:block;width:44px;height:44px;border-radius:10px;border:1px solid var(--edge2)}
+.roster .r.foe-r{grid-template-columns:44px minmax(0,1fr);gap:9px;align-items:start}
+.roster .r.foe-r .rb{display:grid;gap:3px;min-width:0}
+.roster .r.foe-r small{font-family:var(--f-mono);font-size:.56rem;color:var(--faint);letter-spacing:.03em}
+.line.has-face{padding-left:66px;min-height:72px}
+.line .spk{position:absolute;left:11px;top:16px}
+.line.her.has-face{border-top-right-radius:16px;border-top-left-radius:6px;align-self:flex-start}
+.line.her.has-face .plate{left:66px;right:auto}
+.foe-h{display:flex;gap:8px;align-items:center}
+.foe .tok{width:34px;height:34px;border-radius:8px}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -914,13 +924,14 @@ function battlePanel() {
   const st = S.battle.state, foes = st.enemies.map((id) => st.combatants[id]), allies = st.heroes.filter((id) => id !== 'valerie').map((id) => st.combatants[id]);
   const f = focusFoe(), pct = Math.round((Math.max(0, f.hp) / f.maxHp) * 100), phase = st.boss ? st.defs.boss?.phases?.[st.boss.phase] : null, pend = st.boss?.pending;
   const row = (c, aim) => `<div class="r${c.hp <= 0 || c.fled ? ' out' : ''}${aim ? ' aim' : ''}"><div class="h">${esc(c.name)}<span>${c.fled ? 'fled' : c.hp <= 0 ? 'down' : `${n(c.hp)} · ${pctOf(c.hp, c.maxHp)}`}</span></div>${miniBar(c.hp, c.maxHp, 'var(--mint)')}${c.side === 'heroes' ? miniBar(c.stress, 200, 'var(--violet)') : ''}${stateChips(c)}</div>`;
+  const foeRow = (c, aim) => `<div class="r foe-r${c.hp <= 0 || c.fled ? ' out' : ''}${aim ? ' aim' : ''}">${tokenFor(c.name)}<div class="rb"><div class="h">${esc(c.name)}<span>${c.fled ? 'fled' : c.hp <= 0 ? 'down' : pctOf(c.hp, c.maxHp)}</span></div>${miniBar(c.hp, c.maxHp, 'var(--crit)')}${miniBar(c.stress ?? 0, 200, 'var(--pink)')}<small>Might ${n(effectiveStat(c, 'STR'))} · Finesse ${n(effectiveStat(c, 'AGI'))} · Mana ${n(c.mp ?? 0)}</small>${stateChips(c)}</div></div>`;
   return `
     <div class="who"><p class="lbl">In combat · round ${st.round}</p><h2>${esc(st.name)}</h2><p class="role">${esc(f.name)} · level ${f.level}${f.rank && f.rank !== 'normal' ? ` ${esc(f.rank)}` : ''}</p></div>
+    <div class="over foes"><h3>Against you · health, then nerve</h3><div class="roster">${foes.map((c) => foeRow(c, c.id === f.id && foes.length > 1)).join('')}</div></div>
     <div class="dial">${dial(pct, 100, [[0, 30, .24], [30, 60, .16], [60, 100, .1]], 'var(--crit)')}<div class="num"><b>${pct}%</b><span>${n(f.hp)} HP</span></div></div>
     ${emo(f, false)}
     ${phase ? `<div class="over"><h3>Phase ${st.boss.phase + 1}: ${esc(phase.name)}</h3><p>${esc(phase.question ?? phase.text ?? '')}</p></div>` : ''}
     ${pend ? `<div class="windup"><b>Winding up</b>${esc(st.defs.skills[pend.move]?.name ?? String(pend.move).replace(/_/g, ' '))}${pend.due ? ` · lands round ${pend.due}` : ''}${pend.part ? ` · bind their ${esc(pend.part)} to stop it` : ''}</div>` : ''}
-    <div class="over"><h3>Against you</h3><div class="roster">${foes.map((c) => row(c, c.id === f.id && foes.length > 1)).join('')}</div></div>
     ${allies.length ? `<div class="over"><h3>Your party</h3><div class="roster">${allies.map((c) => row(c)).join('')}</div></div>` : ''}
     ${st.contraption ? `<div class="over"><h3>In the room: ${esc(st.contraption.name)}</h3><p>${st.contraption.used ? 'Already set off this phase.' : 'A Chaos Wave sets it off. Wing It and fumble near it.'}</p></div>` : ''}
     ${st.concession ? `<div class="over"><h3>Another way out: ${esc(st.concession.name)}</h3><p>Opens at ${st.concession.at}% of its HP. ${esc(st.concession.price ?? '')}</p></div>` : ''}`;
@@ -935,7 +946,7 @@ function postEvents0(evts) {
   for (const e of evts) {
     const who = e.actorYou ? 'me' : e.actorSide === 'enemies' ? 'her' : 'sys';
     const tone = e.type === 'attack' ? e.outcome : e.type === 'resolve' ? e.kind : e.type === 'chaos_wave' || e.type === 'contraption' ? 'fumble' : e.type === 'phase' || e.type === 'telegraph' || e.type === 'defeat' ? 'crit' : e.type === 'end' ? (e.result === 'win' ? 'virtue' : 'crit') : null;
-    post({ who, plate: e.type === 'round' ? `Round ${e.round}` : e.actorName ?? 'Game Master', dice: esc(e.line ?? ''), tone, say: e.text ?? '' });
+    post({ who, plate: e.type === 'round' ? `Round ${e.round}` : e.actorName ?? 'Game Master', dice: esc(e.line ?? ''), tone, say: e.text ?? '', face: e.actorSide === 'enemies' && e.actorName && e.type !== 'round' ? tokenFor(e.actorName) : '' });
     const side = e.targetYou ? 'l' : e.targetSide === 'enemies' ? 'f' : e.target === 'companion' ? 'r' : null;
     const shots = [];
     if (e.type === 'attack') {
@@ -991,6 +1002,7 @@ function startBattle(spec) {
   S.battle = { state, rng, pick: null, target: null, solo }; S.mode = 'combat'; S.down = false; S.rtab = 'fight';
   post({ who: 'sys', dice: `<b>COMBAT</b> · ${esc(state.name)} · ${solo ? `you alone, level ${level}, against level ${foeLevel}` : `the whole party at level ${level}`}`, tone: 'crit', say: solo ? 'Nobody else is coming. Pick a stance, pick a move, and let the armor do what it does.' : `${allies.map((x) => x.name).join(', ')} fight beside you. They take their own turns; you take yours.` });
   postEvents(state.opening ?? []);
+  const lead = state.combatants[state.enemies[0]]; if (lead && !spec.boss) post({ who: 'her', plate: lead.name, face: tokenFor(lead.name), say: pick(TAUNTS, d()), spoken: true });
   battleAdvance();
 }
 function battleAct(auto) {
@@ -1623,16 +1635,21 @@ function heckle(so) {
     if (r.outcome === 'miss') { bump('l', 'hop'); pop('l', 'MISS', 'var(--muted)'); }
     if (r.limitGain) { S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + r.limitGain) }; fx.push(`MCE +${r.limitGain}`); }
     S.lastRoll = { title: `${so.name} · ${kind === 'melee' ? 'a shove' : 'something thrown'}`, pct: r.hitPct, roll, degree: r.outcome, bands: { pct: r.hitPct, critPct: r.critPct, fumbleFrom: r.fumbleFrom }, math: `they hit on ${r.hitPct} or less · crit on ${r.critPct} or less · fumble on ${r.fumbleFrom}+ · rolled ${roll}` }; S.trayFresh = true;
-    return post({ who: 'her', plate: so.name, dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
+    return post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
   }
-  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) }, 'jeering'); return post({ who: 'her', plate: so.name, dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
+  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) }, 'jeering'); return post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
   count('catcalls', 'being whistled at');
   const cut = hasPerk('shameless') ? 0 : Math.max(1, Math.round(4 * soft * hard)) + (hasPerk('blush') ? 1 : 0); if (cut) decency(-cut, 'catcalls'); chem(hasPerk('blush') ? 8 : 6, 'catcalls'); conduct('lewd', hasPerk('shameless') ? 1 : 0.5);
-  const fx = applyFx({ stress: hasPerk('blush') ? 1 : 3 }, 'catcalls'); post({ who: 'her', plate: so.name, dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [cut ? `decency −${cut}` : 'decency holds', 'chemistry up', ...fx] });
+  const fx = applyFx({ stress: hasPerk('blush') ? 1 : 3 }, 'catcalls'); post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [cut ? `decency −${cut}` : 'decency holds', 'chemistry up', ...fx] });
 }
 function endStandoff(how, last) {
   const so = S.standoff, area = areaOf(placeNow()); S.standoff = null; S.mode = 'travel'; passTime(20);
-  journal('fight', `${so.name} at ${placeNow().name}: ${{ won: 'their nerve broke', ran: 'she got away', bored: 'they got bored and left', lost: 'they won' }[how] ?? how}, round ${so.round}.`);
+  journal('fight', `${so.name} at ${placeNow().name}: ${{ won: 'their nerve broke', ran: 'she got away', bored: 'they got bored and left', lost: 'they won', forced: 'it came to blows' }[how] ?? how}, round ${so.round}.`);
+  if (how === 'forced') {
+    const dry = S.fallen || S.stam <= 0; S.fallen = false; if (S.stam < 10) { S.stam = 10; store.set('stam', 10); }
+    post({ who: 'sys', plate: 'Combat', dice: `<b>FORCED INTO A FIGHT</b> · ${esc(so.name)} · ${dry ? 'she ran out of stamina' : 'talking did not break them'}`, tone: 'crit', say: dry ? 'Your legs go, and they stop pretending this was a conversation.' : 'Eight rounds of talk and they still have their nerve. Somebody draws a knife. That settles what kind of evening this is.' });
+    pop('l', 'FIGHT', 'var(--crit)'); return startBattle({ encounter: so.id, level: so.level });
+  }
   if (how === 'won') { tally('heckWins', 'thick', 2, 'two crowds broken'); if (last === 'sway') grantPerk('crowd', 'a crowd broken with a sway'); order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
   if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
   if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
@@ -1661,11 +1678,11 @@ function standoffAct(kind) {
       useStam(kind === 'strike' ? 4 : 2, label);
     }
   }
-  if (!ended && S.fallen) ended = 'lost';
+  if (!ended && (S.fallen || S.stam <= 0)) ended = 'forced';
   if (!ended) heckle(so);
   if (!ended && so.nerve <= 0) ended = 'won';
   if (!ended && S.hero.hp <= 0) ended = 'lost';
-  if (!ended && so.round >= 8) ended = 'bored';
+  if (!ended && so.round >= 8) ended = so.nerve <= 40 ? 'bored' : 'forced';
   if (ended) return endStandoff(ended, kind);
   so.round += 1;
   if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
@@ -1879,6 +1896,23 @@ function debugCells() {
 }
 const MOOD_FACES = {}; // lookId → { Cheerful: 'art/…' }: one portrait per mood, for when the pictures exist
 function face() { const look = S.custom[S.lookL] ?? LOOKS.find((l) => l.id === S.lookL) ?? LOOKS[0], m = mood(S.hero, true)[1], src = MOOD_FACES[look.id]?.[m] ?? look.src; if (!src) return ''; return `<span class="face" title="${esc(m)}">${look.video && src === look.src ? `<video src="${esc(src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(src)}" alt="">`}</span>`; }
+/* ---------- little portraits for whoever she is up against: drawn here, no picture files ---------- */
+const TOKENS = {
+  goblin: ['#1d2b1a', '<path d="M8 20 L1 9 L15 16Z M40 20 L47 9 L33 16Z" fill="#7fae52"/><ellipse cx="24" cy="26" rx="14" ry="13" fill="#8fbf5c"/><circle cx="18.5" cy="23" r="2.6" fill="#f6e27a"/><circle cx="29.5" cy="23" r="2.6" fill="#f6e27a"/><circle cx="18.5" cy="23" r="1" fill="#1d2b1a"/><circle cx="29.5" cy="23" r="1" fill="#1d2b1a"/><path d="M17 32 Q24 36 31 32" stroke="#2e4420" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M20 32 l1.5 3 l1.5 -3Z" fill="#f4f1e6"/>'],
+  skeleton: ['#22232a', '<path d="M11 22 a13 13 0 0 1 26 0 v7 h-4 v8 h-18 v-8 h-4Z" fill="#ece8dc"/><ellipse cx="18.5" cy="23" rx="3.4" ry="4" fill="#22232a"/><ellipse cx="29.5" cy="23" rx="3.4" ry="4" fill="#22232a"/><path d="M24 27 l-2 4 h4Z" fill="#22232a"/><path d="M18 34 v3 M22 34 v3 M26 34 v3 M30 34 v3" stroke="#22232a" stroke-width="1.4"/>'],
+  bandit: ['#2a2018', '<path d="M8 40 Q8 8 24 6 Q40 8 40 40Z" fill="#4a3526"/><ellipse cx="24" cy="25" rx="10.5" ry="12" fill="#d9a877"/><rect x="12" y="20" width="24" height="6.5" rx="3" fill="#1c1410"/><circle cx="19" cy="23.2" r="1.5" fill="#f1ead8"/><circle cx="29" cy="23.2" r="1.5" fill="#f1ead8"/><path d="M19 33 Q24 31 29 33" stroke="#6b4630" stroke-width="1.8" fill="none" stroke-linecap="round"/>'],
+  drake: ['#2b1513', '<path d="M12 12 L16 22 L9 20Z M36 12 L32 22 L39 20Z" fill="#e7c98a"/><path d="M10 22 Q24 8 38 22 L32 40 Q24 44 16 40Z" fill="#c8483a"/><path d="M17 24 l6 2 l-6 2Z M31 24 l-6 2 l6 2Z" fill="#f6e27a"/><circle cx="21" cy="37" r="1.2" fill="#2b1513"/><circle cx="27" cy="37" r="1.2" fill="#2b1513"/>'],
+  troll: ['#1c2422', '<ellipse cx="24" cy="25" rx="16" ry="15" fill="#7d9488"/><path d="M11 20 Q17 15 22 20 M26 20 Q31 15 37 20" stroke="#35443d" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="17.5" cy="23.5" r="2" fill="#f6e27a"/><circle cx="30.5" cy="23.5" r="2" fill="#f6e27a"/><path d="M15 33 Q24 37 33 33" stroke="#35443d" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M17 33 l1.6 -5 l1.6 5Z M27.8 33 l1.6 -5 l1.6 5Z" fill="#f4f1e6"/>'],
+  crest: ['#231a2b', '<path d="M24 6 L39 12 V25 Q39 36 24 43 Q9 36 9 25 V12Z" fill="#6f5a8f"/><path d="M24 13 l3 7 h7 l-5.5 4.5 l2 7 l-6.5 -4.2 l-6.5 4.2 l2 -7 L14 20 h7Z" fill="#e9dcff"/>'],
+  man: ['#20232b', '<circle cx="24" cy="19" r="9" fill="#d9a877"/><path d="M8 44 Q8 30 24 30 Q40 30 40 44Z" fill="#5b6475"/><path d="M15 16 Q24 6 33 16 Q28 12 24 13 Q20 12 15 16Z" fill="#3a2a1e"/>'],
+};
+function tokenFor(name) {
+  const t = String(name ?? '').toLowerCase();
+  const kind = /goblin/.test(t) ? 'goblin' : /skelet|hoplite|phalanx|captain/.test(t) ? 'skeleton' : /drake|dragon/.test(t) ? 'drake' : /troll|bolgrim/.test(t) ? 'troll' : /vellum|parity/.test(t) ? 'crest' : /bandit|archer|bowman|raider|slaver|horde|drummer|opportunist|warlord/.test(t) ? 'bandit' : 'man';
+  const [bg, art] = TOKENS[kind];
+  return `<svg class="tok" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="10" fill="${bg}"/>${art}</svg>`;
+}
+const TAUNTS = ['Nice armor. Be a shame if it ended up in a ditch with you still in it.', 'Talking is over, knight.', 'You had your chance to walk away. Well. You did not, really. But still.', 'Hand over the shiny bits and nobody has to trip over anything.', 'Look at that. A whole knight, all by herself.'];
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -1902,8 +1936,8 @@ function stripHtml(segs, mark) {
   return `<div class="strip">${mark ? `<div class="mark" style="left:${mark - 0.5}%"><b>${mark}</b><i></i></div>` : ''}<div class="bands" role="img" aria-label="${esc(segs.map((s) => `${s.label} ${s.lo} to ${s.hi}`).join(', '))}">${segs.map((s) => `<span class="o-${s.cls}" style="flex:${s.hi - s.lo + 1}" title="${esc(s.label)} ${s.lo}–${s.hi}"></span>`).join('')}</div></div>
     <div class="key">${Object.entries(key).map(([k, v]) => `<span><i class="o-${v.cls}"></i>${esc(k)} ${v.n}%</span>`).join('')}</div>`;
 }
-function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '' }) {
-  S.lines.push(`<div class="line ${who}${who === 'sys' && !plate && !extra ? ' cap' : ''}"><span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
+function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '', face = '' }) {
+  S.lines.push(`<div class="line ${who}${who === 'sys' && !plate && !extra ? ' cap' : ''}${face ? ' has-face' : ''}">${face ? `<span class="spk">${face}</span>` : ''}<span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
     ${dice ? `<p class="dice" style="--k:${TONE[tone] ?? 'var(--text)'}">${dice}</p>` : ''}${strip ?? ''}
     ${say ? `<p class="say${spoken ? ' spoken' : ''}">${esc(say)}</p>` : ''}${fx.length ? `<div class="fx">${fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${extra}</div>`);
   if (S.lines.length > 160) { S.lines.shift(); seen = Math.max(0, seen - 1); }
@@ -2138,7 +2172,7 @@ function render() {
   $('rattle').textContent = `Rattle ${S.nameR}`;
   const combat = S.mode === 'combat';
   document.body.classList.toggle('combat', combat);
-  const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = !engaged; document.body.classList.toggle('alone', !engaged);
+  const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = !engaged || Boolean(S.standoff) || (Boolean(S.battle) && !S.battle.state.combatants.companion); document.body.classList.toggle('alone', !engaged);
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
   document.body.classList.toggle('debug', S.debug); document.body.dataset.phase = phaseNow(); $('clock').textContent = clockText();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
@@ -2149,7 +2183,7 @@ function render() {
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
   $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : `Travelling · ${placeNow().short}`;
   if (S.battle) renderBattleRow();
-  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<small>their nerve · round ${Math.min(8, so.round)} of 8</small><b>${esc(so.name)}</b>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
+  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>their nerve · round ${Math.min(8, so.round)} of 8</small><b>${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
   else $('foe').hidden = true;
   $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
   $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
