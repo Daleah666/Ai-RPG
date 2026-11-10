@@ -73,6 +73,15 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Guarded answers and talents | `retest`, `TALENTS`, `talentOf`, `S.retest`, `S.passed` |
 | Big window | `keepCard`, `renderBig`, `snapshot`, the `big` option of `post`, `WHY_*` |
 | The other character's card | `themFace`, the top of `hereTab`, `S.autoThem` in `rightPanel` |
+| Screen scaling, centred chat, panel overlay | the `v24` block at the end of the stylesheet (`--col`, `--hudMin`, `--hudR`, `html{font-size}`), `SIZES`, `sizeNear` |
+| Bars and their pop-up | `railHtml` (in her panel), `railPop` (on the stage, `#railPop`), the `railhover` body class |
+| Dice window | `renderTray`, `dockTray`, `S.trayPos`, `S.rollLog`, the pointer code beside `railT` |
+| Thought bubble | `renderThought`, `placeThought` |
+| Guild jobs | `JOBS`, `takeJob`, `jobCells`, `doJob`, `jobBoard`, `S.job`, `S.jobsDone` |
+| Talk as you pass | `CHATTER`, `chatterTags`, `chatterNow`, `chatGen`, `S.chatBank`, `S.thoughtBank` |
+| Growth and enemy ranks | `openGrowth`, the `bloom` potion, `foeRec`, `foeName`, `foeResult`, `openBook`, `S.foes` |
+| Right-panel folds and objectives | `rfold`, `objectivesBox`, `roadsBox`, `S.rfold` |
+| Story choices in the grid | `showEvent` (sets `S.event`), `eventCells` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -118,18 +127,24 @@ Del also said there is a SillyTavern JSON with material to adapt into random eve
 
 Also asked for and not built: three or four playable characters, one per calling, who sometimes join as a party (the callings exist now as ways to play Valerie, not as separate people); a portrait per mood (the hook is `MOOD_FACES`; Del has mood pictures for one character only).
 
-## Asked for on 2026-11-10 and not built yet, newest first
+## State on 2026-11-10, end of session, for whoever picks this up (Del mentioned Opus 5.5)
 
-These arrived while the last pass was being tested. Some reverse earlier asks; the newest wins.
+Start by reading `rpg/playtest/README.md`: its "What is on the page" table is current. Then open the published page. Del comments directly on the page; each comment names the element it is pinned to, and Del expects a reply in that thread.
 
-1. **The chat box always centred.** Del first asked for the panel sizes to push the chat right, then said "chat bar always centre middle". At Half and Full the panel currently pushes it. Centring it means the panel has to overlay the stage or stop growing where the chat begins.
-2. **No portrait column on the left of the left panel; put her sprite back; at minimum show more combat stats and action buttons.** The Full layout's two columns are the thing to undo.
-3. **Her full-body sprite on the left and the other character's on the right, always, except while walking.** Travelling debuffs should show while walking.
-4. **Bars at the top, thicker, with the numbers in them; hover for more; a stat block in the format of Del's older companion hub page.** The vitals rail is the thing to rework. "Organise my bar to be practical and easy to get into."
-5. **While moving, the dice on the left of the chat box; story-event bubbles should not take over the chat column.**
-6. **Guild quests: a layout for every quest and a four-choice interaction each, ending in combat, a social scene, a mystery, and so on.**
-7. **More passives.** Del asked for "all the ones listed in Karryn's Prison". That list is another game's content and is sexual; the bank here stays original and PG-13. Write new ones in the same shape (`PERKS` rows with `need`).
-8. **Full sex-combat in the downed state.** Not built and not going to be: the pinned state is the PG-13 version. See "Decisions".
+How Del works: many short messages while a pass is still running, some reversing the last. The newest wins. Del does not want questions; Del wants a pick made and built ("think for me, do and fill out, make a game"). Del's screen is about 2000 px wide, so check any layout at 2000x1085 as well as 1440x900.
+
+Built in the last pass and merged: screen-scaled layout with the chat dead centre; bars pinned at the top of her panel with a pop-up beside it; four panel sizes; both figures always on stage with Ctrl + scroll resize and idle movement; thought bubble over her head; sharp chat plates; the dice as a dockable, draggable window with a roll log; map key, Book of Trouble and enemy ranks; right-panel folds and Objectives; guild jobs; town chatter with a Claude-fed bank; Bloom Draught and the Growth window; five more passives; every place on one of Del's paintings.
+
+Asked for and not built yet:
+
+1. **A pause menu that holds all the character information: "the beta character creator, tab 5".** Del wants the sheet's folds and tabs gathered into one pause screen that doubles as a character creator.
+2. **Chat text that is not in a bubble and means different things.** Narration is unboxed now; Del wants more kinds of unboxed text with distinct meanings (for example sounds, time passing, a rumour).
+3. **A stat block in the format of Del's older "companion hub" page**, for a quick read of any character. The Combat block on her panel is a first version. The older page's format was not available in this session.
+4. **More action buttons at the minimum panel size.** Potions and Growth are there; Del asked for "buttons of action".
+5. **Separate people for the four callings**, who sometimes join as a party.
+6. **Full sex-combat in the downed state and Karryn's Prison's own passive list.** Not built and not going to be: see Decisions. The pinned state and the original passives are the version this project has.
+7. Fever, Corruption, the bar shift and a shop cure for Swelling, from the conditions plan.
+8. The SillyTavern JSON Del mentioned has never arrived in a session; only pictures have.
 
 ## What Del asked for that is not built, in suggested order
 
