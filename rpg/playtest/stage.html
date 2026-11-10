@@ -1,0 +1,1196 @@
+<title>Oops Playtest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;500;700&family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: full-bleed stage in the Duet Stage manner. Left sprite = you, right sprite = them, both hugging one
+   dialogue column in the middle; each has a HUD on its outer edge. Deliberately a single dark look. */
+:root{color-scheme:dark;
+--ground:#0b0d12;--panel:#12151c;--panel2:#171b24;--box:rgba(15,17,24,.80);--box2:rgba(15,17,24,.93);
+--glass:rgba(255,255,255,.05);--glass2:rgba(255,255,255,.09);--edge:rgba(255,255,255,.13);--edge2:rgba(255,255,255,.26);
+--text:#f6f8fb;--muted:rgba(232,238,247,.76);--faint:rgba(232,238,247,.5);
+--pink:#ff7cbf;--pink-ink:#22091a;--cyan:#86e3ef;--gold:#f6c66d;--mint:#8be6c9;--lime:#c9f07a;--violet:#b9a3ff;--crit:#ff6b6b;
+--miss:rgba(232,238,247,.14);--ink:#130a10;
+--f-head:"Unbounded",system-ui,sans-serif;--f-body:"Instrument Sans",system-ui,sans-serif;--f-serif:"Instrument Serif",Georgia,serif;--f-mono:"IBM Plex Mono",ui-monospace,monospace;
+--lc:var(--lime);--rc:var(--pink);--col:500px;--hudL:224px;--hudR:224px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--text);font-family:var(--f-body);font-size:15px;line-height:1.5;overflow:hidden}
+button,select,input{font:inherit}
+button{font-weight:600;color:var(--text);background:var(--glass2);border:1px solid var(--edge2);border-radius:999px;padding:7px 14px;cursor:pointer}
+button:hover{border-color:rgba(255,255,255,.42)}
+button:disabled{opacity:.42;cursor:default}
+button.primary{background:var(--pink);color:var(--pink-ink);border-color:transparent}
+button.quiet{background:none;border-color:var(--edge);font-weight:500}
+button.sm{padding:4px 11px;font-size:.76rem}
+select,input[type=text]{color:var(--text);background:var(--ground);border:1px solid var(--edge2);border-radius:10px;padding:6px 9px;min-width:0;max-width:100%}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.lbl{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0;font-weight:500}
+
+/* ---------- stage ---------- */
+.stage{position:relative;height:100%;overflow:hidden;isolation:isolate}
+.scene{position:absolute;inset:0;z-index:-3;background:
+ radial-gradient(46% 60% at 86% 100%,color-mix(in srgb,var(--rc) 24%,transparent),transparent 70%),
+ radial-gradient(44% 58% at 12% 100%,color-mix(in srgb,var(--lc) 15%,transparent),transparent 70%),
+ radial-gradient(70% 50% at 50% 0%,#151a26,transparent 70%),var(--ground)}
+.scene img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.4;transition:opacity .6s ease}
+.scene::after{content:"";position:absolute;inset:auto 0 0;height:30%;background:linear-gradient(transparent,rgba(11,13,18,.75))}
+/* sprites hug the dialogue column: each fills the space from its screen edge to just inside the column */
+.sprite{position:absolute;bottom:0;z-index:-2;height:97%;margin:0;display:flex;align-items:flex-end;pointer-events:none;transition:filter .4s,transform .4s;transform-origin:50% 100%}
+/* each sprite owns the lane between its HUD and the chat, and leans a little way in behind the chat */
+.sprite.l{left:calc(var(--hudL) - 6px);right:calc(50% + var(--col)/2 - 104px);justify-content:flex-end}
+.sprite.r{right:calc(var(--hudR) - 6px);left:calc(50% + var(--col)/2 - 104px);justify-content:flex-start}
+.sprite img,.sprite video{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom}
+.sprite img{filter:drop-shadow(0 22px 38px rgba(0,0,0,.6))}
+.sprite video.keyed{mix-blend-mode:screen}
+.sprite .boxed{max-height:74%;border-radius:26px 26px 0 0;-webkit-mask-image:linear-gradient(#000 64%,transparent);mask-image:linear-gradient(#000 64%,transparent)}
+.sprite.dim{filter:brightness(.55) saturate(.75);transform:translateY(8px) scale(.985)}
+.sprite.hit{animation:e-shake .5s ease-in-out}
+.sprite.hop{animation:e-hop .7s ease-out}
+@keyframes e-shake{20%,60%{translate:-9px 0}40%,80%{translate:9px 0}}
+@keyframes e-hop{30%{translate:0 -20px}60%{translate:0 0}80%{translate:0 -7px}}
+body.sway .sprite>*{animation:breathe 4.8s ease-in-out infinite}
+@keyframes breathe{50%{transform:translateY(-6px)}}
+
+/* floating numbers over a sprite when something lands */
+.pop{position:absolute;z-index:4;bottom:52%;font-family:var(--f-head);font-weight:700;font-size:clamp(1.3rem,2.6vw,2.2rem);color:var(--k,#fff);text-shadow:0 2px 14px rgba(0,0,0,.7),0 0 18px color-mix(in srgb,var(--k,#fff) 55%,transparent);pointer-events:none;white-space:nowrap;animation:pop 1.5s ease-out forwards}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,14px) scale(.5) rotate(-8deg)}14%{opacity:1;transform:translate(-50%,0) scale(1.18) rotate(3deg)}30%{transform:translate(-50%,-6px) scale(1)}100%{opacity:0;transform:translate(-50%,-80px) scale(1.04)}}
+.bar .t b.tick{animation:tick .5s ease-out}
+@keyframes tick{30%{color:var(--gold);transform:scale(1.18)}}
+
+/* ---------- HUDs ---------- */
+.hud{position:absolute;top:12px;z-index:3;max-height:calc(100% - 24px);overflow:auto;scrollbar-width:thin;display:grid;grid-template-columns:minmax(0,1fr);gap:9px;padding:12px;border-radius:18px;background:var(--box);border:1px solid color-mix(in srgb,var(--c) 38%,var(--edge));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hud.l{left:max(12px,env(safe-area-inset-left,0px));--c:var(--lc);width:var(--hudL)}
+.hud.r{right:max(12px,env(safe-area-inset-right,0px));--c:var(--rc);width:var(--hudR)}
+/* drag a panel's inner edge to make it wider or narrower */
+.grip{position:absolute;top:10%;bottom:10%;width:14px;z-index:5;cursor:ew-resize;touch-action:none}
+.grip::after{content:"";position:absolute;left:5px;top:50%;width:4px;height:56px;margin-top:-28px;border-radius:4px;background:var(--edge2);transition:background .15s,height .15s,margin .15s}
+.grip:hover::after,.grip.on::after,.grip:focus-visible::after{background:var(--c);height:96px;margin-top:-48px}
+.grip.l{left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--hudL) - 5px);--c:var(--lc)}
+.grip.r{right:calc(max(12px,env(safe-area-inset-right,0px)) + var(--hudR) - 5px);--c:var(--rc)}
+.emo{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:10px;background:color-mix(in srgb,var(--c) 10%,transparent);border:1px solid color-mix(in srgb,var(--c) 32%,var(--edge))}
+.emo .g{font-size:1rem;color:var(--c);line-height:1;width:1.1em;text-align:center}
+.emo b{font-size:.8rem;font-weight:600;white-space:nowrap}
+.emo small{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.emo .mb{flex:1;display:flex;gap:2px;min-width:40px}
+.emo .mb i{flex:1;height:5px;border-radius:2px;background:var(--glass2)}
+.emo .mb i.on{background:linear-gradient(90deg,var(--c),var(--gold))}
+.foe{position:absolute;z-index:3;top:14px;left:calc(50% + var(--col)/2 + 12px);right:calc(var(--hudR) + 26px);padding:8px 10px;border-radius:12px;background:var(--box);border:1px solid color-mix(in srgb,var(--crit) 50%,var(--edge2));backdrop-filter:blur(10px)}
+.foe b{display:block;font-family:var(--f-head);font-size:.86rem;line-height:1.15}
+.foe small{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.foe .track{margin-top:5px}
+.roster{display:grid;gap:7px}
+.roster .r{display:grid;gap:3px;padding:6px 8px;border-radius:9px;background:var(--glass);border:1px solid var(--edge)}
+.roster .r.out{opacity:.45}
+.roster .r.aim{border-color:color-mix(in srgb,var(--c) 70%,transparent)}
+.roster .r .h{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:600}
+.roster .r .h span{font-family:var(--f-mono);font-size:.56rem;font-weight:400;color:var(--muted);white-space:nowrap}
+.roster .track{height:5px}
+.roster .chips{margin:0}
+.windup{padding:7px 9px;border-radius:9px;font-size:.76rem;line-height:1.35;background:color-mix(in srgb,var(--crit) 14%,transparent);border:1px solid color-mix(in srgb,var(--crit) 50%,transparent)}
+.windup b{display:block;font-family:var(--f-mono);font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--crit)}
+.turn{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--crit)}
+#rowsBattle{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.route{display:grid;gap:4px;margin:0;padding:0;list-style:none}
+.route li{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:8px;align-items:center;font-size:.8rem;color:var(--muted);position:relative;padding:3px 0}
+.route li::before{content:"";width:10px;height:10px;border-radius:50%;border:2px solid var(--edge2);justify-self:center}
+.route li+li::after{content:"";position:absolute;left:6px;top:-7px;width:2px;height:10px;background:var(--edge2)}
+.route li.here{color:var(--text);font-weight:600}
+.route li.here::before{background:var(--c);border-color:var(--c);box-shadow:0 0 10px var(--c)}
+.route li small{display:block;font-weight:400;font-size:.68rem;color:var(--faint)}
+.route button{padding:2px 9px;font-size:.7rem}
+.mode{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;font-weight:500;background:var(--box);border-color:color-mix(in srgb,var(--k) 60%,transparent);color:var(--k)}
+.mode::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--k);box-shadow:0 0 10px var(--k)}
+.mode[data-mode="travel"]{--k:var(--mint)}
+.mode[data-mode="combat"]{--k:var(--crit)}
+.mode[data-mode="combat"]::before{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35;transform:scale(.75)}}
+body.combat .scene{box-shadow:inset 0 0 160px -40px color-mix(in srgb,var(--crit) 55%,transparent)}
+body.combat .composer{border-color:color-mix(in srgb,var(--crit) 55%,var(--edge2))}
+.hud h2{margin:0;font-family:var(--f-head);font-weight:500;font-size:1.02rem;line-height:1.15;overflow-wrap:anywhere}
+.hud .role{margin:0;font-family:var(--f-serif);font-style:italic;font-size:1.02rem;color:var(--c);line-height:1.2}
+.hud .who{display:grid;gap:1px}
+.dial{position:relative;display:grid;justify-items:center}
+.dial svg{width:100%;max-width:190px;height:auto;display:block}
+.dial .num{position:absolute;bottom:0;display:grid;justify-items:center;line-height:1.05}
+.dial .num b{font-family:var(--f-head);font-weight:700;font-size:1.55rem;font-variant-numeric:tabular-nums}
+.dial .num span{font-family:var(--f-serif);font-style:italic;color:var(--c);font-size:.98rem}
+.hud input[type=range]{width:100%;accent-color:var(--lime);margin:0}
+.bars{display:grid;gap:6px}
+.bar{display:grid;gap:2px}
+.bar .t{display:flex;justify-content:space-between;gap:8px;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
+.bar .t b{color:var(--text);font-weight:500;font-variant-numeric:tabular-nums}
+.track{position:relative;height:8px;border-radius:999px;background:var(--glass2);overflow:hidden}
+.track i{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--k);transition:width .4s;box-shadow:0 0 10px -2px var(--k)}
+.track u{position:absolute;top:0;bottom:0;width:2px;background:var(--ground)}
+.attrs{display:grid;gap:3px}
+.attrs div{display:grid;grid-template-columns:74px minmax(0,1fr) 38px;gap:6px;align-items:center;font-size:.74rem}
+.attrs span{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attrs i{display:block;height:5px;border-radius:999px;background:var(--glass2);overflow:hidden}
+.attrs i em{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--c),var(--gold))}
+.attrs i em.cut{background:var(--crit)}
+.attrs b{font-family:var(--f-mono);font-weight:500;font-size:.68rem;text-align:right;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chips span{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:999px;border:1px solid color-mix(in srgb,var(--k,var(--c)) 55%,transparent);color:color-mix(in srgb,var(--k,var(--c)) 75%,var(--text))}
+.hud .set{display:grid;gap:5px;padding-top:8px;border-top:1px solid var(--edge)}
+.hud .set label{display:grid;gap:2px}
+.hud .set select,.hud .set input{font-size:.8rem;padding:4px 7px;width:100%}
+.hud .grok{font-size:.72rem;color:var(--faint);margin:0}
+.over{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;padding-top:9px;border-top:1px solid var(--edge)}
+.over h3{margin:0;font-family:var(--f-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--c);font-weight:500}
+.over p{margin:0;font-size:.8rem;color:var(--muted);line-height:1.42}
+.over p b{color:var(--text);font-weight:600}
+.over .quote{font-family:var(--f-serif);font-style:italic;font-size:1.02rem;color:var(--text)}
+.over ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.over li{font-size:.78rem;color:var(--muted);line-height:1.38}
+.over li b{display:block;color:var(--text);font-weight:600}
+.more{font-family:var(--f-mono);font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);text-align:center;margin:0}
+
+/* ---------- dialogue column ---------- */
+.dialog{position:relative;margin:0 auto;width:min(var(--col),100%);height:100%;display:flex;flex-direction:column;gap:8px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:none}
+.top .title{flex:1;min-width:120px;display:grid;line-height:1.15}
+.top .title b{font-family:var(--f-head);font-weight:300;font-size:.95rem;letter-spacing:-.01em}
+.tabs{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:var(--box);border:1px solid var(--edge)}
+.tabs button{border:0;background:none;color:var(--muted);padding:5px 12px;font-size:.78rem}
+.tabs button[aria-selected="true"]{background:var(--text);color:var(--ground)}
+.panel{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-content:start;padding:6px 2px 10px}
+.panel h2{margin:6px 0 0;font-family:var(--f-head);font-weight:500;font-size:1.05rem}
+.panel p{margin:0;color:var(--muted);font-size:.9rem;max-width:64ch}
+.quest{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:11px 13px;border-radius:14px;background:var(--box);border:1px solid var(--edge);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.quest.done{opacity:.6}
+.quest b{font-weight:600}
+.quest small{grid-column:1;color:var(--muted);font-size:.82rem}
+.quest .meta{grid-column:1;display:flex;flex-wrap:wrap;gap:4px}
+.quest .meta span{font-family:var(--f-mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;padding:1px 7px;border-radius:999px;border:1px solid var(--edge);color:var(--faint)}
+.quest .meta span.ok{color:var(--mint);border-color:color-mix(in srgb,var(--mint) 50%,transparent)}
+.quest button{grid-column:2;grid-row:1/4}
+.steps{margin:0;padding:0;list-style:none;display:grid;gap:8px;counter-reset:step}
+.steps li{counter-increment:step;display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:10px 12px;border-radius:14px;background:var(--box);border:1px solid var(--edge);font-size:.9rem;color:var(--muted)}
+.steps li::before{content:counter(step);font-family:var(--f-head);font-size:.8rem;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--pink);color:var(--pink-ink)}
+.steps li b{color:var(--text)}
+.steps code,.panel code{font-family:var(--f-mono);font-size:.82em;color:var(--cyan);overflow-wrap:anywhere}
+.copybox{font-family:var(--f-mono);font-size:.74rem;line-height:1.5;white-space:pre-wrap;padding:10px 12px;border-radius:12px;background:var(--ground);border:1px solid var(--edge2);color:var(--muted);max-height:180px;overflow:auto;margin:0}
+.top .title span{font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.log{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:18px;padding:34px 2px 10px;scrollbar-width:thin;-webkit-mask-image:linear-gradient(transparent,#000 34px);mask-image:linear-gradient(transparent,#000 34px)}
+.line{position:relative;max-width:88%;padding:20px 15px 12px;border-radius:16px;background:var(--box);border:1px solid color-mix(in srgb,var(--c) 32%,var(--edge));backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);flex:none;display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+.line.enter{animation:linein .36s cubic-bezier(.2,.9,.3,1.25)}
+.line.me{align-self:flex-start;border-top-left-radius:6px;--c:var(--lc);background:color-mix(in srgb,var(--c) 8%,var(--box))}
+.line.her{align-self:flex-end;border-top-right-radius:6px;--c:var(--rc)}
+.line.sys{align-self:center;max-width:96%;--c:var(--gold)}
+@keyframes linein{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.plate{position:absolute;top:-11px;left:14px;font-family:var(--f-head);font-weight:500;font-size:.68rem;padding:3px 10px;border-radius:8px;background:var(--c);color:var(--ink);max-width:76%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.line.her .plate{left:auto;right:14px}
+/* the beat: dice line, strip, then the paragraph set apart */
+.dice{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.dice b{color:var(--k,var(--text));font-weight:500}
+.say{font-family:var(--f-serif);font-size:1.24rem;line-height:1.4;margin:0;color:var(--text);text-wrap:pretty}
+.say.spoken{font-family:var(--f-body);font-size:1rem;line-height:1.5}
+.strip{position:relative;padding-top:15px}
+.bands{display:flex;height:16px;border-radius:6px;overflow:hidden;border:1px solid var(--edge2)}
+.bands span{min-width:0}
+.bands span+span{border-left:1px solid var(--ground)}
+.o-crit{background:var(--crit)}.o-hit{background:var(--gold)}.o-bounce{background:var(--cyan)}.o-miss{background:var(--miss)}.o-fumble{background:var(--pink)}.o-virtue{background:var(--mint)}.o-affliction{background:var(--violet)}
+.mark{position:absolute;top:0;transform:translateX(-50%);display:grid;justify-items:center;pointer-events:none}
+.mark b{font-family:var(--f-head);font-size:.6rem;background:var(--text);color:var(--ground);border-radius:5px;padding:0 5px;line-height:1.35}
+.mark i{width:2px;height:20px;background:var(--text)}
+.key{display:flex;flex-wrap:wrap;gap:4px 10px;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.04em;color:var(--faint)}
+.key span{display:inline-flex;align-items:center;gap:4px}
+.key i{width:8px;height:8px;border-radius:2px}
+.fx{display:flex;flex-wrap:wrap;gap:4px}
+.fx span{font-family:var(--f-mono);font-size:.58rem;letter-spacing:.03em;padding:2px 8px;border-radius:999px;background:var(--glass2);color:var(--muted)}
+.choices{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.choice{display:grid;gap:2px;text-align:left;border-radius:12px;padding:8px 11px;background:var(--glass);border:1px solid var(--edge2);font-weight:500}
+.choice small{font-family:var(--f-mono);font-size:.54rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.choice em{font-style:normal;font-family:var(--f-head);font-size:.9rem;color:var(--gold)}
+
+/* ---------- composer ---------- */
+.composer{position:relative;flex:none;display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:12px;border-radius:18px;background:var(--box2);border:1px solid color-mix(in srgb,var(--lc) 35%,var(--edge2));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.crow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+#rowsCombat,#rowsTravel{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.crow .grow{flex:1 1 160px;min-width:0}
+.seg{display:inline-flex;gap:2px;padding:2px;border-radius:999px;background:var(--glass2)}
+.seg button{border:0;background:none;color:var(--muted);padding:6px 12px;font-size:.8rem}
+.seg button[aria-pressed="true"]{background:var(--lime);color:var(--ink)}
+.composer .why{margin:0;font-size:.76rem;color:var(--faint)}
+.say-row input{flex:1 1 160px}
+
+/* ---------- narrow screens: HUDs become two cards on top, sprites fade behind the chat ---------- */
+/* ---- town layout: tabbed right panel, bubble map, button grids ---- */
+.rtabs{display:flex;gap:2px;padding:2px;border-radius:10px;background:var(--glass2);position:sticky;top:-12px;z-index:2}
+.rtabs button{flex:1;border:0;background:none;color:var(--muted);padding:5px 4px;font-size:.72rem;border-radius:8px;white-space:nowrap}
+.rtabs button[aria-selected="true"]{background:var(--c);color:var(--ink)}
+.map{display:block;width:100%;height:auto;border-radius:12px;background:var(--glass);border:1px solid var(--edge)}
+.map line{stroke:var(--edge2);stroke-width:.8;stroke-dasharray:1.6 1.4}
+.map line.on{stroke:var(--c);stroke-dasharray:none}
+.map .node{cursor:pointer;outline:none}
+.map .node circle{fill:var(--ground);stroke:var(--edge2);stroke-width:1;transition:fill .15s,stroke .15s}
+.map .node text{paint-order:stroke;stroke:var(--ground);stroke-width:1.4px;stroke-linejoin:round;font-family:var(--f-mono);font-size:4.3px;fill:var(--muted);text-anchor:middle;letter-spacing:.04em;text-transform:uppercase;pointer-events:none}
+.map .node text.q{stroke:none;font-size:5px;fill:var(--gold);font-weight:700}
+.map .node .res{fill:var(--pink);stroke:none}
+.map .node.near circle:first-child{stroke:var(--c)}
+.map .node.near text{fill:var(--text)}
+.map .node.here circle:first-child{fill:var(--c);stroke:var(--c);filter:drop-shadow(0 0 3px var(--c))}
+.map .node.here text{fill:var(--c);font-weight:700}
+.map .node.here text.q{fill:var(--ink)}
+.map .node:hover circle:first-child,.map .node:focus-visible circle:first-child{stroke:var(--text);stroke-width:1.6}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.cell{display:grid;gap:1px;text-align:left;padding:7px 10px;border-radius:10px;line-height:1.2;min-height:44px;align-content:center}
+.cell b{font-size:.8rem;font-weight:600}
+.cell small{font-size:.62rem;color:var(--muted);font-weight:400}
+.cell.primary small{color:color-mix(in srgb,var(--pink-ink) 75%,transparent)}
+.cell.go{background:none;border-style:dashed}
+.cell:disabled{opacity:.45}
+.train{display:grid;gap:4px}
+.train div{display:grid;grid-template-columns:minmax(0,1fr) auto 34px auto;gap:6px;align-items:center;font-size:.78rem}
+.train b{font-family:var(--f-mono);font-size:.74rem;text-align:right}
+.train small{font-family:var(--f-mono);font-size:.6rem;color:var(--gold)}
+.moves{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.moves li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:1px 8px;font-size:.78rem}
+.moves li span{font-family:var(--f-mono);font-size:.58rem;color:var(--muted);white-space:nowrap}
+.moves li small{grid-column:1/-1;font-size:.68rem;color:var(--faint);line-height:1.35}
+.moves li.locked{opacity:.5}
+.sprite .flip{scale:-1 1}
+body:not(.debug) .dbg{display:none!important}
+#gridTravel[hidden],#rowsBattle[hidden]{display:none!important}
+@media (max-width:1180px){
+  :root{--hudL:196px;--hudR:196px;--col:440px}
+}
+@media (max-width:900px){
+  body{overflow:auto}
+  .stage{height:auto;min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-content:start}
+  .hud,.hud.l,.hud.r{position:static;width:auto;max-height:none}
+  .grip,.foe{display:none}
+  .hud .attrs,.hud .set,.hud .over,.hud .more{display:none}
+  .hud.open .attrs,.hud.open .set,.hud.open .over{display:grid}
+  .dialog{grid-column:1/-1;width:100%;height:auto;padding:0}
+  .log{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none;padding-top:14px}
+  .sprite{position:fixed;height:62%;opacity:.3}
+  .sprite.l{left:0;right:50%}.sprite.r{right:0;left:50%}
+}
+@media (prefers-reduced-motion:reduce){.mode::before,.line.enter,.pop,.sprite.hit,.sprite.hop,body.sway .sprite>*{animation:none}.track i{transition:none}}
+</style>
+
+<div class="stage" id="stage">
+  <div class="scene" id="scene" aria-hidden="true"></div>
+  <figure class="sprite l" id="sprL" aria-hidden="true"></figure>
+  <figure class="sprite r" id="sprR" aria-hidden="true"></figure>
+
+  <div class="grip l" id="gripL" role="separator" aria-orientation="vertical" aria-label="Resize your panel" tabindex="0"></div>
+  <div class="grip r" id="gripR" role="separator" aria-orientation="vertical" aria-label="Resize their panel" tabindex="0"></div>
+  <div class="foe" id="foe" hidden></div>
+  <aside class="hud l" id="hudL" aria-label="You"></aside>
+  <aside class="hud r" id="hudR" aria-label="Them"></aside>
+
+  <main class="dialog">
+    <div class="top">
+      <div class="title"><b>Oops, I'm the Hero?!</b><span>playtest stage · the real rules engine</span></div>
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button role="tab" type="button" data-view="stage" aria-selected="true">Stage</button>
+        <button role="tab" type="button" data-view="guild" aria-selected="false">Guild</button>
+        <button role="tab" type="button" data-view="tavern" aria-selected="false">SillyTavern</button>
+      </div>
+      <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
+      <select class="dbg" id="place" aria-label="Place"></select>
+      <label class="lbl dbg" for="level">Level</label>
+      <input class="dbg" type="number" id="level" min="1" max="100" step="1" style="width:4.6em">
+      <button class="sm quiet dbg" id="rest" type="button">Rest</button>
+    </div>
+    <div class="log" id="log" aria-live="polite"></div>
+    <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
+    <section class="panel" id="tavern" hidden aria-label="SillyTavern guide"></section>
+    <div class="composer" id="composer">
+      <div id="rowsCombat" hidden>
+        <div class="crow">
+          <div class="seg" role="group" aria-label="Stance"><button type="button" id="s-wing" aria-pressed="true">Wing It</button><button type="button" id="s-think" aria-pressed="false">Think It Through</button></div>
+          <select id="skill" class="grow" aria-label="Your skill"></select>
+          <button class="primary" id="act" type="button">Act</button>
+        </div>
+        <p class="why" id="why"></p>
+        <div class="crow">
+          <button class="sm" id="they" type="button">They attack</button>
+          <button class="sm quiet" id="guard" type="button" aria-pressed="false">Guard: off</button>
+          <button class="sm quiet" id="rattle" type="button">Rattle them</button>
+          <button class="sm quiet" id="endFight" type="button">End the fight</button>
+        </div>
+      </div>
+      <div id="rowsBattle" hidden>
+        <div class="crow"><span class="turn" id="bTurn"></span>
+          <div class="seg" id="bStance" role="group" aria-label="Stance"><button type="button" data-bst="wing">Wing It</button><button type="button" data-bst="think">Think It Through</button></div></div>
+        <div class="crow" id="bTargets"></div>
+        <div class="grid" id="bGrid"></div>
+        <p class="why" id="bWhy"></p>
+        <div class="crow">
+          <button class="sm" id="bAuto" type="button">Pick for me</button>
+          <button class="sm quiet" id="bFlee" type="button">Leave the fight (debug)</button>
+        </div>
+      </div>
+      <div class="grid" id="gridTravel"></div>
+      <div id="rowsTravel" class="dbg">
+        <div class="crow">
+          <button class="primary" id="explore" type="button">Explore here</button>
+          <select id="event" class="grow" aria-label="Story event"></select>
+          <button class="sm" id="startFight" type="button">Pick a fight</button>
+        </div>
+        <div class="crow">
+          <button class="sm quiet" type="button" data-st="horror">Scare her</button>
+          <button class="sm quiet" type="button" data-st="realization">Tell her the truth</button>
+          <button class="sm quiet" type="button" data-st="embarrassment">Embarrass her</button>
+        </div>
+      </div>
+      <form class="crow say-row" id="sayForm">
+        <input type="text" id="say" placeholder="Say something as Valerie…" autocomplete="off" aria-label="Say something as Valerie">
+        <button class="sm" type="submit">Say</button>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+/*__ENGINE__*/
+/*__DATA__*/
+</script>
+<script>
+(() => {
+'use strict';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Short numbers: 20,570 reads as 20.6k and 22,200,000 as 22.2M. The engine keeps the exact values.
+const n = (v) => { const a = Math.abs(v); if (a < 10000) return Math.round(v).toLocaleString('en-US'); const [div, unit] = a >= 1e6 ? [1e6, 'M'] : [1e3, 'k']; const x = v / div; return `${Math.abs(x) >= 100 ? Math.round(x) : x.toFixed(1).replace(/\.0$/, '')}${unit}`; };
+const pctOf = (part, whole) => `${Math.max(1, Math.round((part / whole) * 100))}%`;
+const { STAT_KEYS, STAT_INFO, BIND_PARTS } = __m.constants;
+const { fixedRolls, readRoll } = __m.rng;
+const { makeCombatant, effectiveStat, isStatBound } = __m.stats;
+const { statsAt, maxHp, maxMp } = __m.progression;
+const { hitChance, BASIC_ATTACK } = __m.combat;
+const BT = __m.battle ?? null;
+const V = __m.valerie, VC = __m['valerie-combat'], ST = __m.stress, BD = __m.binds, EV = __m.events;
+const klutz = DATA.valerie.archetype;
+const arche = (id) => DATA.archetypes.archetypes.find((a) => a.id === id);
+const tables = { afflictions: DATA.afflictions.afflictions, virtues: DATA.virtues.virtues };
+const d = () => 1 + Math.floor(Math.random() * 100);
+const pick = (list, roll) => list[roll % list.length];
+const store = { get(k, f) { try { const v = localStorage.getItem('oops-' + k); return v === null ? f : JSON.parse(v); } catch { return f; } }, set(k, v) { try { localStorage.setItem('oops-' + k, JSON.stringify(v)); } catch {} } };
+
+/* ---------- the cast: art is swappable per side; the right side also picks a class ---------- */
+const LOOKS = [
+  { id: 'knight', name: 'Knight', src: 'art/knight.webp', as: ['Rival Knight', 'warrior'] },
+  { id: 'forest', name: 'Valerie, forest portrait', src: 'art/valerie-forest.webp', boxed: true },
+  { id: 'bambi-idle', name: 'Bambi, idle clip', src: 'art/bambi-idle.mp4', video: true, keyed: true, as: ['Bambi Soft', 'rogue'] },
+  { id: 'bambi-shirt', name: 'Bambi, shirt', src: 'art/bambi-shirt.webp', as: ['Bambi Soft', 'rogue'] },
+  { id: 'bambi-lounge', name: 'Bambi, lounging', src: 'art/bambi-lounge.webp', as: ['Bambi Soft', 'rogue'] },
+  { id: 'priestess', name: 'Moon priestess', src: 'art/priestess.webp', as: ['Moon Priestess', 'mage'] },
+  { id: 'ranger', name: 'Dune ranger', src: 'art/ranger.webp' },
+  { id: 'succubus', name: 'Velvet, idle clip', src: 'art/succubus-idle.mp4', video: true, keyed: true },
+  { id: 'librarian', name: 'Nyx, archive clip', src: 'art/librarian-idle.mp4', video: true, boxed: true },
+  { id: 'none', name: 'Nobody', src: '' },
+];
+// The town of Gooseford: every bubble on the map is a place with its own backdrop, things to do, and maybe a resident.
+// x and y place the bubble on a 100 by 100 map. Tags tie a place to the story events that can happen there.
+const PLACES = [
+  { id: 'square', name: 'Wishing Well Square', short: 'Well', x: 50, y: 40, src: 'art/bg/bg-lanterns.webp', tags: ['town', 'market', 'camp'], who: 'lune', acts: ['wish', 'explore'], links: ['guild', 'tavern', 'archive', 'baths', 'bar', 'gate'],
+    text: 'Lanterns in the trees and an old stone well in the middle of everything. Every road in Gooseford ends up here sooner or later, and so do you.' },
+  { id: 'guild', name: 'Guild Hall', short: 'Guild', x: 16, y: 28, src: 'art/bg/chat-classroom.webp', tags: ['castle'], who: 'sable', acts: ['board', 'hunt'], links: ['square', 'yard'],
+    text: 'Long benches, a wall of notices, and a ledger nobody is allowed to touch. The briefing room still smells of chalk and wet boots.' },
+  { id: 'tavern', name: 'The Gilded Goose', short: 'Tavern', x: 84, y: 28, src: 'art/bg/bg-stacks.webp', tags: ['inn', 'tavern', 'shrine'], who: 'bambi', acts: ['rest', 'explore'], links: ['square', 'alley'],
+    text: 'Warm lamps, a deep armchair by the window, and the sun going down over the rooftops. The upstairs parlour is yours for the price of a meal.' },
+  { id: 'archive', name: 'The Old Archive', short: 'Archive', x: 50, y: 10, src: 'art/bg/bg-dungeon.webp', tags: ['dungeon', 'ruin'], who: 'nyx', acts: ['study', 'explore'], links: ['square'],
+    text: 'Torchlight on wet stone and shelves that go further back than the building does. Something drips. Something else stops dripping when you look at it.' },
+  { id: 'yard', name: 'Training Yard', short: 'Yard', x: 14, y: 60, src: 'art/bg/bg-arena.webp', tags: [], who: null, acts: ['spar', 'hunt'], links: ['guild', 'gate'],
+    text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.' },
+  { id: 'baths', name: 'Lagoon Baths', short: 'Baths', x: 34, y: 66, src: 'art/bg/chat-pool.webp', tags: [], who: null, acts: ['soak'], links: ['square'],
+    text: 'Still water and warm stones under the palms. For once nothing is trying to kill you. Give it a minute.' },
+  { id: 'bar', name: 'The Low Lantern', short: 'Bar', x: 68, y: 66, src: 'art/bg/bg-nightpark.webp', tags: [], who: 'velvet', acts: ['drink'], links: ['square', 'alley'],
+    text: 'One lamp, a lot of shadow, and a bar that is longer on the inside. Nobody here has ever asked to see a guild badge.' },
+  { id: 'alley', name: 'Back Alley', short: 'Alley', x: 90, y: 52, src: 'art/bg/chat-graffiti.webp', tags: ['town'], who: null, acts: ['explore'], links: ['tavern', 'bar'],
+    text: 'Painted walls, stacked crates, and the short way between the two places in town that sell drinks.' },
+  { id: 'gate', name: 'Town Gate', short: 'Gate', x: 50, y: 86, src: 'art/bg/bg-forest.webp', tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['explore', 'hunt'], links: ['square', 'yard'],
+    text: 'Green light, old trunks, and a road that keeps deciding to be somewhere else. Everything past the gate is the wilds.' },
+];
+// The regulars. Each lives at one place until you move them (Here tab), and can be renamed, re-classed and re-dressed.
+const CAST = {
+  bambi: { name: 'Bambi Soft', role: 'the barmaid at the Gilded Goose', cls: 'rogue', look: 'bambi-idle', greet: [
+    'Val! Sit, sit. You look like you fought a door again. Did the door win?',
+    'There she is, the hero who paid her tab in goblin teeth. Usual table?',
+    'Careful with the sword near the chandelier this time, hon. It has only just stopped swinging.'] },
+  sable: { name: 'Sable', role: 'the guild quartermaster', cls: 'rogue', look: 'ranger', greet: [
+    'Board is on the wall, hunts are on me. Try not to bring one back alive again.',
+    'You again. The paperwork from your last accident has its own shelf now.',
+    'Pick a job, sign the ledger, and please read what it says first.'] },
+  lune: { name: 'Sister Lune', role: 'the keeper of the Wishing Well', cls: 'mage', look: 'priestess', greet: [
+    'The well listens, Dame Valerie. It has asked me to tell you it also has opinions.',
+    'A coin for a wish. Most people aim for the water.',
+    'You glow oddly tonight. The moon noticed. So did I.'] },
+  velvet: { name: 'Velvet', role: 'the bartender at the Low Lantern', cls: 'mage', look: 'succubus', greet: [
+    'Well, well. The luckiest knight in Gooseford. The first one is on the house. The second one is usually on you.',
+    'Sit anywhere that is not holding the roof up, darling.',
+    'I do not judge. I do keep score.'] },
+  nyx: { name: 'Nyx Inkwell', role: 'the night archivist of the Old Archive', cls: 'mage', look: 'librarian', greet: [
+    'Shh. No, quieter than that. The armor, dear. The armor is shouting.',
+    'Returns go on the left. Screaming books go on the right. You go nowhere near the candles.',
+    'I filed a note about you. It is under M, for miracle, clerical error, or both.'] },
+};
+const ACTS = {
+  rest: { label: 'Take a room', hint: 'everything refills' },
+  board: { label: 'Quest board', hint: 'quests and bounties' },
+  hunt: { label: 'Take a hunt', hint: 'a real fight' },
+  wish: { label: 'Make a wish', hint: 'stress −15', once: true },
+  drink: { label: 'Buy a round', hint: 'Airhead +15', once: true },
+  study: { label: 'Study', hint: 'Airhead −15, a little EXP', once: true },
+  soak: { label: 'Soak', hint: 'HP +30%, stress −20', once: true },
+  spar: { label: 'Spar', hint: 'the practice ring' },
+  explore: { label: 'Explore', hint: 'see what happens' },
+};
+function setPlace(id) {
+  const place = PLACES.find((x) => x.id === id) ?? PLACES[0];
+  S.place = place.id; store.set('place', place.id); S.used = {};
+  $('scene').innerHTML = place.src ? `<img src="${esc(place.src)}" alt="">` : '';
+  $('place').value = place.id;
+  S.who = residentOf(place.id);
+  if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
+  else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
+}
+const CLASSES = {
+  warrior: { thing: 'blade', skill: { ...BASIC_ATTACK, id: 'x_strike', name: 'Strike', tags: ['melee'] } },
+  mage: { thing: 'bolt', skill: { ...BASIC_ATTACK, id: 'x_bolt', name: 'Bolt', type: 'magical', stat: 'INT', element: 'bolt', tags: ['ranged', 'projectile'] } },
+  rogue: { thing: 'knife', skill: { ...BASIC_ATTACK, id: 'x_knife', name: 'Thrown Knife', tags: ['ranged', 'projectile'] } },
+};
+const S = {
+  level: store.get('level', 1), stance: 'wing', skill: 'basic_attack', guarding: false,
+  lookL: store.get('lookL', 'knight'), lookR: store.get('lookR', 'bambi-idle'),
+  nameR: store.get('nameR', 'Bambi Soft'), classR: store.get('classR', 'rogue'),
+  hero: null, them: null, lines: [], custom: {}, down: false, mode: 'travel', battle: null,
+  who: null, used: {}, rtab: store.get('rtab', 'map'), debug: store.get('debug', false), party: store.get('party', false),
+  exp: store.get('exp', 0), points: store.get('points', 0), bonus: store.get('bonus', {}), flips: store.get('flips', {}),
+};
+const heroName = 'Valerie';
+
+function freshHero(keep) {
+  const stats = heroStats(S.level), hp = maxHp(S.level, stats.CON), mp = maxMp(S.level, stats.WIL);
+  return makeCombatant({ id: 'valerie', name: heroName, level: S.level, archetype: 'klutz_knight', stats, hp, maxHp: hp, mp, maxMp: mp,
+    flags: { airhead: keep && V.airheadLock(keep) === null ? V.airheadOf(keep) : 60 } });
+}
+function freshThem() {
+  const a = arche(S.classR), stats = statsAt(a, S.level), hp = maxHp(S.level, stats.CON), mp = maxMp(S.level, stats.WIL);
+  return makeCombatant({ id: 'them', name: S.nameR, level: S.level, archetype: a.id, stats, hp, maxHp: hp, mp, maxMp: mp });
+}
+const heroSkills = () => [BASIC_ATTACK, ...DATA.valerie.skills.filter((s) => s.type === 'physical' || s.type === 'debuff')];
+const skillById = (id) => heroSkills().find((s) => s.id === id) || BASIC_ATTACK;
+
+/* ---------- sprites ---------- */
+function drawSprite(el, lookId) {
+  const look = S.custom[lookId] ?? LOOKS.find((l) => l.id === lookId) ?? LOOKS[0];
+  const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${S.flips[lookId] ? ' flip' : ''}`;
+  el.innerHTML = !look.src ? '' : look.video
+    ? `<video src="${esc(look.src)}" class="${cls}" autoplay muted loop playsinline></video>`
+    : `<img src="${esc(look.src)}" class="${cls}" alt="">`;
+}
+function pop(side, text, color) {
+  const host = $('stage'), el = document.createElement('span'), box = $(side === 'l' ? 'sprL' : side === 'f' && !$('foe').hidden && $('foe').offsetWidth ? 'foe' : 'sprR').getBoundingClientRect(), frame = host.getBoundingClientRect();
+  el.className = 'pop'; el.textContent = text; el.style.setProperty('--k', color);
+  el.style.left = `${Math.max(60, Math.min(frame.width - 60, box.left - frame.left + box.width * (side === 'l' ? 0.62 : side === 'f' ? 0.5 : 0.38) + (Math.random() * 60 - 30)))}px`;
+  host.appendChild(el); setTimeout(() => el.remove(), 1600);
+}
+function bump(side, kind) {
+  const el = $(side === 'l' ? 'sprL' : 'sprR');
+  el.classList.remove('hit', 'hop'); void el.offsetWidth; el.classList.add(kind);
+}
+
+/* ---------- HUD pieces ---------- */
+function dial(value, max, zones, color) {
+  // a half-circle gauge: zone ticks under a value arc
+  const R = 80, cx = 100, cy = 96, len = Math.PI * R, at = (v) => { const a = Math.PI * (1 - v / max); return [cx + R * Math.cos(a), cy - R * Math.sin(a)]; };
+  const arc = (from, to) => { const [x1, y1] = at(from), [x2, y2] = at(to); return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`; };
+  const [nx, ny] = at(value);
+  return `<svg viewBox="0 0 200 108" aria-hidden="true">
+    ${zones.map(([a, b, o]) => `<path d="${arc(a + max * 0.006, b - max * 0.006)}" fill="none" stroke="rgba(255,255,255,${o})" stroke-width="13" stroke-linecap="butt"/>`).join('')}
+    <path d="${arc(0, max)}" fill="none" stroke="${color}" stroke-width="13" stroke-linecap="round" stroke-dasharray="${((value / max) * len).toFixed(1)} ${len.toFixed(1)}" style="transition:stroke-dasharray .4s;filter:drop-shadow(0 0 6px ${color})"/>
+    <circle cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="7" fill="#fff" stroke="${color}" stroke-width="3"/>
+  </svg>`;
+}
+const bar = (label, value, max, color, tick) => `<div class="bar"><div class="t"><span>${label}</span><b>${n(value)} / ${n(max)}</b></div><div class="track"><i style="--k:${color};width:${Math.max(0, Math.min(100, (value / max) * 100))}%"></i>${tick ? `<u style="left:${tick}%"></u>` : ''}</div></div>`;
+function attrs(c, top) {
+  return `<div class="attrs">${STAT_KEYS.map((k) => { const v = effectiveStat(c, k), cut = v < c.stats[k];
+    return `<div title="${esc(STAT_INFO[k].drives)}"><span>${STAT_INFO[k].name}</span><i><em class="${cut ? 'cut' : ''}" style="width:${Math.min(100, (v / top) * 100)}%"></em></i><b>${n(v)}</b></div>`; }).join('')}</div>`;
+}
+function stateChips(c) {
+  const out = [];
+  for (const part of BIND_PARTS) if ((c.binds?.[part] ?? 0) > 0) out.push(`<span style="--k:var(--crit)">${part} bound · ${c.binds[part]}</span>`);
+  for (const m of c.mods ?? []) if (m.turns > 0) out.push(`<span style="--k:var(--gold)">${STAT_INFO[m.stat].name} ×${m.mult} · ${m.turns}</span>`);
+  for (const st of c.statuses ?? []) { const def = S.battle?.state.defs.statuses[st.id]; out.push(`<span style="--k:${def?.polarity === 'good' ? 'var(--mint)' : def?.polarity === 'bad' ? 'var(--pink)' : 'var(--cyan)'}" title="${esc(def?.text ?? '')}">${esc(def?.name ?? st.id.replace(/_/g, ' '))}${st.turns ? ` · ${st.turns}` : ''}</span>`); }
+  for (const dt of c.dots ?? []) out.push(`<span style="--k:var(--crit)">${esc(dt.name ?? dt.id ?? 'burning')}${dt.turns ? ` · ${dt.turns}` : ''}</span>`);
+  if (c.resolve) out.push(`<span style="--k:${c.resolve.kind === 'virtue' ? 'var(--mint)' : 'var(--violet)'}">${esc(c.resolve.name)}</span>`);
+  if (c.hp <= 0) out.push('<span style="--k:var(--crit)">down</span>');
+  return out.length ? `<div class="chips">${out.join('')}</div>` : '';
+}
+const lookSelect = (id, value) => `<select id="${id}">${[...LOOKS, ...Object.values(S.custom)].map((l) => `<option value="${esc(l.id)}"${l.id === value ? ' selected' : ''}>${esc(l.name)}</option>`).join('')}</select>`;
+
+function overviewHero() {
+  const h = DATA.valerie.hero;
+  return `<div class="over"><h3>Who she is</h3><p class="quote">“${esc(h.lie)}”</p><p>${esc(h.premise)}</p>
+    <p><b>Wants</b> ${esc(h.want)}</p><p><b>Costs her</b> ${esc(h.cost)}</p><p><b>You want</b> ${esc(h.playerWant)}</p>
+    <h3>Her six accidents</h3><ul>${DATA.valerie.abilities.map((a) => `<li><b>${esc(a.name)}</b>${esc(a.gm)}</li>`).join('')}</ul>
+    <h3>What she carries</h3><ul>${h.symbols.map((s) => `<li><b>${esc(s.name)}</b>${esc(s.meaning)}</li>`).join('')}</ul></div>`;
+}
+function overviewThem() {
+  const a = arche(S.classR), sk = CLASSES[S.classR].skill, v = S.hero, f = S.them;
+  const edges = V.incomingOpts(v, f, sk, { guarding: false }), hc = hitChance(f, v, sk, { hitCap: edges.hitCap, fumbleFrom: edges.fumbleFrom }), plain = hitChance(f, v, sk);
+  const mine = (DATA.skills?.skills ?? []).filter((s) => s.archetype === S.classR && s.unlock <= S.level).slice(-4);
+  return `<div class="over"><h3>Who they are</h3><p>${esc(a.identity)}</p><p><b>Wants</b> ${esc(a.want)}</p><p><b>Costs them</b> ${esc(a.cost)}</p>
+    <h3>Against you right now</h3><p>${esc(sk.name)}${sk.tags.includes('projectile') ? ', a projectile, so it can bounce' : ', up close, so nothing bounces'}. On an ordinary knight it would land ${plain.hitPct} rolls in 100; on you the ceiling is <b>${hc.hitPct}</b>${edges.bounce ? `, and the top ${edges.bounce} of those come back at them` : ''}. They fumble on ${hc.fumbleFrom}+.</p>
+    ${mine.length ? `<h3>Skills at this level</h3><ul>${mine.map((s) => `<li><b>${esc(s.name)} · Lv ${s.unlock}</b>${esc(s.text)}</li>`).join('')}</ul>` : ''}</div>`;
+}
+function mood(c, isHero) {
+  // an emotion read off the real state: no dice, nothing invented
+  const bound = BIND_PARTS.filter((part) => (c.binds?.[part] ?? 0) > 0).length;
+  if (c.hp <= 0) return ['✖', 'Down', 5];
+  if (c.resolve) return [c.resolve.kind === 'virtue' ? '✦' : '☍', c.resolve.name, 5];
+  if (c.stress >= 150) return ['☍', 'Breaking', 5];
+  if (c.stress >= 100) return ['☍', 'Cracking', 4];
+  if (c.hp / c.maxHp < 0.3) return ['♥', 'Hurting', 4];
+  if (bound) return ['⛓', 'Tangled', 2 + bound];
+  if ((c.mods ?? []).some((m) => m.turns > 0 && m.mult < 1)) return ['≈', 'Off-balance', 3];
+  if (c.stress >= 50) return ['~', 'Tense', 3];
+  if (isHero) { const band = V.airheadBand(V.airheadOf(c)); return band === 'airhead' ? ['❀', 'Blissful', 4] : band === 'lucid' ? ['◈', 'Focused', 3] : ['☼', 'Cheerful', 2]; }
+  return S.mode === 'combat' ? ['⚔', 'Ready', 2] : ['☼', 'At ease', 1];
+}
+const emo = (c, isHero) => { const [g, label, lvl] = mood(c, isHero); return `<div class="emo" title="Read off their bars and statuses"><span class="g">${g}</span><b>${esc(label)}</b><div class="mb">${[1, 2, 3, 4, 5].map((i) => `<i class="${i <= lvl ? 'on' : ''}"></i>`).join('')}</div><small>mood</small></div>`; };
+function questsAt(place) { return events.filter((e) => (place.tags ?? []).some((t) => (e.where ?? []).includes(t))); }
+/* ---------- a real fight, run by engine/battle.js ---------- */
+const miniBar = (value, max, color) => `<div class="track"><i style="--k:${color};width:${Math.max(0, Math.min(100, (value / max) * 100))}%"></i></div>`;
+function focusFoe() {
+  const st = S.battle.state, foes = st.enemies.map((id) => st.combatants[id]);
+  return foes.find((f) => f.id === S.battle.target && f.hp > 0 && !f.fled) ?? foes.find((f) => f.hp > 0 && !f.fled) ?? foes[0];
+}
+function battlePanel() {
+  const st = S.battle.state, foes = st.enemies.map((id) => st.combatants[id]), allies = st.heroes.filter((id) => id !== 'valerie').map((id) => st.combatants[id]);
+  const f = focusFoe(), pct = Math.round((Math.max(0, f.hp) / f.maxHp) * 100), phase = st.boss ? st.defs.boss?.phases?.[st.boss.phase] : null, pend = st.boss?.pending;
+  const row = (c, aim) => `<div class="r${c.hp <= 0 || c.fled ? ' out' : ''}${aim ? ' aim' : ''}"><div class="h">${esc(c.name)}<span>${c.fled ? 'fled' : c.hp <= 0 ? 'down' : `${n(c.hp)} · ${pctOf(c.hp, c.maxHp)}`}</span></div>${miniBar(c.hp, c.maxHp, 'var(--mint)')}${c.side === 'heroes' ? miniBar(c.stress, 200, 'var(--violet)') : ''}${stateChips(c)}</div>`;
+  return `
+    <div class="who"><p class="lbl">In combat · round ${st.round}</p><h2>${esc(st.name)}</h2><p class="role">${esc(f.name)} · level ${f.level}${f.rank && f.rank !== 'normal' ? ` ${esc(f.rank)}` : ''}</p></div>
+    <div class="dial">${dial(pct, 100, [[0, 30, .24], [30, 60, .16], [60, 100, .1]], 'var(--crit)')}<div class="num"><b>${pct}%</b><span>${n(f.hp)} HP</span></div></div>
+    ${emo(f, false)}
+    ${phase ? `<div class="over"><h3>Phase ${st.boss.phase + 1}: ${esc(phase.name)}</h3><p>${esc(phase.question ?? phase.text ?? '')}</p></div>` : ''}
+    ${pend ? `<div class="windup"><b>Winding up</b>${esc(st.defs.skills[pend.move]?.name ?? String(pend.move).replace(/_/g, ' '))}${pend.due ? ` · lands round ${pend.due}` : ''}${pend.part ? ` · bind their ${esc(pend.part)} to stop it` : ''}</div>` : ''}
+    <div class="over"><h3>Against you</h3><div class="roster">${foes.map((c) => row(c, c.id === f.id && foes.length > 1)).join('')}</div></div>
+    ${allies.length ? `<div class="over"><h3>Your party</h3><div class="roster">${allies.map((c) => row(c)).join('')}</div></div>` : ''}
+    ${st.contraption ? `<div class="over"><h3>In the room: ${esc(st.contraption.name)}</h3><p>${st.contraption.used ? 'Already set off this phase.' : 'A Chaos Wave sets it off. Wing It and fumble near it.'}</p></div>` : ''}
+    ${st.concession ? `<div class="over"><h3>Another way out: ${esc(st.concession.name)}</h3><p>Opens at ${st.concession.at}% of its HP. ${esc(st.concession.price ?? '')}</p></div>` : ''}`;
+}
+function postEvents(evts) {
+  let k = 0;
+  for (const e of evts) {
+    const who = e.actorYou ? 'me' : e.actorSide === 'enemies' ? 'her' : 'sys';
+    const tone = e.type === 'attack' ? e.outcome : e.type === 'resolve' ? e.kind : e.type === 'chaos_wave' || e.type === 'contraption' ? 'fumble' : e.type === 'phase' || e.type === 'telegraph' || e.type === 'defeat' ? 'crit' : e.type === 'end' ? (e.result === 'win' ? 'virtue' : 'crit') : null;
+    post({ who, plate: e.type === 'round' ? `Round ${e.round}` : e.actorName ?? 'Game Master', dice: esc(e.line ?? ''), tone, say: e.text ?? '' });
+    const side = e.targetYou ? 'l' : e.targetSide === 'enemies' ? 'f' : e.target === 'companion' ? 'r' : null;
+    const shots = [];
+    if (e.type === 'attack') {
+      if (e.damage > 0 && side) shots.push([side, `−${pctOf(e.damage, e.targetMaxHp || 1)}`, e.outcome === 'crit' ? 'var(--crit)' : 'var(--gold)', 'hit']);
+      else if (e.outcome === 'miss' && side) shots.push([side, e.dodged ? 'DODGE' : 'MISS', 'var(--muted)', 'hop']);
+      if (e.outcome === 'bounce') shots.push(['l', 'BOUNCE', 'var(--cyan)']);
+      if (e.outcome === 'fumble') shots.push([e.actorYou ? 'l' : e.actorSide === 'enemies' ? 'f' : 'r', 'OOPS', 'var(--pink)']);
+    } else if (e.type === 'chaos_wave') shots.push(['l', 'CHAOS WAVE', 'var(--pink)']);
+    else if (e.type === 'heal' && side && e.amount) shots.push([side, `+${n(e.amount)}`, 'var(--mint)']);
+    else if (e.type === 'phase') shots.push(['f', `PHASE ${e.phase + 1}`, 'var(--crit)']);
+    else if (e.type === 'resolve' && side) shots.push([side, String(e.entryName ?? e.kind).toUpperCase(), e.kind === 'virtue' ? 'var(--mint)' : 'var(--violet)']);
+    for (const [sd, text, color, move] of shots) if (k < 9) setTimeout(() => { pop(sd, text, color); if (move && sd !== 'f') bump(sd, move); }, 190 * k++);
+  }
+}
+function carry(fresh, c) { // bring a fighter back to the road at the stage's level, hurt in proportion
+  return { ...fresh, hp: Math.round(fresh.maxHp * Math.max(0, c.hp) / c.maxHp), mp: Math.round(fresh.maxMp * c.mp / Math.max(1, c.maxMp)), stress: c.stress, limit: c.limit, resolve: c.resolve ?? null, flags: { ...fresh.flags, ...(c.flags?.airhead !== undefined ? { airhead: c.flags.airhead } : {}) } };
+}
+function syncBattle() {
+  const st = S.battle.state;
+  S.hero = st.combatants.valerie; if (st.combatants.companion && S.who) S.them = st.combatants.companion;
+  if (BT.currentActor(st)) return;
+  const won = st.result === 'win', r = st.rewards;
+  post({ who: 'sys', dice: `<b>${won ? (st.outcome === 'concession' ? 'CONCEDED' : 'VICTORY') : 'DEFEAT'}</b> · ${esc(st.name)} · ${st.round} rounds${r ? ` · ${n(r.exp)} EXP · ${n(r.gold)} gold` : ''}`, tone: won ? 'virtue' : 'crit', say: won ? 'The dust settles. You are back on the road, with whatever the fight left on your bars.' : 'The party drags itself out. A night at the Gilded Goose (Rest) puts everyone back together.' });
+  if (won && r?.exp) gainExp(r.exp, state_name(st));
+  leaveBattle();
+}
+const state_name = (st) => st.name;
+function leaveBattle() {
+  const st = S.battle.state; S.battle = null; S.mode = 'travel'; if (S.rtab === 'fight') S.rtab = 'map';
+  S.hero = carry(freshHero(st.combatants.valerie), st.combatants.valerie);
+  S.them = st.combatants.companion && S.who ? { ...carry(freshThem(), st.combatants.companion), flags: {} } : freshThem();
+  S.down = S.hero.hp <= 0 || S.them.hp <= 0;
+}
+function battleAdvance() { // the rest of the party plays itself until it is your turn again
+  const b = S.battle; let guard = 0;
+  while (BT.currentActor(b.state) && BT.currentActor(b.state) !== 'valerie' && guard++ < 400) { const step = BT.act(b.state, BT.defaultPolicy(b.state), b.rng); b.state = step.state; postEvents(step.events); }
+  b.pick = null; syncBattle();
+}
+function startBattle(spec) {
+  if (!BT || S.battle) return;
+  const def = spec.boss ? DATA.bosses.bosses.find((x) => x.id === spec.boss) : DATA.encounters.encounters.find((x) => x.id === spec.encounter);
+  if (!def) return post({ who: 'sys', dice: `No such fight: ${esc(spec.boss ?? spec.encounter)}` });
+  const solo = !spec.boss && !S.party, level = spec.boss ? def.level : S.level, foeLevel = solo ? Math.max(1, Math.round(level * 0.75)) : level;
+  const classes = ['warrior', 'mage', 'rogue'];
+  const allies = S.who ? [BT.makeHero(arche(S.classR), level, { id: 'companion', name: S.nameR }), ...classes.filter((k) => k !== S.classR).map((k) => BT.makeHero(arche(k), level))] : classes.map((k) => BT.makeHero(arche(k), level));
+  const party = [BT.makeHero(DATA.valerie.archetype, level, { id: 'valerie', name: heroName, stats: heroStats(level), flags: { airhead: V.airheadOf(S.hero) } }), ...(solo ? [] : allies)];
+  const rng = __m.rng.makeRng(Math.floor(Math.random() * 2147483646) + 1);
+  let state;
+  try { state = BT.createBattle({ party, ...(spec.boss ? { boss: spec.boss } : { encounter: spec.encounter }), level: foeLevel, data: DATA }, rng); }
+  catch (err) { return post({ who: 'sys', dice: 'The fight would not start.', say: String(err.message ?? err) }); }
+  S.battle = { state, rng, pick: null, target: null, solo }; S.mode = 'combat'; S.down = false; S.rtab = 'fight';
+  post({ who: 'sys', dice: `<b>COMBAT</b> · ${esc(state.name)} · ${solo ? `you alone, level ${level}, against level ${foeLevel}` : `the whole party at level ${level}`}`, tone: 'crit', say: solo ? 'Nobody else is coming. Pick a stance, pick a move, and let the armor do what it does.' : `${allies.map((x) => x.name).join(', ')} fight beside you. They take their own turns; you take yours.` });
+  postEvents(state.opening ?? []);
+  battleAdvance();
+}
+function battleAct(auto) {
+  const b = S.battle; if (!b) return;
+  const st = b.state, actor = BT.currentActor(st); if (!actor) return syncBattle();
+  let action;
+  if (auto) action = BT.defaultPolicy(st);
+  else { const a = b.acts?.[b.pick]; if (!a || a.disabled) return; action = { kind: a.kind, skillId: a.skillId, stance: a.stance, ...(a.choose ? { target: a.targets.includes(b.target) ? b.target : a.targets[0] } : {}) }; }
+  try { const step = BT.act(st, action, b.rng); b.state = step.state; postEvents(step.events); }
+  catch (err) { post({ who: 'sys', dice: 'That is not possible right now.', say: String(err.message ?? err) }); return; }
+  battleAdvance();
+}
+function renderBattleRow() {
+  const b = S.battle, st = b.state, actor = BT.currentActor(st), acts = BT.legalActions(st, actor); b.acts = acts;
+  const c = st.combatants[actor], val = actor === 'valerie';
+  $('bTurn').textContent = `${val ? 'Your turn' : `${c.name}'s turn`} · round ${st.round}${val ? ` · Airhead ${V.airheadOf(c)}` : ''}`;
+  $('bStance').hidden = !acts.some((a) => a.stance);
+  for (const x of $('bStance').children) x.setAttribute('aria-pressed', x.dataset.bst === S.stance);
+  const foes = st.enemies.map((id) => st.combatants[id]).filter((f) => f.hp > 0 && !f.fled);
+  if (!foes.some((f) => f.id === b.target)) b.target = foes[0]?.id ?? null;
+  $('bTargets').hidden = foes.length < 2;
+  $('bTargets').innerHTML = foes.length < 2 ? '' : `<span class="lbl">Target</span>${foes.map((f) => `<button class="sm${f.id === b.target ? '' : ' quiet'}" type="button" data-btarget="${esc(f.id)}" aria-pressed="${f.id === b.target}">${esc(f.name)} · ${pctOf(f.hp, f.maxHp)}</button>`).join('')}`;
+  const bare = (l) => l.replace(/^(Wing It|Think It Through): /, '');
+  const note = (a) => a.disabled ? (a.why ?? 'sealed') : a.cost?.mp ? `${n(a.cost.mp)} MP` : a.cost?.limit ? `${a.cost.limit} MCE` : a.kind === 'guard' ? 'brace for it' : a.kind === 'breather' ? 'shed some stress' : a.kind === 'concede' ? 'end it, at a price' : 'free';
+  $('bGrid').innerHTML = acts.map((a, i) => (a.stance && a.stance !== S.stance) ? '' : `<button class="cell${a.kind === 'attack' ? ' primary' : ''}" type="button" data-bi="${i}"${a.disabled ? ' disabled' : ''} title="${esc(st.defs.skills[a.skillId]?.text ?? '')}"><b>${esc(bare(a.label))}</b><small>${esc(note(a))}</small></button>`).join('');
+  $('bWhy').textContent = b.hint ?? (S.stance === 'wing' ? 'Wing It: the gauge climbs, her accidents take over, and a fumble becomes a Chaos Wave.' : 'Think It Through: the gauge drops, you aim better, and it costs you a little stress to be this aware.');
+  const foe = $('foe'), f = focusFoe();
+  foe.hidden = false; foe.innerHTML = `<small>${foes.length > 1 ? `target · ${foes.length} left` : 'the enemy'}</small><b>${esc(f.name)}</b>${miniBar(f.hp, f.maxHp, 'var(--crit)')}`;
+}
+/* ---------- the town: who lives where, moving, things to do ---------- */
+const placeNow = () => PLACES.find((x) => x.id === S.place) ?? PLACES[0];
+function residentOf(placeId) { const moved = store.get('residents', {}); const id = placeId in moved ? moved[placeId] : PLACES.find((p) => p.id === placeId)?.who ?? null; return id && CAST[id] ? id : null; }
+const castOf = (id) => ({ ...CAST[id], ...(store.get('cast', {})[id] ?? {}) });
+function saveCast() { if (!S.who) return; const all = store.get('cast', {}); all[S.who] = { name: S.nameR, cls: S.classR, ...(S.lookR.startsWith('custom') ? {} : { look: S.lookR }) }; store.set('cast', all); }
+const nextLine = (list) => { S.lineAt = (S.lineAt ?? 0) + 1; return list[S.lineAt % list.length]; };
+const PR = __m.progression, needExp = () => PR.expToNext(S.level), canLevel = () => S.level < 100 && S.exp >= needExp();
+const trainStep = (level) => Math.max(1, Math.round(__m.stats.benchmarkStat(level) * 0.05));
+function heroStats(level) { const base = statsAt(klutz, level), out = {}; for (const k of STAT_KEYS) out[k] = Math.min(1000, base[k] + (S.bonus[k] ?? 0) * trainStep(level)); return out; }
+function gainExp(amount, why) {
+  if (!amount || S.level >= 100) return;
+  const was = canLevel(); S.exp += Math.round(amount); store.set('exp', S.exp);
+  if (!was && canLevel()) post({ who: 'sys', dice: `<b>LEVEL UP READY</b> · ${esc(why)}`, tone: 'virtue', say: 'Something in the armor sits a little easier. Open the Level tab on the right when you want it.' });
+}
+function levelUp() {
+  if (!canLevel() || S.battle) return;
+  S.exp -= needExp(); S.level += 1; S.points += 3; store.set('exp', S.exp); store.set('level', S.level); store.set('points', S.points);
+  S.hero = freshHero(S.hero); S.them = freshThem(); S.down = false;
+  const fresh = DATA.valerie.skills.filter((s) => s.unlock === S.level).map((s) => s.name);
+  post({ who: 'sys', dice: `<b>LEVEL ${S.level}</b> · 3 training points${fresh.length ? ` · new: ${esc(fresh.join(', '))}` : ''}`, tone: 'virtue', say: 'Every bar refills. You feel exactly as clumsy as before, only more so, and somehow that is better.' });
+}
+function rightPanel() {
+  const tab = S.battle ? S.rtab : S.rtab === 'fight' ? 'map' : S.rtab;
+  const tabs = [...(S.battle ? [['fight', 'Fight']] : []), ['map', 'Map'], ['here', 'Here'], ['level', 'Level'], ['debug', 'Debug']];
+  return `<div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
+    tab === 'fight' ? battlePanel() : tab === 'here' ? hereTab() : tab === 'level' ? levelTab() : tab === 'debug' ? debugTab() : mapTab()}`;
+}
+function mapTab() {
+  const here = placeNow(), near = new Set(here.links), seen = new Set(), lines = [];
+  for (const p of PLACES) for (const l of p.links) { const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); const q = PLACES.find((x) => x.id === l); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}"/>`); }
+  const nodes = PLACES.map((p) => { const q = questsAt(p).filter((e) => !doneQuests.has(e.id)).length, who = residentOf(p.id);
+    return `<g class="node${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} lives here` : ''}"><circle cx="${p.x}" cy="${p.y}" r="6.2"/>${who ? `<circle class="res" cx="${p.x + 5.2}" cy="${p.y - 5.2}" r="1.9"/>` : ''}${q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">${q}</text>` : ''}<text x="${p.x}" y="${p.y + 11.6}">${esc(p.short)}</text></g>`; }).join('');
+  const who = S.who ? castOf(S.who) : null;
+  return `<div class="who"><p class="lbl">${S.mode === 'combat' ? 'Sparring' : 'Travelling'} · the town of Gooseford</p><h2>${esc(here.name)}</h2><p class="role">${who ? `${esc(who.name)} is here` : 'Nobody lives here yet'}</p></div>
+    <svg class="map" viewBox="0 0 100 100" role="group" aria-label="Map of Gooseford">${lines.join('')}${nodes}</svg>
+    <p class="more">click a bubble to go there · pink dot: someone lives there · number: quests waiting</p>
+    <div class="over"><h3>Here</h3><p>${esc(here.text)}</p></div>
+    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. Talk with the button under the story, or type to them.</p>${emo(S.them, false)}</div>` : ''}`;
+}
+function hereTab() {
+  const h = S.hero, t = S.them, top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
+  const stressBand = t.stress >= 100 ? 'Cracking' : t.stress >= 50 ? 'Tense' : 'Steady';
+  const picker = `<label><span class="lbl">Who lives here</span><select id="whoHere"><option value="">Nobody</option>${Object.keys(CAST).map((id) => `<option value="${id}"${id === S.who ? ' selected' : ''}>${esc(castOf(id).name)}</option>`).join('')}</select></label>`;
+  if (!S.who) return `<div class="who"><p class="lbl">${esc(placeNow().name)}</p><h2>Nobody here</h2><p class="role">an empty spot</p></div><div class="set">${picker}</div><div class="over"><h3>Regulars</h3><p>Pick someone to live here. They will be here every time you come back, with their own look, name and class.</p></div>`;
+  return `
+    <div class="who"><p class="lbl">${S.mode === 'combat' ? 'Sparring partner' : esc(castOf(S.who).role)} · level ${t.level}</p><h2>${esc(S.nameR)}</h2><p class="role">${esc(arche(S.classR).name)}</p></div>
+    <div class="dial">${dial(t.stress, 200, [[0, 50, .1], [50, 100, .16], [100, 200, .24]], 'var(--pink)')}<div class="num"><b>${t.stress}</b><span>${stressBand}</span></div></div>
+    ${emo(t, false)}
+    <div class="bars">${bar('HP', t.hp, t.maxHp, 'var(--mint)')}${bar('MP', t.mp, t.maxMp, 'var(--cyan)')}${bar('Limit', t.limit, 100, 'var(--gold)')}</div>
+    ${stateChips(t)}${attrs(t, top)}
+    <div class="set">${picker}<label><span class="lbl">Name</span><input type="text" id="nameR" value="${esc(S.nameR)}" maxlength="28"></label>
+      <label><span class="lbl">Class</span><select id="classR">${Object.keys(CLASSES).map((k) => `<option value="${k}"${k === S.classR ? ' selected' : ''}>${esc(arche(k).name)}</option>`).join('')}</select></label>
+      <label><span class="lbl">Their look</span>${lookSelect('lookR', S.lookR)}</label><button class="sm quiet" type="button" data-flip="r">Flip image</button>
+      <label><span class="lbl">Use my own picture</span><input type="file" id="fileR" accept="image/*,video/mp4,video/webm"></label>
+      <p class="grok">Grok: not connected yet. This slot takes any picture or clip you drop in; a Grok edit would land here the same way.</p></div>
+    <p class="more">scroll for their overview</p>${overviewThem()}`;
+}
+function levelTab() {
+  const need = needExp(), h = S.hero, step = trainStep(S.level), list = DATA.valerie.skills.slice().sort((a, b) => a.unlock - b.unlock);
+  return `<div class="who"><p class="lbl">${heroName} · Klutz Knight</p><h2>Level ${S.level}</h2><p class="role">${S.level >= 100 ? 'The cap. Nothing left to prove.' : canLevel() ? 'Ready to level up' : `${n(Math.max(0, need - S.exp))} EXP to go`}</p></div>
+    <div class="bars">${bar('EXP', Math.min(S.exp, need), need, 'var(--gold)')}</div>
+    <button class="primary" type="button" id="levelUp"${canLevel() && !S.battle ? '' : ' disabled'}>Level up</button>
+    <div class="over"><h3>Training points · ${S.points} to spend</h3><div class="train">${STAT_KEYS.map((k) => `<div><span>${STAT_INFO[k].name}</span><b>${h.stats[k]}</b><small>${S.bonus[k] ? `+${S.bonus[k] * step}` : ''}</small><button class="sm" type="button" data-train="${k}"${S.points > 0 && !S.battle && h.stats[k] < 1000 ? '' : ' disabled'} aria-label="Train ${STAT_INFO[k].name}">+${step}</button></div>`).join('')}</div>
+      <p>Every level gives 3 points. A point is worth more as you grow, and sits on top of what a Klutz Knight gains by herself. EXP comes from fights and from quests the first time.</p></div>
+    <div class="over"><h3>Moves</h3><ul class="moves">${list.map((s) => `<li class="${s.unlock > S.level ? 'locked' : ''}"><b>${esc(s.name)}</b><span>${s.unlock > S.level ? `level ${s.unlock}` : s.cost?.mp ? `${n(s.cost.mp)} MP` : s.cost?.limit ? `${s.cost.limit} MCE` : 'free'}</span><small>${esc(s.text ?? '')}</small></li>`).join('')}</ul></div>`;
+}
+function debugTab() {
+  return `<div class="who"><p class="lbl">Cheats and the old tools</p><h2>Debug</h2><p class="role">nothing was scrapped</p></div>
+    <div class="set">
+      <button class="sm" type="button" data-dbg="old" aria-pressed="${S.debug}">Old controls: ${S.debug ? 'shown' : 'hidden'}</button>
+      <button class="sm" type="button" data-dbg="party" aria-pressed="${S.party}">Hunts: ${S.party ? 'full party' : 'Valerie alone'}</button>
+      <button class="sm" type="button" data-dbg="mode">${S.battle ? 'Leave the fight' : S.mode === 'combat' ? 'Stop sparring' : 'Start sparring here'}</button>
+      <button class="sm" type="button" data-dbg="exp">+1 level of EXP</button>
+      <button class="sm" type="button" data-dbg="heal">Heal and calm</button>
+      <button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button>
+    </div>
+    <div class="over"><h3>What the old controls are</h3><p>Turn them on and the top bar gets the place list, a level box and Rest, and the story box gets the story-event list, the sparring button and the three ways to stress her. The sparring sandbox (they attack, guard, rattle) is the Spar button at the Training Yard, or the button above.</p></div>
+    <div class="over"><h3>Right now</h3><p>${S.battle ? `In a real fight, round ${S.battle.state.round}` : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${esc(placeNow().name)} · level ${S.level} · ${n(S.exp)} / ${n(needExp())} EXP · ${S.points} points · hunts are ${S.party ? 'party of four at your level' : 'solo, enemies at three quarters of your level'}.</p></div>`;
+}
+function doAct(id) {
+  const who = S.who ? castOf(S.who) : null, here = placeNow();
+  const once = () => { S.used[id] = true; };
+  if (id === 'talk') return who && post({ who: 'her', say: nextLine(who.greet), spoken: true });
+  if (id === 'board') return setView('guild');
+  if (id === 'rest') { reset(true); return post({ who: 'sys', dice: '[rest] A night at the Gilded Goose.', tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled. The gauge stays where you left it.' }); }
+  if (id === 'explore') return explore();
+  if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
+  if (id === 'hunt') { const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
+  const relief = (amount) => { const r = ST.relieveStress(S.hero, amount, { from: id }); S.hero = r.combatant ?? r; };
+  if (id === 'wish') { once(); relief(15); S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + 5) }; pop('l', '−15 stress', 'var(--mint)');
+    return post({ who: 'sys', dice: '[no roll] Make a wish · stress −15 · MCE +5', tone: 'virtue', say: 'You flick a coin at the well. It hits the rim, the bucket, a pigeon and the water, in that order. The wish probably still counts.' }); }
+  if (id === 'drink') { once(); S.hero = V.shiftAirhead(S.hero, 15); relief(5); pop('l', 'AIRHEAD +15', 'var(--lime)');
+    return post({ who: 'sys', dice: '[no roll] Buy a round · Airhead +15 · stress −5', tone: 'hit', say: 'It is pink, it is fizzy, and it comes with a tiny sword in it. Halfway down, thinking starts to feel optional.' }); }
+  if (id === 'study') { once(); S.hero = V.shiftAirhead(S.hero, -15); const xp = Math.round(needExp() * 0.05); pop('l', 'AIRHEAD −15', 'var(--cyan)'); post({ who: 'sys', dice: `[no roll] Study · Airhead −15 · ${n(xp)} EXP`, tone: 'hit', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.' }); return gainExp(xp, 'an hour in the Archive'); }
+  if (id === 'soak') { once(); S.hero = { ...S.hero, hp: Math.min(S.hero.maxHp, Math.round(S.hero.hp + S.hero.maxHp * 0.3)) }; relief(20); S.down = S.hero.hp <= 0; pop('l', '+30% HP', 'var(--mint)');
+    return post({ who: 'sys', dice: '[no roll] Soak · HP +30% · stress −20', tone: 'virtue', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.' }); }
+}
+function travelGrid() {
+  const here = placeNow(), who = S.who ? castOf(S.who) : null, needsLegs = new Set(['explore', 'hunt', 'spar']);
+  const acts = (here.acts ?? []).map((id, i) => { const a = ACTS[id], off = (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
+    return `<button class="cell${i === 0 ? ' primary' : ''}" type="button" data-act="${id}"${off ? ' disabled' : ''}><b>${esc(a.label)}</b><small>${a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : esc(id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : a.hint)}</small></button>`; });
+  if (who) acts.push(`<button class="cell" type="button" data-act="talk"><b>Talk to ${esc(who.name.length <= 12 ? who.name : who.name.split(' ')[0])}</b><small>${esc(who.role)}</small></button>`);
+  const exits = here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id); return `<button class="cell go" type="button" data-go="${id}"><b>→ ${esc(p.short)}</b><small>${esc(r ? castOf(r).name : p.name)}</small></button>`; });
+  return acts.join('') + exits.join('');
+}
+function renderHuds() {
+  const h = S.hero, t = S.them;
+  const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
+  const gauge = V.airheadOf(h), band = DATA.valerie.gauge.bands.find((b) => b.id === V.airheadBand(gauge)), locked = V.airheadLock(h) !== null;
+  const stressBand = t.stress >= 100 ? 'Cracking' : t.stress >= 50 ? 'Tense' : 'Steady';
+  $('hudL').innerHTML = `
+    <div class="who"><p class="lbl">You · level ${h.level}</p><h2>${heroName}</h2><p class="role">Klutz Knight</p></div>
+    <div class="dial">${dial(gauge, 100, [[0, 33, .1], [33, 66, .16], [66, 100, .24]], 'var(--lime)')}<div class="num"><b>${gauge}</b><span>${esc(band.name)}</span></div></div>
+    <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
+    ${emo(h, true)}
+    <div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('MP', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
+    ${stateChips(h)}${attrs(h, top)}
+    <div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
+      <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label></div>
+    <p class="more">scroll for her overview</p>${overviewHero()}`;
+  $('hudR').innerHTML = rightPanel();
+}
+
+/* ---------- the log ---------- */
+const NAMES = { crit: 'crit', hit: 'hit', bounce: 'bounce', miss: 'miss', fumble: 'fumble', virtue: 'virtue', affliction: 'affliction' };
+const TONE = { crit: 'var(--crit)', hit: 'var(--gold)', bounce: 'var(--cyan)', miss: 'var(--faint)', fumble: 'var(--pink)', virtue: 'var(--mint)', affliction: 'var(--violet)' };
+function segments(at) {
+  const segs = [];
+  for (let roll = 1; roll <= 100; roll++) { const o = at(roll), last = segs[segs.length - 1]; if (last && last.key === o.key) last.hi = roll; else segs.push({ ...o, lo: roll, hi: roll }); }
+  return segs;
+}
+function stripHtml(segs, mark) {
+  const key = {};
+  for (const s of segs) key[s.label] = { cls: s.cls, n: (key[s.label]?.n ?? 0) + s.hi - s.lo + 1 };
+  return `<div class="strip">${mark ? `<div class="mark" style="left:${mark - 0.5}%"><b>${mark}</b><i></i></div>` : ''}<div class="bands" role="img" aria-label="${esc(segs.map((s) => `${s.label} ${s.lo} to ${s.hi}`).join(', '))}">${segs.map((s) => `<span class="o-${s.cls}" style="flex:${s.hi - s.lo + 1}" title="${esc(s.label)} ${s.lo}–${s.hi}"></span>`).join('')}</div></div>
+    <div class="key">${Object.entries(key).map(([k, v]) => `<span><i class="o-${v.cls}"></i>${esc(k)} ${v.n}%</span>`).join('')}</div>`;
+}
+function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '' }) {
+  S.lines.push(`<div class="line ${who}"><span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
+    ${dice ? `<p class="dice" style="--k:${TONE[tone] ?? 'var(--text)'}">${dice}</p>` : ''}${strip ?? ''}
+    ${say ? `<p class="say${spoken ? ' spoken' : ''}">${esc(say)}</p>` : ''}${fx.length ? `<div class="fx">${fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${extra}</div>`);
+  if (S.lines.length > 160) { S.lines.shift(); seen = Math.max(0, seen - 1); }
+}
+let seen = 0;
+function renderLog() { const el = $('log'); el.innerHTML = S.lines.map((h, i) => (i >= seen ? h.replace('class="line ', 'class="line enter ') : h)).join(''); seen = S.lines.length; el.scrollTop = el.scrollHeight; }
+
+/* ---------- beats ---------- */
+function endTurn(c) {
+  let next = BD.tickBinds(c);
+  next = { ...next, mods: (next.mods ?? []).map((m) => (m.turns ? { ...m, turns: m.turns - 1 } : m)).filter((m) => m.turns === null || m.turns === undefined || m.turns > 0) };
+  return next;
+}
+const SAY_IN = {
+  crit: ['The {thing} finds the one gap in the gold plate. It is a very good shot, and you feel all of it.', 'You see it coming, which is new, and does not help. It lands exactly where the armor is not.'],
+  hit: ['It lands. The armor rings like a dinner bell and you take a step you did not plan.', 'The {thing} connects. You say "ow" in a bright, surprised voice that is not quite yours.'],
+  bounce: ['The {thing} arrives, meets an obstacle nobody planned for, and leaves the way it came. {foe} yelps. You think you bounced it off. You are not wrong.', 'It hits the breastplate dead centre, reconsiders, and goes home. {foe} stares at their own {thing} coming back.'],
+  miss: ['You trip on nothing and the {thing} passes through the space where a competent knight would have been standing.', 'Your cloak snags on the sword, the sword swings you half a step left, and the {thing} goes by. You assume you dodged.'],
+  fumble: ['{foe} winds up, loses track of which end is the dangerous one, and ties up their own {part}. Nobody connects this to you. You certainly do not.', 'Something about standing near you is very distracting. {foe} trips and takes their own {part} out of the fight for a turn.'],
+};
+const SAY_OUT = {
+  wing: {
+    crit: ['Happenstance comes around in an arc you did not choose and lands exactly where it hurts most. You try to look like that was the plan.', 'You overbalance, the sword comes with you, and all that gold-plated momentum arrives in one place.'],
+    hit: ['The sword goes where it wants, and this time it wants {foe}. It connects with a noise like a dropped anvil.', 'You swing. Mostly the sword swings you. It works out.'],
+    miss: ['The sword goes where it wants, which is past {foe}, and takes you with it for two full steps.', 'A magnificent swing at the place {foe} was a moment ago.'],
+    fumble: ['You go down in a long, clattering, armor-first sprawl. The floor disagrees with everyone else: {foe} staggers, a guard drops, and somewhere in the corner something expensive starts happening.', 'The sword clips the wall and rings like a cathedral bell. {foe} claps both hands over their ears and reels.'],
+  },
+  think: {
+    crit: ['You line it up, breathe, and put the blade exactly where you meant to. It is the cleanest thing this body has ever done, and it was you.', 'For once the arms do what the head says. The strike lands like you read about it in a book, because you did.'],
+    hit: ['You pick your spot and hit it. It feels strange to be good at this on purpose.', 'A sensible, well-placed blow. {foe} looks at you with new and slightly worried respect.'],
+    miss: ['The plan was sound. The arms were hers. The sword stops a hand short.', 'You aimed properly, and {foe} simply was not there. No luck came to tidy it up.'],
+    fumble: ['A plain miss, and a bad one. When you are the one steering, there is no accident waiting to catch you.', 'You think about it for half a second too long and the moment is gone.'],
+  },
+};
+const fill = (t, part) => t.replace(/\{foe\}/g, S.nameR).replace(/\{thing\}/g, CLASSES[S.classR].thing).replace(/\{part\}/g, part ?? 'arms');
+
+function theyAttack() {
+  if (S.down) return;
+  const sk = CLASSES[S.classR].skill, v = S.hero, f = S.them;
+  const edges = V.incomingOpts(v, f, sk, { guarding: S.guarding });
+  const hc = hitChance(f, v, sk, ST.withStateOpts(f, { hitCap: edges.hitCap, fumbleFrom: edges.fumbleFrom }));
+  const segs = segments((r) => { const o = V.readIncoming(r, { hitPct: hc.hitPct, critPct: hc.critPct, fumbleFrom: hc.fumbleFrom, bounce: edges.bounce }); return { key: o, cls: o, label: NAMES[o] }; });
+  const roll = d(), r = VC.enemyAttacksValerie(f, v, sk, fixedRolls([roll, d()]), { guarding: S.guarding });
+  const fx = []; let detail = 'no damage';
+  if (r.damage) { S.hero = { ...S.hero, hp: Math.max(0, S.hero.hp - r.damage) }; detail = `${pctOf(r.damage, v.maxHp)} of your bar (${n(r.damage)})`; fx.push(`your HP −${n(r.damage)}`); bump('l', 'hit'); pop('l', `−${pctOf(r.damage, v.maxHp)}`, r.outcome === 'crit' ? 'var(--crit)' : 'var(--gold)'); }
+  if (r.reflected) { S.them = { ...S.them, hp: Math.max(0, S.them.hp - r.reflected) }; detail = `${pctOf(r.reflected, f.maxHp)} of ${S.nameR}'s bar sent back (${n(r.reflected)})`; fx.push(`${S.nameR} HP −${n(r.reflected)}`); bump('r', 'hit'); pop('l', 'BOUNCE', 'var(--cyan)'); pop('r', `−${pctOf(r.reflected, f.maxHp)}`, 'var(--cyan)'); }
+  if (r.selfBind) { S.them = VC.befuddle(S.them, roll).combatant; detail = `${S.nameR} binds their own ${r.selfBind}`; fx.push(`${S.nameR}: ${r.selfBind} bound`); bump('r', 'hit'); pop('r', 'OOPS', 'var(--pink)'); }
+  if (r.outcome === 'miss') { bump('l', 'hop'); pop('l', 'MISS', 'var(--muted)'); }
+  if (r.limitGain) { S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + r.limitGain) }; fx.push(`MCE +${r.limitGain}`); }
+  S.them = endTurn(S.them);
+  post({ who: 'her', dice: `[d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>] ${esc(sk.name)} · ${esc(detail)}`, tone: r.outcome, strip: stripHtml(segs, roll), say: fill(pick(SAY_IN[r.outcome], roll), r.selfBind), fx });
+  checkDown();
+}
+
+function heroCheck() {
+  const v = S.hero, skill = skillById(S.skill);
+  if (S.down) return 'Someone is down. Rest to start over.';
+  if (skill.unlock > S.level) return `${skill.name} unlocks at level ${skill.unlock}.`;
+  if (skill.stance && skill.stance !== S.stance) return `${skill.name} needs ${skill.stance === 'think' ? 'Think It Through' : 'Wing It'}.`;
+  if (!V.canUseInBand(v, skill)) return `${skill.name} is sealed at Airhead ${V.airheadOf(v)}: it works while ${skill.bands.join(' or ')}.`;
+  if (BD.isSealed(v, skill)) return `${skill.name} is sealed: your ${skill.part} are bound.`;
+  if ((skill.cost?.mp ?? 0) > v.mp) return `Not enough MP for ${skill.name} (${n(skill.cost.mp)}). Rest to refill.`;
+  return null;
+}
+function heroActs() {
+  if (heroCheck()) return;
+  const v = S.hero, t = S.them, skill = skillById(S.skill);
+  const fxS = V.stanceEffects(v, S.stance), hc = hitChance(v, t, skill, ST.withStateOpts(v, { ...fxS.opts }));
+  const segs = segments((r) => { const o = readRoll(r, { pct: hc.hitPct, critPct: hc.critPct, fumbleFrom: hc.fumbleFrom }); const wave = o === 'fumble' && S.stance === 'wing'; return { key: o, cls: o, label: wave ? 'chaos wave' : NAMES[o] }; });
+  const roll = d(), r = VC.valerieAttacks(v, t, skill, S.stance, fixedRolls([roll, d()]));
+  const fx = []; let hero = V.shiftAirhead(S.hero, r.airheadDelta), them = S.them;
+  fx.push(`Airhead ${r.airheadDelta > 0 ? '+' : '−'}${Math.abs(r.airheadDelta)}`);
+  const st = VC.applyStressToValerie(hero, r.stress.amount, r.stress.source); hero = st.combatant;
+  if (st.taken) fx.push(`your stress ${st.taken > 0 ? '+' : '−'}${Math.abs(st.taken)}`);
+  if (skill.cost?.mp) { hero = { ...hero, mp: hero.mp - skill.cost.mp }; fx.push(`MP −${n(skill.cost.mp)}`); }
+  let detail = 'no damage';
+  const landed = r.outcome === 'hit' || r.outcome === 'crit';
+  if (r.damage) { them = { ...them, hp: Math.max(0, them.hp - r.damage) }; detail = `${pctOf(r.damage, them.maxHp)} of their bar (${n(r.damage)})`; bump('r', 'hit'); pop('r', `−${pctOf(r.damage, them.maxHp)}${r.outcome === 'crit' ? '!' : ''}`, r.outcome === 'crit' ? 'var(--crit)' : 'var(--gold)'); }
+  if (landed) for (const e of skill.effects ?? []) if (e.kind === 'bind') {
+    const b = BD.tryBind(hero, them, e.part, r.outcome === 'crit' && e.onCritChance ? e.onCritChance : e.chance, e.turns, null, { roll, backfire: false });
+    if (b.success) { them = b.combatant; fx.push(`${S.nameR}: ${e.part} bound ${b.turns} turns (needed ${b.pct} or less)`); } else fx.push(`bind missed (needed ${b.pct} or less)`);
+  }
+  if (r.wave) {
+    hero = { ...hero, limit: Math.min(100, hero.limit + 15) };
+    them = { ...them, mods: [...(them.mods ?? []), { stat: 'AGI', mult: 0.75, turns: 2, source: 'val_chaos_wave' }] };
+    detail = `Accidental Chaos Wave${r.wave.jackpot ? ', jackpot' : ''}`; fx.push(`${S.nameR} Off-Balance 2 turns`, 'MCE +15'); bump('l', 'hop'); bump('r', 'hit'); pop('l', 'CHAOS WAVE', 'var(--pink)'); pop('r', 'OFF-BALANCE', 'var(--pink)');
+  }
+  S.hero = endTurn(hero); S.them = them;
+  post({ who: 'me', dice: `[d100 ${roll} vs ${r.hitPct}: <b>${r.wave ? 'chaos wave' : r.outcome}</b>] ${S.stance === 'wing' ? 'Wing It' : 'Think It Through'} · ${esc(skill.name)} · ${esc(detail)}`, tone: r.outcome, strip: stripHtml(segs, roll), say: fill(pick(SAY_OUT[S.stance][r.outcome], roll)), fx });
+  if (st.event === 'resolve') resolvePrompt('hero');
+  checkDown();
+}
+
+const STRESS = { horror: [24, 'horror'], realization: [24, 'realization'], embarrassment: [12, 'embarrassment'] };
+const SAY_ST = {
+  horror: { none: 'The torches gutter and something with too many teeth leans out of the dark. You look at it with mild interest. {foe} sees you not flinching and stands a little straighter.', some: 'You see it. You understand exactly what it is. Being Lucid means it is every bit as bad as it looks.' },
+  realization: { some: '{foe} says it gently and in order. The bucket. The lever. The sluice. There is nothing to bounce this off.' },
+  embarrassment: { none: 'Something dreadful happens to the back of your cloak in front of forty people. You do not notice. You wave.', some: 'A pauldron pops off and rolls the length of the hall like a dropped coin, with you after it. You notice. Everyone notices.' },
+};
+function stressHero(kind) {
+  if (S.down) return;
+  const [base, source] = STRESS[kind], r = VC.applyStressToValerie(S.hero, base, source);
+  S.hero = r.combatant;
+  const fx = [`your stress +${r.taken}`];
+  pop('l', r.taken ? `+${r.taken} stress` : 'did not notice', r.taken ? 'var(--violet)' : 'var(--cyan)');
+  if (r.allyRelief) { S.them = ST.relieveStress(S.them, r.allyRelief, { from: 'other' }).combatant; fx.push(`${S.nameR} sheds ${r.allyRelief}`); }
+  if (r.airheadDelta) fx.push(`Airhead ${r.airheadDelta}`);
+  post({ who: kind === 'realization' ? 'her' : 'sys', dice: `[stress ${base} · ${source}] lands as <b>${r.taken}</b>${r.note ? ` · ${esc(r.note)}` : ''}`, tone: r.taken ? 'affliction' : 'bounce', say: fill((r.taken === 0 ? SAY_ST[kind].none : SAY_ST[kind].some) ?? SAY_ST[kind].some), fx });
+  if (r.event === 'resolve') resolvePrompt('hero');
+  if (r.event === 'breakdown') post({ dice: 'Stress reached 200: Breakdown.', tone: 'crit', say: 'In a fight you would now choose who pays: storm off for the rest of the battle, have it out with the party, or bottle it and carry a Scar. Rest to start over here.' });
+}
+function rattleThem() {
+  if (S.down) return;
+  const r = ST.applyStress(S.them, 24, { source: 'mental' }); S.them = r.combatant;
+  post({ who: 'sys', dice: `[stress 24 · mental] lands on ${esc(S.nameR)} as <b>${r.taken}</b>`, tone: 'affliction', say: `Something gets under ${S.nameR}'s skin. Their Willpower takes the edge off; it does not take all of it.`, fx: [`${S.nameR} stress +${r.taken}`] });
+  if (r.event === 'resolve') resolvePrompt('them');
+}
+function resolvePrompt(who) {
+  const lend = who === 'them' ? V.resolveShiftForAllies(S.hero) : 0;
+  const shift = ST.partyResolveShift(who === 'them' ? [S.hero] : [S.them], lend);
+  const segs = ST.resolveBands(tables, shift).map((b) => ({ key: b.id, cls: b.kind, label: b.kind, lo: b.lo, hi: b.hi }));
+  post({ who: 'sys', dice: `${who === 'hero' ? heroName : esc(S.nameR)} reached 100 stress: Resolve Check${shift ? ` · Virtue chance ${25 + shift}${lend ? ` (you lend +${lend})` : ''}` : ''}`, tone: 'affliction', strip: stripHtml(segs, null),
+    say: 'One d100, read three ways: the band picks the result, an even roll swaps in her own entry, doubles make it permanent.', extra: `<div><button class="sm primary" type="button" data-resolve="${who}">Roll the Resolve Check</button></div>` });
+}
+function rollResolve(who) {
+  const roll = d(), her = who === 'hero';
+  const rc = VC.partyResolveCheck(her ? S.hero : S.them, her ? [S.them] : [S.hero], fixedRolls([roll]), { tables, personal: DATA.valerie.resolve });
+  if (her) S.hero = rc.combatant; else S.them = rc.combatant;
+  const fx = [rc.kind]; if (rc.personal) fx.push('even roll: her own entry'); if (rc.permanent) fx.push('doubles: permanent mark');
+  if (rc.party) { const o = ST.applyStress(her ? S.them : S.hero, rc.party.stress, rc.party); if (her) S.them = o.combatant; else S.hero = VC.applyStressToValerie(S.hero, rc.party.stress, rc.party.source).combatant; fx.push(`the other one: stress ${rc.party.stress > 0 ? '+' : ''}${rc.party.stress}`); }
+  post({ who: her ? 'me' : 'her', dice: `[d100 ${roll} vs ${rc.virtuePct} for a Virtue: <b>${esc(rc.entry.name)}</b>]`, tone: rc.kind, say: `${rc.entry.quote ? `“${rc.entry.quote}” ` : ''}${rc.entry.text}`, fx });
+}
+
+const events = DATA.packs.flatMap((p) => p.events);
+const doneQuests = new Set(store.get('quests', []));
+function showEvent(id) {
+  const ev = events.find((e) => e.id === id); if (!ev) return;
+  const spot = PLACES.find((x) => (x.tags ?? []).some((t) => (ev.where ?? []).includes(t))); if (spot && spot.id !== S.place) { setPlace(spot.id); S.them = freshThem(); }
+  post({ who: 'sys', plate: ev.title, say: ev.scene, extra: `<div class="choices">${ev.choices.map((c) => { const pct = EV.choicePct(c, S.hero);
+    return `<button class="choice" type="button" data-ev="${esc(ev.id)}" data-choice="${esc(c.id)}"><small>${c.mode === 'wing' ? 'Wing it' : c.mode === 'think' ? 'Think it through' : 'Either way'}</small>${esc(c.label)}<em>${pct === null ? 'no roll' : `${pct}%`}</em></button>`; }).join('')}</div>` });
+}
+function chooseEvent(evId, choiceId) {
+  const ev = events.find((e) => e.id === evId), choice = ev.choices.find((c) => c.id === choiceId);
+  const pct = EV.choicePct(choice, S.hero), roll = d(), r = EV.resolveChoice(ev, choiceId, S.hero, fixedRolls([roll]));
+  const fx = []; let hero = S.hero;
+  for (const e of r.effects) {
+    if (e.kind === 'stress') { const s = VC.applyStressToValerie(hero, e.amount, e.source ?? 'general'); hero = s.combatant; if (s.taken) fx.push(`stress ${s.taken > 0 ? '+' : '−'}${Math.abs(s.taken)}`); }
+    else if (e.kind === 'airhead') { hero = e.set !== undefined ? { ...hero, flags: { ...hero.flags, airhead: e.set } } : V.shiftAirhead(hero, e.amount); fx.push(`Airhead ${e.set !== undefined ? `= ${e.set}` : (e.amount > 0 ? '+' : '') + e.amount}`); }
+    else if (e.kind === 'limit') { hero = { ...hero, limit: Math.max(0, Math.min(100, hero.limit + e.amount)) }; fx.push(`MCE +${e.amount}`); }
+    else if (e.kind === 'hp') { hero = { ...hero, hp: Math.max(1, Math.min(hero.maxHp, Math.round(hero.hp + (hero.maxHp * e.pct) / 100))) }; fx.push(`HP ${e.pct > 0 ? '+' : ''}${e.pct}%`); }
+    else if (e.kind === 'battle') { fx.push(`battle: ${e.encounter.replace(/_/g, ' ')}`); S.fightNext = e.encounter; }
+    else if (e.kind === 'item') fx.push(`item ${e.qty > 0 ? '+' : ''}${e.qty}: ${e.id.replace(/^itm_/, '').replace(/_/g, ' ')}`);
+    else if (e.kind === 'flag') fx.push(`story: ${(e.set ?? e.clear).replace(/_/g, ' ')}`);
+    else if (e.kind === 'moment') fx.push('saved to her card as a Moment');
+    else if (['rep', 'trust', 'dignity'].includes(e.kind)) fx.push(`${e.kind} ${e.amount > 0 ? '+' : ''}${e.amount}`);
+    else if (e.kind === 'exp' || e.kind === 'gold') fx.push(`${e.kind}: ${e.levelShare !== undefined ? `${Math.round(e.levelShare * 100)}% of a level` : e.amount}`);
+  }
+  const firstTime = !doneQuests.has(evId);
+  S.hero = hero; doneQuests.add(evId); store.set('quests', [...doneQuests]);
+  if (firstTime) { const xp = Math.round(needExp() * 0.15); fx.push(`${n(xp)} EXP`); gainExp(xp, ev.title); }
+  const good = r.branch === 'success' || r.branch === 'crit';
+  post({ who: 'me', dice: r.roll === null ? `[no roll] ${esc(choice.label)}` : `[d100 ${r.roll} vs ${pct}: <b>${r.branch}</b>] ${esc(choice.label)}`, tone: r.roll === null ? null : good ? 'hit' : 'fumble', say: r.text, fx });
+  if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
+  if (S.fightNext) { const w = S.fightNext; S.fightNext = null; if (BT && DATA.encounters.encounters.some((x) => x.id === w) && S.hero.hp > 0) startBattle({ encounter: w }); else setMode('combat', w.replace(/_/g, ' ')); }
+}
+function setMode(mode, why) {
+  if (S.mode === mode) return;
+  S.mode = mode;
+  if (mode === 'combat') post({ who: 'sys', dice: `<b>COMBAT</b>${why ? ` · ${esc(why)}` : ''}`, tone: 'crit', say: `${S.nameR} squares up. Initiative, stances and dice from here on: pick how you act.` });
+  else post({ who: 'sys', dice: `<b>TRAVELLING</b>${why ? ` · ${esc(why)}` : ''}`, tone: 'virtue', say: 'Weapons down. You can explore, take a quest from the board, or go somewhere else.' });
+}
+function goTo(id) {
+  const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return;
+  if (S.battle) return post({ who: 'sys', dice: 'You are in a fight.', say: 'Finish it, or press the red pill at the top to walk out (debug).' });
+  S.mode = 'travel'; setPlace(id); S.them = freshThem(); S.down = S.hero.hp <= 0;
+  const q = questsAt(to).filter((e) => !doneQuests.has(e.id)).length;
+  post({ who: 'sys', dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b>`, tone: 'virtue', say: to.text, fx: q ? [`${q} quest${q === 1 ? '' : 's'} around here`] : [] });
+  if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+}
+function explore() {
+  const place = placeNow();
+  const pool = questsAt(place).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); });
+  if (!pool.length) return post({ who: 'sys', dice: `[explore] ${esc(place.name)}`, say: 'You poke around for a while. Nothing here needs a hero today. Try another bubble on the map, or the board at the Guild Hall.' });
+  showEvent(pool[Math.floor(Math.random() * pool.length)].id);
+}
+function checkDown() {
+  if (S.hero.hp <= 0 || S.them.hp <= 0) {
+    S.down = true; S.mode = 'travel';
+    post({ who: 'sys', dice: `${S.hero.hp <= 0 ? heroName : esc(S.nameR)} is down.`, tone: 'crit', say: S.hero.hp <= 0 ? 'The world goes sideways and very quiet. In a real fight the party would have to get you back up.' : `${S.nameR} sits down hard and holds up a hand. That is the bout. Rest to go again.` });
+  }
+}
+
+/* ---------- talking: Claude answers as the other character when the page is allowed to ask ---------- */
+let sampler; // undefined = not asked yet, null = unavailable
+async function say(text) {
+  post({ who: 'me', say: text, spoken: true }); render();
+  if (!S.who && S.lookR === 'none') { post({ who: 'sys', say: 'Nobody is here to answer. Walk to a bubble with a pink dot, or move someone in from the Here tab.', spoken: true }); return render(); }
+  if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+  if (!sampler) { post({ who: 'sys', say: 'Replies need this page to be allowed to ask Claude. Open it on claude.ai and allow it, or keep playing with the buttons.', spoken: true }); return render(); }
+  const state = `Valerie: level ${S.level}, Airhead ${V.airheadOf(S.hero)}/100 (${V.airheadBand(V.airheadOf(S.hero))}), stress ${S.hero.stress}/200. ${S.nameR}: a ${arche(S.classR).name}, stress ${S.them.stress}/200.`;
+  const prompt = `You are ${S.nameR}, ${S.who ? castOf(S.who).role : `a ${arche(S.classR).name}`} in the town of Gooseford, talking with Dame Valerie Bellweather at ${placeNow().name} in a light fantasy comedy. Valerie is a brave, kind, spectacularly clumsy knight who is absurdly lucky without knowing it. The person talking to you is inside Valerie. Reply in character in one to three short sentences, warm and playful, PG-13, no narration of Valerie's actions. Current state: ${state}\n\nValerie says: ${text}`;
+  const idx = S.lines.length; post({ who: 'her', say: '…', spoken: true }); render();
+  try {
+    const out = await sampler(prompt, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(t)}</p></div>`; renderLog(); } });
+    S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(out.text)}</p></div>`;
+  } catch (e) {
+    S.lines[idx] = `<div class="line sys"><span class="plate">Game Master</span><p class="say spoken">${e?.code === 'rate_limited' ? 'Too many replies at once. Give it a moment.' : 'No reply this time. The buttons still work.'}</p></div>`;
+    if (e?.code === 'not_granted') sampler = null;
+  }
+  render();
+}
+
+/* ---------- guild hall and the SillyTavern guide ---------- */
+function renderGuild() {
+  const quests = events.map((e) => { const lv = e.when?.level ?? [1, 100], ok = S.level >= lv[0] && S.level <= lv[1], done = doneQuests.has(e.id);
+    return `<div class="quest${done ? ' done' : ''}"><b>${esc(e.title)}</b><small>${esc(e.t)}</small><div class="meta"><span>${esc((e.where ?? ['anywhere']).join(' · '))}</span><span class="${ok ? 'ok' : ''}">levels ${lv[0]}–${lv[1]}</span>${done ? '<span class="ok">done</span>' : ''}</div><button class="sm ${ok ? 'primary' : 'quiet'}" type="button" data-quest="${esc(e.id)}">${done ? 'Again' : 'Go'}</button></div>`; }).join('');
+  const live = Boolean(BT), busy = Boolean(S.battle);
+  const bosses = (DATA.bosses?.bosses ?? []).map((b) => `<div class="quest"><b>${esc(b.name)}${b.title ? `, ${esc(b.title)}` : ''}</b><small>${esc(b.want)}</small><div class="meta"><span>level ${b.level} ${esc(b.rank)}</span><span>${n(b.hp)} HP</span><span>${esc(b.arena ? b.arena.split(':')[0] : 'arena')}</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-boss="${esc(b.id)}"${live && !busy ? '' : ' disabled'}>${live ? 'Fight' : 'Soon'}</button></div>`).join('');
+  const hunts = (DATA.encounters?.encounters ?? []).map((x) => `<div class="quest"><b>${esc(x.name)}</b><small>${esc(x.text ?? x.t ?? x.premise ?? '')}</small><div class="meta"><span>at your level (${S.level})</span><span>${(x.enemies ?? []).reduce((sum, en) => sum + (en.count ?? 1), 0)} enemies</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-enc="${esc(x.id)}"${live && !busy ? '' : ' disabled'}>${live ? 'Hunt' : 'Soon'}</button></div>`).join('');
+  $('guild').innerHTML = `<h2>The Guild Hall</h2><p>The notice board at the Gilded Goose. Quests are story events from the plug-in packs; pick one and it plays out on the stage. A quest outside your level still runs, it just was not written for it.</p>${quests}
+    <h2>Hunts</h2><p>Ordinary fights, run turn by turn by the battle runner at your current level. ${esc(S.nameR)} and two more join your party.</p>${hunts}
+    <h2>Bounties</h2><p>The three bosses, fought at their own level with a full party. None of them can simply be out-damaged: read the phase question in the right panel.</p>${bosses}`;
+}
+function renderTavern() {
+  $('tavern').innerHTML = `<h2>Play this in SillyTavern</h2><p>This page shows the rules. SillyTavern is where you play the story: you are Valerie, and a Game Master card plays everything else and reads real dice.</p>
+    <ol class="steps">
+      <li><span><b>Import the Game Master.</b> Character Management → Import → <code>Oops_Im_the_Hero_GM.card.json</code>. Say yes when it offers the embedded lorebook: that is the whole rulebook, 52 entries.</span></li>
+      <li><span><b>Become Valerie.</b> Persona Management → new persona named Valerie → paste the text below as its description, and pick it for this chat.</span></li>
+      <li><span><b>Open her card in your Card Creator.</b> She is already in the extension inbox as <code>st-card-creator/inbox/Valerie.card.json</code> and in your Character Card artifact under Characters. Her RPG tab reads Klutz Knight with the same numbers as here.</span></li>
+      <li><span><b>Start a chat</b> with the Game Master. Pick the forest (level 1), the tavern (level 5) or the dungeon (level 10). Type what you do; it reads it as winging it or thinking it through.</span></li>
+      <li><span><b>Use this page beside it.</b> When the Game Master rolls, set the same level and gauge here to see exactly which band the roll landed in and why.</span></li>
+    </ol>
+    <h2>Her persona text</h2><pre class="copybox" id="personaText">${esc(DATA.persona || 'Build the SillyTavern files first: node sillytavern/build.mjs')}</pre>
+    <div><button class="sm" type="button" id="copyPersona">Copy persona text</button></div>
+    <p>The files are in the Ai-RPG repository under <code>rpg/sillytavern/out/</code>. What is not built yet: an extension that tracks HP, stress and the gauge in code. Until then the model does the arithmetic from the lorebook's tables.</p>`;
+}
+function setView(view) {
+  S.view = view;
+  for (const b of document.querySelectorAll('[data-view]')) b.setAttribute('aria-selected', b.dataset.view === view);
+  $('log').hidden = view !== 'stage'; $('composer').hidden = view !== 'stage'; $('guild').hidden = view !== 'guild'; $('tavern').hidden = view !== 'tavern';
+  if (view === 'guild') renderGuild(); if (view === 'tavern') renderTavern();
+  if (view === 'stage') renderLog();
+}
+
+/* ---------- render and wiring ---------- */
+function render() {
+  drawSpriteOnce();
+  renderHuds();
+  const sel = $('skill');
+  sel.innerHTML = heroSkills().map((s) => `<option value="${s.id}"${s.id === S.skill ? ' selected' : ''}>${esc(s.name)}${s.unlock > S.level ? ` (level ${s.unlock})` : s.cost?.mp ? ` · ${n(s.cost.mp)} MP` : ''}</option>`).join('');
+  const why = heroCheck();
+  $('why').textContent = why ?? (skillById(S.skill).text ?? '');
+  $('act').disabled = Boolean(why);
+  $('they').disabled = S.down; $('they').textContent = `${S.nameR} attacks`;
+  $('rattle').textContent = `Rattle ${S.nameR}`;
+  const combat = S.mode === 'combat';
+  document.body.classList.toggle('combat', combat);
+  document.body.classList.toggle('debug', S.debug);
+  $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat;
+  if (!combat) $('gridTravel').innerHTML = travelGrid();
+  $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
+  if (document.activeElement !== $('level')) $('level').value = String(S.level);
+  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : combat ? 'Sparring' : `Travelling · ${placeNow().short}`;
+  if (S.battle) renderBattleRow(); else $('foe').hidden = true;
+  $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
+  $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
+  $('s-wing').setAttribute('aria-pressed', S.stance === 'wing'); $('s-think').setAttribute('aria-pressed', S.stance === 'think');
+  $('guard').setAttribute('aria-pressed', S.guarding); $('guard').textContent = `Guard: ${S.guarding ? 'on' : 'off'}`;
+  renderLog();
+}
+let drawn = {};
+function drawSpriteOnce() {
+  if (drawn.l !== S.lookL) { drawSprite($('sprL'), S.lookL); drawn.l = S.lookL; }
+  if (drawn.r !== S.lookR) { drawSprite($('sprR'), S.lookR); drawn.r = S.lookR; }
+}
+function reset(keepGauge) {
+  S.hero = freshHero(keepGauge ? S.hero : null); S.them = freshThem(); S.down = false;
+}
+function addCustom(side, file) {
+  if (!file) return;
+  const id = `custom-${side}`, video = file.type.startsWith('video/');
+  if (S.custom[id]) URL.revokeObjectURL(S.custom[id].src);
+  S.custom[id] = { id, name: `My upload (${side === 'l' ? 'left' : 'right'})`, src: URL.createObjectURL(file), video };
+  if (side === 'l') { S.lookL = id; drawn.l = null; } else { S.lookR = id; drawn.r = null; }
+  render();
+}
+document.addEventListener('input', (e) => {
+  if (e.target.id === 'gauge' && !S.battle) { S.hero = { ...S.hero, flags: { ...S.hero.flags, airhead: +e.target.value } }; renderHudsKeepFocus(); }
+});
+function renderHudsKeepFocus() { const v = $('gauge').value; renderHuds(); const g = $('gauge'); g.value = v; g.focus(); $('why').textContent = heroCheck() ?? (skillById(S.skill).text ?? ''); $('act').disabled = Boolean(heroCheck()); }
+document.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.id === 'lookL') { S.lookL = t.value; if (!t.value.startsWith('custom')) store.set('lookL', t.value); render(); }
+  else if (t.id === 'lookR') { S.lookR = t.value; saveCast(); render(); }
+  else if (t.id === 'classR') { S.classR = t.value; saveCast(); S.them = freshThem(); S.down = S.hero.hp <= 0; render(); }
+  else if (t.id === 'nameR') { S.nameR = t.value.trim() || 'Them'; saveCast(); S.them = { ...S.them, name: S.nameR }; render(); }
+  else if (t.id === 'whoHere') { const moved = store.get('residents', {}); moved[S.place] = t.value || null; store.set('residents', moved); setPlace(S.place); S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${esc(placeNow().name)}: ${S.who ? `${esc(S.nameR)} lives here now` : 'nobody lives here now'}` }); render(); }
+  else if (t.id === 'fileL') addCustom('l', t.files[0]);
+  else if (t.id === 'fileR') addCustom('r', t.files[0]);
+  else if (t.id === 'level') { S.level = Math.max(1, Math.min(100, Math.round(+t.value) || 1)); store.set('level', S.level); reset(true); if (skillById(S.skill).unlock > S.level) S.skill = 'basic_attack'; post({ who: 'sys', dice: `Level ${S.level}. Both of you are fresh.` }); render(); }
+  else if (t.id === 'skill') { S.skill = t.value; render(); }
+  else if (t.id === 'bAct') { S.battle.pick = +t.value; render(); }
+  else if (t.id === 'bTarget') { S.battle.target = t.value; render(); }
+  else if (t.id === 'place') { goTo(t.value); render(); }
+  else if (t.id === 'event') { if (t.value) { showEvent(t.value); t.value = ''; render(); } }
+});
+document.addEventListener('pointerover', (e) => { const c = e.target.closest?.('[data-bi]'); if (c && S.battle) { const a = S.battle.acts?.[+c.dataset.bi]; if (a) $('bWhy').textContent = a.why ?? S.battle.state.defs.skills[a.skillId]?.text ?? $('bWhy').textContent; } });
+document.addEventListener('keydown', (e) => { const g = e.target.closest?.('g[data-go]'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); goTo(g.dataset.go); render(); } });
+function debugClick(what) {
+  if (what === 'old') { S.debug = !S.debug; store.set('debug', S.debug); }
+  else if (what === 'party') { S.party = !S.party; store.set('party', S.party); }
+  else if (what === 'exp') gainExp(Math.max(1, needExp() - S.exp), 'a cheat');
+  else if (what === 'heal') { reset(true); post({ who: 'sys', dice: '[debug] Healed and calmed.' }); }
+  else if (what === 'mode') { if (S.battle) { post({ who: 'sys', dice: '<b>TRAVELLING</b> · you left the fight (debug)', tone: 'virtue', say: 'You walk out of a fight nobody is allowed to walk out of. Your bars come with you as they are.' }); leaveBattle(); } else setMode(S.mode === 'combat' ? 'travel' : 'combat', 'switched by hand'); }
+  else if (what === 'wipe') {
+    if (!S.wipeArmed) { S.wipeArmed = true; return; }
+    try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [] }); doneQuests.clear(); seen = 0; drawn = {};
+    setPlace('square'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, Wishing Well Square, nothing done yet.' });
+  }
+  if (what !== 'wipe') S.wipeArmed = false;
+}
+document.addEventListener('click', (e) => {
+  const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.rtab) { S.rtab = b.dataset.rtab; if (b.dataset.rtab !== 'fight') store.set('rtab', S.rtab); $('hudR').scrollTop = 0; return render(); }
+  if (b.dataset.act) { doAct(b.dataset.act); return render(); }
+  if (b.dataset.dbg) { debugClick(b.dataset.dbg); return render(); }
+  if (b.dataset.flip) { const id = b.dataset.flip === 'l' ? S.lookL : S.lookR; S.flips[id] = !S.flips[id]; store.set('flips', S.flips); drawn[b.dataset.flip] = null; return render(); }
+  if (b.dataset.train) { if (S.points > 0) { S.points -= 1; S.bonus[b.dataset.train] = (S.bonus[b.dataset.train] ?? 0) + 1; store.set('points', S.points); store.set('bonus', S.bonus); const keep = S.hero; S.hero = { ...freshHero(keep), hp: keep.hp, mp: keep.mp, stress: keep.stress, limit: keep.limit, resolve: keep.resolve, binds: keep.binds, mods: keep.mods }; } return render(); }
+  if (b.id === 'levelUp') { levelUp(); return render(); }
+  if (b.dataset.bst) { S.stance = b.dataset.bst; return render(); }
+  if (b.dataset.btarget && S.battle) { S.battle.target = b.dataset.btarget; return render(); }
+  if (b.dataset.bi && S.battle) { S.battle.pick = +b.dataset.bi; S.battle.hint = null; battleAct(false); return render(); }
+  if (b.dataset.view) return setView(b.dataset.view);
+  if (b.dataset.quest) { showEvent(b.dataset.quest); setView('stage'); return render(); }
+  if (b.id === 'copyPersona') { const t = $('personaText'); (navigator.clipboard?.writeText(t.textContent) ?? Promise.reject()).then(() => { b.textContent = 'Copied'; }).catch(() => { const r = document.createRange(); r.selectNodeContents(t); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected: press copy'; }); return; }
+  if (b.dataset.go) goTo(b.dataset.go);
+  else if (b.dataset.boss) { setView('stage'); startBattle({ boss: b.dataset.boss }); }
+  else if (b.dataset.enc) { setView('stage'); startBattle({ encounter: b.dataset.enc }); }
+  else if (b.id === 'bGo') battleAct(false);
+  else if (b.id === 'bAuto') battleAct(true);
+  else if (b.id === 'bFlee' || (b.id === 'mode' && S.battle)) { post({ who: 'sys', dice: '<b>TRAVELLING</b> · you left the fight (debug)', tone: 'virtue', say: 'You walk out of a fight nobody is allowed to walk out of. Your bars come with you as they are.' }); leaveBattle(); }
+  else if (b.id === 'mode') setMode(S.mode === 'combat' ? 'travel' : 'combat', 'switched by hand');
+  else if (b.id === 'startFight') setMode('combat', `you and ${S.nameR}`);
+  else if (b.id === 'endFight') setMode('travel', 'you called it off');
+  else if (b.id === 'explore') explore();
+  else if (b.id === 's-wing') S.stance = 'wing';
+  else if (b.id === 's-think') S.stance = 'think';
+  else if (b.id === 'act') heroActs();
+  else if (b.id === 'they') theyAttack();
+  else if (b.id === 'guard') S.guarding = !S.guarding;
+  else if (b.id === 'rattle') rattleThem();
+  else if (b.id === 'rest') { reset(true); S.mode = 'travel'; post({ who: 'sys', dice: 'A night at the Gilded Goose.', say: 'Bars refilled, binds gone, nerves settled. The gauge stays where you left it.' }); }
+  else if (b.dataset.st) stressHero(b.dataset.st);
+  else if (b.dataset.resolve) { rollResolve(b.dataset.resolve); b.disabled = true; }
+  else if (b.dataset.choice) chooseEvent(b.dataset.ev, b.dataset.choice);
+  else if (b.closest('.hud') && window.matchMedia('(max-width:900px)').matches) b.closest('.hud').classList.toggle('open');
+  else return;
+  render();
+});
+for (const id of ['hudL', 'hudR']) $(id).addEventListener('click', (e) => { if (window.matchMedia('(max-width:900px)').matches && !e.target.closest('input,select,button,label')) $(id).classList.toggle('open'); });
+$('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $('say').value.trim(); if (!t) return; $('say').value = ''; say(t); });
+
+for (const side of ['L', 'R']) {
+  const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
+  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.36), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); };
+  const saved = store.get(`hud${side}`, null); if (saved) root.style.setProperty(key, `${saved}px`);
+  grip.addEventListener('pointerdown', (e) => { grip.setPointerCapture(e.pointerId); grip.classList.add('on');
+    const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
+    const up = () => { grip.classList.remove('on'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); };
+    grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); });
+  grip.addEventListener('keydown', (e) => { const now = parseInt(getComputedStyle(root).getPropertyValue(key), 10) || 224; const step = (e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0) * (side === 'L' ? 1 : -1); if (step) { e.preventDefault(); apply(now + step); } });
+}
+$('level').value = String(S.level);
+$('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
+setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'square') : 'square');
+$('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
+if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
+reset(false);
+post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, on the left, in the town of Gooseford. The map on the right is how you get around: click a bubble and you are there. The buttons under this box are what you can do where you stand. The pill up top always says whether you are travelling or in combat.` });
+if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
+window.__stage = { S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+render();
+})();
+</script>
+<script>
+/*__BATTLE_UI__*/
+</script>
