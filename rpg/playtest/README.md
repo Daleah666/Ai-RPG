@@ -26,6 +26,7 @@ That writes `playtest/out/oops-playtest.html` (ignored by git). Open it from a f
 These live in `stage.html`, not in `engine/`. They are playtest rules: cheap to change, and not yet covered by the test suite.
 
 - **Clock.** Walking, talking and resting move a clock. Four phases tint the scene. Shops, the guild and the bar keep hours, and a regular is only at their place during theirs.
+- **Domains and order.** The city is the hub. Around it are four domains, each with its own map: the Greenwood, Castle Greywatch and its dungeons, the Academy, and the Slaver Camps. Each has an Order meter (0 to 100). Winning fights, talking enemies down, quiet patrols and freeing captives raise it; losing lowers it. Order moves the fight chance by 0.3 a point around 50. Each domain has a stronghold (a boss, or the camp garrison); breaking it secures the domain and cuts fight chances there to 40%.
 - **Zones.** Each place is `safe`, `risky` or `wild`, with a fight chance (`enc`), an event chance (`evt`) and an enemy strength (`foe`, a share of her level). Entering or exploring a place that is not safe rolls one d100 against that table.
 - **Fight chance.** Place + 15 at night + half of every point of decency under 50 + 10 when stamina is under 25. In a safe place it is zero until decency drops under 30; then even townsfolk try it.
 - **Combat.** A fight starts as a standoff: Fight, Persuade (Willpower), Tempt (Luck) or Run (Finesse). You cannot walk away. A failed roll starts the fight. Inside a non-boss fight the same three are offered again and a failure costs the turn; potions cost the turn too.
@@ -56,7 +57,8 @@ A missing file leaves an empty spot; the page still works. Anyone on the page ca
 
 The tables near the top of the script in `stage.html`:
 
-- `PLACES`: each bubble. Map position, backdrop, zone, chances, hours, what you can do there, who lives there, which bubbles it connects to, the lines for Look around, and the tags that tie it to story events.
+- `AREAS`: the five maps. Name, starting order, and the doorways that lead from one map to a place on another.
+- `PLACES`: each bubble. `area` says which map it is on; `roads` gives the minutes for a walk between maps; `boss` names its stronghold. Map position, backdrop, zone, chances, hours, what you can do there, who lives there, which bubbles it connects to, the lines for Look around, and the tags that tie it to story events.
 - `CAST`: the regulars. Name, role, class, look, hours, what they like and hate, and their lines.
 - `SPOTS`: the spots inside a place, three options each: a stat and a difficulty, a cost, and what winning or losing does.
 - `APPROACH`, `POTIONS`, `PATHS`, `THOUGHTS`: the four approaches, the shop stock, the growth paths, and her canned inner voice.
