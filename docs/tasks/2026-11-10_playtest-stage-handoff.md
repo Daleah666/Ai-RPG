@@ -68,6 +68,11 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Asking Claude, and counting it | `metered`, `meter`, `aiUsage`, `gaugeDigest`, `FILL`, `fillPrompt`, `fillSheet`, `fillBox` |
 | The fixed place grid, street actions | `HERE_ROW`, `TROUBLE_ROW`, `streetAct`, `streetCell`, `placeGrid`, `actCell` inside `travelGrid` |
 | Roads on the map and in the panel | `roadPath`, `roadsBox`, `jointsOf`, `stretchRows` |
+| Pinned, passive rank, crowd size | `pinDown`, `pinnedAct`, `passiveRank`, `crowdSize`, the `pinned` branch at the top of `travelGrid` |
+| Cast view | `renderCast`, `shade`, `FOE_TIER`, the `inn`, `guarded` flags on `CAST` |
+| Guarded answers and talents | `retest`, `TALENTS`, `talentOf`, `S.retest`, `S.passed` |
+| Big window | `keepCard`, `renderBig`, `snapshot`, the `big` option of `post`, `WHY_*` |
+| The other character's card | `themFace`, the top of `hereTab`, `S.autoThem` in `rightPanel` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -92,6 +97,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
 - The left panel copies the left side of Del's Character Card: portrait, a row of folds, then the sheet, with no boxed info cards. HP, mana and stamina live beside the panel, not in it, and opening them shows her mood. The panel has exactly three sizes (min, half, full) and pushes the chat column over. The dice come out of the chat box. Del asked for the look to be "a bit more RPG": the gold double frame, the corner studs, the cursor on the buttons and the die are that.
 - Del's pictures: 27 town backdrops are all in use. Of 12 character cutouts, six are in use (four as poses for Valerie, two as new regulars), one is a duplicate, and five were left out; the reply to Del on 2026-11-10 says which and why. Do not add the five without asking Del again.
+- Del asked for the downed state to work like Karryn's Prison's. The structure was built (pinned, four ways out, counters that unlock passives, more of them as rank rises). The explicit content was not, and the assistant told Del so on 2026-11-10.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
 
@@ -111,6 +117,19 @@ Not built, from the plan Del was shown (the two open choices were settled by def
 Del also said there is a SillyTavern JSON with material to adapt into random events. Only a picture arrived in the session (a modern city crowd scene), with no card data inside it. The fourteen road events in `MICRO` are original. When the JSON arrives, adapt its events into `MICRO` rows (one roll each) or into `data/events/` packs (full story events), re-themed to the knight setting and kept PG-13.
 
 Also asked for and not built: three or four playable characters, one per calling, who sometimes join as a party (the callings exist now as ways to play Valerie, not as separate people); a portrait per mood (the hook is `MOOD_FACES`; Del has mood pictures for one character only).
+
+## Asked for on 2026-11-10 and not built yet, newest first
+
+These arrived while the last pass was being tested. Some reverse earlier asks; the newest wins.
+
+1. **The chat box always centred.** Del first asked for the panel sizes to push the chat right, then said "chat bar always centre middle". At Half and Full the panel currently pushes it. Centring it means the panel has to overlay the stage or stop growing where the chat begins.
+2. **No portrait column on the left of the left panel; put her sprite back; at minimum show more combat stats and action buttons.** The Full layout's two columns are the thing to undo.
+3. **Her full-body sprite on the left and the other character's on the right, always, except while walking.** Travelling debuffs should show while walking.
+4. **Bars at the top, thicker, with the numbers in them; hover for more; a stat block in the format of Del's older companion hub page.** The vitals rail is the thing to rework. "Organise my bar to be practical and easy to get into."
+5. **While moving, the dice on the left of the chat box; story-event bubbles should not take over the chat column.**
+6. **Guild quests: a layout for every quest and a four-choice interaction each, ending in combat, a social scene, a mystery, and so on.**
+7. **More passives.** Del asked for "all the ones listed in Karryn's Prison". That list is another game's content and is sexual; the bank here stays original and PG-13. Write new ones in the same shape (`PERKS` rows with `need`).
+8. **Full sex-combat in the downed state.** Not built and not going to be: the pinned state is the PG-13 version. See "Decisions".
 
 ## What Del asked for that is not built, in suggested order
 
