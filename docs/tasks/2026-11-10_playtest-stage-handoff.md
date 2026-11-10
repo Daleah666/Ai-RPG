@@ -85,6 +85,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Composure, catcalls, thought pops | `composure`, `composureScore`, `COMPOSURE`, `catcallWalk`, `CALLERS`, `REACT`, `thoughtPops` |
 | Amaranth and Corruption | `maybeVisit`, `visitChance`, `dreamCells`, `dreamAct`, `DREAM_*`, the `corrupt` row of `COND`, the `bless` act, `S.dream` |
 | News, notifications, big trouble | `WORLD`, `worldEvent`, `worldTick` (called from `passTime` when the phase changes), `toast`, `newsBox`, `REACT_W`, `BADDIES`, `baddieAt`, `baddieCheck`, `bigResult`, `openCell`, `S.news`, `S.baddieDown`, `S.loose` |
+| Del's secondary cast, rivals who turn, playing as Pip | `SECOND`, `HOSTILE`, `rivalFight`, `turnRival`, `secPose`, the `ally` branch in `hail`, `S.turned`, `S.secMet`; `PCS`, `PC_ID`, `SHEET_KEY`, `playAs` |
 | The Town Girls | `TOWN` (generated from Del's `Town_Girls` dialogue files), the `town` kind in `hail`, `S.townMet`, the Cast section in `castHtml` |
 | Wanderers and the movement maps | `countsFor` (the big map), `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
 | Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
@@ -151,7 +152,7 @@ Asked for and not built yet:
 2. **Chat text that is not in a bubble and means different things.** Narration is unboxed now; Del wants more kinds of unboxed text with distinct meanings (for example sounds, time passing, a rumour).
 3. **A stat block for a quick read of any character.** Her own numbers now use the card creator's tile format in the strip under the top bar. The same tiles for the person on the right are not built.
 4. **More action buttons at the minimum panel size.** Potions and Growth are there; Del asked for "buttons of action".
-5. **Separate people for the four callings**, who sometimes join as a party.
+5. **A party.** Del's allies exist and can be hailed, but nobody joins a fight yet. The four callings are still all Valerie (or Pip).
 6. **Full sex-combat in the downed state and Karryn's Prison's own passive list.** Not built and not going to be: see Decisions. The pinned state and the original passives are the version this project has.
 7. Fever, Corruption, the bar shift and a shop cure for Swelling, from the conditions plan.
 8. The SillyTavern JSON Del mentioned has never arrived in a session; only pictures have.
@@ -173,6 +174,10 @@ Decisions made in that pass:
 - Del then said: make the map easier to remember, put similar things together, and stop showing the same thing again and again. What changed: the big map shows a head-count per place instead of a token per person; the key is in three groups; the folds are grouped under four labels; the separate list of roads is gone (the Go row has its numbers); the stat strip no longer repeats HP, Mana, Stamina or the clock; Lore no longer repeats the news; Settings no longer repeats full screen, the world switch or Jiggle. **Before adding anything to this page, check whether it is already shown somewhere, and put it there.**
 - Del's comment on the tab row: the four tabs go under the buttons, and Jump belongs on the map. Done. The old row of Jump buttons in the Debug tab is behind a Settings switch (`S.tpRow`) that the browser tests turn on.
 - `Town_Girls` (twelve folders, a dialogue file and one or two pictures each) became `TOWN`. Their lines are used as written. Line 2 and line 3 are read as her reaction to how composed Valerie is.
+
+- Del then sent three roster archives (four witches, six rogues, plus two bosses sent earlier) and said one is playable: "the ginger rogue", which is **Pip Copperfinch**. All twelve are in `SECOND`. The seven written as enemies or rivals start hostile and turn ally the first time she beats them, which is what their cards say happens. Pip is playable as a second name, face, calling and story on the same save.
+- A courier wanderer used to be called Pip Quickpenny. He is Dash Quickpenny now so there is one Pip. His key in `WANDER` is still `pip`; Pip Copperfinch's is `copper`.
+- Not used from those archives: the "torn" pictures, the second copies of each pose, Vexa's three clips, and the `prompt.txt` / `card.json` files.
 
 Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
 
