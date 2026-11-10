@@ -321,6 +321,7 @@
       "effects": [
         {
           "kind": "airhead",
+          "target": "self",
           "amount": 25
         },
         {
@@ -660,6 +661,7 @@
         },
         {
           "kind": "airhead",
+          "target": "self",
           "set": 0
         },
         {
@@ -765,6 +767,7 @@
       "effects": [
         {
           "kind": "airhead",
+          "target": "self",
           "set": 50
         }
       ],
