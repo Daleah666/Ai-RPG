@@ -526,6 +526,33 @@ body.alone{--col:700px}
 .tray.shut .tray-h::after{content:"▴"}
 .foe{position:static;flex:none;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:6px 12px;border-radius:12px}
 .foe .track{margin:0;height:9px}
+/* the same grid at every place: three rows of four */
+.pgrid{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.prow{grid-column:1/-1;font-family:var(--f-mono);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:2px}
+.prow:first-child{margin-top:0}
+.cell.empty{border:1px dashed var(--edge);background:none;min-height:44px;opacity:.45}
+body.sheetL .pgrid,body.half .pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.sheetL .cell.empty,body.half .cell.empty{display:none}
+#gridTravel{max-height:50vh;overflow-y:auto;scrollbar-width:thin;align-content:start}
+/* roads on the map bend once per stretch */
+.map polyline{fill:none;stroke:var(--edge2);stroke-width:.8;stroke-dasharray:1.6 1.4;stroke-linejoin:round}
+.map polyline.on{stroke:var(--c);stroke-dasharray:none}
+.map polyline.wild{stroke:color-mix(in srgb,var(--crit) 55%,transparent)}
+.map polyline.on.wild{stroke:var(--c)}
+.map .jt{fill:var(--edge2)}.map .jt.wild{fill:color-mix(in srgb,var(--crit) 70%,transparent)}.map .jt.on{fill:var(--c)}
+.roads{display:grid;gap:4px}
+.roadrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:center;text-align:left;padding:6px 10px;border-radius:10px;background:var(--glass);border:1px solid var(--edge);min-height:0}
+.roadrow:hover{border-color:var(--edge2)}
+.roadrow b{font-size:.8rem;font-weight:600}.roadrow b i{font-family:var(--f-serif);font-weight:400;color:var(--pink);margin-left:4px}
+.roadrow span{grid-column:1;font-size:.64rem;color:var(--muted);font-weight:400}
+.roadrow em{grid-row:1/3;grid-column:2;font-style:normal;font-family:var(--f-mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)}
+.roadrow em.mid{color:var(--gold)}.roadrow em.bad{color:var(--crit)}
+@media (min-width:901px){
+  body.half{--lane:clamp(0px,calc(100vw - var(--hudL) - var(--hudR) - 546px),230px)}
+  body.half .dialog{margin-left:calc(var(--hudL) + 64px + var(--lane));width:min(var(--col),calc(100% - var(--hudL) - 64px - var(--lane) - var(--hudR) - 30px))}
+  body.half .sprite.l{right:auto;width:calc(var(--lane) + 150px)}
+  body.half .sprite.r{left:auto;right:calc(var(--hudR) - 30px);width:300px}
+}
 /* the world plate at the top of the right-hand panel: time and season, place, danger, standing */
 .world{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;padding-bottom:10px;border-bottom:1px solid var(--edge)}
 .w-time{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -767,7 +794,7 @@ const LOOKS = [
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
-const TOWN_SCENES = { gates: 'gate', square: 'well', guild: 'guild', tavern: 'tavern', archive: 'archive', baths: 'baths', bar: 'bar', alley: 'alley', yard: 'yard' };
+const TOWN_SCENES = { tankard: 'tavern', bunks: 'bar', lodge: 'guild', gates: 'gate', square: 'well', guild: 'guild', tavern: 'tavern', archive: 'archive', baths: 'baths', bar: 'bar', alley: 'alley', yard: 'yard' };
 const sceneOf = (place) => (TOWN_SCENES[place.id] ? `art/bg/town/${TOWN_SCENES[place.id]}-${{ Morning: 1, Afternoon: 1, Evening: 2, Night: 3 }[phaseNow()]}.webp` : place.src);
 function drawScene() { const place = placeNow(), src = sceneOf(place); if (S.sceneSrc === src) return; S.sceneSrc = src; $('scene').innerHTML = src ? `<img src="${esc(src)}" alt="">` : ''; }
 // Four months, one per season, twenty-eight days each.
@@ -805,10 +832,22 @@ const PLACES = [
   { id: 'alley', name: 'Back Alley', short: 'Alley', x: 90, y: 40, src: 'art/bg/chat-graffiti.webp', zone: 'risky', enc: 10, evt: 20, foe: 0.6, tags: ['town'], who: null, acts: ['look', 'explore'], links: ['tavern', 'bar'],
     text: 'Painted walls, stacked crates, and the short way between the two places in town that sell drinks. Mostly safe. Mostly.',
     look: ['Someone has painted a very flattering mural of a knight falling over. The armor is gold.', 'A cat watches you from a crate with the patience of a creditor.'] },
-  { id: 'yard', area: 'castle', name: 'Castle Yard', short: 'Yard', x: 50, y: 18, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look', 'spar'], links: ['gates', 'ruins'],
+  { id: 'yard', area: 'castle', name: 'Castle Yard', short: 'Yard', x: 50, y: 18, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look', 'spar'], links: ['gates', 'ruins', 'bunks'],
     text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.',
     look: ['One dummy has a helmet on. On closer inspection it is your helmet, from last week.', 'The sand has been raked into neat lines. You have about a minute before that stops being true.'] },
-  { id: 'road', area: 'forest', name: 'Greenwood Road', short: 'Road', x: 40, y: 22, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'bridge', 'hollow'],
+  { id: 'tankard', area: 'forest', name: 'The Mossy Tankard', short: 'Tankard', x: 84, y: 30, src: 'art/bg/bg-stacks.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['road'], roads: { road: 35 },
+    text: 'A woodsmen\'s inn built round a living tree, with a tinker\'s cart parked for good in the yard. Beds upstairs, potions out front, and nobody asks where you have been.',
+    look: ['A branch has grown in through one window and out through another. Somebody hangs washing on it.', 'The tinker is asleep on his cart with a price list over his face.'] },
+  { id: 'bunks', area: 'castle', name: 'The Gatehouse Bunks', short: 'Bunks', x: 18, y: 22, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['yard'], roads: { yard: 25 },
+    text: 'The old gatehouse, turned into a row of bunks for anyone holding the castle. The quartermaster sells out of a hatch in the wall and counts everything twice.',
+    look: ['Every bunk has a name carved in it. Yours says HERE in chalk, as of a moment ago.', 'The quartermaster\'s hatch has a bell, and a sign that says DO NOT RING THE BELL.'] },
+  { id: 'lodge', area: 'academy', name: 'The Porter\'s Lodge', short: 'Lodge', x: 50, y: 52, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['quad'], roads: { quad: 25 },
+    text: 'The porter keeps a guest room for visitors who miss the gate, and a counter of reagents for students who miss their deadlines.',
+    look: ['A board of keys, every one labelled NOT THIS ONE.', 'The reagent counter has a jar marked FREE SAMPLES. It is empty and looks pleased about it.'] },
+  { id: 'leanto', area: 'camps', name: 'The Smuggler\'s Lean-to', short: 'Lean-to', x: 16, y: 20, src: 'art/bg/bg-nightpark.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['outskirts'], roads: { outskirts: 40 },
+    text: 'Canvas over a dry ditch, out of sight of the camps. A fence who will not give a name rents bedrolls and sells whatever fell off a wagon.',
+    look: ['The whole place can be packed onto one mule in the time it takes to say "patrol".', 'The fence weighs your purse by eye and nods. You are not sure what was decided.'] },
+  { id: 'road', area: 'forest', name: 'Greenwood Road', short: 'Road', x: 40, y: 22, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'bridge', 'hollow', 'tankard'],
     text: 'Green light, old trunks, and a road that keeps deciding to be somewhere else. You are outside the walls now.',
     look: ['Fresh tracks cross the road ahead: small, many, and in a hurry.', 'A signpost points five ways. Four of them say GOOSEFORD. The fifth just says NO.'] },
   { id: 'bridge', area: 'forest', name: 'The Troll Bridge', short: 'Bridge', x: 18, y: 46, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 35, evt: 20, foe: 0.9, tags: ['bridge', 'mountain'], who: null, boss: 'boss_bolgrim', acts: ['look', 'explore', 'boss'], links: ['road'],
@@ -823,13 +862,13 @@ const PLACES = [
   { id: 'vault', area: 'castle', name: 'The Counting Vault', short: 'Vault', x: 72, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 35, evt: 15, foe: 1.1, tags: ['dungeon'], who: null, boss: 'boss_parity', acts: ['look', 'explore', 'boss'], links: ['ruins'],
     text: 'The deepest room under the castle: ledgers to the ceiling and one enormous set of scales. Every debt the crown ever forgot is written down in here.',
     look: ['Your name is in one of the ledgers. The column next to it is headed LUCK, OWED.', 'The scales are perfectly level. They tip, very slightly, when you breathe.'] },
-  { id: 'quad', area: 'academy', name: 'Academy Quad', short: 'Quad', x: 50, y: 18, src: 'art/bg/chat-classroom.webp', zone: 'risky', enc: 12, evt: 30, foe: 0.7, tags: ['town', 'castle'], who: null, acts: ['look', 'explore'], links: ['square', 'lecture', 'archive'],
+  { id: 'quad', area: 'academy', name: 'Academy Quad', short: 'Quad', x: 50, y: 18, src: 'art/bg/chat-classroom.webp', zone: 'risky', enc: 12, evt: 30, foe: 0.7, tags: ['town', 'castle'], who: null, acts: ['look', 'explore'], links: ['square', 'lecture', 'archive', 'lodge'],
     text: 'The Academy of Careful Magic: clipped lawns, tall windows, and students who settle arguments with duels they are not supposed to have.',
     look: ['Two apprentices are having a very quiet duel behind a hedge. Both are losing.', 'A notice reads NO UNLICENSED MIRACLES ON THE GRASS. It has scorch marks.'] },
   { id: 'lecture', area: 'academy', name: 'The Lecture Hall', short: 'Lecture', x: 22, y: 46, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: ['shrine'], who: 'elowen', hours: [8, 20], acts: ['look', 'study'], links: ['quad'],
     text: 'Rows of desks, a chalkboard nobody has fully erased in a century, and a seat at the back that fits a knight in full plate, just.',
     look: ['Today\'s lecture is "Luck: A Statistical Impossibility." The lecturer keeps glancing at you.', 'Someone has drawn you on a desk. The armor is very accurate. The sword is on fire, for some reason.'] },
-  { id: 'outskirts', area: 'camps', name: 'Camp Outskirts', short: 'Outskirts', x: 50, y: 18, src: 'art/bg/bg-nightpark.webp', zone: 'wild', enc: 40, evt: 20, foe: 0.85, tags: ['road', 'camp'], who: null, acts: ['look', 'explore', 'hunt'], links: ['hollow', 'stockade', 'tent'],
+  { id: 'outskirts', area: 'camps', name: 'Camp Outskirts', short: 'Outskirts', x: 50, y: 18, src: 'art/bg/bg-nightpark.webp', zone: 'wild', enc: 40, evt: 20, foe: 0.85, tags: ['road', 'camp'], who: null, acts: ['look', 'explore', 'hunt'], links: ['hollow', 'stockade', 'tent', 'leanto'],
     text: 'Watch fires in the dark and a palisade of sharpened logs. The slavers took this valley a season ago. A knight is the last thing they want to see walk out of the trees.',
     look: ['Cart ruts, all heading in. None heading out.', 'A lookout on the palisade is asleep on his spear. For now.'] },
   { id: 'stockade', area: 'camps', name: 'The Stockade', short: 'Stockade', x: 24, y: 46, src: 'art/bg/chat-graffiti.webp', zone: 'wild', enc: 55, evt: 10, foe: 0.95, tags: ['camp'], who: null, acts: ['look', 'liberate', 'explore'], links: ['outskirts'],
@@ -936,6 +975,10 @@ const SPOTS = {
       { label: 'Feed the pigeons', mins: 20, win: { say: 'They like you. They like you a lot. There are a great many of them now.', stress: -6, rest: 5 } },
       { label: 'Sleep on the bench', sleep: 'bench', win: { say: 'It is free, it is lumpy, and somebody tucks a pamphlet about the guild under your arm in the night.', stress: 5 } }] },
   ],
+  tankard: [{ id: 'shelf', name: 'Tinker\'s cart', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
+  bunks: [{ id: 'shelf', name: 'Quartermaster\'s hatch', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
+  lodge: [{ id: 'shelf', name: 'Reagent counter', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
+  leanto: [{ id: 'shelf', name: 'The fence\'s crate', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
   shop: [
     { id: 'shelf', name: 'Potion shelf', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] },
   ],
@@ -1536,10 +1579,11 @@ function afterFight(won, r) {
 function doAct(id) {
   const who = S.who ? castOf(S.who) : null, here = placeNow();
   if (id === 'getup') return getUp();
+  if (['search', 'listen', 'wait', 'watch', 'provoke', 'lielow'].includes(id)) return streetAct(id);
   if (['boss', 'garrison', 'liberate', 'camp'].includes(id)) return knightAct(id);
   if (id.startsWith('meet:')) return meet(id.slice(5));
   if (id.startsWith('so:')) return standoffAct(id.slice(3));
-  if (id.startsWith('spot:')) { S.spot = id.slice(5) || null; if (S.spot === 'shelf' && once(`shop:${S.level}`)) journal('shop', `Fizz and Fettle at level ${S.level}: ${Object.values(POTIONS).map((x) => `${x.name} ${n(x.price * Math.max(1, S.level))} gold (${x.hint})`).join(', ')}.`); return; }
+  if (id.startsWith('spot:')) { S.spot = id.slice(5) || null; if (S.spot === 'shelf' && once(`shop:${here.id}:${S.level}`)) journal('shop', `${here.name} at level ${S.level}: ${Object.values(POTIONS).map((x) => `${x.name} ${n(x.price * Math.max(1, S.level))} gold (${x.hint})`).join(', ')}.`); return; }
   if (id.startsWith('opt:')) return doSpot(+id.slice(4));
   if (id.startsWith('use:')) return drink(id.slice(4));
   if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
@@ -1547,9 +1591,9 @@ function doAct(id) {
   if (id === 'board') return setView('guild');
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
-    if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A room is ${n(cost)} gold. You have ${n(S.gold)}.`, say: 'The bench at the Well is free, if lumpy.' });
+    if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A room is ${n(cost)} gold. You have ${n(S.gold)}.`, say: 'No coin, no bed. A bench is free, if lumpy.' });
     sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; S.waiting = false; spent(false, 'a real bed'); vol(-4, 'a real bed'); cond('swell', -10, 'armor let out properly at the inn'); decency(20, 'a bath and a real bed');
-    return post({ who: 'sys', plate: 'The Gilded Goose', dice: `[rest] A room · ${n(cost)} gold · ${clockText()}`, tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled, armor buffed by someone who knows how. The gauge stays where you left it.' });
+    return post({ who: 'sys', plate: here.name, dice: `[rest] A bed · ${n(cost)} gold · ${clockText()}`, tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled, armor buffed by someone who knows how. The gauge stays where you left it.' });
   }
   if (id === 'explore') return explore();
   if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
@@ -1570,11 +1614,12 @@ function travelGrid() {
       ? cell(`opt:${i}`, `Buy ${POTIONS[o.buy].name}`, `${POTIONS[o.buy].hint} · ${n(POTIONS[o.buy].price * L)} gold · have ${S.bag[o.buy] ?? 0}`, i === 0 ? 'primary' : '', S.gold < POTIONS[o.buy].price * L)
       : cell(`opt:${i}`, o.label, `${o.stat ? odds(o.stat, dcFor(S.level, o.diff), o.tempt ? temptBonus() : 0) : 'no roll'}${o.cost ? ` · ${n(o.cost * L)} gold` : ''}${o.sleep ? 'free · till morning' : ''}`, i === 0 ? 'primary' : '', Boolean(o.cost) && S.gold < o.cost * L)).join('') + cell('spot:', 'Step away', `back to the ${here.short.toLowerCase()}`, 'go'); }
   const needsLegs = new Set(['explore', 'hunt', 'spar', 'boss', 'garrison', 'liberate']);
-  const acts = (here.acts ?? []).map((id) => { const a = ACTS[id], shut = closed && id !== 'look', held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
-    return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); });
+  const actCell = (id) => { const a = ACTS[id], shut = closed && !['look', 'explore'].includes(id), held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
+    return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); };
+  const acts = (here.acts ?? []).filter((id) => id !== 'look' && id !== 'explore').map(actCell);
   const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
   const ctab = ['resp', 'social', 'items', 'debug'].includes(S.ctab) ? S.ctab : 'resp';
-  return composerTabs(ctab) + (ctab === 'social' ? socialCells(here, who) : ctab === 'items' ? itemCells() : ctab === 'debug' ? debugCells() : acts.join('') + spots.join('')) + (ctab === 'debug' ? '' : exitCells(here));
+  return composerTabs(ctab) + (ctab === 'social' ? socialCells(here, who) : ctab === 'items' ? itemCells() : ctab === 'debug' ? debugCells() : placeGrid(HERE_ROW.map((id) => (id === 'look' ? actCell(id) : streetCell(id, here))), TROUBLE_ROW.map((id) => (id === 'explore' ? actCell(id) : streetCell(id, here))), [...acts, ...spots])) + (ctab === 'debug' ? '' : exitCells(here));
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
@@ -1715,9 +1760,9 @@ function dangerOf(p) { // percent chance of a fight: the place, the hour, the st
 }
 function mapTab() {
   const here = placeNow(), area = areaOf(here), A = AREAS[area], local = PLACES.filter((p) => areaOf(p) === area), near = new Set(here.links), seen = new Set(), lines = [], roam = wandererAt();
-  for (const p of local) for (const l of p.links) { const q = local.find((x) => x.id === l); if (!q) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}"/>`); }
+  for (const p of local) for (const l of p.links) { const q = local.find((x) => x.id === l); if (!q) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); lines.push(roadPath(p, q, `${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}`)); }
   const doors = A.exits.map((e) => { const from = local.find((x) => x.id === e.from), to = PLACES.find((x) => x.id === e.to);
-    return `<line x1="${from.x}" y1="${from.y}" x2="${e.x}" y2="${e.y}" class="${from.id === here.id ? 'on' : ''}"/><g class="node door${from.id === here.id ? ' near' : ''}" data-go="${e.to}" role="button" tabindex="0" aria-label="The way to ${esc(AREAS[areaOf(to)].name)}, ${legMins(from, to)} minutes from ${esc(from.name)}"><rect x="${e.x - 6}" y="${e.y - 4}" width="12" height="8" rx="2.4"/><text x="${e.x}" y="${e.y + 1.6}">${esc(e.label)}</text></g>`; }).join('');
+    return `${roadPath(from, { ...to, x: e.x, y: e.y }, from.id === here.id ? 'on' : '')}<g class="node door${from.id === here.id ? ' near' : ''}" data-go="${e.to}" role="button" tabindex="0" aria-label="The way to ${esc(AREAS[areaOf(to)].name)}, ${legMins(from, to)} minutes from ${esc(from.name)}"><rect x="${e.x - 6}" y="${e.y - 4}" width="12" height="8" rx="2.4"/><text x="${e.x}" y="${e.y + 1.6}">${esc(e.label)}</text></g>`; }).join('');
   const nodes = local.map((p) => { const q = eventPool(p).length, who = residentOf(p.id), shut = !openNow(p.hours);
     return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${p.boss || p.acts.includes('garrison') ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">★</text>` : q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">!</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
   const who = S.who ? castOf(S.who) : null;
@@ -1725,7 +1770,8 @@ function mapTab() {
   return `
     ${aroundHere()}
     <svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg>
-    <p class="more">bubble: walk there · box: another map · ★ stronghold</p>
+    <p class="more">bubble: walk there · box: another map · ★ stronghold · each bend in a road is a stretch with its own roll</p>
+    ${roadsBox()}
     <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
     ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `Their respect for you: ${tierOf(npcOf(S.who).rapport).toLowerCase()}.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
     <div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`;
@@ -2314,7 +2360,7 @@ const CHEATS = [
 const cheatCells = () => CHEATS.map(([id, label, hint]) => `<button class="cell bubble" type="button" data-cheat="${id}"><b>${esc(label)}</b><small>${esc(hint)}</small></button>`).join('');
 // The stretch table the road really rolls on, in one place so the walk and the simulator cannot disagree.
 function stretchRows(p, joints) { return [['fight', Math.round((dangerOf(p) / joints) * 1.3), 'crit'], ['event', Math.round(((p.zone === 'safe' ? 0 : p.evt ?? 0) / joints) * 1.3), 'hit'], ['sign', 30, 'bounce']]; }
-const jointsOf = (mins) => Math.max(1, Math.min(4, Math.round(mins / 20)));
+const jointsOf = (mins) => Math.max(1, Math.min(5, Math.round(mins / 15)));
 function simWalks(runs = 1000) { // every road out of here, walked many times with nothing changed
   const here = placeNow();
   return here.links.map((id) => { const p = PLACES.find((x) => x.id === id), mins = legMins(here, p), joints = jointsOf(mins), rows = stretchRows(p, joints), quiet = p.zone === 'safe' && here.zone === 'safe' && !dangerOf(p); let fights = 0, events = 0, signs = 0;
@@ -2345,6 +2391,58 @@ function simFights(runs = 60) { // the real battle runner, playing itself: her a
 const SIMS = { walks: ['1,000 walks down every road from here', simWalks], rolls: ['1,000 social rolls, here and now', simRolls], nights: ['30 nights of her conditions', simNights], fights: ['60 real fights, her alone', simFights] };
 function runSim(id) { const [title, fn] = SIMS[id]; S.sim = { title, rows: fn(), at: clockText() }; }
 const simBlock = () => `<div class="over"><h3>Simulators · nothing here touches your save</h3><div class="set">${Object.entries(SIMS).map(([id, [title]]) => `<button class="sm" type="button" data-sim="${id}">${esc(title)}</button>`).join('')}</div>${S.sim ? `<p class="lbl">${esc(S.sim.title)} · ${esc(S.sim.at)}</p>${S.sim.rows.map((r) => `<p class="simrow">${esc(r)}</p>`).join('')}` : '<p>Pick one. The numbers come from the same tables the game rolls on.</p>'}</div>`;
+/* ---------- the same grid at every place: four things to do with the world, four ways to find trouble ---------- */
+const HERE_ROW = ['look', 'search', 'listen', 'wait'], TROUBLE_ROW = ['explore', 'watch', 'provoke', 'lielow'];
+const RUMOURS = ['Two carters agree on one thing: the price of turnips is a scandal.', 'Somebody\'s cousin saw a dragon. Somebody\'s cousin sees a lot of things.', 'The talk is all about a goose that got into the guild ledger. Nobody will say what it wrote.'];
+function streetAct(id) {
+  const here = placeNow(), area = areaOf(here), L = Math.max(1, S.level), open = here.zone !== 'safe';
+  if (id === 'search') { S.used.search = true; passTime(20); useStam(2, 'searching'); if (S.fallen) return;
+    const r = rollCheck({ title: `Search · ${here.short}`, stat: 'LCK', dc: dcFor(S.level, 'normal') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Search`;
+    if (r.degree === 'crit') { S.bag.heal = (S.bag.heal ?? 0) + 1; store.set('bag', S.bag); const fx = applyFx({ gold: 3 * L }, 'a search'); return post({ who: 'me', dice, tone: 'crit', say: 'Behind a loose stone: a purse, and a corked bottle somebody meant to come back for.', fx: [...fx, 'Healing Draught +1'] }); }
+    if (r.success) { const fx = applyFx({ gold: 2 * L, exp: 0.01 }, 'a search'); return post({ who: 'me', dice, tone: 'hit', say: 'You turn over the obvious things and one of them has coins under it.', fx }); }
+    const fx = applyFx(r.degree === 'fumble' ? { stress: 4, decency: -4 } : { stress: 1 }, 'a search'); return post({ who: 'me', dice, tone: r.degree, say: r.degree === 'fumble' ? 'You search a hedge. The hedge searches you back. You come out with leaves in places leaves should not be.' : 'You look under everything. Everything was exactly what it looked like.', fx }); }
+  if (id === 'listen') { S.used.listen = true; passTime(20);
+    const r = rollCheck({ title: `Listen · ${here.short}`, stat: 'WIL', dc: dcFor(S.level, 'easy') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Listen`;
+    const lead = PLACES.filter((p) => areaOf(p) === area && p.id !== here.id && eventPool(p).length)[0] ?? PLACES.filter((p) => areaOf(p) === area && p.id !== here.id).sort((a, b) => dangerOf(b) - dangerOf(a))[0];
+    if (r.success && lead) { if (once(`rumour:${lead.id}:${dayNow()}`)) journal('quest', `Heard at ${here.name}: ${eventPool(lead).length ? 'something wants doing' : 'trouble gathers'} at ${lead.name}.`); return post({ who: 'me', dice, tone: r.degree, say: `You stand still and let the place talk. One name keeps coming up: ${lead.name}. ${eventPool(lead).length ? 'Something there wants doing.' : `People lower their voices when they say it.`}`, fx: ['written in the Backlog'] }); }
+    return post({ who: 'me', dice, tone: r.degree, say: pick(RUMOURS, r.roll) }); }
+  if (id === 'wait') { passTime(60); useStam(open ? -3 : -6, 'a rest on your feet');
+    if (open && d() <= Math.round(dangerOf(here) / 2)) return startStandoff('you sat still too long');
+    return post({ who: 'me', plate: 'Wait', dice: `[no roll] An hour goes by · ${hhmm()}`, say: open ? 'You sit on a milestone with your back to something solid and watch the road do nothing. It is not restful, but it is rest.' : 'You find a wall to lean on and let an hour go past. The light moves. So does the laundry.', fx: [`stamina +${open ? 3 : 6}`] }); }
+  if (id === 'watch') { S.used.watch = true; passTime(45); useStam(6, 'standing watch'); if (S.fallen) return;
+    const c = calling(), r = rollCheck({ title: `Stand watch · ${here.short}`, stat: c.stat, dc: dcFor(S.level, 'normal') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Stand watch`;
+    if (r.success) { order(area, 3, 'she stood watch'); if (area === 'city') rep(2, 'she stood watch'); heat(-5, 'seen doing her job'); const fx = applyFx({ exp: 0.02 }, 'standing watch'); return post({ who: 'me', dice, tone: r.degree, say: 'You stand where a knight is supposed to stand, looking the way a knight is supposed to look. It works better than it has any right to.', fx: [...fx, area === 'city' ? 'reputation up' : 'order +3', 'suspicion −5'] }); }
+    heat(4, 'a watch that went wrong'); const fx = applyFx({ stress: 3 }, 'standing watch'); return post({ who: 'me', dice, tone: r.degree, say: 'You challenge a suspicious figure. It is a scarecrow. Several people saw.', fx: [...fx, 'suspicion +4'] }); }
+  if (id === 'provoke') { conduct('mean', 1); if (!open) rep(-2, 'she started it'); return startStandoff('you went looking for it'); }
+  if (id === 'lielow') { passTime(60);
+    const r = rollCheck({ title: `Lie low · ${here.short}`, stat: 'AGI', dc: dcFor(S.level, 'normal') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Lie low`;
+    if (r.success) { heat(-15, 'lay low'); return post({ who: 'me', dice, tone: r.degree, say: 'You keep your head down, your helmet off and your sword out of sight. For one whole hour nobody looks twice.', fx: ['suspicion −15'] }); }
+    heat(-5, 'lay low, badly'); const fx = applyFx({ decency: -3 }, 'hid in a hay cart'); return post({ who: 'me', dice, tone: r.degree, say: 'You hide in a hay cart. The cart leaves. You get out two streets later with hay in your hair.', fx: [...fx, 'suspicion −5'] }); }
+}
+function streetCell(id, here) {
+  const danger = dangerOf(here), open = here.zone !== 'safe';
+  const T = { search: ['Search', S.used.search ? 'done for this visit' : `${STAT_INFO.LCK.name} · ${oddsOf('LCK', dcFor(S.level, 'normal'))}% · 20 min`, S.used.search], listen: ['Listen', S.used.listen ? 'done for this visit' : `${STAT_INFO.WIL.name} · ${oddsOf('WIL', dcFor(S.level, 'easy'))}% · a rumour`, S.used.listen], wait: ['Wait an hour', open ? `stamina +3 · fight ${Math.round(danger / 2)}%` : 'stamina +6', false],
+    watch: ['Stand watch', S.used.watch ? 'done for this visit' : S.down ? 'rest first' : `${STAT_INFO[calling().stat].name} · ${oddsOf(calling().stat, dcFor(S.level, 'normal'))}% · ${areaOf(here) === 'city' ? 'reputation' : 'order +3'}`, S.used.watch || S.down], provoke: ['Pick a fight', S.down ? 'rest first' : open ? 'a standoff, right now' : 'a standoff · reputation −2', S.down], lielow: ['Lie low', `${STAT_INFO.AGI.name} · ${oddsOf('AGI', dcFor(S.level, 'normal'))}% · suspicion ${S.heat}`, false] }[id];
+  return cell(id, T[0], T[1], '', Boolean(T[2]));
+}
+const blank = '<span class="cell bubble empty" aria-hidden="true"></span>';
+const placeGrid = (rowHere, rowTrouble, rowOnly) => `<div class="pgrid"><span class="prow">Here</span>${rowHere.join('')}<span class="prow">Trouble</span>${rowTrouble.join('')}<span class="prow">Only at this place</span>${[...rowOnly, ...Array(Math.max(0, (4 - (rowOnly.length % 4)) % 4 || (rowOnly.length ? 0 : 4))).fill(blank)].join('')}</div>`;
+// The roads out of here, for the right-hand panel: how long, how many stretches, how bad.
+function roadsBox() {
+  const here = placeNow(), area = areaOf(here), doors = AREAS[area].exits.filter((e) => e.from === here.id).map((e) => e.to);
+  const rows = [...new Set([...here.links, ...doors])].map((id) => { const p = PLACES.find((x) => x.id === id), mins = legMins(here, p), jn = jointsOf(mins), dg = dangerOf(p), r = residentOf(id);
+    return `<button class="roadrow" type="button" data-go="${id}"><b>${esc(p.name)}${areaOf(p) !== area ? ` <i>${esc(AREAS[areaOf(p)].name)}</i>` : ''}</b><span>${mins} min · ${jn} stretch${jn > 1 ? 'es' : ''}${r ? ' · someone is there' : ''}${p.acts.includes('rest') ? ' · inn' : ''}${SPOTS[p.id]?.some((s) => s.id === 'shelf') ? ' · shop' : ''}</span><em class="${dg >= 35 ? 'bad' : dg ? 'mid' : ''}">${dg ? `fight ${dg}%` : 'safe'}</em></button>`; }).join('');
+  const stops = PLACES.filter((p) => areaOf(p) === area && (p.acts.includes('rest') || p.acts.includes('camp') || SPOTS[p.id]?.some((s) => s.id === 'shelf'))).map((p) => `${p.short} (${[p.acts.includes('rest') && 'inn', p.acts.includes('camp') && 'camp', SPOTS[p.id]?.some((s) => s.id === 'shelf') && 'shop'].filter(Boolean).join(', ')})`);
+  return `<div class="over"><h3>Roads from here</h3><div class="roads">${rows}</div><p>${stops.length ? `Beds and traders in ${esc(AREAS[area].name)}: ${esc(stops.join(' · '))}.` : `No bed and no trader in ${esc(AREAS[area].name)}. Do not run dry here.`}</p></div>
+    <div class="over"><h3>Today</h3><p>${S.jobDay === dayNow() ? 'Guild work is done for today.' : 'No guild work yet today: tomorrow morning the town will have noticed.'} ${S.spent ? 'She is Exhausted and needs a bed.' : S.stam < 25 ? 'She is running on fumes.' : ''} ${condOf('phero') >= 50 || condOf('swell') >= 50 ? `Her body is making the day harder (${[condOf('swell') >= 50 && `swelling ${COND.swell.words[stepOf('swell')]}`, condOf('phero') >= 50 && `pheromones ${COND.phero.words[stepOf('phero')]}`].filter(Boolean).join(', ')}).` : ''} ${S.heat >= 40 ? 'People are watching her.' : ''}</p></div>`;
+}
+// A road on the map bends once for every stretch it will take to walk.
+function roadPath(a, b, cls) {
+  const jn = jointsOf(legMins(a, b)), dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len, pts = [[a.x, a.y]], dots = [];
+  for (let i = 1; i < jn; i++) { const t = i / jn, off = (i % 2 ? 1 : -1) * Math.min(3.2, len * 0.12), x = a.x + dx * t + nx * off, y = a.y + dy * t + ny * off; pts.push([x, y]); dots.push(`<circle class="jt ${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1"/>`); }
+  pts.push([b.x, b.y]);
+  return `<polyline class="${cls}" points="${pts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}"/>${dots.join('')}`;
+}
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -2682,7 +2780,7 @@ function debugClick(what) {
   if (what !== 'wipe') S.wipeArmed = false;
 }
 document.addEventListener('click', (e) => {
-  const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
+  const node = e.target.closest('g[data-go], button[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.tray) { $('tray').classList.toggle('shut'); clearTimeout(S.trayT); return; }
   if (b.dataset.rail) { S.railOpen = !S.railOpen; return render(); }
@@ -2753,9 +2851,9 @@ function sizeL(name) { S.sizeL = name; store.set('sizeL', name); applyHud.L?.(SI
 function snapL() { const now = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hudL'), 10) || 224; sizeL(Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - now) - Math.abs(SIZES[b]() - now))[0]); renderHuds(); }
 for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
-  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') { const was = document.body.classList.contains('sheetL'); document.body.classList.toggle('sheetL', v >= 520); document.body.classList.toggle('noSprL', v >= 330); if (was !== (v >= 520)) renderHuds(); } };
+  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') { const was = document.body.classList.contains('sheetL'); document.body.classList.toggle('sheetL', v >= 520); document.body.classList.toggle('noSprL', v >= 520); document.body.classList.toggle('half', v >= 330 && v < 520); if (was !== (v >= 520)) renderHuds(); } };
   applyHud[side] = apply;
-  const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') { document.body.classList.toggle('sheetL', saved >= 520); document.body.classList.toggle('noSprL', saved >= 330); } }
+  const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') { document.body.classList.toggle('sheetL', saved >= 520); document.body.classList.toggle('noSprL', saved >= 520); document.body.classList.toggle('half', saved >= 330 && saved < 520); } }
   grip.addEventListener('pointerdown', (e) => { e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add('on'); document.body.classList.add('dragging');
     const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
     const up = () => { grip.classList.remove('on'); document.body.classList.remove('dragging'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up); if (side === 'L') snapL(); };
