@@ -136,7 +136,7 @@ art/amaranth.mp4  art/amaranth-2.mp4   (Amaranth: waist-up crops of Del's clips,
 | `art/cut/elf-violet.webp` | Fizz, the alchemist who owns Fizz and Fettle |
 | `art/cut/val-jailer.webp` | Valerie: cell duty (the top of the growth ladder for her card) |
 | `art/amaranth-fade.mp4` | Amaranth going up in smoke, shown for five seconds when a dream ends |
-| `art/s/<id>-s.webp`, `-f.webp`, `-a.webp`, `-x.webp` | The secondary cast (`nyxara`, `vexa`, `vexara`, `scarlet`, `kestra`, `marisol`, `raven`, `lumi`, `juniper`, `juno`, `sylvie`, `copper` for Pip): standing, flirting, fighting, and a soft or smug extra where one was supplied. They were supplied on white and cut out by `cut29b.py`-style edge fill, so a few have a faint pale fringe |
+| `art/s/<id>-s.webp`, `-f.webp`, `-a.webp`, `-x.webp` | The secondary cast (`nyxara`, `vexa`, `vexara`, `scarlet`, `kestra`, `marisol`, `raven`, `lumi`, `juniper`, `juno`, `sylvie`, `copper` for Pip): standing, flirting, fighting, and a soft or smug extra where one was supplied. They were supplied on white and cut out with an edge fill, so a few have a faint pale fringe |
 | `art/t/<first name>-s.webp`, `-f.webp` | The twelve Town Girls: standing, and flirting where a second picture was supplied (`anya`, `brenna`, `imani`, `kessa`, `lira`, `marigold`) |
 | `art/w/<class>-s.webp`, `-f.webp`, `-a.webp` | The seven Vantari sisters (`barbarian`, `priestess`, `archer`, `office`, `noble`, `knight`, `witch`): standing, pleased, squaring up |
 
