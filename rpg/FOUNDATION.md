@@ -140,7 +140,7 @@ Questions the roles raised, settled here so nobody answers them twice.
 - `target`: one, row, all, self, ally, allies
 - `part`: head, arms, legs or none. A bound part seals its skills.
 - `tags` that rules key on: melee, ranged, projectile, mental, horror, embarrassment, realization
-- `effects[].kind`: bind, stress, mod, status, heal, limit, airhead, dot, cleanse, revive. An effect lands on the skill's target unless it says `"target": "self"`.
+- `effects[].kind`: bind, stress, mod, status, heal, limit, airhead, dot, cleanse, revive. An effect lands on the skill's target unless it names another: `self`, `valerie`, `others`, `heroes`, `enemies`, `allies` or `boss`. `allies` includes the user. An `airhead` effect always moves the user's own gauge.
 - Tags `ultimate` (costs Limit) and `scripted` (needs code of its own beyond its effects list)
 - IDs are lowercase snake case with an owner prefix: `war_`, `mag_`, `rog_`, `val_`, `itm_`, `boss_`, `aff_`, `vir_`, `evt_`
 
@@ -157,6 +157,7 @@ Questions the roles raised, settled here so nobody answers them twice.
 | `engine/stress.js`, `engine/binds.js`, `data/afflictions.json`, `data/virtues.json`, `test/stress.test.js`, `test/binds.test.js`, `blueprint/03_psych_status.md` | Systems Designer |
 | `data/skills.json`, `data/passives.json`, `data/items.json`, `blueprint/04_asset_registry.md` | Content Writer |
 | `data/bosses.json`, `data/encounters.json`, `blueprint/05_boss_architecture.md` | Content Writer (boss desk) |
+| `engine/battle.js`, `engine/narrate.js`, `test/battle.test.js`, `blueprint/08_battle_runner.md` | Battle Engineer |
 
 Write only inside your own paths. Need something changed elsewhere? Put the request in your handoff note.
 

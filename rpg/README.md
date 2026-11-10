@@ -28,6 +28,8 @@ engine/      the rules, as small pure functions with no dependencies
   valerie.js     the Airhead gauge and her six accidents
   valerie-combat.js  her kit joined to the combat math: one call, one d100
   events.js      event packs: validate, draw, resolve, convert
+  battle.js      the battle runner: turns, skill effects, statuses, bosses
+  narrate.js     every beat as one dice line and one paragraph
 data/        archetypes, skills, passives, items, bosses, encounters, afflictions, virtues, Valerie
 events/      event packs (drop new ones in events/packs/)
 blueprint/   one document per role, plus the compiled master
@@ -58,9 +60,11 @@ npm run all
 
 ## What runs today, and what is designed but not built
 
-**Runs, with tests:** the dice and their bands; damage, hit, crit, healing and initiative; stress mitigation; the EXP curve, attribute growth, HP and MP, yields and prices; the stress bar, Resolve Check, afflictions, virtues and breakdown; binds; Valerie's gauge, stances and six accidents, joined to the combat math; event packs.
+**Runs, with tests, as rules:** the dice and their bands; damage, hit, crit, healing and initiative; stress mitigation; the EXP curve, attribute growth, HP and MP, yields and prices; the stress bar, Resolve Check, afflictions, virtues and breakdown; binds; Valerie's gauge, stances and six accidents, joined to the combat math; event packs.
 
-**Designed in data, with no runner yet:** there is no battle loop, no skill resolver and no status store. Nothing in `engine/` takes turns, applies a skill's `effects` list, ticks a status, tracks a boss's phases, or plays its script. The skill, item, boss and encounter files describe things only a battle runner would act on: status effects, damage over time, passive triggers, several actions a round, phase changes, wound-up telegraphed moves, contraption effects, concessions. A game master, human or the SillyTavern card, can run all of it from the text today. `handoff/content-writer.md` and `handoff/boss-desk.md` list exactly what a runner would need.
+**Runs, with tests, as a whole fight:** `engine/battle.js` is the battle runner. It takes turns in initiative order, applies a skill's `effects`, ticks statuses and damage over time, fires passives, tracks a boss's phases, winds up and resolves telegraphed moves, sets off contraptions and offers concessions. `engine/narrate.js` turns every beat into one dice line followed by one paragraph. Drive it a step at a time with `createBattle`, `legalActions` and `act`, or play a whole fight with `runBattle`.
+
+**Not resolved yet (the runner disables these with a reason; it never fakes them):** items in battle, Valerie's Pocket Dimension (so Found It! and Rummaging), four passives (Share the Shield, I Told You So, Chain of Thought, Quartermaster), rows and positions inside a side, fleeing and swapping, and the encounter rules written only as prose. `blueprint/08_battle_runner.md` and `handoff/battle-engineer.md` have the full list.
 
 ## Generated files
 
