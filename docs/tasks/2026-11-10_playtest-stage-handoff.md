@@ -44,6 +44,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | What a choice does | `applyFx`, `gainGold`, `useStam`, `decency`, `chem`, `grow` |
 | Meeting, spots, shop | `meet`, `doSpot`, `buy`, `drink` |
 | Travel and danger | `goTo`, `pathTo`, `dangerOf`, `explore`, `startStandoff`, `standoffAct` |
+| Domains and order | `AREAS`, `areaOf`, `order`, `secure`, `knightAct`, `mapTab` |
 | Falling down | `fallDown`, `getUp` |
 | Real fights | `startBattle`, `battleAct`, `battleExtra`, `syncBattle`, `leaveBattle`, `postEvents` |
 | Panels | `renderHuds`, `rightPanel`, `mapTab`, `hereTab`, `levelTab`, `debugTab`, `bioTab`, `spicyTab`, `settingsBlock`, `renderDebugger` |
@@ -55,6 +56,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Layout: stats left, story middle with a button grid under it, tabbed panel right. Movement is clicking bubbles on a map.
 - Combat is announced by the word COMBAT and locks movement. The ways out are fight, persuade, tempt or run.
 - Regulars have hidden numbers. A debugger at the top shows them, along with chances and what just changed.
+- Knight theme: four domains around the city (the Academy, the Castle and its dungeons, the Slaver Camps, the Forest), each with an Order meter the knight raises and a stronghold to break. The camps are enemy ground she frees people from.
 - Old tools are kept under Debug, never deleted.
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
@@ -63,7 +65,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 ## What Del asked for that is not built, in suggested order
 
 1. **A small dungeon between places.** Del wants a short stretch to cross when moving between two places, with gold and EXP in it. Suggested: a 3 to 5 room crawl on the Road → Ruins leg, each room one `tableRoll`.
-2. **Area level variants.** `foe` on a place is the hook. Del wants the same area at different levels and safe areas that turn dangerous as numbers change. Decency already does the second for safe places.
+2. **Area level variants.** `foe` on a place is the hook, and each domain now has an Order meter and a secured flag. Del wants the same area at different levels and safe areas that turn dangerous as numbers change. Decency already does the second for safe places.
 3. **Balance pass.** Nothing here is tuned. Known rough spots: level 1 solo against the eight-enemy Skeleton Phalanx; EXP per hunt swings from 7% to 68% of a level; Willpower is Valerie's weakest attribute, so getting up and Persuade are hard by design but may be too hard. Del does not need level 100 reachable; balance upward from level 1.
 4. **"Say your own thing."** The fifth button in a meeting or standoff is disabled. Del wants it read by a Game Master model with heavy randomness. The page already declares the `sample` capability; `say()` and `thinkAloud()` show how it is called.
 5. **Regulars who change.** Rapport is stored and shown as a tier. Nothing unlocks at a tier yet. Their own growth stat is described in the Debugger and not simulated.
@@ -76,6 +78,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 ## Known loose ends
 
 - The page's own rules have no tests. If one hardens, move it to `engine/` with a test.
+- The domains are thin: two to four places each, and most share a backdrop. The Academy and the Camps have no regulars and no spots yet. The camp garrison reuses the `horde_at_the_gate` encounter; the three strongholds reuse the three bosses.
 - A save from before this version loads, but its place may no longer exist; it falls back to the Castle Gates.
 - `stage.html` is one large file. Splitting it is reasonable once the rules stop moving.
 

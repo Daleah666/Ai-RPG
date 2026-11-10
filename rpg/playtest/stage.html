@@ -299,6 +299,15 @@ body[data-phase="Night"] .scene img{filter:brightness(.5) saturate(.7) hue-rotat
 .bio dd{margin:0;color:var(--muted)}
 .hud textarea{width:100%;font-family:var(--f-mono);font-size:.6rem;border-radius:8px;background:var(--glass);color:var(--text);border:1px solid var(--edge2);padding:5px;resize:vertical}
 @media (prefers-reduced-motion:reduce){.tray .deg,.scene img{transition:none}}
+.map .node.door rect{fill:var(--glass2);stroke:var(--edge2);stroke-width:.8}
+.map .node.door text{font-size:3.6px;fill:var(--text)}
+.map .node.door.near rect{stroke:var(--c)}
+.map .node.door:hover rect,.map .node.door:focus-visible rect{stroke:var(--text);stroke-width:1.4}
+.dom{display:grid;gap:3px;padding:6px 8px;border-radius:9px;background:var(--glass);border:1px solid var(--edge)}
+.dom.on{border-color:color-mix(in srgb,var(--c) 70%,transparent)}
+.dom .h{display:flex;justify-content:space-between;gap:8px;font-size:.76rem}
+.dom .h span{font-family:var(--f-mono);font-size:.54rem;color:var(--muted);white-space:nowrap}
+.dom .track{height:5px}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -436,24 +445,25 @@ const LOOKS = [
   { id: 'librarian', name: 'Nyx, archive clip', src: 'art/librarian-idle.mp4', video: true, boxed: true },
   { id: 'none', name: 'Nobody', src: '' },
 ];
-// The city of Gooseford and the wilds outside its gates. Every bubble on the map is a place.
+// The city of Gooseford and the four domains around it: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps.
+// area says which map a place is on (the city when it is left out). Every bubble on the map is a place.
 // zone: safe (nothing attacks), risky (a small chance), wild (travel and exploring roll for a fight or an event).
 // foe is how strong the enemies there are, as a share of her level (the road is gentle, the ruins are not).
 // enc and evt are percent chances on one d100: 1..enc is a fight, the next evt is an event, the rest is quiet.
 const PLACES = [
-  { id: 'gates', name: 'Castle Gates', short: 'Gates', x: 50, y: 58, src: 'art/bg/bg-forest.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look'], links: ['square', 'yard', 'road'],
+  { id: 'gates', name: 'Castle Gates', short: 'Gates', x: 50, y: 58, src: 'art/bg/bg-forest.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look'], links: ['square', 'yard', 'road'], roads: { road: 45, yard: 30 },
     text: 'The great gates of Gooseford, where the forest road ends and the cobbles begin. Inside the walls nothing will jump you. Outside, something probably will.',
     look: ['Two guards are arguing about whether your armor counts as a weapon. A cart of turnips rolls in past all three of you.', 'From here you can see the whole main street: the well, the Goose, and a great deal of laundry.'] },
-  { id: 'square', name: 'Wishing Well Square', short: 'Well', x: 50, y: 24, src: 'art/bg/bg-lanterns.webp', zone: 'safe', tags: ['town', 'market', 'camp'], who: 'lune', acts: ['look'], links: ['guild', 'tavern', 'archive', 'shop', 'baths', 'bar', 'gates'],
+  { id: 'square', name: 'Wishing Well Square', short: 'Well', x: 50, y: 24, src: 'art/bg/bg-lanterns.webp', zone: 'safe', tags: ['town', 'market', 'camp'], who: 'lune', acts: ['look'], links: ['guild', 'tavern', 'quad', 'shop', 'baths', 'bar', 'gates'], roads: { quad: 40 },
     text: 'Lanterns in the trees and an old stone well in the middle of everything. Every street in Gooseford ends up here sooner or later, and so do you.',
     look: ['A pigeon is sitting on the rim of the well like it owns the place. It might.', 'Somebody has chalked a tally on the well stones. It is headed WISHES THAT WORKED and it is short.'] },
-  { id: 'guild', name: 'Guild Hall', short: 'Guild', x: 15, y: 24, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: ['castle'], who: null, hours: [6, 22], acts: ['look', 'board', 'hunt'], links: ['square', 'yard'],
+  { id: 'guild', name: 'Guild Hall', short: 'Guild', x: 15, y: 24, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: ['castle'], who: null, hours: [6, 22], acts: ['look', 'board', 'hunt'], links: ['square'],
     text: 'Long benches, a wall of notices, and a ledger nobody is allowed to touch. The briefing room still smells of chalk and wet boots.',
     look: ['Half the notices are hunts. The other half are complaints about the people who took the hunts.', 'There is a chalk outline on the floor shaped like a knight who tripped. It is labelled DO NOT.'] },
   { id: 'tavern', name: 'The Gilded Goose', short: 'Tavern', x: 85, y: 24, src: 'art/bg/bg-stacks.webp', zone: 'safe', tags: ['inn', 'tavern'], who: 'bambi', acts: ['look', 'rest'], links: ['square', 'alley'],
     text: 'Warm lamps, a deep armchair by the window, and the sun going down over the rooftops. The best place in town to get social, or drunk, or both.',
     look: ['A bard is tuning up in the corner. He sees you, winces, and moves his lute off the floor.', 'The chandelier has a dent in it roughly the size of your helmet.'] },
-  { id: 'archive', name: 'The Old Archive', short: 'Archive', x: 50, y: 8, src: 'art/bg/bg-dungeon.webp', zone: 'safe', tags: ['shrine'], who: 'nyx', hours: [8, 24], acts: ['look', 'study'], links: ['square'],
+  { id: 'archive', area: 'academy', name: 'The Old Archive', short: 'Archive', x: 78, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'safe', tags: ['shrine'], who: 'nyx', hours: [8, 24], boss: 'boss_vellum', acts: ['look', 'study', 'boss'], links: ['quad'],
     text: 'Torchlight on old stone and shelves that go further back than the building does. Something drips. Something else stops dripping when you look at it.',
     look: ['A book on the nearest shelf is slowly turning its own pages. It stops when you look.', 'Every candle in here has a small sign next to it with your name crossed out.'] },
   { id: 'shop', name: 'Fizz and Fettle', short: 'Shop', x: 32, y: 42, src: 'art/bg/bg-candy.webp', zone: 'safe', tags: ['market'], who: null, hours: [7, 21], acts: ['look'], links: ['square'],
@@ -468,16 +478,50 @@ const PLACES = [
   { id: 'alley', name: 'Back Alley', short: 'Alley', x: 90, y: 40, src: 'art/bg/chat-graffiti.webp', zone: 'risky', enc: 10, evt: 20, foe: 0.6, tags: ['town'], who: null, acts: ['look', 'explore'], links: ['tavern', 'bar'],
     text: 'Painted walls, stacked crates, and the short way between the two places in town that sell drinks. Mostly safe. Mostly.',
     look: ['Someone has painted a very flattering mural of a knight falling over. The armor is gold.', 'A cat watches you from a crate with the patience of a creditor.'] },
-  { id: 'yard', name: 'Training Yard', short: 'Yard', x: 16, y: 60, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'spar'], links: ['guild', 'gates'],
+  { id: 'yard', area: 'castle', name: 'Castle Yard', short: 'Yard', x: 50, y: 18, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look', 'spar'], links: ['gates', 'ruins'],
     text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.',
     look: ['One dummy has a helmet on. On closer inspection it is your helmet, from last week.', 'The sand has been raked into neat lines. You have about a minute before that stops being true.'] },
-  { id: 'road', name: 'Greenwood Road', short: 'Road', x: 50, y: 77, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'ruins'],
+  { id: 'road', area: 'forest', name: 'Greenwood Road', short: 'Road', x: 40, y: 22, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'bridge', 'hollow'],
     text: 'Green light, old trunks, and a road that keeps deciding to be somewhere else. You are outside the walls now.',
     look: ['Fresh tracks cross the road ahead: small, many, and in a hurry.', 'A signpost points five ways. Four of them say GOOSEFORD. The fifth just says NO.'] },
-  { id: 'ruins', name: 'The Sunken Ruins', short: 'Ruins', x: 22, y: 86, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 45, evt: 20, foe: 1, tags: ['dungeon', 'ruin'], who: null, acts: ['look', 'explore', 'hunt'], links: ['road'],
-    text: 'Wet stone, dead torches, and doors that were barred from the outside. Whatever lives down here has had a long time to get comfortable.',
+  { id: 'bridge', area: 'forest', name: 'The Troll Bridge', short: 'Bridge', x: 18, y: 46, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 35, evt: 20, foe: 0.9, tags: ['bridge', 'mountain'], who: null, boss: 'boss_bolgrim', acts: ['look', 'explore', 'boss'], links: ['road'],
+    text: 'A narrow stone bridge over a gorge, an iron toll box, and something very large asleep underneath it. The forest goes quiet around here on purpose.',
+    look: ['The toll box has a slot for coins and a much bigger slot for people who argue.', 'Claw marks on the parapet, evenly spaced. Somebody counts while they wait.'] },
+  { id: 'hollow', area: 'forest', name: 'The Hollow Oak', short: 'Hollow', x: 66, y: 44, src: 'art/bg/bg-forest.webp', zone: 'risky', enc: 12, evt: 20, foe: 0.75, tags: ['camp', 'forest'], who: null, acts: ['look', 'camp', 'explore'], links: ['road', 'outskirts'], roads: { outskirts: 90 },
+    text: 'An oak wide enough to sleep inside, with an old fire ring out front. Travellers camp here because it is the last sensible place before the camps.',
+    look: ['Someone has carved initials into the oak. Below them, in a different hand: STILL HERE.', 'The fire ring is warm. Whoever left, left recently.'] },
+  { id: 'ruins', area: 'castle', name: 'The Castle Dungeons', short: 'Dungeons', x: 30, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 45, evt: 20, foe: 1, tags: ['dungeon', 'ruin'], who: null, acts: ['look', 'explore', 'hunt'], links: ['yard', 'vault'],
+    text: 'Wet stone, dead torches, and doors that were barred from the outside. Whatever lives under the castle has had a long time to get comfortable.',
     look: ['Something scraped these walls at about shoulder height. Your shoulder height.', 'There is a lever. There is always a lever.'] },
+  { id: 'vault', area: 'castle', name: 'The Counting Vault', short: 'Vault', x: 72, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 35, evt: 15, foe: 1.1, tags: ['dungeon'], who: null, boss: 'boss_parity', acts: ['look', 'explore', 'boss'], links: ['ruins'],
+    text: 'The deepest room under the castle: ledgers to the ceiling and one enormous set of scales. Every debt the crown ever forgot is written down in here.',
+    look: ['Your name is in one of the ledgers. The column next to it is headed LUCK, OWED.', 'The scales are perfectly level. They tip, very slightly, when you breathe.'] },
+  { id: 'quad', area: 'academy', name: 'Academy Quad', short: 'Quad', x: 50, y: 18, src: 'art/bg/chat-classroom.webp', zone: 'risky', enc: 12, evt: 30, foe: 0.7, tags: ['town', 'castle'], who: null, acts: ['look', 'explore'], links: ['square', 'lecture', 'archive'],
+    text: 'The Academy of Careful Magic: clipped lawns, tall windows, and students who settle arguments with duels they are not supposed to have.',
+    look: ['Two apprentices are having a very quiet duel behind a hedge. Both are losing.', 'A notice reads NO UNLICENSED MIRACLES ON THE GRASS. It has scorch marks.'] },
+  { id: 'lecture', area: 'academy', name: 'The Lecture Hall', short: 'Lecture', x: 22, y: 46, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: ['shrine'], who: null, hours: [8, 20], acts: ['look', 'study'], links: ['quad'],
+    text: 'Rows of desks, a chalkboard nobody has fully erased in a century, and a seat at the back that fits a knight in full plate, just.',
+    look: ['Today\'s lecture is "Luck: A Statistical Impossibility." The lecturer keeps glancing at you.', 'Someone has drawn you on a desk. The armor is very accurate. The sword is on fire, for some reason.'] },
+  { id: 'outskirts', area: 'camps', name: 'Camp Outskirts', short: 'Outskirts', x: 50, y: 18, src: 'art/bg/bg-nightpark.webp', zone: 'wild', enc: 40, evt: 20, foe: 0.85, tags: ['road', 'camp'], who: null, acts: ['look', 'explore', 'hunt'], links: ['hollow', 'stockade', 'tent'],
+    text: 'Watch fires in the dark and a palisade of sharpened logs. The slavers took this valley a season ago. A knight is the last thing they want to see walk out of the trees.',
+    look: ['Cart ruts, all heading in. None heading out.', 'A lookout on the palisade is asleep on his spear. For now.'] },
+  { id: 'stockade', area: 'camps', name: 'The Stockade', short: 'Stockade', x: 24, y: 46, src: 'art/bg/chat-graffiti.webp', zone: 'wild', enc: 55, evt: 10, foe: 0.95, tags: ['camp'], who: null, acts: ['look', 'liberate', 'explore'], links: ['outskirts'],
+    text: 'Pens, chains, and tired people behind a gate with one big lock. This is the part of the camp a knight is actually for.',
+    look: ['Tally marks on the gatepost. Days, probably. A great many.', 'A child on the other side of the bars looks at the gold armor and stops crying to stare.'] },
+  { id: 'tent', area: 'camps', name: 'The Warlord\'s Tent', short: 'Tent', x: 76, y: 46, src: 'art/bg/bg-nightpark.webp', zone: 'wild', enc: 50, evt: 10, foe: 1, tags: ['camp'], who: null, acts: ['look', 'garrison'], links: ['outskirts'],
+    text: 'The big tent in the middle, with the banners and the guards who are actually awake. Break the garrison here and the camps come apart.',
+    look: ['A map on the table has Gooseford circled. Twice.', 'There is a very large chair. Nobody is in it yet.'] },
 ];
+// The world: the city in the middle and four domains around it. A knight keeps order.
+// Order (0 to 100) is how firmly a domain is held. Winning there raises it, losing lowers it, and it moves the fight chance.
+// exits draw a doorway on one map that leads to a place on another.
+const AREAS = {
+  city: { name: 'Gooseford', h: 80, exits: [{ from: 'gates', to: 'road', x: 78, y: 66, label: 'Forest' }, { from: 'gates', to: 'yard', x: 22, y: 66, label: 'Castle' }, { from: 'square', to: 'quad', x: 50, y: 7, label: 'Academy' }] },
+  forest: { name: 'The Greenwood', h: 74, start: 40, exits: [{ from: 'road', to: 'gates', x: 72, y: 9, label: 'City' }, { from: 'hollow', to: 'outskirts', x: 66, y: 62, label: 'Camps' }] },
+  castle: { name: 'Castle Greywatch', h: 74, start: 30, exits: [{ from: 'yard', to: 'gates', x: 82, y: 9, label: 'City' }] },
+  academy: { name: 'The Academy', h: 74, start: 60, exits: [{ from: 'quad', to: 'square', x: 82, y: 9, label: 'City' }] },
+  camps: { name: 'The Slaver Camps', h: 74, start: 10, exits: [{ from: 'outskirts', to: 'hollow', x: 82, y: 9, label: 'Forest' }] },
+};
 // The regulars. Their numbers are hidden from the player; the Debugger at the top shows them.
 // likes and dislikes move a first impression by 20. hours is when they are at their place.
 const CAST = {
@@ -506,6 +550,10 @@ const ACTS = {
   soak: { label: 'Soak', hint: 'HP +30%, stress −20', once: true },
   spar: { label: 'Spar', hint: 'the practice ring' },
   explore: { label: 'Explore', hint: 'see what happens' },
+  camp: { label: 'Make camp', hint: 'sleep rough till morning' },
+  liberate: { label: 'Free the captives', hint: 'Luck, hard · order +10', once: true },
+  boss: { label: 'Challenge', hint: 'the stronghold · a party of four' },
+  garrison: { label: 'Break the garrison', hint: 'the stronghold · a real fight' },
 };
 // The four ways to answer someone. tilt: +1 gets easier the more airheaded she is, −1 gets harder.
 const APPROACH = {
@@ -586,6 +634,7 @@ const S = {
   clock: store.get('clock', 540), gold: store.get('gold', 30), bag: store.get('bag', {}), npc: store.get('npc', {}), stam: store.get('stam', 100), decency: store.get('decency', 70),
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
   dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'stats'),
+  order: store.get('order', {}), secured: store.get('secured', {}),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
 };
 const heroName = 'Valerie';
@@ -745,7 +794,7 @@ function leaveBattle() {
   const st = S.battle.state; S.battle = null; S.mode = 'travel'; if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = carry(freshHero(st.combatants.valerie), st.combatants.valerie);
   S.them = st.combatants.companion && S.who ? { ...carry(freshThem(), st.combatants.companion), flags: {} } : freshThem();
-  S.down = S.hero.hp <= 0; S.standoff = null;
+  S.down = S.hero.hp <= 0; S.standoff = null; S.fightTag = null;
   if (S.afterStam) { const a = S.afterStam; S.afterStam = 0; passTime(45); useStam(a, 'the fight'); }
 }
 function battleAdvance() { // the rest of the party plays itself until it is your turn again
@@ -870,7 +919,7 @@ const castOf = (id) => ({ ...CAST[id], ...(store.get('cast', {})[id] ?? {}) });
 function npcOf(id) { S.npc[id] ??= { met: false, rapport: 20, talked: -1 }; return S.npc[id]; }
 const saveNpc = () => store.set('npc', S.npc);
 const tierOf = (r) => (r >= 70 ? 'Close' : r >= 45 ? 'Friendly' : r >= 25 ? 'Acquaintance' : 'Wary');
-function wandererAt() { const pool = PLACES.filter((p) => p.zone === 'safe' && !p.who); return pool[(dayNow() * 5 + PHASE_ORDER.indexOf(phaseNow()) * 3) % pool.length].id; }
+function wandererAt() { const pool = PLACES.filter((p) => p.zone === 'safe' && !p.who && !p.area); return pool[(dayNow() * 5 + PHASE_ORDER.indexOf(phaseNow()) * 3) % pool.length].id; }
 function residentOf(placeId) {
   const moved = store.get('residents', {}), place = PLACES.find((p) => p.id === placeId);
   let id = placeId in moved ? moved[placeId] : place?.who ?? null;
@@ -1036,11 +1085,6 @@ function drink(kind) {
 
 /* ---------- getting around: distance, danger, standoffs ---------- */
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
-const legMins = (a, b) => Math.round(dist(a, b) * (a.zone === 'wild' || b.zone === 'wild' ? 2.4 : 1.2));
-function dangerOf(p) { // percent chance of a fight on entering or exploring: the place, the hour, and the state she is in
-  if (p.zone === 'safe') return S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0;
-  return Math.min(90, (p.enc ?? 0) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0));
-}
 function pathTo(id) { // the shortest walk along the lines on the map
   const prev = { [S.place]: null }, queue = [S.place];
   while (queue.length) { const at = queue.shift(); if (at === id) break; for (const l of PLACES.find((p) => p.id === at).links) if (!(l in prev)) { prev[l] = at; queue.push(l); } }
@@ -1056,7 +1100,7 @@ function goTo(id) {
   S.prev = S.place; let at = from, total = 0;
   for (const step of pathTo(id)) {
     const p = PLACES.find((x) => x.id === step), mins = legMins(at, p), wild = p.zone === 'wild' || at.zone === 'wild';
-    total += mins; passTime(mins); setPlace(step); S.them = freshThem(); S.down = S.hero.hp <= 0; useStam(Math.max(1, Math.round(dist(at, p) / (wild ? 4 : 8))), `walking to ${p.short}`); at = p;
+    total += mins; passTime(mins); setPlace(step); S.them = freshThem(); S.down = S.hero.hp <= 0; useStam(Math.max(1, Math.round(mins / 9.6)), `walking to ${p.short}`); at = p;
     const danger = dangerOf(p), evt = p.zone === 'safe' ? 0 : p.evt ?? 0;
     if (S.fallen) break;
     if (!danger && !evt) continue;
@@ -1079,7 +1123,8 @@ function explore() {
   const res = tableRoll(`Explore · ${p.name}`, [['fight', danger, 'crit'], ['event', p.zone === 'safe' ? 0 : p.evt ?? 20, 'hit']]);
   if (res === 'fight') return startStandoff('you walked right into them');
   if (res === 'event') return pool.length ? showEvent(pool[Math.floor(Math.random() * pool.length)].id) : luckyFind('Explore');
-  post({ who: 'me', plate: 'Explore', dice: '[quiet]', say: 'Wind, leaves, and your own armor clanking. Nothing finds you this time.' });
+  order(areaOf(p), 2, 'a quiet patrol');
+  post({ who: 'me', plate: areaOf(p) === 'city' ? 'Explore' : 'Patrol', dice: '[quiet]', say: 'Wind, leaves, and your own armor clanking. Nothing finds you this time.' });
 }
 const STAND_SAY = {
   persuade: ['You explain, earnestly and at length, why nobody here wants this. Somewhere in the third minute they agree just to make it stop.', 'You open with "Now, listen." They do not.'],
@@ -1100,7 +1145,7 @@ function standoffAct(kind) {
   const tb = kind === 'tempt' ? temptBonus() : 0, r = rollCheck({ title: `${label} · ${so.name}`, stat, dc: dcFor(so.level), bonus: tb, parts: tb ? [`+${tb} bust`] : [] });
   const dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
   if (!r.success) { const fx = applyFx({ stress: kind === 'tempt' ? 5 : 4 }, `${label} failed`); if (r.degree === 'fumble') decency(-4, `${label} fumbled`); post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][1], fx }); return begin(); }
-  S.standoff = null; S.mode = 'travel';
+  S.standoff = null; S.mode = 'travel'; order(areaOf(placeNow()), kind === 'persuade' ? 5 : 2, `${label} worked`);
   const fx = applyFx(kind === 'persuade' ? { exp: 0.04 } : kind === 'tempt' ? { gold: 6, airhead: 5, grow: 12, growPath: 'rogue' } : { stress: 2 }, label);
   post({ who: 'me', dice, tone: r.degree, say: STAND_SAY[kind][0], fx });
   if (kind === 'run') { useStam(8, 'running'); if (S.prev && S.prev !== S.place && !S.fallen) { setPlace(S.prev); S.them = freshThem(); } }
@@ -1122,6 +1167,7 @@ function afterFight(won, r) {
   if (won && r?.gold) gainGold(r.gold, 'spoils');
   if (won && S.path === 'warrior') grow(15, 'a fight won');
   if (!won) decency(-10, 'carried out of a fight');
+  const area = S.fightTag?.area ?? areaOf(placeNow()); order(area, won ? 8 : -6, won ? 'a fight won' : 'a fight lost'); if (won && S.fightTag?.secure) secure(area);
   S.afterStam = won ? 15 : Math.max(1, S.stam - 5);
 }
 
@@ -1129,6 +1175,7 @@ function afterFight(won, r) {
 function doAct(id) {
   const who = S.who ? castOf(S.who) : null, here = placeNow();
   if (id === 'getup') return getUp();
+  if (['boss', 'garrison', 'liberate', 'camp'].includes(id)) return knightAct(id);
   if (id.startsWith('meet:')) return meet(id.slice(5));
   if (id.startsWith('so:')) return standoffAct(id.slice(3));
   if (id.startsWith('spot:')) { S.spot = id.slice(5) || null; return; }
@@ -1152,7 +1199,7 @@ function doAct(id) {
 function cell(act, label, hint, cls = '', off = false) { return `<button class="cell bubble ${cls}" type="button" data-act="${esc(act)}"${off ? ' disabled' : ''}><b>${esc(label)}</b><small>${esc(hint)}</small></button>`; }
 function exitCells(here) {
   return here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
-    return `<button class="cell bubble go" type="button" data-go="${id}"><b>→ ${esc(p.short)}</b><small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('');
+    return `<button class="cell bubble go" type="button" data-go="${id}"><b>→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}</b><small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('');
 }
 function travelGrid() {
   const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
@@ -1165,9 +1212,9 @@ function travelGrid() {
     return spot.opts.map((o, i) => o.buy
       ? cell(`opt:${i}`, `Buy ${POTIONS[o.buy].name}`, `${POTIONS[o.buy].hint} · ${n(POTIONS[o.buy].price * L)} gold · have ${S.bag[o.buy] ?? 0}`, i === 0 ? 'primary' : '', S.gold < POTIONS[o.buy].price * L)
       : cell(`opt:${i}`, o.label, `${o.stat ? odds(o.stat, dcFor(S.level, o.diff), o.tempt ? temptBonus() : 0) : 'no roll'}${o.cost ? ` · ${n(o.cost * L)} gold` : ''}${o.sleep ? 'free · till morning' : ''}`, i === 0 ? 'primary' : '', Boolean(o.cost) && S.gold < o.cost * L)).join('') + cell('spot:', 'Step away', `back to the ${here.short.toLowerCase()}`, 'go'); }
-  const needsLegs = new Set(['explore', 'hunt', 'spar']);
-  const acts = (here.acts ?? []).map((id) => { const a = ACTS[id], shut = closed && id !== 'look', off = shut || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
-    return cell(id, a.label, shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); });
+  const needsLegs = new Set(['explore', 'hunt', 'spar', 'boss', 'garrison', 'liberate']);
+  const acts = (here.acts ?? []).map((id) => { const a = ACTS[id], shut = closed && id !== 'look', held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
+    return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); });
   const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
   if (who) acts.push(cell('talk', `Talk to ${who.name.length <= 12 ? who.name : who.name.split(' ')[0]}`, tierOf(npcOf(S.who).rapport), 'primary'));
   return acts.join('') + spots.join('') + exitCells(here);
@@ -1180,18 +1227,6 @@ function dashboard() {
 }
 
 /* ---------- the map ---------- */
-function mapTab() {
-  const here = placeNow(), near = new Set(here.links), seen = new Set(), lines = [], roam = wandererAt();
-  for (const p of PLACES) for (const l of p.links) { const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); const q = PLACES.find((x) => x.id === l); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}"/>`); }
-  const nodes = PLACES.map((p) => { const q = eventPool(p).length, who = residentOf(p.id), shut = !openNow(p.hours);
-    return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">${q}</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
-  const who = S.who ? castOf(S.who) : null;
-  return `<div class="who"><p class="lbl">${S.battle || S.standoff ? 'In combat' : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${clockText()}</p><h2>${esc(here.name)}</h2><p class="role">${who ? `${esc(who.name)} is here` : 'Nobody else is here'}</p></div>
-    <svg class="map" viewBox="0 0 100 100" role="group" aria-label="Map of Gooseford and the wilds">${lines.join('')}${nodes}</svg>
-    <p class="more">click a bubble to walk there · red ring: the wilds · pink dot: a regular · gold dot: the wanderer · number: quests</p>
-    <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
-    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `You are ${tierOf(npcOf(S.who).rapport).toLowerCase()} with them.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}`;
-}
 
 /* ---------- in a real fight: potions, and the three ways out ---------- */
 function battleOdds(st) {
@@ -1231,8 +1266,8 @@ function renderDebugger() {
   const here = placeNow(), L = S.lastRoll, ch = (p) => (p.zone === 'safe' && !dangerOf(p) ? 'safe' : `fight ${dangerOf(p)}% · event ${p.zone === 'safe' ? 0 : p.evt ?? 0}%`);
   const rec = S.who ? npcOf(S.who) : null, c = S.who ? castOf(S.who) : null, t = S.them, path = PATHS[S.path];
   el.innerHTML = `
-    <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p></div>
-    <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}</p><p>= ${dangerOf(here)}% here</p></div>
+    <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
+    <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
     <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · rapport ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
     <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p></div>
     <div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
@@ -1298,6 +1333,61 @@ async function thinkAloud(key, band) {
   finally { S.thinking = false; }
 }
 function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; }
+/* ---------- the four domains: a knight keeps order ---------- */
+const areaOf = (p) => p.area ?? 'city';
+const orderOf = (area) => S.order[area] ?? AREAS[area]?.start ?? 50;
+function order(area, delta, why) {
+  if (area === 'city' || !delta) return; const was = orderOf(area);
+  S.order[area] = Math.max(0, Math.min(100, was + delta)); store.set('order', S.order);
+  if (S.order[area] !== was) note(`${AREAS[area].name}: order ${delta > 0 ? '+' : '−'}${Math.abs(S.order[area] - was)} · ${why}`);
+}
+function secure(area) {
+  if (area === 'city' || S.secured[area]) return; S.secured[area] = true; store.set('secured', S.secured); order(area, 30, 'the stronghold fell');
+  post({ who: 'sys', plate: AREAS[area].name, dice: `<b>SECURED</b> · ${esc(AREAS[area].name)} · fights there are far rarer now`, tone: 'virtue', say: 'Word goes round faster than you can walk: the knight in the gold armor did it. Probably by accident. It still counts.' });
+  pop('l', 'SECURED', 'var(--mint)');
+}
+const legMins = (a, b) => a.roads?.[b.id] ?? b.roads?.[a.id] ?? Math.round(dist(a, b) * (a.zone === 'wild' || b.zone === 'wild' ? 2.4 : 1.2));
+function dangerOf(p) { // percent chance of a fight: the place, the hour, the state she is in, and how well the domain is held
+  if (p.zone === 'safe') return S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0;
+  const area = areaOf(p), held = area === 'city' ? 0 : Math.round((50 - orderOf(area)) * 0.3);
+  const raw = (p.enc ?? 0) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0) + held;
+  return Math.max(0, Math.min(90, Math.round(raw * (S.secured[area] ? 0.4 : 1))));
+}
+function mapTab() {
+  const here = placeNow(), area = areaOf(here), A = AREAS[area], local = PLACES.filter((p) => areaOf(p) === area), near = new Set(here.links), seen = new Set(), lines = [], roam = wandererAt();
+  for (const p of local) for (const l of p.links) { const q = local.find((x) => x.id === l); if (!q) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); lines.push(`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}"/>`); }
+  const doors = A.exits.map((e) => { const from = local.find((x) => x.id === e.from), to = PLACES.find((x) => x.id === e.to);
+    return `<line x1="${from.x}" y1="${from.y}" x2="${e.x}" y2="${e.y}" class="${from.id === here.id ? 'on' : ''}"/><g class="node door${from.id === here.id ? ' near' : ''}" data-go="${e.to}" role="button" tabindex="0" aria-label="The way to ${esc(AREAS[areaOf(to)].name)}, ${legMins(from, to)} minutes from ${esc(from.name)}"><rect x="${e.x - 6}" y="${e.y - 4}" width="12" height="8" rx="2.4"/><text x="${e.x}" y="${e.y + 1.6}">${esc(e.label)}</text></g>`; }).join('');
+  const nodes = local.map((p) => { const q = eventPool(p).length, who = residentOf(p.id), shut = !openNow(p.hours);
+    return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${p.boss || p.acts.includes('garrison') ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">★</text>` : q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">${q}</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
+  const who = S.who ? castOf(S.who) : null;
+  const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
+  return `<div class="who"><p class="lbl">${S.battle || S.standoff ? 'In combat' : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${clockText()}</p><h2>${esc(here.name)}</h2><p class="role">${esc(A.name)}${who ? ` · ${esc(who.name)} is here` : ''}</p></div>
+    <svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg>
+    <p class="more">click a bubble to walk there · a box leads to another map · red ring: danger · ★: a stronghold</p>
+    <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
+    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `You are ${tierOf(npcOf(S.who).rapport).toLowerCase()} with them.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
+    <div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`;
+}
+function knightAct(id) { // the things only the outer domains offer
+  const here = placeNow(), area = areaOf(here);
+  if (id === 'boss') { const b = DATA.bosses.bosses.find((x) => x.id === here.boss); if (!b) return; S.fightTag = { area, secure: true }; post({ who: 'sys', plate: here.name, dice: `<b>STRONGHOLD</b> · ${esc(b.name)} · level ${b.level} · the guild sends three with you`, tone: 'crit', say: 'This one is fought at its level, with a full party. It cannot simply be out-damaged: read the phase question on the Fight tab.' }); return startBattle({ boss: here.boss }); }
+  if (id === 'garrison') { S.fightTag = { area, secure: true }; return startBattle({ encounter: 'horde_at_the_gate', level: Math.max(1, Math.round(S.level * (here.foe ?? 1))) }); }
+  if (id === 'liberate') {
+    S.used[id] = true; passTime(30); useStam(6, 'the stockade gate'); if (S.fallen) return;
+    const r = rollCheck({ title: 'The Stockade · Open the gate', stat: 'LCK', dc: dcFor(S.level, 'hard') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Open the gate`;
+    if (!r.success) { post({ who: 'me', plate: 'The Stockade', dice, tone: r.degree, say: 'You try the lock with the sword. The sword tries the alarm bell.' }); return startStandoff('the guards heard the bell'); }
+    order(area, 10, 'captives freed'); const fx = applyFx({ exp: 0.06, decency: 5, stress: -8 }, 'captives freed');
+    return post({ who: 'me', plate: 'The Stockade', dice, tone: r.degree, say: 'You lean on the gate to think and the whole rotten hinge gives way. Forty people walk out past you into the trees. One of them salutes.', fx: [`${AREAS[area].name}: order +10`, ...fx] });
+  }
+  if (id === 'camp') {
+    const danger = dangerOf(here) + 10, res = tableRoll(`Make camp · ${here.name}`, [['fight', danger, 'crit']]);
+    if (res === 'fight') return startStandoff('they saw the fire');
+    sleepUntil(7); const f = freshHero(S.hero); S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(f.maxHp * 0.6)), mp: Math.max(S.hero.mp, Math.round(f.maxMp * 0.6)) }; S.down = false; S.stam = Math.max(S.stam, 70); store.set('stam', S.stam); decency(-5, 'slept in a tree');
+    return post({ who: 'me', plate: here.name, dice: `[camp] a quiet night · ${clockText()}`, tone: 'virtue', say: 'You sleep inside the oak with the sword for a pillow. In the morning there is a leaf in your hair. There was already a leaf in your hair.', fx: ['HP and Mana to 60%', 'stamina 70', 'decency −5'] });
+  }
+}
+const actLabel = (id, here) => (id === 'boss' ? `Challenge ${DATA.bosses.bosses.find((x) => x.id === here.boss)?.name.split(' ')[0] ?? 'the boss'}` : id === 'explore' && areaOf(here) !== 'city' ? 'Patrol' : ACTS[id].label);
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -1636,7 +1726,7 @@ function debugClick(what) {
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null }); doneQuests.clear(); seen = 0; drawn = {};
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {} }); doneQuests.clear(); seen = 0; drawn = {};
     setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
@@ -1705,7 +1795,7 @@ setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place'
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
 reset(false);
-post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside, every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
+post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'her', say: nextLine(castOf(S.who).greet), spoken: true });
 window.__stage = { S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
