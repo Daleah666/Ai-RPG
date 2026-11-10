@@ -85,7 +85,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Composure, catcalls, thought pops | `composure`, `composureScore`, `COMPOSURE`, `catcallWalk`, `CALLERS`, `REACT`, `thoughtPops` |
 | Amaranth and Corruption | `maybeVisit`, `visitChance`, `dreamCells`, `dreamAct`, `DREAM_*`, the `corrupt` row of `COND`, the `bless` act, `S.dream` |
 | News, notifications, big trouble | `WORLD`, `worldEvent`, `worldTick` (called from `passTime` when the phase changes), `toast`, `newsBox`, `REACT_W`, `BADDIES`, `baddieAt`, `baddieCheck`, `bigResult`, `openCell`, `S.news`, `S.baddieDown`, `S.loose` |
-| Wanderers and the movement maps | `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
+| The Town Girls | `TOWN` (generated from Del's `Town_Girls` dialogue files), the `town` kind in `hail`, `S.townMet`, the Cast section in `castHtml` |
+| Wanderers and the movement maps | `countsFor` (the big map), `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
 | Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
 | Lore and Claude-written news | `LORE`, `loreDigest`, `newsGen`, `S.lore`, `S.newsBank`, `S.autoNews` |
 | Stat strip, close-ups, growth portrait | `statStrip`, `closeFit`, `body.closeup`, `GROW_FACE`, `growFace` |
@@ -168,6 +169,10 @@ Decisions made in that pass:
 - "Wish Valerie in the portrait had bigger breasts": pictures cannot be repainted here, so her card now climbs through the bustier pictures already supplied as her growth tier rises.
 - A dungeon corridor picture Del pasted did not reach the disk in that session, so it is not on the page. If it is sent again as a file it belongs on the Castle Dungeons (`TOWN_SCENES.ruins`).
 - The old `#cast` panel and `renderCast` are still in the file but nothing opens them; the Cast tab calls `castHtml` into the menu.
+
+- Del then said: make the map easier to remember, put similar things together, and stop showing the same thing again and again. What changed: the big map shows a head-count per place instead of a token per person; the key is in three groups; the folds are grouped under four labels; the separate list of roads is gone (the Go row has its numbers); the stat strip no longer repeats HP, Mana, Stamina or the clock; Lore no longer repeats the news; Settings no longer repeats full screen, the world switch or Jiggle. **Before adding anything to this page, check whether it is already shown somewhere, and put it there.**
+- Del's comment on the tab row: the four tabs go under the buttons, and Jump belongs on the map. Done. The old row of Jump buttons in the Debug tab is behind a Settings switch (`S.tpRow`) that the browser tests turn on.
+- `Town_Girls` (twelve folders, a dialogue file and one or two pictures each) became `TOWN`. Their lines are used as written. Line 2 and line 3 are read as her reaction to how composed Valerie is.
 
 Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
 
