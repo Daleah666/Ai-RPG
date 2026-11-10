@@ -99,7 +99,11 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Routines, phrases outside the chat, the klutz | `LOOPS`, `stepToward`, `loopNext`, `wanderStep` (`wait`, `leg`), `BARKS`, `placeBark`, `bark`, `barkOf`, `barkTick`, the `#bark` element; `KLUTZ`, `klutzMoment` |
 | Meme, the helper | `MEME_HELLO`, `MEME_RULES`, `memeFacts`, `askMeme`, `memeToggle`, `memeCell`, `idleR`, `S.meme` |
 | Layout circles, what changed | `LAYS`, `layPill`, `applyLay`, `setLay`, `S.lay`, the `lay1`/`lay2`/`lay3` body classes; `NEW_VER`, `NEW_UI`, `showNew`, `hideNew`, the `#newLayer` element |
-| Moves on the chat bar, attribute help | `movesNow`, `moveCells`, `moveAct`, `MOVE_SAY`, the *Your moves* row in `placeGrid`; `ATTR_USE`, `attrHelp`, `S.attrHelp` |
+| Moves on the chat bar | `movesNow`, `moveCells`, `moveAct`, `MOVE_SAY`, the *Your moves* row in `placeGrid` |
+| Help windows, the attribute line, the numbers table | `HELP`, `helpBtn`, `helpBox`, `S.help`; `ATTR_USE`, `attrBars`, `attrLine`; `numbersHtml` (reads `__m.progression` and `__m.stats`) |
+| Right now (how she feels) | `HEART`, `STAGES`, `EMOS`, `HEART_DEF`, `HEART_COLD`, `MOOD_HEART`, `SAID_HEART`, `WANTS`, `THINKS`, `heartOf`, `stageOf`, `heartMove` (called from `talkPick`), `heartRest` (called from `worldTick` in the morning), `heartThink`, `nowCard`, the `now` tab in `rightPanel`, `S.heart` |
+| Chapters and the opening | `chapterList`, `chapterNo`, `CHAPTER_SAY`, `BOOK`, `chapterOpen` (from `showEvent`), `chapterClose` (from `chooseEvent`), `chaptersHtml`, `S.chap`, `S.book`; `OPENING`, `playOpening` |
+| Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
 | The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
 | More than one answer | `swipeOpen`, `swipeSeal` (called first thing in `post`), `swipe`, `swipeBar`, `takeLine`, `TAKES`, `S.swipe` |
 | One-line arrivals, no repeats | `arrive` (description only on a first visit), the guard at the top of `post`, `S.said` |
@@ -121,7 +125,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Four callings: knight, mage, rogue (Del says "finesse") and courtesan or wench. The first three split slash, strike and thrust, mirroring the three attack types of the game Del is modelling; the courtesan is the social one and is allowed to bend the dice. Del wants each calling to end up with an equivalent, balanced kit. So far only the crowd attack and the courtesan's three tricks differ; the turn-based runner gives every calling Valerie's kit. A proper per-calling kit in `data/` and `engine/battle.js` is the real job.
 - Full combat should look like a classic RPG Maker battle screen: enemy list with small portraits and bars, the heroine large, a speaker portrait in the dialogue. Del showed a Karryn's Prison screenshot as the reference for layout only. Attribute names are already this game's own (Might, Arcana, Finesse, Constitution, Willpower, Luck); Del is happy for systems to mirror that game's structure with names changed.
 - Social rolls are meant to be most of the "combat". The turn-based battle runner is kept to one side for hunts and strongholds.
-- This is not a dating sim. Relationships are about respect, and mood. Del's Character Card page has a Kit tab (perks, moves, gear) and a shelf of passives from another game; the page copies the Kit idea with its own seven perks and does not import that shelf. Del wants moments to grant and change passives, and may bring more of the sheet's tabs across later (interests, knows about, guilty pleasures, a tag calculator), a few at a time.
+- This is not a dating sim. Relationships are about respect, and mood. (Later the same day Del asked for a social element "mixed with dating sims": see the Right now tab in the last pass below.) Del's Character Card page has a Kit tab (perks, moves, gear) and a shelf of passives from another game; the page copies the Kit idea with its own seven perks and does not import that shelf. Del wants moments to grant and change passives, and may bring more of the sheet's tabs across later (interests, knows about, guilty pleasures, a tag calculator), a few at a time.
 - The personality types on the sheet are a glimpse for now. Del wants them to become a system later.
 - The left panel is Del's character sheet in miniature. Pulled wide it should read like the Character Card page: picture on the left, tabbed sheet on the right. Del wants the right-hand panel to get the same treatment later.
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
@@ -241,6 +245,25 @@ Decisions made in that pass:
 - The move buttons and the library use Valerie's skill list for every lead, as the Kit tab already did. Ember and Pip have no moves of their own yet.
 
 Loose ends from that pass: in the smallest layout the left panel is the bars alone, and the size strip under them still works independently of the circles (picking a circle sets the size; picking a size does not move the circle). The rings are placed once when shown and do not follow a resize.
+
+### Added on 2026-11-10, last of the day (v39, artifact version 33)
+
+Built and merged, from a screenshot and four short messages:
+
+- Del sent a screenshot of the Right now panel from the card creator (a character called Belladonna: mood, thought, want and cost, six bars) with "use this and plug in for character mood if used". It is the **Right now** tab. The names and default numbers of the bars and the six stage names are Del's own, copied from `desktop-companion/st-card-creator/extension/index.js`.
+- "For story events call them chapters, give them dialogue or milestones": **Chapters**. The spoken lines in `CHAPTER_SAY` and the milestone names are the assistant's.
+- "Clump similarities together and help menu be expandable windows with a question mark... put the might arcana finesse all of that": the **?** windows and the one-line attributes.
+- "If you get there on foot you can fast travel": **Fast travel**.
+- "Start at the beginning with an opening in the debug area so I can see the start, have a little bit of story": the **prologue** and **Play the opening**. It replays the story; it does not wipe the save.
+
+Decisions made in that pass:
+
+- Earlier Del decided "this is not a dating sim". Del has now said the game should have "a social element" and things "mixed with dating sims". The Right now bars are the first piece of that. Respect and rapport for the regulars are unchanged, and the regulars do not have a Right now tab yet: only people the conversation system can talk to do.
+- Del asked to "use Karryn's Prison stats... their exact same stat block... just change the name... their enemies exactly the same", as a foundation to learn the numbers from, then clarified it is a starting point to adapt. **Not done**, and the assistant told Del so: another game's stat block, numbers and enemy list are not copied here, renamed or not. What Del gets instead is this game's own number system, which already exists in `rpg/engine` with tests, shown as a table in the Lore menu so Del can read it and say which rows feel wrong. Offered next: more enemies of this game's own (there are eleven kinds in five encounters and three bosses), and talents learned through fighting, built on the passives bank.
+- Del floated renaming Level ("Fae level or some other type of level thing"). Not changed; it is Del's call and one word in the page.
+- The want-and-cost lines in `WANTS` (thirteen of the main cast) are the assistant's, written from each character's own trope and temperament lines. Town Girls and the Vantari sisters have none, so their card leaves that line out.
+
+Loose ends from that pass: the Right now tab is only on the right panel, not on the character page; the regulars are not in it; `heartThink` and the extra line in the conversation prompt have only been run against a stand-in for Claude; the test `drive22` can fail when a night visit opens after it sleeps at an inn (it passes when run again).
 
 ## What Del asked for that is not built, in suggested order
 
