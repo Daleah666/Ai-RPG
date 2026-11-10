@@ -772,15 +772,94 @@
     }
   ],
   "resolve": {
+    "note": "Valerie rolls the same Resolve Check as everyone, on one d100. When that roll is an even number, the table result is replaced by her own entry for that side.",
     "affliction": {
       "id": "aff_val_self_aware",
       "name": "Self-Aware",
-      "text": "\"Oh no. I'm a fraud.\" The gauge locks at 0 and her passives go quiet. Allies who relied on her nerve take 5 stress when it starts."
+      "quote": "Oh no. I'm a fraud.",
+      "text": "She works it out: the gauge locks at 0, so her accidents go quiet and every planned skill is open. Luck ×0.75. About one turn in three she apologises to the enemy and Guards instead of acting. Allies take 5 stress when it starts.",
+      "want": "To finally be honest about what she is.",
+      "cost": "The honesty switches off the one thing that was keeping the party alive.",
+      "effects": [
+        {
+          "kind": "mod",
+          "stat": "LCK",
+          "mult": 0.75
+        },
+        {
+          "kind": "airheadLock",
+          "value": 0
+        }
+      ],
+      "behavior": {
+        "actOut": 30,
+        "act": {
+          "id": "val_sorry_everyone",
+          "name": "Sorry, Everyone",
+          "action": "guard",
+          "target": "self",
+          "refuses": [],
+          "text": "Apologises to the enemy and Guards instead of acting."
+        },
+        "meltdown": {
+          "id": "val_full_confession",
+          "name": "Full Confession",
+          "action": "pass",
+          "allyStress": {
+            "amount": 6,
+            "who": "all"
+          },
+          "refuses": [],
+          "text": "Tells the party everything she has worked out, in order. Loses the turn, and every ally takes 6 stress."
+        }
+      },
+      "onStart": {
+        "selfStress": 0,
+        "partyStress": 5
+      },
+      "until": "calm",
+      "mark": {
+        "id": "aff_scar_val_saw_the_strings",
+        "kind": "scar",
+        "name": "Saw the Strings",
+        "text": "Takes 25% more realization stress, for good.",
+        "effects": [
+          {
+            "kind": "stressMult",
+            "source": "realization",
+            "mult": 1.25
+          }
+        ]
+      }
     },
     "virtue": {
       "id": "vir_val_good_hero",
       "name": "A Good Hero",
-      "text": "\"I'm a GOOD hero!\" She decides the evidence is on her side. Stress stops reaching her, and every ally sheds 10."
+      "quote": "I'm a GOOD hero!",
+      "text": "She decides the evidence is on her side: stress stops reaching her at all, and about one turn in three every ally sheds 5. She sheds 40 stress and allies shed 10 when it starts.",
+      "want": "To be exactly who everyone already thinks she is.",
+      "cost": "Nothing gets through to her, including the things she needs to hear.",
+      "effects": [
+        {
+          "kind": "stressMult",
+          "mult": 0
+        }
+      ],
+      "behavior": {
+        "inspire": 30,
+        "act": {
+          "id": "val_did_you_see_that",
+          "name": "Did You See That?",
+          "action": "none",
+          "partyRelief": 5,
+          "text": "Every ally sheds 5 stress."
+        }
+      },
+      "onStart": {
+        "selfStress": -40,
+        "partyStress": -10
+      },
+      "until": "battle"
     }
   },
   "dashboard": [

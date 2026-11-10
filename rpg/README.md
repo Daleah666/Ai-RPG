@@ -60,7 +60,7 @@ npm run all
 
 **Runs, with tests:** the dice and their bands; damage, hit, crit, healing and initiative; stress mitigation; the EXP curve, attribute growth, HP and MP, yields and prices; the stress bar, Resolve Check, afflictions, virtues and breakdown; binds; Valerie's gauge, stances and six accidents, joined to the combat math; event packs.
 
-**Designed in data, with no runner yet:** there is no battle loop. Nothing in `engine/` takes turns, tracks a boss's phases, or plays its script. The boss and encounter files describe things only a battle runner would act on: several actions a round, phase changes, wound-up telegraphed moves, moves that cannot miss, contraption effects, concessions, enemy targeting rules. A game master, human or the SillyTavern card, can run all of it from the text today. `handoff/boss-desk.md` lists the thirteen things a runner would need.
+**Designed in data, with no runner yet:** there is no battle loop, no skill resolver and no status store. Nothing in `engine/` takes turns, applies a skill's `effects` list, ticks a status, tracks a boss's phases, or plays its script. The skill, item, boss and encounter files describe things only a battle runner would act on: status effects, damage over time, passive triggers, several actions a round, phase changes, wound-up telegraphed moves, contraption effects, concessions. A game master, human or the SillyTavern card, can run all of it from the text today. `handoff/content-writer.md` and `handoff/boss-desk.md` list exactly what a runner would need.
 
 ## Generated files
 

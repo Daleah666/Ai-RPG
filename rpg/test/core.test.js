@@ -20,6 +20,12 @@ test('fixedRolls replays exactly the rolls it was given', () => {
   assert.throws(() => d100(rng));
 });
 
+test('fixedRolls replays every face of the die exactly', () => {
+  const faces = Array.from({ length: 100 }, (_, i) => i + 1);
+  const rng = fixedRolls(faces);
+  assert.deepEqual(faces.map(() => d100(rng)), faces);
+});
+
 test('A1: contestPct is bounded for every corner of the attribute range', () => {
   for (const stat of [1, 10, 500, 1000]) {
     for (const dc of [1, 10, 500, 1000]) {

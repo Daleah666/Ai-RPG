@@ -20,7 +20,9 @@ export function fixedRolls(rolls) {
   let i = 0;
   const rng = () => {
     if (i >= rolls.length) throw new Error('fixedRolls: ran out of rolls');
-    return (rolls[i++] - 1) / 100;
+    // Aim at the middle of the roll's slot. (roll - 1) / 100 lands a hair low for some rolls in floating point,
+    // and d100 then floors 30 down to 29.
+    return (rolls[i++] - 0.5) / 100;
   };
   rng.seed = null;
   return rng;

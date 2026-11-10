@@ -1,7 +1,7 @@
 # Valerie isekai RPG blueprint
 
 ## Status
-`IN_PROGRESS`
+`DONE`
 
 ## Title
 Build the game blueprint and rules engine for "Oops, I'm the Hero?!", with Valerie as the player character
@@ -17,11 +17,13 @@ One master blueprint (engine math, progression, stress and binds, asset registry
 
 ## Steps
 1. Foundation contract and shared engine core (Director). Done.
-2. Wave 1: Combat Engineer (`engine/combat.js`, blueprint section 1), Progression Analyst (`engine/progression.js`, `data/archetypes.json`, section 2).
-3. Director: Valerie's kit (`engine/valerie.js`, `data/valerie.json`), event packs (`engine/events.js`, `events/`). Done.
-4. Wave 2: Systems Designer (stress, afflictions, virtues, binds, section 3), Content Writer (skills, passives, items, bosses, sections 4 and 5).
-5. Integrate: all tests, cross-reference check, compile `rpg/blueprint/MASTER_BLUEPRINT.md`, build `rpg/sillytavern/out/`.
-6. Valerie's card into `desktop-companion/st-card-creator/inbox/` and the card creator artifact.
+2. Wave 1: Combat Engineer, Progression Analyst. Done.
+3. Director: Valerie's kit, event packs. Done.
+4. Wave 2: Systems Designer, Content Writer, boss desk. Done.
+5. Integrate: all tests, cross-reference check, compiled `rpg/blueprint/MASTER_BLUEPRINT.md`, built `rpg/sillytavern/out/`. Done.
+6. Valerie's card into `desktop-companion/st-card-creator/inbox/` and the card creator artifact. Done.
+
+Results: `docs/logs/2026-11-09_rpg-build-log.md`. Decisions and why: `docs/notes/2026-11-09_rpg-design-decisions.md`.
 
 ## Notes for the next bot
 - Run `npm run all` inside `rpg/` before and after any change. It runs tests, the data cross-check, the event validator and both builds.

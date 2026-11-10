@@ -29,7 +29,9 @@ export function difficultyDc(level, difficulty = 'normal') {
  *   stats   base attributes plus gear, before buffs and binds
  *   mods    [{ stat, mult, turns, source }]  buffs and debuffs
  *   binds   { head, arms, legs }  turns remaining, 0 = free
- *   resolve null, or { kind: 'affliction' | 'virtue', id, turns }  (turns null = until cured)
+ *   resolve null, or the state stress.js sets: { kind: 'affliction' | 'virtue' | 'rattled', id, name, turns, until,
+ *           permanent, personal, roll, effects, behavior, mark }. 'rattled' is the enemy version.
+ *   bindResist  one number, or { head, arms, legs }, each 0..80: how hard each part is to bind
  *   affinities { fire: 'weak', ... }  anything missing is 'normal'
  */
 export function makeCombatant(partial = {}) {
@@ -54,6 +56,8 @@ export function makeCombatant(partial = {}) {
     mods: (partial.mods ?? []).map((m) => ({ ...m })),
     resolve: partial.resolve ?? null,
     affinities: { ...(partial.affinities ?? {}) },
+    // Left undefined when not given, so binds.js can fall back to flags.bindResist.
+    bindResist: typeof partial.bindResist === 'object' && partial.bindResist !== null ? { ...partial.bindResist } : partial.bindResist,
     tags: [...(partial.tags ?? [])],
     flags: { ...(partial.flags ?? {}) },
   };

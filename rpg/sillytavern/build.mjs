@@ -14,6 +14,7 @@ import { readData } from '../engine/data-node.js';
 import { statsAt, maxHp, maxMp, expToNext } from '../engine/progression.js';
 import { hitChance, damage, stressTaken, BASIC_ATTACK, CRIT_MULT, GUARD_MULT } from '../engine/combat.js';
 import { toLoreEntry } from '../engine/events.js';
+import { resolveBands } from '../engine/stress.js';
 import { AIRHEAD, stanceEffects } from '../engine/valerie.js';
 import { STAT_KEYS, STAT_INFO, SCALE, RESOLVE, DIFFICULTY, AFFINITY_MULT, BIND_MAP, FUMBLE_FROM } from '../engine/constants.js';
 import { contestPct } from '../engine/rng.js';
@@ -105,22 +106,68 @@ ${valerie.skills.map((s) => {
   }).join('\n')}
 Main Character Energy (MCE) is her 0-100 ultimate gauge: +15 per Chaos Wave, and it rises on bounces, enemy fumbles and crowd-pleasing moments.`);
 
-add('rules · stress and resolve', ['stress', 'stressed', 'resolve', 'panic', 'breakdown', 'afraid', 'terrified', 'horror', 'affliction', 'virtue', 'nerve'], `
-[RULES: STRESS] Stress runs 0 to ${SCALE.STRESS_MAX} and never scales with level. Willpower reduces incoming stress: a hit of 20 lands as ${stressAt(10)} at Willpower 10, ${stressAt(150)} at 150, ${stressAt(400)} at 400, ${stressAt(1000)} at 1000.
-At ${SCALE.STRESS_BREAK} a character makes a Resolve Check, one d100: 01-${RESOLVE.VIRTUE_PCT} a Virtue, ${RESOLVE.VIRTUE_PCT + 1}-100 an Affliction. At ${SCALE.STRESS_MAX}: Breakdown.
-${virtues.length ? `Virtues: ${virtues.map((v) => `${v.name} (${v.text})`).join(' ')}` : ''}
-${afflictions.length ? `Afflictions: ${afflictions.map((a) => `${a.name} (${a.text})`).join(' ')}` : ''}
-Valerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead. When her Resolve roll is an even number she gets one of her own outcomes instead: ${valerie.resolve.affliction.name} (${valerie.resolve.affliction.text}) or ${valerie.resolve.virtue.name} (${valerie.resolve.virtue.text})`);
+// The by-hand steps the Systems Designer wrote (blueprint 3.12), split into their lettered blocks.
+const quickRef = (() => {
+  const doc = readFileSync(path.join(here, '../blueprint/03_psych_status.md'), 'utf8');
+  const start = doc.indexOf('### 3.12');
+  const end = doc.indexOf('### 3.13');
+  if (start < 0 || end < 0) throw new Error('blueprint/03_psych_status.md has no section 3.12 quick reference');
+  const blocks = {};
+  for (const part of doc.slice(start, end).split(/\n(?=\*\*[A-F]\. )/).slice(1)) blocks[part[2]] = part.trim().replace(/\*\*/g, '');
+  for (const letter of 'ABCDEF') if (!blocks[letter]) throw new Error(`blueprint 3.12 is missing block ${letter}`);
+  return blocks;
+})();
+const tables = { afflictions, virtues };
+const bandLine = resolveBands(tables, 0).map((band) => `${band.lo}-${band.hi} ${band.name}`).join(', ');
 
-add('rules · binds', ['bind', 'bound', 'binds', 'tangled', 'disarmed', 'pinned', 'tripped', 'blinded', 'gagged', 'head', 'arms', 'legs'], `
-[RULES: BINDS] Three body parts can be bound: ${Object.entries(BIND_MAP).map(([part, stats]) => `${part} (halves ${stats.map((k) => STAT_INFO[k].name).join(' and ')} and seals ${part} skills)`).join('; ')}. A bind lasts a set number of turns. Two binds never quarter the same attribute.
-An enemy that fumbles inside Valerie's Aura of Befuddlement binds one of its own parts for a turn.`);
+add('rules · stress', ['stress', 'stressed', 'panic', 'afraid', 'terrified', 'horror', 'nerve', 'breakdown', 'storm off', 'breather'], `
+[RULES: STRESS] Stress runs 0 to ${SCALE.STRESS_MAX} and never scales with level. Willpower reduces stress from the world: a hit of 20 lands as ${stressAt(10)} at Willpower 10, ${stressAt(150)} at 150, ${stressAt(400)} at 400, ${stressAt(1000)} at 1000. Stress the party gives itself, and all relief, is flat.
+${quickRef.A.replace(/Reduce it by the target's WIL with the table in section 1\.8\./, "Reduce it by the target's Willpower as above.")}
+${quickRef.D}
+${quickRef.E}
+Valerie: horror and mental stress do not land on her unless she is Lucid, and allies who see it shed 3. Realization stress (being told what really happened) ignores her Willpower and drops the gauge 10. Embarrassment is x1.5 unless she is a Total Airhead.`);
+
+add('rules · resolve check', ['resolve', 'resolve check', 'affliction', 'afflicted', 'virtue', 'virtuous', 'cracks', 'snaps', 'scar', 'silver lining', ...afflictions.map((a) => a.name.toLowerCase()), ...virtues.map((v) => v.name.toLowerCase())], `
+[RULES: THE RESOLVE CHECK] At ${SCALE.STRESS_BREAK} stress, one d100 read three ways: the band picks the result, an even roll swaps in the character's own entry if they have one, doubles (11, 22 ... 99, 100) make it permanent.
+With no shift the bands are: ${bandLine}. A shift moves the edge between Virtues and Afflictions (${RESOLVE.VIRTUE_PCT} by default, never below ${RESOLVE.VIRTUE_PCT - RESOLVE.SHIFT_CAP} or above ${RESOLVE.VIRTUE_PCT + RESOLVE.SHIFT_CAP}); each side keeps its order and stretches or squeezes evenly.
+${quickRef.B.replace(/Roll d100 and find it in that shift's column of the table in 3\.4\./, 'Roll d100 and find it in the bands above, moved by the shift.')}
+${quickRef.C}
+Virtues: ${virtues.map((v) => `${v.name}: ${v.text}`).join(' | ')}
+Afflictions: ${afflictions.map((x) => `${x.name}: ${x.text}`).join(' | ')}
+Valerie's own, on an even roll: ${valerie.resolve.virtue.name}: ${valerie.resolve.virtue.text} | ${valerie.resolve.affliction.name}: ${valerie.resolve.affliction.text}`);
+
+add('rules · binds', ['bind', 'bound', 'binds', 'tangled', 'disarmed', 'pinned', 'tripped', 'blinded', 'gagged', 'trussed', 'struggle'], `
+[RULES: BINDS] Three body parts can be bound: ${Object.entries(BIND_MAP).map(([part, stats]) => `${part} (halves ${stats.map((k) => STAT_INFO[k].name).join(' and ')} and seals ${part} skills)`).join('; ')}. Two binds never quarter the same attribute. The basic attack is never sealed.
+${quickRef.F}
+An enemy that fumbles inside Valerie's Aura of Befuddlement binds one of its own parts for a turn, with no contest.`);
 
 for (const a of archetypes) {
   const s1 = statsAt(a, 1); const s100 = statsAt(a, 100);
   add(`class · ${a.id}`, [a.id, a.name.toLowerCase()], `
 [CLASS: ${a.name.toUpperCase()}] ${a.identity} Wants: ${a.want} Cost: ${a.cost} Best attribute: ${STAT_INFO[a.signature].name}.
 Level 1: ${STAT_KEYS.map((k) => `${k} ${s1[k]}`).join(', ')}. Level 100: ${STAT_KEYS.map((k) => `${k} ${s100[k]}`).join(', ')}.`);
+}
+
+const classSkills = readData('skills')?.skills ?? [];
+const classPassives = readData('passives')?.passives ?? [];
+const costLine = (sk) => [sk.cost?.mp ? `${n(sk.cost.mp)} MP` : null, sk.cost?.limit ? `${sk.cost.limit} Limit` : null].filter(Boolean).join(', ') || 'free';
+for (const a of archetypes) {
+  const mine = classSkills.filter((sk) => sk.archetype === a.id).sort((x, y) => x.unlock - y.unlock);
+  if (mine.length) {
+    add(`skills · ${a.id}`, [`${a.id} skill`, `${a.id} skills`, `${a.id}'s`, ...mine.map((sk) => sk.name.toLowerCase())], `
+[SKILLS: ${a.name.toUpperCase()}] Name (unlock level, cost, body part): effect.
+${mine.map((sk) => `- ${sk.name} (Lv ${sk.unlock}, ${costLine(sk)}, ${sk.part}): ${sk.text}`).join('\n')}`);
+  }
+  const passives = classPassives.filter((ps) => ps.archetype === a.id).sort((x, y) => x.unlock - y.unlock);
+  if (passives.length) {
+    add(`passives · ${a.id}`, [`${a.id} passive`, `${a.id} passives`, ...passives.map((ps) => ps.name.toLowerCase())], `
+[PASSIVES: ${a.name.toUpperCase()}] Always on. ${passives.map((ps) => `${ps.name} (Lv ${ps.unlock}): ${ps.text}`).join(' | ')}`);
+  }
+}
+const general = classPassives.filter((ps) => ps.archetype === 'any');
+if (general.length) {
+  add('passives · general', ['general passive', 'passive slot', ...general.map((ps) => ps.name.toLowerCase())], `
+[PASSIVES: GENERAL] Anyone can equip these: one slot, two from level 50. ${general.map((ps) => `${ps.name} (Lv ${ps.unlock}): ${ps.text}`).join(' | ')}`);
 }
 
 const profile = readJson('src/valerie.card-profile.json');
@@ -337,5 +384,8 @@ writeFileSync(path.join(out, 'Valerie.card.json'), JSON.stringify(valerieCard, n
 
 const constantChars = entries.filter((e) => e.constant).reduce((sum, e) => sum + e.content.length, 0);
 console.log(`built sillytavern/out: GM card with ${entries.length} lorebook entries (${entries.filter((e) => e.constant).length} always on, about ${Math.round(constantChars / 4)} tokens), ${eventCount} events, persona, Valerie card`);
-const thin = [['afflictions', afflictions], ['virtues', virtues], ['items', items], ['bosses', bosses], ['encounters', encounters]].filter(([, list]) => !list.length).map(([name]) => name);
-if (thin.length) console.log(`not in the lorebook yet (no data): ${thin.join(', ')}`);
+const thin = [['afflictions', afflictions], ['virtues', virtues], ['skills', classSkills], ['passives', classPassives], ['items', items], ['bosses', bosses], ['encounters', encounters]].filter(([, list]) => !list.length).map(([name]) => name);
+if (thin.length) {
+  console.log(`missing from the lorebook (no data): ${thin.join(', ')}`);
+  process.exit(1);
+}

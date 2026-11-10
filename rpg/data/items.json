@@ -76,7 +76,7 @@
     },
     {
       "id": "itm_smelling_salts", "name": "Smelling Salts", "category": "cure", "line": "snap_out", "level": 20, "price": 1200, "use": "any",
-      "text": "Snaps one ally out of an Affliction (or a Virtue) at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check.",
+      "text": "Ends one ally's Affliction or Virtue at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check.",
       "effects": [{ "kind": "cleanse", "what": "resolve", "stressTo": 90 }]
     },
     {
@@ -96,61 +96,61 @@
     {
       "id": "itm_firecracker", "name": "Firecracker", "category": "elemental", "line": "thrown_fire", "level": 8, "price": 160, "use": "battle",
       "power": 4, "element": "fire", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 fire damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 4 fire damage from the thrower's Level (40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_snowball", "name": "Snowball", "category": "elemental", "line": "thrown_ice", "level": 8, "price": 160, "use": "battle",
       "power": 4, "element": "ice", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 ice damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 4 ice damage from the thrower's Level (40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_static_sock", "name": "Static Sock", "category": "elemental", "line": "thrown_bolt", "level": 8, "price": 160, "use": "battle",
       "power": 4, "element": "bolt", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 bolt damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 4 bolt damage from the thrower's Level (40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_blessed_water_balloon", "name": "Blessed Water Balloon", "category": "elemental", "line": "thrown_holy", "level": 8, "price": 160, "use": "battle",
       "power": 4, "element": "holy", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 holy damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 4 holy damage from the thrower's Level (40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_ink_bomb", "name": "Ink Bomb", "category": "elemental", "line": "thrown_dark", "level": 8, "price": 160, "use": "battle",
       "power": 4, "element": "dark", "stat": "benchmark", "levelCap": 40, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 4 dark damage, worked out from the thrower's Level (counted as 40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 4 dark damage from the thrower's Level (40 at most) and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_bottled_bonfire", "name": "Bottled Bonfire", "category": "elemental", "line": "thrown_fire", "level": 45, "price": 1400, "use": "battle",
       "power": 7, "element": "fire", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 fire damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 7 fire damage from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_bottled_blizzard", "name": "Bottled Blizzard", "category": "elemental", "line": "thrown_ice", "level": 45, "price": 1400, "use": "battle",
       "power": 7, "element": "ice", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 ice damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 7 ice damage from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_bottled_thunder", "name": "Bottled Thunder", "category": "elemental", "line": "thrown_bolt", "level": 45, "price": 1400, "use": "battle",
       "power": 7, "element": "bolt", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 bolt damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 7 bolt damage from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_bottled_sunrise", "name": "Bottled Sunrise", "category": "elemental", "line": "thrown_holy", "level": 45, "price": 1400, "use": "battle",
       "power": 7, "element": "holy", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 holy damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 7 holy damage from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
       "id": "itm_bottled_midnight", "name": "Bottled Midnight", "category": "elemental", "line": "thrown_dark", "level": 45, "price": 1400, "use": "battle",
       "power": 7, "element": "dark", "stat": "benchmark", "levelCap": 100, "target": "one", "tags": ["ranged", "projectile"],
-      "text": "Thrown at one enemy and rolled to hit like any attack. Power 7 dark damage, worked out from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
+      "text": "Thrown at one enemy and rolled to hit. Power 7 dark damage from the thrower's Level and the benchmark attribute for that Level, against the target's Willpower.",
       "effects": []
     },
     {
@@ -216,41 +216,41 @@
     {
       "id": "itm_gristle_seed", "name": "Gristle Seed", "category": "seed", "line": "seed_str", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "STR", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Might for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Might, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     },
     {
       "id": "itm_bookworm_seed", "name": "Bookworm Seed", "category": "seed", "line": "seed_int", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "INT", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Arcana for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Arcana, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     },
     {
       "id": "itm_fidget_seed", "name": "Fidget Seed", "category": "seed", "line": "seed_agi", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "AGI", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Finesse for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Finesse, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     },
     {
       "id": "itm_stodge_seed", "name": "Stodge Seed", "category": "seed", "line": "seed_con", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "CON", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Constitution for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Constitution, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     },
     {
       "id": "itm_mule_seed", "name": "Mule Seed", "category": "seed", "line": "seed_wil", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "WIL", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Willpower for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Willpower, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     },
     {
       "id": "itm_fluke_seed", "name": "Fluke Seed", "category": "seed", "line": "seed_lck", "level": 50, "price": 16000, "use": "field",
       "grants": { "stat": "LCK", "add": 5, "maxPerCharacter": 10 },
-      "text": "Out of battle only. Permanent: +5 Luck for whoever eats it, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
+      "text": "Out of battle only. Permanent +5 Luck, at most 10 of this seed per character. Gear and seeds together never add more than 200 to one attribute.",
       "effects": []
     }
   ],
-  "gearNote": "A set is three pieces: weapon (the listed price, half the bonus), armour (0.6 of the price, three tenths of the bonus) and charm (0.4 of the price, a fifth of the bonus). Each piece puts its points on one attribute chosen when it is bought. Gear and seeds together never add more than 200 to one attribute.",
+  "gearNote": "A set is three pieces. The weapon costs the listed price and carries half the bonus. The armour costs 0.6 of the price and carries three tenths. The charm costs 0.4 of the price and carries a fifth. Each piece puts its points on one attribute, chosen at purchase. Gear and seeds together never add more than 200 to one attribute.",
   "gearTiers": [
     { "tier": 1, "name": "Hand-Me-Downs", "minLevel": 1, "maxLevel": 10, "price": 160, "setPrice": 320, "bonus": 5 },
     { "tier": 2, "name": "Guild Issue", "minLevel": 11, "maxLevel": 20, "price": 2900, "setPrice": 5700, "bonus": 25 },

@@ -298,6 +298,20 @@ test('the status registry is complete: every status a skill, passive or item app
   for (const s of statuses) assert.ok(used.has(s.id) || engineDriven.includes(s.id), `status "${s.id}" is registered but nothing applies it`);
 });
 
+test('enemy stress: the Rattled and Routed texts say what engine/stress.js does', async () => {
+  const text = (id) => statuses.find((s) => s.id === id).text;
+  // engine/stress.js enemyStressEvent() implements these two rungs, and test/stress.test.js reads these same phrases.
+  assert.ok(text('rattled').includes('−10 to hit') && text('rattled').includes('91'), 'rattled: −10 to hit, fumbles on 91 or more');
+  assert.ok(/minion or standard/i.test(text('routed')) && text('routed').includes('100'), 'routed: who runs, and where the bar resets');
+  const engine = await import('../engine/stress.js').catch(() => null);
+  const rules = engine?.ENEMY_STRESS;
+  if (!rules) return; // the Systems Designer's file is not there yet: the phrases above still hold the contract
+  assert.ok(text('rattled').includes(`−${Math.abs(rules.RATTLED_HIT_BONUS)} to hit`), 'rattled: hit penalty');
+  assert.ok(text('rattled').includes(String(96 + rules.RATTLED_FUMBLE_SHIFT)), 'rattled: fumble edge');
+  assert.ok(text('routed').includes(String(rules.ROUT_RESET)), 'routed: reset value');
+  for (const rank of rules.ROUT_RUNS) assert.ok(text('routed').includes(rank), `routed: ${rank} enemies run`);
+});
+
 // ------------------------------------------------------------------------------------------ binds and body parts
 
 test("each kit is spread across head, arms and legs: a bind hurts, and never seals more than 60% of the kit", () => {

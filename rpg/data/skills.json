@@ -107,7 +107,7 @@
       "type": "heal", "stat": "CON", "power": 6, "acc": 0, "crit": 0,
       "element": "phys", "target": "self", "part": "none",
       "cost": { "mp": 380, "limit": 0 }, "mpShare": 0.07,
-      "tags": ["field"],
+      "tags": [],
       "effects": [{ "kind": "stress", "amount": 5, "source": "wound" }],
       "text": "You decide it is not that bad. Restores about 30% of your max HP (Power 6 on your own Constitution). Pretending costs you 5 stress."
     },
@@ -230,7 +230,7 @@
       "type": "heal", "stat": "INT", "power": 4, "acc": 0, "crit": 0,
       "element": "holy", "target": "ally", "part": "head",
       "cost": { "mp": 1, "limit": 0 }, "mpShare": 0.1,
-      "tags": ["field"],
+      "tags": [],
       "effects": [],
       "text": "A short, kind passage read aloud. Restores HP to one ally: Power 4 on your Arcana, about 20% of the bar of an ally whose Constitution matches it."
     },
@@ -271,7 +271,7 @@
         { "kind": "stress", "amount": -15, "source": "general" },
         { "kind": "stress", "amount": 5, "source": "mental", "ignoreWill": true, "target": "self" }
       ],
-      "text": "You listen, properly. One other ally sheds 15 stress. You take 5 stress that Willpower cannot reduce: their worries have to go somewhere."
+      "text": "You listen, properly. One ally sheds 15 stress. You take 5 stress that Willpower cannot reduce: their worries have to go somewhere."
     },
     {
       "id": "mag_thesis_statement", "name": "Thesis Statement", "archetype": "mage", "unlock": 23, "tier": 3,
@@ -287,7 +287,7 @@
       "type": "heal", "stat": "INT", "power": 4, "acc": 0, "crit": 0,
       "element": "holy", "target": "allies", "part": "arms",
       "cost": { "mp": 670, "limit": 0 }, "mpShare": 0.14,
-      "tags": ["field", "scripted"],
+      "tags": ["scripted"],
       "effects": [],
       "text": "You hand out the work, then do all of it yourself. Restores HP to every ally except you: Power 4 on your Arcana."
     },
@@ -331,14 +331,14 @@
       "cost": { "mp": 1500, "limit": 0 }, "mpShare": 0.1,
       "tags": ["mental"],
       "effects": [{ "kind": "bind", "part": "head", "chance": 50, "turns": 2 }],
-      "text": "You name the thing, and it forgets how it works. 50% base chance to bind one enemy's head for 2 turns: Arcana and Willpower halved, head skills sealed. No damage."
+      "text": "You name the thing, and it forgets how it works. 50% base chance to bind one enemy's head for 2 turns: Arcana and Willpower halved, head skills sealed. No damage. Fumble the roll and the head it binds is your own, for 1 turn."
     },
     {
       "id": "mag_second_edition", "name": "Second Edition", "archetype": "mage", "unlock": 58, "tier": 6,
       "type": "heal", "stat": "INT", "power": 0, "acc": 0, "crit": 0,
       "element": "holy", "target": "ally", "part": "arms",
       "cost": { "mp": 4100, "limit": 0 }, "mpShare": 0.2,
-      "tags": ["field"],
+      "tags": [],
       "effects": [
         { "kind": "revive", "pct": 30 },
         { "kind": "stress", "amount": 8, "source": "death", "target": "self" }
@@ -359,7 +359,7 @@
       "type": "heal", "stat": "INT", "power": 9, "acc": 0, "crit": 0,
       "element": "holy", "target": "ally", "part": "head",
       "cost": { "mp": 4600, "limit": 0 }, "mpShare": 0.14,
-      "tags": ["field"],
+      "tags": [],
       "effects": [
         { "kind": "cleanse", "what": "binds" },
         { "kind": "status", "id": "sitting_out", "turns": 1 }
@@ -394,7 +394,7 @@
       "cost": { "mp": 0, "limit": 100 },
       "tags": ["ultimate", "ranged", "scripted"],
       "effects": [],
-      "text": "Ultimate. Four hundred pages on why the target should be on fire: Power 24 at +20 to hit, dealt as fire, ice, bolt, holy or dark, whichever the target is weakest to."
+      "text": "Ultimate. Four hundred pages on why the target should be on fire: Power 24 at +20 to hit. It lands as fire, ice, bolt, holy or dark, whichever the target is weakest to."
     },
     {
       "id": "rog_cheap_shot", "name": "Cheap Shot", "archetype": "rogue", "unlock": 1, "tier": 1,
@@ -502,7 +502,7 @@
       "cost": { "mp": 1200, "limit": 0 }, "mpShare": 0.09,
       "tags": ["scripted"],
       "effects": [{ "kind": "status", "id": "sitting_out", "turns": 1 }],
-      "text": "You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do."
+      "text": "You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do. It cannot be used during an extra action."
     },
     {
       "id": "rog_stab_in_the_back", "name": "Stab in the Back", "archetype": "rogue", "unlock": 52, "tier": 6,
@@ -557,7 +557,7 @@
         { "kind": "bind", "part": "arms", "chance": 35, "turns": 2 },
         { "kind": "bind", "part": "legs", "chance": 35, "turns": 2 }
       ],
-      "text": "Rope, ribbon and a bow. Damage to one enemy from your Finesse, and a 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll."
+      "text": "Rope, ribbon and a bow. Damage to one enemy from your Finesse. 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll."
     },
     {
       "id": "rog_punchline", "name": "Punchline", "archetype": "rogue", "unlock": 90, "tier": 9,
