@@ -39,8 +39,8 @@ select,input[type=text]{color:var(--text);background:var(--ground);border:1px so
 /* sprites hug the dialogue column: each fills the space from its screen edge to just inside the column */
 .sprite{position:absolute;bottom:0;z-index:-2;height:97%;margin:0;display:flex;align-items:flex-end;pointer-events:none;transition:filter .4s,transform .4s;transform-origin:50% 100%}
 /* each sprite owns the lane between its HUD and the chat, and leans a little way in behind the chat */
-.sprite.l{left:calc(var(--hudL) - 6px);right:calc(50% + var(--col)/2 - 104px);justify-content:flex-end}
-.sprite.r{right:calc(var(--hudR) - 6px);left:calc(50% + var(--col)/2 - 104px);justify-content:flex-start}
+.sprite.l{left:calc(var(--hudL) - 22px);right:calc(50% + var(--col)/2 - clamp(104px,7vw,170px));justify-content:flex-end}
+.sprite.r{right:calc(var(--hudR) - 22px);left:calc(50% + var(--col)/2 - clamp(104px,7vw,170px));justify-content:flex-start}
 .sprite img,.sprite video{display:block;max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom}
 .sprite img{filter:drop-shadow(0 22px 38px rgba(0,0,0,.6))}
 .sprite video.keyed{mix-blend-mode:screen}
@@ -755,8 +755,8 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
 /* ---------- v24: the chat stays dead centre; both figures keep their lanes; her panel slides over the stage ---------- */
 html{font-size:clamp(16px,calc(.5vw + 8.8px),21px)}
 body{font-size:.94rem}
-:root{--col:clamp(560px,38vw,900px);--hudMin:clamp(224px,15.5vw,340px);--hudL:var(--hudMin);--hudR:clamp(300px,20vw,430px)}
-body.alone{--col:clamp(560px,38vw,900px)}
+:root{--col:clamp(560px,40vw,940px);--hudMin:clamp(224px,15.5vw,340px);--hudL:var(--hudMin);--hudR:clamp(300px,20vw,430px)}
+body.alone{--col:clamp(560px,40vw,940px)}
 /* her paintings already carry the hour, so they are shown as painted */
 .scene img.painted{opacity:.82;filter:none!important}
 @media (min-width:901px){
@@ -972,6 +972,17 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .cine-box .plate{position:absolute;top:-12px;left:16px;padding:3px 10px;border-radius:7px;background:var(--pink);color:#111;font-weight:700;font-size:.78rem}
 .cine-box .dice{font:500 .68rem var(--f-mono);color:var(--muted);letter-spacing:.02em;line-height:1.4}.cine-box .say{font-size:1.08rem;line-height:1.5}
 .cine-bar{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}.cine-bar .mono{font-size:.66rem;color:var(--text);min-width:7em;text-align:center;text-shadow:0 1px 3px #000}
+/* right-click a figure */
+.ctx{position:fixed;z-index:70;width:270px;padding:11px;border-radius:14px;background:#14151d;border:1px solid var(--edge2);box-shadow:0 18px 50px rgba(0,0,0,.65);display:grid;gap:7px}.ctx[hidden]{display:none}.ctx p{margin:0}
+.ctx-h{display:grid;gap:1px;font-size:1.02rem}.ctx-h small{font-size:.68rem;color:var(--muted)}
+.ctx-mood{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;align-items:center;gap:7px;font-size:.84rem}.ctx-mood i{display:flex;gap:2px}.ctx-mood u{flex:1;height:8px;border-radius:2px;background:color-mix(in srgb,var(--text) 14%,transparent);text-decoration:none}.ctx-mood u.on{background:var(--pink)}.ctx-mood small{font:500 .62rem var(--f-mono);color:var(--muted)}
+.ctx-line{font-size:.72rem;color:var(--muted)}.ctx-acts{display:flex;flex-wrap:wrap;gap:5px}
+.sprite.upper img,.sprite.upper video{scale:calc(var(--z) * 1.5);translate:0 var(--liftY,0px);transform-origin:50% var(--headY,0%);transition:scale .4s,translate .4s}
+.sprite.upper .flip{scale:calc(-1.5 * var(--z)) calc(var(--z) * 1.5)}.sprite.upper .boxed,.sprite.upper .ghost{scale:var(--z);translate:none}.sprite.upper .boxed.flip{scale:calc(-1 * var(--z)) var(--z)}
+/* her menu: her name on her portrait, the switch row, and tabs big enough to read */
+.charface{position:relative}.charface-name{position:absolute;left:12px;bottom:10px;display:grid;font-size:1.5rem;line-height:1.05;text-shadow:0 2px 10px #000,0 0 3px #000}.charface-name i{font:500 .6rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.pcswitch{margin:8px 0;align-items:center;gap:6px;flex-wrap:wrap}
+#charmenu .char-top .tabs button{font-size:1rem;padding:9px 16px}
 /* a question mark that opens an explanation */
 .qm{flex:none;display:inline-grid;place-items:center;width:18px;height:18px;min-width:0;min-height:0;padding:0;border-radius:50%;border:1px solid var(--edge2);background:transparent;color:var(--muted);font:600 .66rem var(--f-mono);line-height:1;cursor:pointer;vertical-align:middle;text-transform:none;letter-spacing:0;box-shadow:none}
 .qm[aria-expanded="true"]{background:var(--text);color:#111;border-color:var(--text)}
@@ -1051,6 +1062,7 @@ body.dragging .rail .sizes button{height:6px}
   <div class="charmenu" id="charmenu" hidden></div>
   <div class="toasts" id="toasts" aria-live="polite"></div>
 <div class="cine" id="cine" hidden aria-live="polite"></div>
+<div class="ctx" id="ctx" hidden role="menu" aria-label="This character"></div>
   <div class="grip r" id="gripR" role="separator" aria-orientation="vertical" aria-label="Resize their panel" tabindex="0"></div>
   <aside class="hud l" id="hudL" aria-label="You"></aside>
   <aside class="hud r" id="hudR" aria-label="Them"></aside>
@@ -3569,11 +3581,12 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v42', NEW_UI = [
+const NEW_VER = 'v43', NEW_UI = [
+  ['#sprL img, #sprL video', 'Right-click a character: her name, her mood out of ten, how many pictures she has, flip her, or frame her upper body. Right-click again for her pictures.'],
   ['#pcBtn', 'Who you are playing is first on the bar. The arrow switches: Valerie, Ember, Pip, or Meme the cat mage.'],
+  ['#mode', 'The clock is here while you travel.'],
   ['#whoFoot', 'Bottom right: who is standing there, with her level, class and state. A rarer or stronger character has a coloured name and a nickname.'],
-  ['[data-ctab="debug"]', 'Debug has Cinematic: the opening, or a simulated fight, plays by itself in one small box. Pause, fast, stop.'],
-  ['[data-act^="move:"]', 'The moves are now the moves of her calling: a mage gets mage moves, a rogue gets rogue moves.'],
+  ['[data-ctab="debug"]', 'Debug has Cinematic: the opening, or a simulated fight, plays by itself in one small box.'],
 ];
 function hideNew() { clearTimeout(S.newT); $('newLayer')?.remove(); }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -3773,6 +3786,36 @@ function cineClick(what) { const c = S.cine; if (!c) return; if (what === 'stop'
   if (what === 'toggle') c.playing = !c.playing; else if (what === 'fast') { c.fast = !c.fast; c.playing = c.at < c.lines.length - 1; } else if (what === 'next') { if (c.at < c.lines.length - 1) c.at += 1; } else if (what === 'back') { c.at = Math.max(0, c.at - 1); c.playing = false; }
   cineShow(); }
 
+/* ---------- right-click a figure: her name, her mood, her pictures, and a few things to do ---------- */
+const picsOf = (base, owner) => LOOKS.filter((l) => l.src && (owner ? ownerOf(l) === owner : l.id === base || l.id.startsWith(`${base}-`)));
+function figureWho(side) { const here = placeNow().name;
+  if (side === 'l') { const c = CHAR[PC.file] ?? {}, m = mood(S.hero, true), pics = PC_ID === 'valerie' ? picsOf('', 'Valerie') : picsOf(PC.look);
+    return { side, name: PC.full ?? heroName, r: c.rarity ?? 4, sub: `${calling().name} · level ${S.level} · you`, emoji: m[0], word: m[1], level: Math.max(1, Math.min(10, 10 - Math.round(S.hero.stress / 20))), pics, showing: loopOf(heroLook()), here, vid: 'her' }; }
+  const w = rightWho(); if (!w) return null; const id = S.convo?.id ?? S.guest, h = id ? S.heart[id] : null;
+  const base = id && WANDER[id] ? WANDER[id].look : S.who && CAST[S.who] ? CAST[S.who].look : S.lookR, asst = ASSIST && (S.lookR === ASSIST.look || S.lookR === loopOf(ASSIST.look));
+  const vid = id && SECOND[id] ? `sec:${id}` : id && WANDER[id]?.kind === 'town' ? `town:${id}` : id && LEAVERS.includes(id) ? `sis:${id}` : S.meme && S.lookR === 'meme' ? 'meme:meme' : asst ? 'asst:valerie' : S.who && viewList().includes(`cast:${S.who}`) ? `cast:${S.who}` : null;
+  return { side, name: w.name, r: w.r, sub: `${w.cls}${w.race ? ` · ${w.race}` : ''} · level ${w.level} · ${w.type}`, emoji: h ? EMOS[h.emo] ?? '😐' : '😐', word: h ? h.emo.replace(/^./, (c) => c.toUpperCase()) : w.state.replace(/^./, (c) => c.toUpperCase()), level: h ? h.level : 5,
+    pics: asst ? picsOf('', 'Valerie') : picsOf(String(base).replace(/-[a-z]$/, '')), showing: loopOf(S.lookR), here, vid, hail: id && WANDER[id] && !S.convo && S.wander[id]?.at === S.place ? id : null }; }
+function ctxHtml(f) { const loops = f.pics.filter((l) => l.video).length, cur = LOOKS.find((l) => l.id === f.showing) ?? S.custom[f.showing], still = !cur?.video;
+  const stale = f.pics.length <= 1 ? 'her only picture, so she cannot change expression' : still && loops ? 'on a still, though she has a loop' : still ? 'on a still' : 'on a loop';
+  return `<div class="ctx-h">${rareName(f.name, f.r)}<small>${esc(f.sub)}</small></div>
+    <div class="ctx-mood" title="How she is feeling, out of ten"><span>${f.emoji}</span><b>${esc(f.word)}</b><i>${Array.from({ length: 10 }, (_, i) => `<u class="${i < f.level ? 'on' : ''}"></u>`).join('')}</i><small>${f.level}/10</small></div>
+    <p class="ctx-line">${f.pics.length} picture${f.pics.length === 1 ? '' : 's'} · ${loops} loop${loops === 1 ? '' : 's'} · ${stale}</p><p class="ctx-line">At ${esc(f.here)}</p>
+    <div class="ctx-acts"><button class="sm" type="button" data-ctx="flip">Face the other way</button><button class="sm" type="button" data-ctx="upper">${S.upper[f.side] ? 'Whole figure' : 'Upper body'}</button>${f.vid ? `<button class="sm" type="button" data-ctx="page">${f.side === 'l' ? 'Her sheet' : 'Her pictures and page'}</button>` : ''}${f.hail ? '<button class="sm" type="button" data-ctx="hail">Hail her</button>' : ''}</div>
+    ${f.vid ? '<p class="more">Right-click her again to open her pictures.</p>' : ''}`; }
+function ctxOpen(side, x, y) { if (S.ctx?.side === side) return ctxAct('page'); render(); // draw first, so the card describes whoever is really standing there
+  const f = figureWho(side); if (!f) return; // a second right-click on the same figure goes straight to her pictures
+  S.ctx = { side, f }; const el = $('ctx'); el.innerHTML = ctxHtml(f); el.hidden = false; const w = el.offsetWidth, hgt = el.offsetHeight; el.style.left = `${Math.max(8, Math.min(window.innerWidth - w - 8, x))}px`; el.style.top = `${Math.max(8, Math.min(window.innerHeight - hgt - 8, y))}px`; }
+function ctxClose() { S.ctx = null; const el = $('ctx'); if (el) el.hidden = true; }
+function ctxAct(what) { const c = S.ctx; if (!c) return; const { side, f } = c; ctxClose();
+  if (what === 'flip') { const id = side === 'l' ? S.lookL : S.lookR; S.flips[id] = !S.flips[id]; store.set('flips', S.flips); drawn[side] = null; }
+  else if (what === 'upper') { S.upper[side] = !S.upper[side]; store.set('upper', S.upper); }
+  else if (what === 'page' && f.vid) { if (f.vid === 'her') { S.menu = 'her'; S.viewing = null; } else openViewer(f.vid); }
+  else if (what === 'hail' && f.hail) hail(f.hail);
+  render(); }
+document.addEventListener('contextmenu', (e) => { if (S.cine || S.menu || e.target.closest?.('.hud, .dialog, #charmenu, .bigwrap, #tray, #ctx, input, textarea, select')) return;
+  for (const side of ['r', 'l']) { const fig = $(side === 'l' ? 'sprL' : 'sprR'), pic = fig.querySelector('img, video'); if (!pic || fig.hidden) continue; const r = pic.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { e.preventDefault(); return ctxOpen(side, e.clientX, e.clientY); } } });
+
 /* ---------- more than one answer: the newest written reply keeps its takes; the arrows flip between them and the last arrow asks for a fresh one ---------- */
 const TAKES = 6;
 const swipeBar = (sw) => `<div class="swipe"><button class="sm quiet" type="button" data-swipe="-1"${sw.at ? '' : ' disabled'} aria-label="Previous answer">◀</button><span class="mono">${sw.at + 1} / ${sw.list.length}</span>${sw.at + 1 < sw.list.length ? '<button class="sm quiet" type="button" data-swipe="1" aria-label="Next answer">▶</button>' : sw.list.length < TAKES ? '<button class="sm quiet" type="button" data-swipe="1">Another answer</button>' : ''}</div>`;
@@ -3833,7 +3876,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -3901,7 +3944,7 @@ function openCell() { const L = Math.max(1, S.level); S.loose = dayNow(); store.
 const MENUS = { her: heroName, cast: 'Everyone', lore: 'Lore', api: 'API', settings: 'Settings' };
 function herHtml() { const h = S.hero, p = DATA.card?.profile ?? {};
   const ed = (key, label, fallback, rows) => `<label class="ed"><span class="lbl">${label}</span><textarea data-edit="${key}" rows="${rows}">${esc(sheetOf(key, fallback))}</textarea></label>`;
-  return `<div class="char-grid"><div class="char-col pic"><div class="charface">${face()}</div><h2 class="char-name">${heroName} <i>${esc(calling().name)} · level ${S.level}</i></h2>${lookPicker()}</div>
+  return `<div class="char-grid"><div class="char-col pic"><div class="charface">${face()}<b class="charface-name">${heroName}<i>${esc(calling().name)} · level ${S.level}</i></b></div><div class="crow pcswitch"><span class="lbl">Switch to</span>${Object.entries(PCS).filter(([k]) => k !== PC_ID).map(([k, x]) => `<button class="sm quiet" type="button" data-pc="${k}">${esc(x.name)}</button>`).join('')}</div>${lookPicker()}</div>
       <div class="char-col"><div class="over"><h3>Who she is</h3><div class="crow"><span class="lbl">You are playing</span>${Object.entries(PCS).map(([k, x]) => `<button class="sm${k === PC_ID ? '' : ' quiet'}" type="button" data-pc="${k}" aria-pressed="${k === PC_ID}">${esc(x.full)}</button>`).join('')}</div><p class="more">Same save and same rules for now. Switching changes the name, the pictures, the calling and the story, and reloads the page.</p><div class="crow">${Object.entries(CALLINGS).map(([k, x]) => `<button class="sm${k === S.cls ? '' : ' quiet'}" type="button" data-calling="${k}" aria-pressed="${k === S.cls}"${S.battle || S.standoff ? ' disabled' : ''}>${esc(x.short)}</button>`).join('')}</div>
         <label class="walkto"><span class="lbl">Strangers take her for</span><select data-race="1">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label></div>
         ${combatBlock(h)}<div class="over"><h3>At a glance</h3>${overviewTab()}</div></div>
@@ -4376,7 +4419,7 @@ async function talkPick(k) { const c = S.convo; if (!c || c.busy) return; const 
 const heroLook = () => { const p = PC.poses; if (!p || S.lookL !== PC.look) return S.lookL; if ((S.fallen || S.down) && p.d) return p.d; if (composure() >= 1 && p.x) return p.x; return S.lookL; }; // a played character with her own poses shows how she is doing
 /* ---------- render and wiring ---------- */
 function render() {
-  drawSpriteOnce(); drawScene();
+  drawSpriteOnce(); drawScene(); $('sprL').classList.toggle('upper', Boolean(S.upper.l)); $('sprR').classList.toggle('upper', Boolean(S.upper.r));
   renderHuds();
   const sel = $('skill');
   sel.innerHTML = heroSkills().map((s) => `<option value="${s.id}"${s.id === S.skill ? ' selected' : ''}>${esc(s.name)}${s.unlock > S.level ? ` (level ${s.unlock})` : s.cost?.mp ? ` · ${n(s.cost.mp)} MP` : ''}</option>`).join('');
@@ -4396,7 +4439,7 @@ function render() {
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
-  $('mode').dataset.mode = S.mode; $('mode').textContent = S.dream ? 'Dreaming' : S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : 'Travelling';
+  $('mode').dataset.mode = S.mode; $('mode').textContent = S.dream ? 'Dreaming' : S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : hhmm(); $('mode').title = S.battle || S.standoff || combat ? 'Click to leave (debug)' : `${phaseNow()}, day ${dayNow()} · travelling · click to switch by hand (debug)`;
   if (S.battle) renderBattleRow();
   else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>${so.pinned ? 'you are pinned' : `their nerve · round ${Math.min(8, so.round)} of 8`} · ${crowdSize(so)} of them</small><b style="color:${RANK_COLOR[foeRec(so.key ?? 'opportunists').rank] === 'var(--muted)' ? 'inherit' : RANK_COLOR[foeRec(so.key ?? 'opportunists').rank]}">${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
   else $('foe').hidden = true;
@@ -4465,10 +4508,12 @@ function debugClick(what) {
 }
 document.addEventListener('click', (e) => {
   if (S.pcPop && !e.target.closest?.('#pcPop, [data-pcpop]')) pcPop(false);
+  if (S.ctx && !e.target.closest?.('#ctx')) ctxClose();
   const node = e.target.closest('g[data-go], button[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   if (e.target.id === 'big') { S.big = null; return render(); }
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.pcpop) return void pcPop();
+  if (b.dataset.ctx) return void ctxAct(b.dataset.ctx);
   if (b.dataset.cine) return void cineClick(b.dataset.cine);
   if (b.dataset.cinestart) return void cineStart(b.dataset.cinestart);
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
@@ -4559,7 +4604,7 @@ document.addEventListener('click', (e) => {
 for (const id of ['hudL', 'hudR']) $(id).addEventListener('click', (e) => { if (window.matchMedia('(max-width:900px)').matches && !e.target.closest('input,select,button,label')) $(id).classList.toggle('open'); });
 $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $('say').value.trim(); if (!t) return; $('say').value = ''; say(t); });
 
-document.addEventListener('keydown', (e) => { if (S.cine && e.key === 'Escape') return cineStop(); if (S.cine && e.key === ' ' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName ?? '')) { e.preventDefault(); return cineClick('toggle'); } if (e.key === 'Escape' && S.menu && S.viewing) { S.viewing = null; return render(); } if (e.key === 'Escape' && S.menu) { S.menu = ''; return render(); } if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
+document.addEventListener('keydown', (e) => { if (S.ctx && e.key === 'Escape') return ctxClose(); if (S.cine && e.key === 'Escape') return cineStop(); if (S.cine && e.key === ' ' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName ?? '')) { e.preventDefault(); return cineClick('toggle'); } if (e.key === 'Escape' && S.menu && S.viewing) { S.viewing = null; return render(); } if (e.key === 'Escape' && S.menu) { S.menu = ''; return render(); } if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
 for (const side of ['l', 'r']) document.documentElement.style.setProperty(`--z${side}`, S[`spr${side.toUpperCase()}`]);
 document.addEventListener('wheel', (e) => { if (!e.ctrlKey || e.target.closest?.('.hud, .bigwrap, .panel, .charmenu')) return; e.preventDefault(); const side = e.clientX < window.innerWidth / 2 ? 'L' : 'R', key = `spr${side}`; S[key] = Math.max(0.5, Math.min(1.8, Math.round((S[key] + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set(key, S[key]); document.documentElement.style.setProperty(`--z${side.toLowerCase()}`, S[key]); }, { passive: false });
 { const tray = $('tray'), place = () => { if (S.trayPos) { tray.style.left = `${Math.max(0, Math.min(window.innerWidth - 120, S.trayPos.x))}px`; tray.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, S.trayPos.y))}px`; } };
@@ -4570,7 +4615,7 @@ document.addEventListener('wheel', (e) => { if (!e.ctrlKey || e.target.closest?.
     window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); }); }
 let railT; document.addEventListener('pointerover', (e) => { const on = e.target.closest?.('#rail, #railPop'); clearTimeout(railT); if (on) document.body.classList.add('railhover'); else railT = setTimeout(() => document.body.classList.remove('railhover'), 220); });
 document.addEventListener('dragstart', (e) => { if (document.body.classList.contains('dragging') || e.target.closest?.('.sprite, .halfcard, .scene')) e.preventDefault(); });
-const SIZES = { slim: () => (window.innerWidth <= 1180 ? 150 : Math.round(Math.max(160, Math.min(230, window.innerWidth * 0.105)))), min: () => (window.innerWidth <= 1180 ? 196 : Math.round(Math.max(224, Math.min(340, window.innerWidth * 0.155)))), half: () => Math.round(Math.max(360, Math.min(640, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
+const SIZES = { slim: () => (window.innerWidth <= 1180 ? 150 : Math.round(Math.max(180, Math.min(250, window.innerWidth * 0.12)))), min: () => (window.innerWidth <= 1180 ? 196 : Math.round(Math.max(224, Math.min(340, window.innerWidth * 0.155)))), half: () => Math.round(Math.max(360, Math.min(640, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
 const sizeNear = (v) => Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - v) - Math.abs(SIZES[b]() - v))[0];
 const applyHud = {};
 function sizeL(name) { if (!Object.hasOwn(SIZES, name)) return; S.sizeL = name; store.set('sizeL', name); applyHud.L?.(SIZES[name]()); }
@@ -4600,7 +4645,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
