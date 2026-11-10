@@ -6,19 +6,19 @@
       "id": "war_p_doorstop", "name": "Doorstop", "archetype": "warrior", "unlock": 1, "trigger": "hit_taken_for_ally",
       "text": "Each time you are hit by an attack that was aimed at an ally, or that Provoked, Taunt, Covered or Bulwark pulled onto you, gain 8 Limit. At most twice per round.",
       "choice": "Hits aimed at you from the start earn nothing. Your gauge only fills while you are doing the most dangerous thing available.",
-      "effects": [{ "kind": "limit", "amount": 8, "target": "self" }]
+      "effects": [{ "kind": "limit", "amount": 8, "target": "self", "maxPerRound": 2 }]
     },
     {
       "id": "war_p_stubborn", "name": "Stubborn", "archetype": "warrior", "unlock": 12, "trigger": "bind_applied_to_self",
-      "text": "Binds on your arms and legs last 1 turn less, to a minimum of 1. Binds on your head last 1 turn longer.",
-      "choice": "Your body shrugs off what your head cannot. Every head bind is a longer stretch at half Willpower with your shouts sealed.",
+      "text": "Binds that enemies put on your arms and legs last 1 turn less, to a minimum of 1. Every bind on your head lasts 1 turn longer, your own included.",
+      "choice": "Your body shrugs off what your head cannot. Every head bind, Stiff Upper Lip included, is a longer stretch at half Willpower with your shouts sealed.",
       "effects": []
     },
     {
       "id": "war_p_bodyguards_reflex", "name": "Bodyguard's Reflex", "archetype": "warrior", "unlock": 26, "trigger": "ally_below_30_pct_hp_targeted",
       "text": "Once per round, when a single-target attack is aimed at an ally below 30% HP, you take it instead as if they were Covered. Your legs must be free. You cannot decline.",
       "choice": "It is a reflex, not a decision. It fires when you are the one who cannot afford the hit, and it goes to the first ally in trouble, not the one you would have picked.",
-      "effects": [{ "kind": "status", "id": "covered", "turns": 1 }]
+      "effects": [{ "kind": "status", "id": "covered", "turns": 1, "maxPerRound": 1 }]
     },
     {
       "id": "war_p_seeing_red", "name": "Seeing Red", "archetype": "warrior", "unlock": 42, "trigger": "always",
@@ -51,15 +51,15 @@
       "text": "The first time each battle you hit an enemy with a given element, its affinity to that element is revealed to the party and you gain 6 Limit. Whenever one of your spells hits a weakness, you gain 8 Limit.",
       "choice": "The gauge pays for research and for being right, not for repeating a safe spell. Testing an element costs a turn, and the answer may be \"resisted\".",
       "effects": [
-        { "kind": "limit", "amount": 6, "target": "self" },
-        { "kind": "limit", "amount": 8, "target": "self" }
+        { "kind": "limit", "amount": 6, "target": "self", "when": "first_hit_with_this_element_on_this_enemy" },
+        { "kind": "limit", "amount": 8, "target": "self", "when": "hits_weakness" }
       ]
     },
     {
       "id": "mag_p_i_told_you_so", "name": "I Told You So", "archetype": "mage", "unlock": 14, "trigger": "spell_meets_affinity",
       "text": "When your spell hits a weakness, your next skill costs half MP. When your spell is resisted, nulled or absorbed, you take 5 stress that Willpower cannot reduce.",
       "choice": "Being right is cheap and being wrong is personal. Guessing at an unknown enemy now risks your nerve as well as your turn.",
-      "effects": [{ "kind": "stress", "amount": 5, "source": "embarrassment", "ignoreWill": true, "target": "self" }]
+      "effects": [{ "kind": "stress", "amount": 5, "source": "embarrassment", "ignoreWill": true, "target": "self", "when": "resisted_nulled_or_absorbed" }]
     },
     {
       "id": "mag_p_ivory_tower", "name": "Ivory Tower", "archetype": "mage", "unlock": 30, "trigger": "always",
@@ -84,7 +84,7 @@
     },
     {
       "id": "mag_p_mind_over_matter", "name": "Mind Over Matter", "archetype": "mage", "unlock": 80, "trigger": "lethal_hit_on_self",
-      "text": "Once per round, when a hit would take you to 0 HP, you stay at 1 HP and pay the rest of that hit from MP at 1 MP per 4 HP. If you cannot pay all of it, the hit lands in full and no MP is spent.",
+      "text": "Once per round, when a hit would take you to 0 HP, you stay at 1 HP instead. You pay the rest of that hit from MP at 1 MP per 4 HP. If you cannot pay all of it, the hit lands in full and no MP is spent.",
       "choice": "It is automatic. Every MP held back as armor is a spell not cast, and every spell cast is armor spent.",
       "effects": []
     },
@@ -96,14 +96,14 @@
     },
     {
       "id": "rog_p_first_in", "name": "First In", "archetype": "rogue", "unlock": 10, "trigger": "round_number",
-      "text": "In the first two rounds of a battle your attacks get +15 to crit. From round six onward they get −10 to hit.",
-      "choice": "You are built for the opening, not the siege. A long fight turns your best trait into a penalty, so end it early or be carried.",
+      "text": "Count your rounds since the battle began or since you were last Hidden. On rounds one and two your attacks get +15 to crit. From round six onward they get −10 to hit.",
+      "choice": "You are built for the opening, not the siege. Standing and trading costs you accuracy; resetting the count costs a turn spent hiding while the hits land on your friends.",
       "effects": []
     },
     {
       "id": "rog_p_opportunist", "name": "Opportunist", "archetype": "rogue", "unlock": 22, "trigger": "self_hits_with_bind_skill",
-      "text": "When you crit with a skill that carries a bind, the bind ignores the target's bind resistance and the wear from earlier binds. When such a skill hits without a crit, any bind it lands lasts 1 turn less, to a minimum of 1.",
-      "choice": "Your binds become bets on your crits. Setting up Marked or Hidden lets you tie up a boss; skipping the setup leaves you with the shortest binds in the party.",
+      "text": "When you crit with a skill that carries a bind, the bind ignores the target's bind resistance and the wear from earlier binds. When such a skill hits without a crit, its bind base chance is 10 lower.",
+      "choice": "Your binds become bets on your crits. Setting up Marked or Hidden lets you tie up a boss; skipping the setup leaves you a worse binder than you were at level 21.",
       "effects": []
     },
     {
@@ -123,8 +123,8 @@
       "text": "When you defeat an enemy you become Hidden for 1 turn. When an ally is defeated you take 8 stress that Willpower cannot reduce.",
       "choice": "You get out clean after every kill, which leaves your friends holding the room, and you feel it when one of them pays for that.",
       "effects": [
-        { "kind": "status", "id": "hidden", "turns": 1, "target": "self" },
-        { "kind": "stress", "amount": 8, "source": "death", "ignoreWill": true, "target": "self" }
+        { "kind": "status", "id": "hidden", "turns": 1, "target": "self", "when": "self_defeats_enemy" },
+        { "kind": "stress", "amount": 8, "source": "death", "ignoreWill": true, "target": "self", "when": "ally_defeated" }
       ]
     },
     {
@@ -149,7 +149,7 @@
       "id": "any_p_gallows_humour", "name": "Gallows Humour", "archetype": "any", "unlock": 55, "trigger": "stress_or_enemy_defeated",
       "text": "You take no stress from death sources, and you shed 5 stress whenever an enemy is defeated. Embarrassment stress on you is ×1.5.",
       "choice": "Nothing grim gets to you and everything silly does. A heckle or a public pratfall lands harder than a lich.",
-      "effects": [{ "kind": "stress", "amount": -5, "source": "general", "target": "self" }]
+      "effects": [{ "kind": "stress", "amount": -5, "source": "general", "target": "self", "when": "enemy_defeated" }]
     }
   ]
 }

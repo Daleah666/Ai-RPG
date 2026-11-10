@@ -1,10 +1,12 @@
 ## 4. MASTER ASSET REGISTRY (SPELLS, PASSIVES, ITEMS)
 
-This section lists everything a party member can learn or buy: 54 class skills, 22 passives, 27 statuses, 42 shop items and 10 gear tiers. The data is `data/skills.json`, `data/passives.json` and `data/items.json`. `test/content.test.js` pins the rules on this page. Every table below was printed from that data, and every damage, healing, stress and bind figure was produced by running it through `engine/combat.js`, `engine/progression.js` and `engine/binds.js`.
+This section lists everything a party member can learn or buy: 54 class skills, 22 passives, 27 statuses, 42 shop items and 10 gear tiers. The data is `data/skills.json`, `data/passives.json` and `data/items.json`. `test/content.test.js` pins the rules on this page. A script printed every table below from that data. The damage, healing, stress and bind figures come from running it through `engine/combat.js`, `engine/progression.js` and `engine/binds.js`.
 
 The hero's own class, the Klutz Knight, is in section 6. Boss and enemy moves are in section 5.
 
-One rule shaped the whole registry. Costs are flat, so a skill learned at level 1 costs 1 MP forever, and by level 10 that is less than half a percent of anyone's bar. MP is therefore only the price of a *new* skill. Every skill needs a second price that never wears off: a missed turn, a body part, stress, or exposure. Read each entry for that second price.
+One rule shaped the whole registry: costs are flat. A skill learned at level 1 costs 1 MP forever. By level 10 that is less than half a percent of anyone's bar. MP is therefore only the price of a *new* skill.
+
+Every skill needs a second price that never wears off: a missed turn, a body part, stress, or exposure. Read each entry for that second price.
 
 ### 4.1 How to read a skill entry
 
@@ -24,24 +26,24 @@ One rule shaped the whole registry. Costs are flat, so a skill learned at level 
 | --- | --- |
 | `unlock`, `tier` | The level the skill is learned at. Tier is its ten-level bracket: tier 1 is levels 1–10, tier 10 is levels 91–100. |
 | `type` | `physical` and `magical` deal damage. `heal` restores HP. `buff`, `debuff`, `stress` and `utility` deal none. |
-| `stat`, `power` | The attribute the skill attacks or heals with, and its Power. Each point of Power is 5% of the bar of a peer whose defense equals that attribute (section 1.3). A physical skill is defended by Constitution whatever it attacks with; a magical one by Willpower. |
+| `stat`, `power` | The attribute the skill attacks or heals with, and its Power. Each point of Power is 5% of the bar of a peer whose defense equals that attribute (section 1.3). Constitution defends against a physical skill whatever it attacks with. Willpower defends against a magical one. |
 | `acc`, `crit` | Added to the chance to hit and the chance to crit. Accuracy runs −20 to +20, crit 0 to +20. |
 | `element` | `phys`, `fire`, `ice`, `bolt`, `holy` or `dark`. The target's affinity multiplies the damage. |
-| `target` | `one`, `row` or `all` aim at enemies and roll one d100 for each enemy. `self`, `ally` and `allies` aim at the party and do not roll. |
-| `part` | `head`, `arms`, `legs` or `none`. While that part is bound the skill is sealed. `none` can never be sealed. |
-| `cost` | Flat MP, or Limit for an ultimate. It never changes after the skill is learned. |
-| `mpShare` | The share of `mpBudget(unlock)` the MP cost was worked out from. |
-| `tags` | `melee`, `ranged`, `projectile`: how the attack travels. `mental`, `embarrassment`: the stress source it carries. `ultimate`: spends Limit. `field`: can also be used outside battle. `scripted`: the text holds a rule the `effects` list cannot express. |
+| `target` | `one`, `row` or `all` aim at enemies and roll one d100 for each enemy. `self`, `ally` and `allies` aim at the party and roll nothing. |
+| `part` | `head`, `arms`, `legs` or `none`. A bound part seals its skills. No bind seals `none`. |
+| `cost` | Flat MP, or Limit for an ultimate. It stays the same from the day the skill is learned. |
+| `mpShare` | The share of `mpBudget(unlock)` that set the MP cost. |
+| `tags` | `melee`, `ranged`, `projectile`: how the attack travels. `mental`, `embarrassment`: the stress source it carries. `ultimate`: spends Limit. `scripted`: the text holds a rule the `effects` list cannot express. |
 | `effects` | What else happens. See the table below. |
 | `text` | The exact rule in one line, as the player and the game master read it. |
 
 **The cost rule.**
 
 ```
-cost.mp = mpShare × mpBudget(unlock level), rounded to two significant figures, never less than 1
+cost.mp = mpShare × mpBudget(unlock level), rounded to two significant figures, at least 1
 ```
 
-`mpBudget(level)` is the MP bar of a character with benchmark Willpower: 640 at level 10, 15,100 at level 50, 60,000 at level 100. The three bars are different sizes (the warrior holds half the budget, the rogue two thirds, the mage four thirds), so each archetype has its own share ladder. The ladders are set so that the same weight of skill empties anyone's bar at about the same pace, with the mage ahead by a third because casting is all the mage does.
+`mpBudget(level)` is the MP bar of a character with benchmark Willpower: 640 at level 10, 15,100 at level 50, 60,000 at level 100. The three bars differ in size: the warrior holds half the budget, the rogue two thirds, the mage four thirds. Each archetype therefore has its own share ladder. A skill of a given weight empties any bar at about the same pace. The mage gets a third more casts, because casting is all the mage does.
 
 | Weight | Warrior share | Rogue share | Mage share | Casts from a full bar when it unlocks (W / R / M, at level 50) |
 | --- | ---: | ---: | ---: | ---: |
@@ -50,17 +52,22 @@ cost.mp = mpShare × mpBudget(unlock level), rounded to two significant figures,
 | heavy | 7% | 9% | 14% | 6 / 7 / 9 |
 | signature | 10% | 13% | 20% | 5 / 5 / 6 |
 
-Light is a stance, a setup or a small utility. Standard is a bread-and-butter attack or tool. Heavy is an area attack, a big hit or a strong tool. Signature is the show-stopper of its tier. Every cost can be paid at least four times from a full bar at the level the skill unlocks. Ultimates cost no MP: each archetype has one at 50 or 60 Limit and one that takes the whole gauge of 100.
+- **Light:** a stance, a setup or a small utility.
+- **Standard:** a bread-and-butter attack or tool.
+- **Heavy:** an area attack, a big hit or a strong tool.
+- **Signature:** the show-stopper of its tier.
+
+A full bar pays for every skill at least four times at the level the skill unlocks. Ultimates cost no MP: each archetype has one at 50 or 60 Limit and one that takes the whole gauge of 100.
 
 **Effects.**
 
 | `kind` | Fields | What it does |
 | --- | --- | --- |
-| `bind` | `part`, `chance`, `turns` | Tries to bind that part. `chance` is the base chance. `engine/binds.js` adds a Luck contest, takes off the target's bind resistance, and halves the chance for every earlier bind on that part this battle. A bind riding on an attack is read off the attack's own d100. |
-| `stress` | `amount`, `source`, optional `ignoreWill` | Positive adds stress, reduced by the target's Willpower unless `ignoreWill` is set. Negative is relief and is never reduced. `source` is one of general, horror, mental, realization, embarrassment, wound, death. |
-| `mod` | `stat`, `mult`, `turns` | Multiplies one attribute for that many turns. All the multipliers on one attribute combine and are held to ×0.5–×1.5. |
+| `bind` | `part`, `chance`, `turns` | Tries to bind that part. `chance` is the base chance. `engine/binds.js` adds a Luck contest, takes off the target's bind resistance, and halves the chance for every earlier bind on that part this battle. A bind riding on an attack reads the attack's own d100. |
+| `stress` | `amount`, `source`, optional `ignoreWill` | A positive amount adds stress. The target's Willpower reduces it unless `ignoreWill` is set. A negative amount is relief, and nothing reduces relief. `source` is one of general, horror, mental, realization, embarrassment, wound, death. |
+| `mod` | `stat`, `mult`, `turns` | Multiplies one attribute for that many turns. The multipliers on one attribute combine, and the engine holds the product to ×0.5–×1.5. |
 | `status` | `id`, `turns` | Applies a status from the registry in 4.6. |
-| `dot` | `power`, `turns`, `element` | Damage over time. At the start of each of the target's next turns it takes a hit of that Power and element from the caster: no roll, no crit, no variance, affinity applies. |
+| `dot` | `power`, `turns`, `element` | Damage over time. At the start of each of the target's next turns it takes a hit of that Power and element from the caster: no roll, no crit, no variance. Affinity applies. |
 | `cleanse` | `what`: `binds`, `mods` or `statuses` | On an ally: removes binds, debuffs or harmful statuses. On an enemy: removes its buffs or helpful statuses. |
 | `heal` | `pct`, optional `cap`, optional `bar: "mp"` | Items only. Restores that share of the max bar, up to the ceiling. A negative share drains. |
 | `revive` | `pct` | Brings a downed ally back at that share of max HP. |
@@ -68,25 +75,35 @@ Light is a stance, a setup or a small utility. Standard is a bread-and-butter at
 
 **How an action resolves.**
 
-1. Pay the cost. A skill whose part is bound cannot be chosen.
-2. An effect marked `"target": "self"` is the price or the stance. It lands on the user once per use, hit or miss, unless it also says `"onHit": true`. A self-bind is applied with no roll (`applyBind`), which is why its `chance` reads 100.
-3. A skill aimed at enemies rolls one d100 for each enemy, with `acc` and `crit`. On a miss or a fumble nothing else in the skill touches that enemy.
-4. On a hit or a crit the enemy takes the damage, then every unmarked effect. Skills with Power 0 (`debuff`, `stress`) still roll to hit; they simply deal no damage.
-5. A skill aimed at the party does not roll. Healing is `healAmount` for each target, then every unmarked effect lands on each target.
-6. Durations count the bearer's own turns and tick at the end of each, as binds do. Something a character puts on itself during its own turn starts counting on its next turn. Guard is the one exception: its entry in 4.6 says when it ends.
+1. Skills are battle actions. Outside battle, HP and MP come back from items, camp and inns.
+2. Pay the cost. A character cannot choose a skill whose part is bound.
+3. An effect marked `"target": "self"` is the price or the stance. It lands on the user once per use, hit or miss, unless it also says `"onHit": true`. A self-bind uses `applyBind` and no roll, which is why its `chance` reads 100.
+4. A skill aimed at enemies rolls one d100 for each enemy, with `acc` and `crit`. On a miss or a fumble nothing else in the skill touches that enemy.
+5. On a hit or a crit the enemy takes the damage, then every unmarked effect. Skills with Power 0 (`debuff`, `stress`) still roll to hit and deal no damage.
+6. A skill aimed at the party rolls nothing. Healing is `healAmount` for each target, then every unmarked effect lands on each target.
+7. Durations count the bearer's own turns and tick at the end of each, as binds do. Something a character puts on itself during its own turn starts counting on its next turn. Guard is the one exception: its entry in 4.6 says when it ends.
 
-The attribute names in rules text are the ones the player sees: Might (STR), Arcana (INT), Finesse (AGI), Constitution (CON), Willpower (WIL), Luck (LCK).
+Rules text uses the attribute names the player sees: Might (STR), Arcana (INT), Finesse (AGI), Constitution (CON), Willpower (WIL), Luck (LCK).
 
-**Scripted skills.** 8 skills carry the `scripted` tag. Their text states a rule that needs code of its own: Grudge Match, Closing Time, Group Project, Dissertation, Clean Getaway, Borrowed Time, Punchline, The Big Score.
+**Scripted skills.** 8 skills carry the `scripted` tag: Grudge Match, Closing Time, Group Project, Dissertation, Clean Getaway, Borrowed Time, Punchline, The Big Score. Each one's text states a rule that needs code of its own.
 
 ### 4.2 Warrior: 16 skills and 2 ultimates
 
 - **Want:** To be the one still standing between the party and whatever is charging at it.
 - **Cost:** A head built for helmets, not hexes: spells and nerves get through where swords cannot.
 
-**How the tree says it.** The want is the row of tools for putting yourself between an enemy and an ally: Provoke one enemy with Shield Bash, cover one ally with Not On My Watch, Taunt everything with Oi! Over Here!, Guard the whole party with Shield Wall, and at 60 Limit take every hit in the room with The Door Holds. The cost is that almost all of it is paid in stress, on the lowest Willpower in the party. Taunting costs 6 stress, Walk It Off costs 5, Bring It On costs 15, and Bulwark pulls every stress rider aimed at the party onto the warrior. The two ways out both cut: Stiff Upper Lip buries 20 stress and binds the warrior's own head, and Grudge Match turns stress into Power, which rewards never calming down.
+**How the tree says it.**
 
-A bind is a real problem and never a shutdown. Skills by part: head 3, arms 8, legs 4, none 3. Bound arms seal every weapon skill and leave the taunt, the cover and the wall. Bound legs seal the cover and both guard skills and leave the weapons. Bound head seals the shouts. Walk It Off, Shrug It Off and Stiff Upper Lip need no part at all.
+- **The want** is a row of tools for standing between an enemy and an ally. Shield Bash Provokes one enemy. Not On My Watch covers one ally. Oi! Over Here! Taunts everything. Shield Wall Guards the whole party. At 60 Limit, The Door Holds takes every hit in the room.
+- **The cost** is stress, on the lowest Willpower in the party. Taunting costs 6 stress, Walk It Off costs 5 and Bring It On costs 15. Bulwark pulls every stress rider aimed at the party onto the warrior.
+- **Both ways out cut.** Stiff Upper Lip buries 20 stress and binds the warrior's own head. Grudge Match turns stress into Power, which rewards staying angry.
+
+Skills by part: head 3, arms 8, legs 4, none 3. A bind hurts and stops short of a shutdown:
+
+- Bound arms seal every weapon skill and leave the taunt, the cover and the wall.
+- Bound legs seal the cover and both guard skills and leave the weapons.
+- A bound head seals the shouts.
+- Walk It Off, Shrug It Off and Stiff Upper Lip need no part.
 
 | Lv | Skill | Tier | Cost | Weight | Power | Target | Part | Element | What it does |
 | ---: | --- | ---: | ---: | --- | --- | --- | --- | --- | --- |
@@ -115,7 +132,7 @@ A bind is a real problem and never a shutdown. Skills by part: head 3, arms 8, l
 Worth knowing:
 
 - **Shield Bash chooses who you tank, not who you kill.** The enemy you hit is the enemy that must hit you.
-- **Legs are the defense and arms are the offense, and your best skills bind your own.** Shield Wall binds your legs for a turn, so it works every other turn at best. Castle Doctrine binds them for four. Overhead Regret binds your arms. Decide the turn after before you spend the turn.
+- **Your best skills bind your own limbs.** Shield Wall binds your legs for a turn, so it works every other turn at best. Castle Doctrine binds them for four turns and Overhead Regret binds your arms. Plan the turn after before you spend this one.
 - **Stress is the bar that ends a warrior.** A Breather takes 10 off and costs the turn. The mage's Office Hours takes 15 off and costs the mage. Plan for one of them.
 
 ### 4.3 Mage: 16 skills and 2 ultimates
@@ -123,9 +140,26 @@ Worth knowing:
 - **Want:** To understand the thing, name the thing and set the thing on fire, in that order.
 - **Cost:** Everything below the neck is on loan: one good shove and the lecture is over.
 
-**How the tree says it.** The want is in the order of operations. Understand: the level 1 passive Marginalia reveals an affinity the first time each element lands, and pays Limit for it. Name: Cold Feet, Closed Book and Peer Review bind, silence and strip. Set on fire: five elements, two attack spells each, every one a different shape. Fire burns over time. Ice pins legs and slows. Bolt gambles on crits. Dark attacks the stress bar. Holy heals, revives and strikes out buffs. The cost is the body. The big spells leave the caster standing still or worn down: Burnout cuts the mage's own Arcana, Absolute Zero Tolerance binds the mage's own legs, Thesis Statement gives every attacker +10 to hit, the All-Nighter ends with a bound head. The healing line has the same shape: Group Project heals everyone except the caster.
+**How the tree says it.** The want is the order of operations.
 
-Skills by part: head 8, arms 6, legs 2, none 2. A head bind is the worst thing that can happen to a mage: it seals the head skills and halves Arcana for everything else. The thrown and gestured spells (fire, single-target bolt, Peer Review, the party heal and the revive) are arms skills for exactly that turn. Office Hours and the All-Nighter need no part.
+- **Understand.** The level 1 passive Marginalia reveals an affinity the first time each element lands, and pays Limit for it.
+- **Name.** Cold Feet, Closed Book and Peer Review bind, silence and strip.
+- **Set on fire.** Five elements, and no two spells the same shape:
+  - Fire burns over time.
+  - Ice pins legs and slows.
+  - Bolt gambles on crits.
+  - Dark attacks the stress bar.
+  - Holy heals, revives and strikes out buffs.
+
+The cost is the body. The big spells leave the caster standing still or worn down:
+
+- Burnout cuts the mage's own Arcana.
+- Absolute Zero Tolerance binds the mage's own legs.
+- Thesis Statement gives every attacker +10 to hit.
+- The All-Nighter ends with a bound head.
+- Group Project heals everyone except the caster.
+
+Skills by part: head 8, arms 6, legs 2, none 2. A head bind is the worst thing that can happen to a mage: it seals the head skills and halves Arcana for everything else. The thrown and gestured spells are arms skills for exactly that turn: fire, single-target bolt, Peer Review, the party heal and the revive. Office Hours and the All-Nighter need no part.
 
 | Lv | Skill | Tier | Cost | Weight | Power | Target | Part | Element | What it does |
 | ---: | --- | ---: | ---: | --- | --- | --- | --- | --- | --- |
@@ -134,12 +168,12 @@ Skills by part: head 8, arms 6, legs 2, none 2. A head bind is the worst thing t
 | 4 | **Cold Feet** | 1 | 11 MP | standard | 3 (INT) | one enemy | legs | ice | You stamp, and frost runs along the floor at +5 to hit. Ice damage to one enemy; 45% base chance to bind its legs for 2 turns. |
 | 8 | **Pop Quiz** | 1 | 42 MP | standard | 4.5 (INT) | one enemy | arms | bolt | Lightning, with no warning and no revision time. Bolt damage to one enemy at −10 to hit and +20 to crit. |
 | 13 | **Strongly Worded Letter** | 2 | 110 MP | standard | 3 (INT) | one enemy | head | dark | Composed in your head, delivered directly to theirs at +5 to hit. Dark damage to one enemy, and it takes 12 stress. |
-| 18 | **Office Hours** | 2 | 120 MP | light | n/a | one ally | none | n/a | You listen, properly. One other ally sheds 15 stress. You take 5 stress that Willpower cannot reduce: their worries have to go somewhere. |
+| 18 | **Office Hours** | 2 | 120 MP | light | n/a | one ally | none | n/a | You listen, properly. One ally sheds 15 stress. You take 5 stress that Willpower cannot reduce: their worries have to go somewhere. |
 | 23 | **Thesis Statement** | 3 | 190 MP | light | n/a | self | head | n/a | You stop and state exactly what is about to happen. Focused for 2 turns: your next damaging skill deals ×1.5 damage. Until then, attacks against you get +10 to hit. |
 | 28 | **Group Project** | 3 | 670 MP | heavy | heal 4 (INT) | all allies | arms | holy | You hand out the work, then do all of it yourself. Restores HP to every ally except you: Power 4 on your Arcana. |
 | 34 | **Burnout** | 4 | 990 MP | heavy | 5 (INT) | one row | arms | fire | Everything on the desk goes up at once. Fire damage to one row, and each enemy hit burns for Power 1 at the start of each of its next 2 turns. Then you are spent: your Arcana is ×0.8 for 2 turns. |
 | 39 | **Peer Review** | 4 | 1,300 MP | heavy | 6 (INT) | one enemy | arms | holy | Harsh, fair light and a red pen. Holy damage to one enemy at +10 to hit, and every buff on it is struck out. |
-| 50 | **Closed Book** | 5 | 1,500 MP | standard | n/a | one enemy | head | n/a | You name the thing, and it forgets how it works. 50% base chance to bind one enemy's head for 2 turns: Arcana and Willpower halved, head skills sealed. No damage. |
+| 50 | **Closed Book** | 5 | 1,500 MP | standard | n/a | one enemy | head | n/a | You name the thing, and it forgets how it works. 50% base chance to bind one enemy's head for 2 turns: Arcana and Willpower halved, head skills sealed. No damage. Fumble the roll and the head it binds is your own, for 1 turn. |
 | 58 | **Second Edition** | 6 | 4,100 MP | signature | n/a | one ally | arms | holy | Revised, corrected and back in print. Revives a downed ally at 30% of max HP. Looking that closely at the first edition costs you 8 stress. |
 | 66 | **Brainstorm** | 7 | 3,700 MP | heavy | 4 (INT) | all enemies | head | bolt | Every idea you have had today, as weather. Bolt damage to every enemy at −5 to hit and +10 to crit. Each enemy is rolled separately. |
 | 74 | **Recommended Reading** | 8 | 4,600 MP | heavy | heal 9 (INT) | one ally | head | holy | A long, soothing chapter the patient cannot put down. Restores a lot of HP to one ally (Power 9 on your Arcana) and removes their binds. They sit out their next turn, reading. |
@@ -149,23 +183,31 @@ Skills by part: head 8, arms 6, legs 2, none 2. A head bind is the worst thing t
 | Lv | Ultimate | Tier | Cost | Power | Target | Part | Element | What it does |
 | ---: | --- | ---: | ---: | --- | --- | --- | --- | --- |
 | 44 | **All-Nighter** | 5 | 60 Limit | n/a | self | none | n/a | Ultimate. For 3 turns your skills cost no MP and your Arcana is ×1.2. When it ends you crash: your head is bound for 2 turns. |
-| 100 | **Dissertation** | 10 | 100 Limit | 24 (INT) | one enemy | head | fire | Ultimate. Four hundred pages on why the target should be on fire: Power 24 at +20 to hit, dealt as fire, ice, bolt, holy or dark, whichever the target is weakest to. |
+| 100 | **Dissertation** | 10 | 100 Limit | 24 (INT) | one enemy | head | fire | Ultimate. Four hundred pages on why the target should be on fire: Power 24 at +20 to hit. It lands as fire, ice, bolt, holy or dark, whichever the target is weakest to. |
 
 Worth knowing:
 
-- **Old spells are free and new spells are not.** At level 50 Hot Take costs 1 MP out of 20,200 and Peer Review costs 1,300. The choice each turn is tempo against the bar.
-- **Thesis Statement trades a turn for half a spell.** Two casts beat one cast at ×1.5. It pays when the second cast would cost real MP, when a weakness or a crit will multiply it again, or when the target is about to Guard.
+- **Old spells are free and new spells cost.** At level 50 Hot Take costs 1 MP out of 20,200 and Peer Review costs 1,300. The choice each turn is tempo against the bar.
+- **Thesis Statement trades a turn for half a spell.** Two casts beat one cast at ×1.5. Use it when the second cast would cost real MP. Use it when a weakness or a crit will multiply the bonus again.
 - **The healer chooses how the patient pays.** Light Reading is small and free of strings. Recommended Reading is big, removes binds, and costs the patient their next turn. Second Edition costs the caster 8 stress every time.
-- **Dark spells cost nerve.** Publish or Perish is the only skill in the registry that hits every enemy for Power 7, and it charges 15 stress that Willpower cannot reduce.
+- **Dark spells cost nerve.** Publish or Perish is the only skill in the registry that hits every enemy for Power 7. Each cast charges 15 stress that Willpower cannot reduce.
 
 ### 4.4 Rogue: 16 skills and 2 ultimates
 
 - **Want:** To get in, get the prize and get out before anyone finishes saying "hey".
 - **Cost:** No armour and no backup plan: the one hit that does connect is the one that counts.
 
-**How the tree says it.** Get in: Head Start, Borrowed Time and Clean Getaway buy speed and extra actions now. Get the prize: binds on all three parts, a Mark that gives the whole party +15 to crit, Five-Finger Discount for the target's buffs and 12 Limit, and three payoffs (Stab in the Back, All In, The Big Score) that turn setup into one large number. Get out: Exit, Stage Left. The cost is that every one of those is paid for by standing in the open. Head Start and both big hits leave the rogue Exposed, so every hit on it deals ×1.25. Borrowed Time is repaid with a turn spent Sitting Out. Roast ends with the rogue holding a Taunt. Hiding sends the hits to the rogue's friends. The tree has no heal, no Guard and no way to remove a bind.
+**How the tree says it.**
 
-The rogue's skills attack with Finesse or Luck, not Might, and its basic attack is the lightest in the party. Out of MP, or with its arms bound, it has no second plan. Bound legs are worse: they halve Finesse, which is the rogue's accuracy, evasion, turn order and damage together. Skills by part: head 3, arms 9, legs 5, none 1. All In uses no part, so it is always available, at −20 to hit.
+- **Get in.** Head Start, Borrowed Time and Clean Getaway buy speed and extra actions now.
+- **Get the prize.** Binds on all three parts. A Mark that gives the whole party +15 to crit. Five-Finger Discount, which takes the target's buffs and pays 12 Limit. Three payoffs that turn setup into one large number: Stab in the Back, All In and The Big Score.
+- **Get out.** Exit, Stage Left.
+- **The cost is standing in the open.** Head Start and both big hits leave the rogue Exposed, so every hit on it deals ×1.25. Borrowed Time costs a later turn spent Sitting Out. Roast ends with the rogue holding a Taunt. Hiding sends the hits to the rogue's friends.
+- **No backup plan.** The tree has no heal, no guard skill and no way to remove a bind.
+
+The rogue's skills attack with Finesse or Luck, not Might, and its basic attack is the lightest in the party. Out of MP, or with its arms bound, it has no second plan. Bound legs are worse: they halve Finesse, which is the rogue's accuracy, evasion, turn order and damage together.
+
+Skills by part: head 3, arms 9, legs 5, none 1. All In uses no part, so it is always available, at −20 to hit.
 
 | Lv | Skill | Tier | Cost | Weight | Power | Target | Part | Element | What it does |
 | ---: | --- | ---: | ---: | --- | --- | --- | --- | --- | --- |
@@ -178,12 +220,12 @@ The rogue's skills attack with Finesse or Luck, not Might, and its basic attack 
 | 22 | **Exit, Stage Left** | 3 | 180 MP | standard | n/a | self | legs | n/a | You are simply not there any more. Hidden for 2 turns: enemies cannot single you out while another ally stands, and your next attack gets +20 to crit. Attacking ends it. While you hide, the hits land on your friends. |
 | 28 | **Trouser Malfunction** | 3 | 430 MP | heavy | n/a | one enemy | arms | n/a | One tug on one belt, rolled at +5 to hit. The target takes 15 stress; 40% base chance to bind its legs for 2 turns. No damage, except to its dignity. |
 | 40 | **Put a Sock in It** | 4 | 580 MP | standard | 3 (AGI) | one enemy | arms | phys | A sock, applied to the mouth mid-sentence. Damage to one enemy from your Finesse; 45% base chance to bind its head for 2 turns. |
-| 46 | **Borrowed Time** | 5 | 1,200 MP | heavy | n/a | self | legs | n/a | You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do. |
+| 46 | **Borrowed Time** | 5 | 1,200 MP | heavy | n/a | self | legs | n/a | You take your next turn now. Act again immediately; in exchange you sit out your next turn, and you cannot Guard while you do. It cannot be used during an extra action. |
 | 52 | **Stab in the Back** | 6 | 1,500 MP | heavy | 7 (AGI) | one enemy | arms | phys | The classic. Heavy damage to one enemy from your Finesse at −5 to hit and +10 to crit. You end up standing right beside it: Exposed for 1 turn, so every hit on you deals ×1.25. |
 | 59 | **Five-Finger Discount** | 6 | 1,300 MP | standard | 3 (AGI) | one enemy | arms | phys | You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit. On a hit its buffs are removed and you gain 12 Limit. |
 | 66 | **Roast** | 7 | 3,400 MP | signature | n/a | all enemies | head | n/a | Five minutes of material on everyone in the room, rolled at +5 to hit against each enemy: 20 stress to every one it lands on. Then they are all looking at you: you have Taunt until your next turn. |
 | 73 | **All In** | 8 | 4,200 MP | signature | 10 (LCK) | one enemy | none | phys | No plan, one throw. Huge damage to one enemy from your Luck at −20 to hit and +20 to crit. Win or lose you are Exposed for 2 turns. It uses no body part, so no bind can seal it. |
-| 80 | **Gift Wrap** | 8 | 3,500 MP | heavy | 4 (AGI) | one enemy | arms | phys | Rope, ribbon and a bow. Damage to one enemy from your Finesse, and a 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll. |
+| 80 | **Gift Wrap** | 8 | 3,500 MP | heavy | 4 (AGI) | one enemy | arms | phys | Rope, ribbon and a bow. Damage to one enemy from your Finesse. 35% base chance to bind its head, its arms and its legs for 2 turns, each part checked against the same roll. |
 | 90 | **Punchline** | 9 | 4,400 MP | heavy | 5 (AGI) | one enemy | head | phys | The joke lands, then you do. Power 5 from your Finesse, plus 1 for every 20 stress the target is carrying, up to Power 11 at 120 stress. |
 
 | Lv | Ultimate | Tier | Cost | Power | Target | Part | Element | What it does |
@@ -193,22 +235,22 @@ The rogue's skills attack with Finesse or Luck, not Might, and its basic attack 
 
 Worth knowing:
 
-- **Set up, then cash in.** Kick Me Sign is +15 crit for everyone for three turns. Hidden is +20 on your next attack. Stab in the Back adds +10 and All In adds +20. Crit is capped at 50.
-- **Binds wear out.** Each bind that lands halves the next chance on that part of that enemy, so spread them across head, arms and legs. Three parts bound at once is Trussed: every hit on the target deals ×1.5 (`engine/binds.js`). Gift Wrap checks all three parts against one roll, so it tends to land all or nothing.
-- **Stress is a second way to win.** Heckle, Kick Me Sign, Trouser Malfunction and Roast fill an enemy's stress bar. At 100 it is Rattled, at 200 it is Routed (4.6), and Punchline gains a point of Power for every 20 stress it carries.
+- **Set up, then cash in.** Kick Me Sign gives everyone +15 crit for three turns, and Hidden gives your next attack +20. Stab in the Back adds +10 and All In adds +20. The crit chance stops at 50.
+- **Binds wear out.** Each bind that lands halves the next chance on that part of that enemy, so spread them across head, arms and legs. Three parts bound at once is Trussed: every hit on the target deals ×1.5 (`engine/binds.js`). Gift Wrap checks all three parts against one roll, so its binds land together unless the target resists one part more than another.
+- **Stress is a second way to win.** Heckle, Kick Me Sign, Trouser Malfunction and Roast fill an enemy's stress bar. At 100 stress the enemy is Rattled and at 200 it is Routed (4.6). Punchline gains a point of Power for every 20 stress the target carries.
 
 ### 4.5 Passives
 
-A **class passive** is always on from its unlock level. Each one cuts both ways: the column on the right is what it costs. Each class's level 1 passive is also its Limit engine, the only automatic source of Limit that class has.
+A **class passive** is always on from its unlock level. Each one cuts both ways: the column on the right is what it costs. Each class's level 1 passive is also its Limit engine: the gauge fills from that passive and from the few skills that say so.
 
-A **general passive** is chosen. A character has one general slot, and a second from level 50, and may change what is in them at any rest. The hero can use them too.
+The player chooses **general passives**. A character has one general slot, and a second from level 50. The player may swap them at any rest. The hero can use them too.
 
 #### Warrior
 
 | Lv | Passive | Rule | The choice |
 | ---: | --- | --- | --- |
 | 1 | **Doorstop** | Each time you are hit by an attack that was aimed at an ally, or that Provoked, Taunt, Covered or Bulwark pulled onto you, gain 8 Limit. At most twice per round. | Hits aimed at you from the start earn nothing. Your gauge only fills while you are doing the most dangerous thing available. |
-| 12 | **Stubborn** | Binds on your arms and legs last 1 turn less, to a minimum of 1. Binds on your head last 1 turn longer. | Your body shrugs off what your head cannot. Every head bind is a longer stretch at half Willpower with your shouts sealed. |
+| 12 | **Stubborn** | Binds that enemies put on your arms and legs last 1 turn less, to a minimum of 1. Every bind on your head lasts 1 turn longer, your own included. | Your body shrugs off what your head cannot. Every head bind, Stiff Upper Lip included, is a longer stretch at half Willpower with your shouts sealed. |
 | 26 | **Bodyguard's Reflex** | Once per round, when a single-target attack is aimed at an ally below 30% HP, you take it instead as if they were Covered. Your legs must be free. You cannot decline. | It is a reflex, not a decision. It fires when you are the one who cannot afford the hit, and it goes to the first ally in trouble, not the one you would have picked. |
 | 42 | **Seeing Red** | For every 25 stress you carry, your Might is ×1.05 higher and your Willpower ×0.95 lower, up to Might ×1.2 and Willpower ×0.8 at 100 stress. | Stress you keep is damage you deal and magic you eat. Calming the warrior down also turns the warrior down. |
 | 60 | **Share the Shield** | When you use the Guard action, the ally with the lowest share of HP also gains Guard until the start of your next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5. | You give away part of your cover every time, wanted or not: two people half protected instead of one door properly shut. |
@@ -223,15 +265,15 @@ A **general passive** is chosen. A character has one general slot, and a second 
 | 30 | **Ivory Tower** | While you are at full HP your Arcana is ×1.15. While you are below 50% HP it is ×0.9. | Your best work needs you untouched, so the party pays to keep you that way, and one good shove moves you from the first number to the second. |
 | 46 | **Bedside Manner** | Your healing on an ally below 30% HP is ×1.3. Your healing on an ally above 70% HP is ×0.7. | Topping people up is wasteful; waiting until it is nearly too late is efficient and frightening. You choose how close to the edge to let them get. |
 | 62 | **Chain of Thought** | Each damaging spell you cast of a different element from your previous spell deals 10% more damage, building to 30%. Repeating an element, or doing anything else with your turn, resets it to nothing. | Rotating elements builds the bonus; hammering the one weakness you found throws it away. So does stopping to heal. |
-| 80 | **Mind Over Matter** | Once per round, when a hit would take you to 0 HP, you stay at 1 HP and pay the rest of that hit from MP at 1 MP per 4 HP. If you cannot pay all of it, the hit lands in full and no MP is spent. | It is automatic. Every MP held back as armor is a spell not cast, and every spell cast is armor spent. |
+| 80 | **Mind Over Matter** | Once per round, when a hit would take you to 0 HP, you stay at 1 HP instead. You pay the rest of that hit from MP at 1 MP per 4 HP. If you cannot pay all of it, the hit lands in full and no MP is spent. | It is automatic. Every MP held back as armor is a spell not cast, and every spell cast is armor spent. |
 
 #### Rogue
 
 | Lv | Passive | Rule | The choice |
 | ---: | --- | --- | --- |
 | 1 | **Sticky Fingers** | Gain 6 Limit each time you land a crit and each time you inflict a bind. | Plain hits earn nothing. A careful rogue has an empty gauge; a greedy one is fishing for crits with skills that miss more often. |
-| 10 | **First In** | In the first two rounds of a battle your attacks get +15 to crit. From round six onward they get −10 to hit. | You are built for the opening, not the siege. A long fight turns your best trait into a penalty, so end it early or be carried. |
-| 22 | **Opportunist** | When you crit with a skill that carries a bind, the bind ignores the target's bind resistance and the wear from earlier binds. When such a skill hits without a crit, any bind it lands lasts 1 turn less, to a minimum of 1. | Your binds become bets on your crits. Setting up Marked or Hidden lets you tie up a boss; skipping the setup leaves you with the shortest binds in the party. |
+| 10 | **First In** | Count your rounds since the battle began or since you were last Hidden. On rounds one and two your attacks get +15 to crit. From round six onward they get −10 to hit. | You are built for the opening, not the siege. Standing and trading costs you accuracy; resetting the count costs a turn spent hiding while the hits land on your friends. |
+| 22 | **Opportunist** | When you crit with a skill that carries a bind, the bind ignores the target's bind resistance and the wear from earlier binds. When such a skill hits without a crit, its bind base chance is 10 lower. | Your binds become bets on your crits. Setting up Marked or Hidden lets you tie up a boss; skipping the setup leaves you a worse binder than you were at level 21. |
 | 38 | **Travelling Light** | The first attack aimed at you each round gets −15 to hit. Any attack that hits you while you are above 50% HP deals ×1.15 damage. | Harder to touch, softer when touched. The one hit that does connect is the one that counts. |
 | 55 | **Kick 'Em While They're Down** | You deal ×1.25 damage to a target with at least one bound part and ×0.9 damage to a target with none. | You are the best in the party at finishing a tied-up enemy and the worst at opening on a free one. Something has to land a bind first. |
 | 76 | **Cut and Run** | When you defeat an enemy you become Hidden for 1 turn. When an ally is defeated you take 8 stress that Willpower cannot reduce. | You get out clean after every kill, which leaves your friends holding the room, and you feel it when one of them pays for that. |
@@ -247,7 +289,7 @@ A **general passive** is chosen. A character has one general slot, and a second 
 
 ### 4.6 Status registry
 
-`data/skills.json` registers every status a class skill, a passive, an item or the hero's kit can apply. Bosses and encounters register their own in `data/bosses.json` and `data/encounters.json` (section 5). Kind says what a cleanse does with it: `bad` comes off an ally, `good` comes off an enemy, `neutral` is never cleansed.
+`data/skills.json` registers every status a class skill, a passive, an item or the hero's kit can apply. Bosses and encounters register their own in `data/bosses.json` and `data/encounters.json` (section 5). Kind says what a cleanse does with it: `bad` comes off an ally, `good` comes off an enemy, and no cleanse touches `neutral`.
 
 #### Shared
 
@@ -286,24 +328,31 @@ A **general passive** is chosen. A character has one general slot, and a second 
 
 #### What stress does to an enemy
 
-Enemies carry the same 0–200 stress bar as the party, and their Willpower reduces what they take by the same formula (section 1.6). They never roll a Resolve Check. Two thresholds replace it:
+Enemies carry the same 0–200 stress bar as the party, and their Willpower reduces what they take by the same formula (section 1.6). They roll no Resolve Check. `enemyStressEvent` in `engine/stress.js` gives them two rungs instead:
 
 | Status | id | Kind | Rule |
 | --- | --- | --- | --- |
 | **Rattled** | `rattled` | bad | An enemy whose stress reaches 100 is Rattled until the battle ends: its attacks get −10 to hit and it fumbles on a roll of 91 or more. |
 | **Routed** | `routed` | bad | An enemy whose stress reaches 200 is Routed. A minion or standard enemy runs: it is defeated and pays full rewards. An elite, boss or superboss loses its next action instead, and its stress drops back to 100. |
 
-A brute with a deep HP bar and low Willpower is cheaper to rout than to kill. A boss cannot be routed, but 100 stress on it costs it a tenth of its accuracy for the rest of the fight and widens its fumble band, which is where the hero's Aura of Befuddlement lives.
+A brute with a deep HP bar and low Willpower is cheaper to rout than to kill. No boss runs. A Rattled boss still loses 10 points of accuracy for the rest of the fight, and its wider fumble band feeds the hero's Aura of Befuddlement.
 
 ### 4.7 Economy Item Matrix
 
-Prices come from the two helpers in section 2.6 and are rounded to two significant figures. Consumables are priced in reference fights with `priceForFights(level, fights)`: one fight pays 40 gold at level 1, 400 at level 10, 2,000 at level 50 and 4,000 at level 100. Seeds and gear are priced in levels with `priceAt(level, share)`. An item's level is the level it is sized and priced for; nothing stops a lower-level party buying it if it has the gold. The party starts with 160 gold.
+Prices come from the two helpers in section 2.6, rounded to two significant figures.
 
-Gold income grows with the square of the level and prices are fixed, so anything that restores a share of a bar needs a ceiling or it would be free by mid-game. Stress never scales at all, so stress relief is never sold for gold alone: each calming item also takes MP, a turn, or works once per rest.
+- **Consumables** cost a number of reference fights: `priceForFights(level, fights)`. One fight pays 40 gold at level 1, 400 at level 10, 2,000 at level 50 and 4,000 at level 100.
+- **Seeds and gear** cost a share of a level's gold: `priceAt(level, share)`.
+- **Level** is the level an item is sized and priced for. A lower-level party with the gold can still buy it.
+- The party starts with 160 gold.
+
+Gold income grows with the square of the level and prices stay fixed. An item that restores a share of a bar therefore needs a ceiling, or it would be free by mid-game. Stress does not scale with level, so gold alone cannot buy relief: each calming item also takes MP or a turn, or works once per rest.
 
 #### Recovery
 
-A basic recovery item costs half a fight at its level (`20 × level`), which a party can afford every fight or two. Each tonic restores 30% of max HP up to a ceiling. The ceiling is 30% of a warrior's bar at the level where the next tier goes on sale, so a tonic gives everyone the full 30% through its own tier and then goes stale on the biggest bars first. A mage or a rogue can keep drinking the cheap one for longer than the warrior can.
+A basic recovery item costs half a fight at its level (`20 × level`). A party can afford one every fight or two.
+
+Each tonic restores 30% of max HP up to a ceiling: 30% of a warrior's bar at the level where the next tier goes on sale. A tonic therefore gives everyone the full 30% through its own tier, then goes stale on the biggest bars first. A mage or a rogue can keep drinking the cheap one longer than the warrior can.
 
 | Item | Level | Price (gold) | Use | Effect |
 | --- | ---: | ---: | --- | --- |
@@ -315,7 +364,7 @@ A basic recovery item costs half a fight at its level (`20 × level`), which a p
 
 #### MP
 
-MP is the scarce bar, so it costs a whole fight. The ceiling is sized on the mage's bar in the same way.
+MP is the scarce bar, so an MP item costs a whole fight. Its ceiling follows the mage's bar in the same way.
 
 | Item | Level | Price (gold) | Use | Effect |
 | --- | ---: | ---: | --- | --- |
@@ -338,7 +387,7 @@ The universal Breather takes 10 stress off the character who spends a turn on it
 | --- | ---: | ---: | --- | --- |
 | **Wriggle Oil** | 5 | 100 | anywhere | Removes every bind (head, arms and legs) from one ally. |
 | **Fresh Start Kit** | 30 | 1,200 | anywhere | Removes every bind, every debuff and every harmful status from one ally. |
-| **Smelling Salts** | 20 | 1,200 | anywhere | Snaps one ally out of an Affliction (or a Virtue) at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check. |
+| **Smelling Salts** | 20 | 1,200 | anywhere | Ends one ally's Affliction or Virtue at once. If their stress is above 90 it drops to 90, so the next bad moment means a new Resolve Check. |
 
 #### Revive
 
@@ -348,7 +397,9 @@ The universal Breather takes 10 stress off the character who spends a turn on it
 
 #### Elementals: thrown
 
-Anyone can throw one, so a party without a mage can still hunt a weakness. A thrown item is an attack: it rolls to hit with the thrower's own Finesse and Luck, and it is tagged `ranged` and `projectile`. Its damage does not use the thrower's attributes. It uses the thrower's Level and the benchmark attribute for that Level (10 at level 1, 600 at level 100), against the target's Willpower, so it hits like a trained caster's spell of that Power. Tier 1 counts the thrower's Level as 40 at most, which is what makes it go stale.
+Anyone can throw one, so a party without a mage can still hunt a weakness. A thrown item is an attack with the tags `ranged` and `projectile`. It rolls to hit with the thrower's own Finesse and Luck.
+
+Its damage ignores the thrower's attributes. It uses the thrower's Level and the benchmark attribute for that Level (10 at level 1, 600 at level 100) against the target's Willpower. That is a trained caster's spell of the same Power. Tier 1 counts the thrower's Level as 40 at most, so it goes stale.
 
 | Tier | Level | Price (gold) | Power | Thrower Level counts up to | Fire | Ice | Bolt | Holy | Dark |
 | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- |
@@ -379,7 +430,7 @@ What a fire item does to an even peer (benchmark Willpower, `hpBudget` HP):
 
 #### Stat-buffers
 
-One for each attribute, three turns each. Attack attributes get the smaller multiplier and the larger price, because attack moves damage far more than defense does (section 1.3): Might ×1.2 is about ×1.28 damage, while Constitution ×1.3 is about ×0.91 damage taken.
+One for each attribute, three turns each. Attack attributes get the smaller multiplier and the larger price, because attack moves damage more than defense does (section 1.3). Might ×1.2 is ×1.27 damage dealt against an even target. Constitution ×1.3 is ×0.91 damage taken.
 
 | Item | Attribute | Level | Price (gold) | Effect |
 | --- | --- | ---: | ---: | --- |
@@ -401,7 +452,7 @@ One for each attribute, three turns each. Attack attributes get the smaller mult
 | **Mule Seed** | Willpower | 50 | 16,000 | Permanent +5 Willpower. At most 10 per character. |
 | **Fluke Seed** | Luck | 50 | 16,000 | Permanent +5 Luck. At most 10 per character. |
 
-Seeds are eaten outside battle and cost half a level of gold each. Gear and seeds draw on the same headroom: together they never add more than 200 to one attribute, and no attribute passes 1000.
+A character eats a seed outside battle. Each one costs half a level of gold. Gear and seeds draw on the same headroom: together they add at most 200 to one attribute, and no attribute passes 1000.
 
 #### Kit
 
@@ -426,15 +477,21 @@ Every archetype's signature attribute reaches exactly 800 at level 100. Equipmen
 | 9 | Star-Metal | 81–90 | 78,000 | 160,000 | +175 | 650–721 | 27%–24% |
 | 10 | Legendary (Probably) | 91–100 | 96,000 | 190,000 | +200 | 729–800 | 27%–25% |
 
-A set is three pieces: weapon (the listed price, half the bonus), armour (0.6 of the price, three tenths of the bonus) and charm (0.4 of the price, a fifth of the bonus). Each piece puts its points on one attribute chosen when it is bought. Gear and seeds together never add more than 200 to one attribute. The last two columns use the warrior's Constitution; every signature attribute follows the same line.
+A set is three pieces. The weapon costs the listed price and carries half the bonus. The armour costs 0.6 of the price and carries three tenths. The charm costs 0.4 of the price and carries a fifth. Each piece puts its points on one attribute, chosen at purchase. Gear and seeds together never add more than 200 to one attribute.
 
-A weapon costs one level of gold at the level its tier opens (`priceAt(minLevel, 1)`), so the first one costs exactly the starting purse. A party that saves a third of its income affords one major purchase every 2.9 levels (section 2.6), about three or four pieces per tier between four characters. Nobody is fully equipped; choosing who gets the new sword is the point.
+The last two columns use the warrior's Constitution. Every signature attribute follows the same line.
+
+A weapon costs one level of gold at the level its tier opens (`priceAt(minLevel, 1)`), so the first one costs exactly the starting purse. A party that saves a third of its income affords one major purchase every 2.9 levels (section 2.6). That is three or four pieces per tier between four characters. Nobody is fully equipped, and choosing who gets the new sword is the point.
 
 ### 4.9 Balance notes
 
-Every number in this part is engine output. "Even peer" is a target with every attribute on the benchmark line and `hpBudget(level)` HP: 6,400 at level 10, 151,000 at level 50, 600,000 at level 100. Attackers are the archetypes with no gear.
+Every number in this part is engine output. An "even peer" has every attribute on the benchmark line and `hpBudget(level)` HP. That is 6,400 HP at level 10, 151,000 at level 50 and 600,000 at level 100. Attackers are the archetypes with no gear.
 
-**What a skill does to an even peer.** For each archetype, its level 1 attack and a newer one. "Plain hit" is a landed hit with no crit at variance 1. "Hit / crit" is the chance on the d100. "Average per use" counts misses, fumbles and crits (`expectedDamage`).
+**What a skill does to an even peer.** The table shows each archetype's level 1 attack and a newer one.
+
+- **Plain hit:** a landed hit with no crit at variance 1.
+- **Hit / crit:** the chances on the d100.
+- **Average per use:** `expectedDamage`, which counts misses, fumbles and crits.
 
 | Level | Archetype | Skill | Power | Plain hit | Share of peer's bar | Hit / crit % | Average per use | Cost (MP) | Share of own bar | Casts from a full bar |
 | ---: | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -456,7 +513,7 @@ Every number in this part is engine output. "Even peer" is a target with every a
 | 100 | Rogue | Cheap Shot | 3 AGI | 130,909 | 21.8% | 80 / 22 | 19.9% | 1 | 0.0% | 40,000 |
 | 100 | Rogue | Stab in the Back | 7 AGI | 305,454 | 50.9% | 75 / 17 | 42.5% | 1,500 | 3.8% | 26 |
 
-The level 1 attacks keep their share of a peer's bar at every level while their cost falls to nothing: that is the flat-cost rule at work. A newer skill still takes a real slice of the bar, and what it buys is a bigger hit or a rider, each with its own drawback written into the text.
+The level 1 attacks keep their share of a peer's bar at every level while their cost falls to nothing. That is the flat-cost rule at work. A newer skill still takes a real slice of the bar. It buys a bigger hit or a rider, and its text names the drawback.
 
 **Casts per bar.** What a skill of each weight costs if it unlocks at that level, and how many times a full bar pays for it.
 
@@ -499,7 +556,7 @@ The level 1 attacks keep their share of a peer's bar at every level while their 
 | Mage | Group Project | 4 INT | 152,000 | 19% | n/a | 33% |
 | Mage | Recommended Reading | 9 INT | 342,000 | 43% | 71% | 74% |
 
-**Stress on enemies** at each skill's unlock level. The last three columns are what lands on an enemy whose Willpower is half the benchmark, on it, and half again above it.
+**Stress on enemies** at each skill's unlock level. The last three columns show what lands on an enemy with Willpower at half the benchmark, on the benchmark, and half again above it.
 
 | Level | Archetype | Skill | Target | Base | Source | Low Willpower | Benchmark | High Willpower |
 | ---: | --- | --- | --- | ---: | --- | ---: | ---: | ---: |
@@ -510,7 +567,7 @@ The level 1 attacks keep their share of a peer's bar at every level while their 
 | 52 | Warrior | Rattle the Line | one row | 14 | mental | 11 | 9 | 8 |
 | 66 | Rogue | Roast | all enemies | 20 | embarrassment | 15 | 12 | 10 |
 
-A benchmark enemy is Rattled after about nine of the single-target hits and Routed after about eighteen. The same enemy dies to five landed Power 3 hits. Stress is the slower road against ordinary enemies and the better one against anything with a deep HP bar and a weak mind, and a stress rider on a damaging skill (Strongly Worded Letter, Kick Me Sign's Mark) costs nothing extra.
+About nine of the single-target hits Rattle a benchmark enemy, and about eighteen Rout it. Five landed Power 3 hits kill the same enemy. Stress is the slower road against ordinary enemies. It is the better road against anything with a deep HP bar and a weak mind. A stress rider on a skill you wanted anyway, such as Strongly Worded Letter, costs nothing extra.
 
 **Bind chances** at each skill's unlock level, from `bindChance`. The target has benchmark Luck.
 
@@ -525,4 +582,4 @@ A benchmark enemy is Rattled after about nine of the single-target hits and Rout
 | 50 | Mage | Closed Book | head | 50% | 40% | 20% | 20% |
 | 80 | Rogue | Gift Wrap | head, arms, legs | 35% | 42% | 21% | 21% |
 
-The rogue's Luck sits above the benchmark and the mage's sits below it, so the same base chance is worth about seven points more to a rogue and ten less to a mage.
+The rogue's Luck sits above the benchmark and the mage's sits below it. The same base chance is therefore worth 7 to 12 points more to a rogue and 7 to 10 points less to a mage.
