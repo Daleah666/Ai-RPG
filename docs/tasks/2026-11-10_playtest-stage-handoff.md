@@ -82,6 +82,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Growth and enemy ranks | `openGrowth`, the `bloom` potion, `foeRec`, `foeName`, `foeResult`, `openBook`, `S.foes` |
 | Right-panel folds and objectives | `rfold`, `objectivesBox`, `roadsBox`, `S.rfold` |
 | Story choices in the grid | `showEvent` (sets `S.event`), `eventCells` |
+| Composure, catcalls, thought pops | `composure`, `composureScore`, `COMPOSURE`, `catcallWalk`, `CALLERS`, `REACT`, `thoughtPops` |
+| Amaranth and Corruption | `maybeVisit`, `visitChance`, `dreamCells`, `dreamAct`, `DREAM_*`, the `corrupt` row of `COND`, the `bless` act, `S.dream` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -107,6 +109,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - The left panel copies the left side of Del's Character Card: portrait, a row of folds, then the sheet, with no boxed info cards. HP, mana and stamina live beside the panel, not in it, and opening them shows her mood. The panel has exactly three sizes (min, half, full) and pushes the chat column over. The dice come out of the chat box. Del asked for the look to be "a bit more RPG": the gold double frame, the corner studs, the cursor on the buttons and the die are that.
 - Del's pictures: 27 town backdrops are all in use. Of 12 character cutouts, six are in use (four as poses for Valerie, two as new regulars), one is a duplicate, and five were left out; the reply to Del on 2026-11-10 says which and why. Do not add the five without asking Del again.
 - Del asked for the downed state to work like Karryn's Prison's. The structure was built (pinned, four ways out, counters that unlock passives, more of them as rank rises). The explicit content was not, and the assistant told Del so on 2026-11-10.
+- Del asked for Karryn's Prison's dialogue, for her to be "horny", and for her to crave "dark men". What was built: original lines only; attraction written as being flustered by big, imposing men, at PG-13; nothing keyed to skin colour or race. The assistant told Del this on 2026-11-10. Keep to it.
+- Amaranth is Del's purple demoness ("the corrupter of her"). Her clips are cropped to waist-up, which also keeps a playing-card tattoo on her thigh out of frame. Del sent four more pictures in the same message (a rabbit girl, two elves with stat cards, a guard with a halberd); they were not saved to disk in that session and are not in the game.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
 

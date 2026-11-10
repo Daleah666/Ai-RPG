@@ -604,6 +604,21 @@ body.alone{--col:700px}
 #thought::after{content:"";position:absolute;left:18px;bottom:-7px;width:12px;height:12px;rotate:45deg;background:inherit;border-right:1px solid color-mix(in srgb,var(--lc) 42%,var(--edge2));border-bottom:1px solid color-mix(in srgb,var(--lc) 42%,var(--edge2))}
 #thought i{font-size:.92rem;line-height:1.3;display:block}
 body.walking #thought{opacity:0}
+.tpop{position:absolute;z-index:5;max-width:230px;padding:6px 11px 7px;border-radius:11px 11px 11px 2px;background:color-mix(in srgb,var(--box2) 95%,transparent);border:1px solid color-mix(in srgb,var(--k) 55%,var(--edge2));font-family:var(--f-serif);font-style:italic;font-size:.9rem;line-height:1.25;color:var(--text);pointer-events:none;box-shadow:0 10px 24px -14px #000;animation:tpop 5.2s ease forwards;--k:var(--lc)}
+body.popping #thought{opacity:0}
+.hud p.mapkey{font-size:.5rem}
+.tpop.c1{--k:var(--gold)}.tpop.c2{--k:var(--pink)}
+@keyframes tpop{0%{opacity:0;translate:0 10px;scale:.92}8%{opacity:1;translate:0 0;scale:1}82%{opacity:1;translate:0 -14px}100%{opacity:0;translate:0 -26px}}
+@media (prefers-reduced-motion:reduce){.tpop{animation:tpopStill 5.2s linear forwards}}
+@keyframes tpopStill{0%,90%{opacity:1}100%{opacity:0}}
+/* Amaranth is an apparition: her clip has a white ground, so she arrives in a soft-edged halo */
+.sprite video.ghost,.sprite img.ghost{-webkit-mask-image:radial-gradient(ellipse 56% 62% at 50% 52%,#000 58%,transparent 82%);mask-image:radial-gradient(ellipse 56% 62% at 50% 52%,#000 58%,transparent 82%);object-position:50% 100%;filter:drop-shadow(0 0 28px rgba(199,125,255,.55))}
+.sprite.r:has(.ghost){height:80%;left:calc(50% + var(--col)/2 - 150px);right:calc(var(--hudR) - 10px)}
+.sprite video.ghost,.sprite img.ghost{object-fit:cover;object-position:50% 22%}
+body.dream .scene img{filter:brightness(.32) saturate(1.5) hue-rotate(250deg)!important;opacity:.9}
+body.dream .scene::after{background:radial-gradient(120% 90% at 70% 40%,rgba(120,40,170,.38),rgba(8,5,14,.82));height:100%;inset:0}
+body.dream .sprite.l{filter:brightness(.72) saturate(.8)}
+.cthumb video{object-position:50% 20%}
 .chat-l{margin:0;font-size:.82rem;color:var(--muted);line-height:1.4}
 .chat-l b{color:var(--text);font-weight:600}
 .chat-l i{font-family:var(--f-mono);font-style:normal;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
@@ -942,6 +957,8 @@ const LOOKS = [
   { id: 'val-offduty', name: 'Valerie, off duty', src: 'art/cut/val-offduty.webp', hero: true },
   { id: 'elf-green', name: 'Elowen, the visiting lecturer', src: 'art/cut/elf-green.webp', bust: true, as: ['Elowen Thistledown', 'mage'] },
   { id: 'elf-violet', name: 'Fizz, the alchemist', src: 'art/cut/elf-violet.webp', bust: true, as: ['Fizz', 'rogue'] },
+  { id: 'corrupter', name: 'Amaranth, waving', src: 'art/amaranth.mp4', video: true, ghost: true },
+  { id: 'corrupter2', name: 'Amaranth, watching', src: 'art/amaranth-2.mp4', video: true, ghost: true },
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
@@ -1178,7 +1195,7 @@ const S = {
   order: store.get('order', {}), secured: store.get('secured', {}),
   cls: store.get('cls', 'knight'), heat: store.get('heat', 0), cond: store.get('cond', {}), resist: store.get('resist', {}),
   journal: store.get('journal', []), seen: store.get('seen', {}), race: store.get('race', 'Human'), ctab: 'resp',
-  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), chatBank: store.get('chatBank', {}), chatBusy: false, chatNote: '', job: store.get('job', null), jobOpen: false, jobsDone: store.get('jobsDone', {}), thoughtBank: store.get('thoughtBank', {}), foes: store.get('foes', {}), fightKey: null, rfold: store.get('rfold', 'roads'), rollLog: [], trayPos: store.get('trayPos', null), trayDragged: false, idle: store.get('idle', true), sprL: store.get('sprL', 1), sprR: store.get('sprR', 1), event: null, cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
+  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), dream: null, chatBank: store.get('chatBank', {}), chatBusy: false, chatNote: '', job: store.get('job', null), jobOpen: false, jobsDone: store.get('jobsDone', {}), thoughtBank: store.get('thoughtBank', {}), foes: store.get('foes', {}), fightKey: null, rfold: store.get('rfold', 'roads'), rollLog: [], trayPos: store.get('trayPos', null), trayDragged: false, idle: store.get('idle', true), sprL: store.get('sprL', 1), sprR: store.get('sprR', 1), event: null, cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), ai: store.get('ai', {}), fillSeg: store.get('fillSeg', { bio: true, drives: true, read: true }), fillTier: store.get('fillTier', 'quick'), fillNote: '', descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1200,7 +1217,7 @@ const skillById = (id) => heroSkills().find((s) => s.id === id) || BASIC_ATTACK;
 /* ---------- sprites ---------- */
 function drawSprite(el, lookId) {
   const look = S.custom[lookId] ?? LOOKS.find((l) => l.id === lookId) ?? LOOKS[0];
-  const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${S.flips[lookId] ? ' flip' : ''}`;
+  const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${look.ghost ? ' ghost' : ''}${S.flips[lookId] ? ' flip' : ''}`;
   el.innerHTML = !look.src ? '' : look.video
     ? `<video src="${esc(look.src)}" class="${cls}" autoplay muted loop playsinline></video>`
     : `<img src="${esc(look.src)}" class="${cls}" alt="">`;
@@ -1478,7 +1495,7 @@ function passTime(mins) {
   if (S.path === 'mage' && full) grow(Math.round(6 * hrs), 'mana with nowhere to go');
   if (phaseNow() !== before) { post({ who: 'sys', dice: `[time] ${clockText()}`, say: PHASE_LINE[phaseNow()] }); refreshWho(); }
 }
-function sleepUntil(hour) { chem(-20, 'sleep'); passTime(((hour * 60 - (S.clock % 1440) + 1440) % 1440) || 1440); }
+function sleepUntil(hour) { chem(-20, 'sleep'); passTime(((hour * 60 - (S.clock % 1440) + 1440) % 1440) || 1440); setTimeout(() => { if (maybeVisit(false)) render(); }, 40); }
 
 /* ---------- people: hidden records, who is where ---------- */
 const placeNow = () => PLACES.find((x) => x.id === S.place) ?? PLACES[0];
@@ -1498,7 +1515,7 @@ function seat() { // whoever is here takes the right side of the stage
   S.who = residentOf(S.place); S.retest = false; S.passed = null;
   if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
   else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
-  S.meet = S.who && !npcOf(S.who).met ? S.who : null;
+  S.meet = S.who && !npcOf(S.who).met ? S.who : null; if (S.meet) setTimeout(() => thoughtPops(pickN(REACT.meet[composure()], 2)), 500);
 }
 function refreshWho() { const was = S.who; seat(); if (S.who === was) return; S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${S.who ? `${esc(S.nameR)} turns up.` : `${esc(castOf(was).name)} heads off.`}` }); }
 function setPlace(id) {
@@ -1542,7 +1559,7 @@ const GROW_SAY = {
 function grow(points, why) {
   if (!(points > 0) || S.bust >= 10) return;
   S.bustXp += points; note(`bust +${points}% · ${why}`);
-  while (S.bustXp >= 100 && S.bust < 10) { S.bustXp -= 100; S.bust += 1; cond('swell', 12, 'another notch on the breastplate'); const p = PATHS[S.path];
+  while (S.bustXp >= 100 && S.bust < 10) { S.bustXp -= 100; S.bust += 1; cond('swell', 12, 'another notch on the breastplate'); setTimeout(() => thoughtPops(pickN(REACT.growth[composure()], 2)), 400); const p = PATHS[S.path];
     post({ who: 'sys', plate: `${p.name} · ${p.why}`, dice: `<b>BUST · TIER ${S.bust}</b> · Tempt +2 · Finesse −2% · ${esc(p.perk)}`, tone: 'fumble', say: GROW_SAY[S.path] }); pop('l', `TIER ${S.bust}`, 'var(--pink)'); }
   if (S.bust >= 10) S.bustXp = 0;
   store.set('bust', S.bust); store.set('bustXp', S.bustXp); rebuildHero();
@@ -1673,6 +1690,7 @@ function eventPool(p) { return questsAt(p).filter((e) => { const lv = e.when?.le
 function luckyFind(plate) { const fx = applyFx({ gold: 4, exp: 0.02 }, 'a lucky find'); post({ who: 'me', plate, dice: '[event] a lucky find', tone: 'hit', say: 'Half buried by the path: a dropped purse, and a map with one useful corner left.', fx }); }
 function goTo(id) {
   const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return;
+  if (S.dream) return post({ who: 'sys', dice: 'You are asleep. She is waiting for an answer.' });
   if (S.battle || S.standoff) return post({ who: 'sys', plate: 'Combat', dice: '<b>COMBAT</b> · you cannot walk away', tone: 'crit', say: 'Fight, talk them down, tempt them, or run. Those are the ways out.' });
   if (S.fallen) return post({ who: 'sys', dice: 'You are on the ground. Get up first.' });
   if (S.mode === 'combat') S.mode = 'travel';
@@ -1685,7 +1703,7 @@ function goTo(id) {
     for (let j = 1; j <= joints; j++) {
       total += mins / joints; passTime(mins / joints); count('stretches', 'walking'); useStam(Math.max(1, Math.round(mins / joints / 9.6) - (hasPerk('roadworn') ? 1 : 0)), `walking to ${p.short}`); S.down = S.hero.hp <= 0;
       if (S.fallen) break;
-      if (quietLeg) { if (j === 1 && d() <= 35) sign(start, p, j, joints); continue; }
+      if (quietLeg) { if (j === 1 && d() <= 55) sign(start, p, j, joints); continue; }
       const res = tableRoll(`${start.short} → ${p.short} · stretch ${j} of ${joints}`, stretchRows(p, joints));
       if (res === 'fight') { arrive(from, p, Math.round(total)); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : `they were waiting, ${j === joints ? 'right at the end' : 'part way along'}`); }
       if (res === 'event') { const pool = eventPool(p); if (pool.length && d() <= 40) { arrive(from, p, Math.round(total)); return showEvent(pool[Math.floor(Math.random() * pool.length)].id); } micro(p); if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero'); }
@@ -1753,6 +1771,8 @@ function afterFight(won, r) {
 function doAct(id) {
   const who = S.who ? castOf(S.who) : null, here = placeNow();
   if (id === 'getup') return getUp();
+  if (id.startsWith('dream:')) return dreamAct(id.slice(6));
+  if (id === 'bless') { S.used.bless = true; const cost = 10 * Math.max(1, S.level); if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A blessing is ${n(cost)} gold. You have ${n(S.gold)}.` }); passTime(30); cond('corrupt', -20, 'a blessing at the well'); return post({ who: 'me', plate: 'The Wishing Well', dice: `[blessing] ${n(cost)} gold`, tone: 'virtue', say: 'Sister Lune pours well water over your hands and says nothing about how cold it is. Something that was leaning on you stands up straight and leaves.', fx: ['corruption −20'] }); }
   if (id === 'jobopen') { S.jobOpen = true; return; }
   if (id === 'jobback') { S.jobOpen = false; return; }
   if (id.startsWith('job:')) return doJob(+id.slice(4));
@@ -1786,6 +1806,7 @@ function travelGrid() {
   if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy'), hasPerk('surefoot') ? 10 : 0), 'primary');
   if (S.standoff?.pinned) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total, left = 3 - S.standoff.pinRounds; return cell('so:struggle', 'Struggle up', `${odds('STR', dc, rb('strike') + (hasPerk('ragdoll') ? 10 : 0))} · back on your feet`, 'primary') + cell('so:wriggle', 'Wriggle free', `${odds('AGI', dc, rb('run') + (hasPerk('eel') ? 10 : 0))} · out and away`) + cell('so:plead', 'Talk from the ground', `${odds('WIL', dc, rb('persuade') - 10)} · nerve −30`) + cell('so:endure', 'Curl up', 'no roll · halve the next one') + `<span class="pinnote">Pinned · ${left} round${left === 1 ? '' : 's'} before they win</span>`; }
   if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; const cl = calling(), so = S.standoff, tell = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : ''; return cell('so:strike', cl.verb, `${odds(cl.stat, dc, rb('strike'))} · nerve −25${tell}`, 'primary') + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
+  if (S.dream) return dreamCells();
   if (S.event) return eventCells();
   if (S.jobOpen && jobNow()?.place === S.place) return jobCells();
   if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
@@ -1798,6 +1819,7 @@ function travelGrid() {
   const actCell = (id) => { const a = ACTS[id], shut = closed && !['look', 'explore'].includes(id), held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
     return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); };
   const acts = (here.acts ?? []).filter((id) => id !== 'look' && id !== 'explore').map(actCell);
+  if (here.id === 'square' && condOf('corrupt') > 0) acts.unshift(cell('bless', 'Ask for a blessing', S.used.bless ? 'done for this visit' : `${n(10 * L)} gold · corruption −20`, 'spot', Boolean(S.used.bless) || S.gold < 10 * L));
   if (jobNow()?.place === here.id) acts.unshift(cell('jobopen', `The job: ${jobNow().title}`, 'four ways to do it', 'primary'));
   const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
   const ctab = ['resp', 'social', 'items', 'debug'].includes(S.ctab) ? S.ctab : 'resp';
@@ -1805,7 +1827,7 @@ function travelGrid() {
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
-  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation here · ${repLabel()}`, repOf(areaOf(placeNow())), 100, 'var(--mint)')}${bar(`Stereotyped here · as ${(RACES[S.race] ?? RACES.Human).a}`, stereoOf(), 100, 'var(--violet)')}${bar(`Swelling · ${COND.swell.words[stepOf('swell')]}`, condOf('swell'), 100, 'var(--pink)')}${bar(`Pheromones · ${COND.phero.words[stepOf('phero')]}`, condOf('phero'), 100, 'var(--violet)')}${bar('Suspicion', S.heat, 100, 'var(--crit)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
+  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation here · ${repLabel()}`, repOf(areaOf(placeNow())), 100, 'var(--mint)')}${bar(`Stereotyped here · as ${(RACES[S.race] ?? RACES.Human).a}`, stereoOf(), 100, 'var(--violet)')}${bar(`Swelling · ${COND.swell.words[stepOf('swell')]}`, condOf('swell'), 100, 'var(--pink)')}${bar(`Pheromones · ${COND.phero.words[stepOf('phero')]}`, condOf('phero'), 100, 'var(--violet)')}${bar(`Corruption · ${COND.corrupt.words[stepOf('corrupt')]}`, condOf('corrupt'), 100, '#c77dff')}${bar('Suspicion', S.heat, 100, 'var(--crit)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
     <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''} ${{ Heroine: 'The town thinks she is a heroine.', Knight: 'The town thinks she is a decent knight.', 'Town scandal': 'The town is gossiping about her. Do some guild work.', Villain: 'The town is afraid of her. Do some guild work.', Layabout: 'The town is not sure what she is for. Do some guild work.' }[repLabel()]}</p></div>
     <div class="over"><h3>Purse and satchel</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0}</span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>`;
 }
@@ -1853,7 +1875,7 @@ function renderDebugger() {
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
     <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · respect ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
-    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>seen as ${esc((RACES[S.race] ?? RACES.Human).a)}: stereotype ${stereoOf()} here (race base ${(RACES[S.race] ?? RACES.Human).base} − 0.7 × reputation − willpower); at 40+ strangers apply ${esc(JSON.stringify((RACES[S.race] ?? RACES.Human).assume))}; someone who respects her ignores it</p><p>swelling ${condOf('swell')} (resist ${resistOf('swell')}, Constitution; +2 a night per bust tier, +12 on a tier; per 25: Run −5, Sway +3; at 75 every stamina cost +1) · pheromones ${condOf('phero')} (resist ${resistOf('phero')}, Finesse; half of every chemistry gain, + chemistry ÷ 10 a night; per 25: Persuade −5, Flirt and Sway +3, fight chance +4, one more catcall in the mix; at 50 safe streets roll for trouble and people follow; at 75 the prim ones will not talk)</p><p>suspicion ${S.heat} → +${Math.round(S.heat / 4)} to every fight chance outside safe places; signs on the road raise it, patrols and notices move it, −15 each night</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
+    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>seen as ${esc((RACES[S.race] ?? RACES.Human).a)}: stereotype ${stereoOf()} here (race base ${(RACES[S.race] ?? RACES.Human).base} − 0.7 × reputation − willpower); at 40+ strangers apply ${esc(JSON.stringify((RACES[S.race] ?? RACES.Human).assume))}; someone who respects her ignores it</p><p>swelling ${condOf('swell')} (resist ${resistOf('swell')}, Constitution; +2 a night per bust tier, +12 on a tier; per 25: Run −5, Sway +3; at 75 every stamina cost +1) · pheromones ${condOf('phero')} (resist ${resistOf('phero')}, Finesse; half of every chemistry gain, + chemistry ÷ 10 a night; per 25: Persuade −5, Flirt and Sway +3, fight chance +4, one more catcall in the mix; at 50 safe streets roll for trouble and people follow; at 75 the prim ones will not talk)</p><p>corruption ${condOf('corrupt')} (${COND.corrupt.words[stepOf('corrupt')]}, resist ${resistOf('corrupt')}, Willpower): only her visits move it up; per 25: Flirt and Sway +3, Be friendly and Persuade −3; a quarter of it comes off composure · a visit tonight: ${visitChance()}% · visits so far ${S.count.visits ?? 0}</p><p>composure ${100 - composureScore()} (${COMPOSURE[composure()]}): 100 − (chemistry ÷ 2 + pheromones ÷ 2 − Willpower's hold). Flustered: Flirt and Sway +2. Weak at the knees: Flirt and Sway +5, Persuade and her attack −5, jeering +2 stress, and catcalls take stress away instead of adding it. Catcalls on a stretch: ${28 + 12 * stepOf('phero') + (S.decency < 40 ? 10 : 0)}% in town, ${16 + 12 * stepOf('phero') + (S.decency < 40 ? 10 : 0)}% in the wilds, when a sign comes up</p><p>suspicion ${S.heat} → +${Math.round(S.heat / 4)} to every fight chance outside safe places; signs on the road raise it, patrols and notices move it, −15 each night</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     ${S.standoff ? `<div class="dg"><h4>This crowd</h4><p>nerve ${S.standoff.nerve} · round ${S.standoff.round} · weak to ${S.standoff.weak} (×1.5) · shrugs off ${S.standoff.tough} (×0.5)</p><p>her attack: ${esc(calling().verb)}${calling().type ? ` (${calling().type})` : ' (no type)'} on ${STAT_INFO[calling().stat].name}</p></div>` : ''}<div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>Asking Claude · tokens by use</h4>${aiUsage()}</div>
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
@@ -2078,7 +2100,7 @@ function railPop(h, gauge, band, locked) {
       <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
         <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
         <p class="settled"><i>${esc(band.name)}</i> ${gauge}<span>settled in ${esc(band.name)} · ${gauge <= 33 ? `${34 - gauge} to Ditzy` : gauge <= 66 ? `${67 - gauge} to Total Airhead` : `${gauge - 66} back to Ditzy`}</span></p></div>
-      <div class="bars">${bar('♥ HP', h.hp, h.maxHp, 'var(--mint)')}${bar('✦ Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('⚡ Stamina', S.stam, 100, 'var(--gold)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
+      <div class="bars">${bar(`Composure · ${COMPOSURE[composure()]}`, 100 - composureScore(), 100, composure() === 2 ? 'var(--crit)' : composure() ? 'var(--gold)' : 'var(--mint)')}${bar('♥ HP', h.hp, h.maxHp, 'var(--mint)')}${bar('✦ Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('⚡ Stamina', S.stam, 100, 'var(--gold)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
       ${S.spent ? '<div class="chips"><span style="--k:var(--crit)">Exhausted · every roll −10 · stamina stops at 50 · fights find her · cure: a bed</span></div>' : ''}${stateChips(h)}<p class="pin">${S.railOpen ? 'pinned open · click the bars to let go' : 'click the bars to pin this open'}</p>`;
 }
 function exitCells(here) {
@@ -2102,6 +2124,9 @@ function repBonus(kind) { // gossip changes how people take her. Each label help
   if (S.cls === 'courtesan' && ['flirt', 'sway', 'persuade'].includes(kind)) add(5, 'her trade');
   const sw = stepOf('swell'), ph = stepOf('phero');
   if (S.spent) add(-10, 'exhausted');
+  { const cs = stepOf('corrupt'); if (cs && ['friendly', 'persuade'].includes(kind)) add(-3 * cs, 'something behind her smile'); if (cs && ['flirt', 'sway'].includes(kind)) add(3 * cs, 'her patron\'s gifts'); if (hasPerk('marked') && kind === 'sway') add(5, 'her mark'); }
+  if (composure() === 2 && ['persuade', 'strike'].includes(kind)) add(-5, 'they look bigger than they are');
+  if (composure() && ['flirt', 'sway'].includes(kind)) add(composure() === 2 ? 5 : 2, COMPOSURE[composure()].toLowerCase());
   if (sw && kind === 'run') add(-5 * sw, 'swelling');
   if (sw && kind === 'sway') add(3 * sw, 'swelling');
   if (ph && kind === 'persuade') add(-5 * ph, 'nobody is listening to the words');
@@ -2131,7 +2156,7 @@ function startStandoff(why, encId) {
     foe: makeCombatant({ id: 'heckler', name: safe ? 'Opportunists' : enc.name, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
   post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
-  pop('l', 'COMBAT', 'var(--crit)');
+  pop('l', 'COMBAT', 'var(--crit)'); setTimeout(() => thoughtPops(pickN(REACT.standoff[composure()], 2)), 600);
 }
 function heckle(so) {
   const pool = [...(HECKLES[areaOf(placeNow())] ?? HECKLES.city), ...Array(stepOf('phero')).fill('lewd')], kind = pool[Math.floor(Math.random() * pool.length)], soft = so.brace ? 0.5 : 1, hard = so.exposed ? 1.5 : 1; const braced = so.brace; so.brace = false; so.exposed = false;
@@ -2145,7 +2170,7 @@ function heckle(so) {
     S.lastRoll = { title: `${so.name} · ${kind === 'melee' ? 'a shove' : 'something thrown'}`, pct: r.hitPct, roll, degree: r.outcome, bands: { pct: r.hitPct, critPct: r.critPct, fumbleFrom: r.fumbleFrom }, math: `they hit on ${r.hitPct} or less · crit on ${r.critPct} or less · fumble on ${r.fumbleFrom}+ · rolled ${roll}` }; S.trayFresh = true;
     return post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
   }
-  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) }, 'jeering'); return post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
+  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) + (composure() === 2 ? 2 : 0) }, 'jeering'); return post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
   count('catcalls', 'being whistled at');
   const cut = hasPerk('shameless') ? 0 : Math.max(1, Math.round(4 * soft * hard)) + (hasPerk('blush') ? 1 : 0); if (cut) decency(-cut, 'catcalls'); chem(hasPerk('blush') ? 8 : 6, 'catcalls'); conduct('lewd', hasPerk('shameless') ? 1 : 0.5);
   const fx = applyFx({ stress: hasPerk('blush') ? 1 : 3 }, 'catcalls'); post({ who: 'her', plate: so.name, face: tokenFor(so.name), dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [cut ? `decency −${cut}` : 'decency holds', 'chemistry up', ...fx] });
@@ -2235,7 +2260,7 @@ function rep(delta, why, area = areaOf(placeNow())) { // a friend who lives ther
 }
 function newDay(day) { // every morning: did the knight do any guild work? Gossip fades a little, and so does the wobble.
   if ((S.jobDay ?? 0) < day - 1) for (const a of AREA_IDS) rep(a === 'city' ? -4 : -2, 'no guild work yesterday', a);
-  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd); vol(-1, 'a night passed'); heat(-15, 'a night passed'); nightConditions(day);
+  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd); vol(-1, 'a night passed'); heat(-15, 'a night passed'); nightConditions(day); if (S.chem >= 60) grow(8, 'a restless night');
 }
 
 /* ---------- her sheet: the overview, and what opens underneath ---------- */
@@ -2338,6 +2363,7 @@ Object.assign(PERKS, {
   bloomed: { name: 'In Bloom', quote: 'The armorer has stopped asking and started measuring.', does: 'Tempt +2. Swelling rises 2 faster each night.', from: 'Drink three Bloom Draughts', need: ['blooms', 3] },
   ragdoll: { name: 'Knows the View', quote: 'I know this view. It is mostly boots.', does: 'Struggle up +10.', from: 'Get pinned twice', need: ['pinned', 2] },
   eel: { name: 'Hard to Hold', quote: 'There is always a gap. You just have to be willing to lose a cloak.', does: 'Wriggle free +10.', from: 'Wriggle out of a pin twice', need: ['wriggles', 2] },
+  marked: { name: 'Her Mark', quote: 'There is a violet smell on my pillow. I have stopped washing it out.', does: 'Sway +5. Amaranth visits more easily: saying no is 5 harder.', from: 'Say yes to Amaranth three times', need: ['yeses', 3] },
   floor: { name: 'Friend of the Floor', quote: 'The ground and I have an understanding. It is always there for me.', does: 'Falling over no longer costs decency.', from: 'Fall down three times', need: ['falls', 3] },
 });
 function count(key, why) { S.count[key] = (S.count[key] ?? 0) + 1; store.set('count', S.count); for (const id of Object.keys(PERKS)) { const need = PERKS[id].need; if (need && need[0] === key && S.count[key] >= need[1]) grantPerk(id, why); } }
@@ -2481,6 +2507,7 @@ const MICRO = [
 ];
 function sign(from, to, j, total) {
   const area = areaOf(to), wild = to.zone !== 'safe' || from.zone !== 'safe', where = `${esc(from.short)} → ${esc(to.short)} · stretch ${j} of ${total}`;
+  if (d() <= (wild ? 16 : 28) + 12 * stepOf('phero') + (S.decency < 40 ? 10 : 0)) return catcallWalk(where, wild);
   if (condOf('phero') >= 50 && d() <= 45) { heat(4, 'being followed'); return post({ who: 'sys', dice: `[${where} · pheromones]`, say: pick(FOLLOW, d()) }); }
   if (wild && d() <= 30) { heat(8, 'being watched'); return post({ who: 'sys', dice: `[${where} · suspicion]`, say: pick(SUSPECT, d()) }); }
   post({ who: 'sys', dice: `[${where}]`, say: phaseNow() === 'Night' && d() <= 40 ? pick(ENV_NIGHT, d()) : pick(ENV[area] ?? ENV.city, d()) });
@@ -2501,6 +2528,7 @@ function micro(to) {
 const COND = {
   swell: { name: 'Swelling', stat: 'CON', words: ['fits', 'snug', 'straining', 'bursting'], cure: 'a night in a real bed' },
   phero: { name: 'Pheromones', stat: 'AGI', words: ['faint', 'noticeable', 'heady', 'overwhelming'], cure: 'a long soak or a Calming Tea' },
+  corrupt: { name: 'Corruption', stat: 'WIL', words: ['untouched', 'tempted', 'marked', 'hers'], cure: 'a blessing at the Wishing Well' },
 };
 const condOf = (k) => S.cond[k] ?? 0, stepOf = (k) => Math.min(3, Math.floor(condOf(k) / 25));
 const resistOf = (k) => Math.min(30, Math.round((10 * effectiveStat(S.hero, COND[k].stat)) / Math.max(1, __m.stats.benchmarkStat(S.level))) + (S.resist[k] ?? 0));
@@ -2508,7 +2536,8 @@ function cond(k, delta, why) { if (!delta) return; const was = condOf(k); S.cond
 function nightConditions(day) { // each morning: up by what her body did, down by her resistance, and living with it toughens her
   const rows = [];
   for (const k of Object.keys(COND)) {
-    const before = condOf(k), up = k === 'swell' ? 2 * S.bust + (hasPerk('bloomed') ? 2 : 0) : Math.round(S.chem / 10), down = Math.round(resistOf(k) / 2);
+    if (k === 'corrupt' && !condOf(k)) continue;
+    const before = condOf(k), up = k === 'swell' ? 2 * S.bust + (hasPerk('bloomed') ? 2 : 0) : k === 'phero' ? Math.round(S.chem / 10) : 0, down = Math.round(resistOf(k) / 2);
     S.cond[k] = Math.max(0, Math.min(100, before + up - down));
     const trained = before >= 25 && (S.resist[k] ?? 0) < 20; if (trained) S.resist[k] = (S.resist[k] ?? 0) + 1;
     rows.push(`${COND[k].name} ${before} → ${S.cond[k]} (+${up} overnight, −${down} resisted${trained ? ', resistance +1' : ''})`);
@@ -2522,7 +2551,7 @@ const FOLLOW = ['Two lads have found a reason to walk the same way you are walki
 // Jiggle free: the one button that always works. It drops whatever is holding her and puts her back on her feet where she stands.
 function jiggle(auto) {
   const was = S.battle ? 'a fight' : S.standoff ? 'a standoff' : S.fallen || S.down ? 'the floor' : S.meet ? 'a first meeting' : S.spot ? 'a corner of the room' : S.talking ? 'a conversation' : S.mode === 'combat' ? 'the sparring ring' : 'nothing you could point at';
-  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.event = null; S.jobOpen = false; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
+  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.event = null; S.jobOpen = false; if (S.dream) { S.dream = null; seat(); } S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
   if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(S.hero.maxHp * 0.25)), stress: Math.min(S.hero.stress, 90) };
   if (S.stam < 20) { S.stam = 20; store.set('stam', S.stam); }
@@ -2552,6 +2581,9 @@ const CHEATS = [
   ['bust', 'Bust tier +1', 'with the swelling that comes with it', () => grow(100, 'a cheat')],
   ['hour', '+1 hour', 'the clock moves', () => passTime(60)],
   ['dawn', 'Skip to tomorrow, 07:00', 'runs the night and its morning report', () => passTime(1440 - (S.clock % 1440) + 420)],
+  ['visit', 'Night visit now', 'Amaranth, in a dream', () => { maybeVisit(true); }],
+  ['whistle', 'Catcalls now', 'three voices, three thoughts', () => catcallWalk('a cheat', placeNow().zone !== 'safe')],
+  ['heatup', 'Chemistry +30', 'composure drops', () => chem(30, 'a cheat')],
   ['micro', 'Road event now', 'one of the small ones', () => micro(placeNow())],
   ['ambush', 'Standoff now', 'a crowd, right here', () => { if (!S.battle && !S.standoff) startStandoff('you asked for it (cheat)'); }],
   ['rep', 'Reputation +15', 'here', () => rep(15, 'a cheat')],
@@ -2568,7 +2600,7 @@ function simWalks(runs = 1000) { // every road out of here, walked many times wi
 }
 function simNights(nights = 30) { // the two conditions, run forward with today's body and no cures
   return Object.keys(COND).map((k) => { let v = condOf(k), r = S.resist[k] ?? 0; const base = resistOf(k) - r, marks = [];
-    for (let n = 1; n <= nights; n++) { const up = k === 'swell' ? 2 * S.bust : Math.round(S.chem / 10), was = v; v = Math.max(0, Math.min(100, v + up - Math.round(Math.min(30, base + r) / 2))); if (was >= 25 && r < 20) r++; if ([1, 7, 14, 30].includes(n)) marks.push(`night ${n}: ${v}`); }
+    for (let n = 1; n <= nights; n++) { const up = k === 'swell' ? 2 * S.bust : k === 'phero' ? Math.round(S.chem / 10) : 0, was = v; v = Math.max(0, Math.min(100, v + up - Math.round(Math.min(30, base + r) / 2))); if (was >= 25 && r < 20) r++; if ([1, 7, 14, 30].includes(n)) marks.push(`night ${n}: ${v}`); }
     return `${COND[k].name} from ${condOf(k)} · ${marks.join(' · ')} · resistance ends at ${Math.min(30, base + r)}`; });
 }
 function simRolls(runs = 1000) { // the social dice against whoever is in front of her, or a stranger of her level
@@ -2667,7 +2699,7 @@ const passiveRank = () => Object.keys(PERKS).filter((id) => PERKS[id].quote && h
 const crowdSize = (so) => 3 + Math.min(5, Math.floor(so.level / 10)) + (so.rank ?? 0);
 function pinDown(so) {
   so.pinned = true; so.pinRounds = 0; S.fallen = false; count('pinned', 'being pinned'); if (placeNow().zone !== 'safe') spent(true, 'pinned in the open');
-  post({ big: { why: WHY_PIN }, who: 'sys', plate: 'Pinned', dice: `<b>PINNED</b> · stamina 0 · ${esc(so.name)}`, tone: 'crit', say: 'Your legs go. You are on your back in the road with the armor holding you there like a tipped tortoise, and they close in round you, delighted. Get up, get out, or talk very fast. Three rounds of this and they have won.', fx: ['every hit lands harder while you are down'] }); pop('l', 'PINNED', 'var(--crit)');
+  post({ big: { why: WHY_PIN }, who: 'sys', plate: 'Pinned', dice: `<b>PINNED</b> · stamina 0 · ${esc(so.name)}`, tone: 'crit', say: 'Your legs go. You are on your back in the road with the armor holding you there like a tipped tortoise, and they close in round you, delighted. Get up, get out, or talk very fast. Three rounds of this and they have won.', fx: ['every hit lands harder while you are down'] }); pop('l', 'PINNED', 'var(--crit)'); setTimeout(() => thoughtPops(pickN(REACT.pinned[composure()], 2)), 500);
 }
 function pinnedAct(kind) {
   const so = S.standoff, dc = dcFor(so.level); let ended = null; so.pinRounds += 1;
@@ -2708,6 +2740,7 @@ function renderCast() {
     <h3>Her</h3><div class="cgrid">${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
     <h3>Regulars · ${regs.filter(([id]) => S.npc[id]?.met).length} of ${regs.length} met</h3><div class="cgrid">${regs.map(person).join('')}</div>
     <h3>Innkeepers · ${inns.filter(([id]) => S.npc[id]?.met).length} of ${inns.length} met</h3><div class="cgrid">${inns.map(person).join('')}</div>
+    <h3>The one who comes at night</h3><div class="cgrid">${S.seen.amaranth ? card('<video src="art/amaranth.mp4" muted loop autoplay playsinline></video>', 'Amaranth', 'the Corrupter, who calls herself a patron', [`Visits so far: ${S.count.visits ?? 0} · you said yes ${S.count.yeses ?? 0} time${(S.count.yeses ?? 0) === 1 ? '' : 's'}`, `Corruption ${condOf('corrupt')} · ${COND.corrupt.words[stepOf('corrupt')]}`, 'Comes when Valerie sleeps. Never by day.']) : card(shade(4), '???', 'something that has not found you yet', ['Sleep, and see.'], 'unmet')}</div>
     <h3>Shapes on the road</h3><p class="cnote">You only ever see how big they stand. The bigger the shape, the worse the fight. A name goes on it once you have faced it.</p>
     <div class="cgrid">${foes.map(([id, name, where]) => { const tier = FOE_TIER[id] ?? (id.startsWith('boss') ? 5 : 2), seen = S.seen[`foe:${id}`]; return card(shade(tier), seen ? esc(name) : '???', `${TIER_WORD[tier]} · ${where}`, [seen ? 'You have faced these.' : 'Not met yet.'], seen ? 'foe' : 'foe unmet'); }).join('')}</div></div>`;
 }
@@ -2750,7 +2783,7 @@ const WHY_MORNING = 'Each night both conditions move: up by what her body did (2
 /* ---------- v24: bars, combat at a glance, walking, story choices in the grid ---------- */
 function combatBlock(h) {
   const cl = calling(), topv = Math.max(1, ...STAT_KEYS.map((k) => effectiveStat(h, k))), here = placeNow();
-  return `<div class="cblock"><p class="lbl">Combat · ${esc(cl.verb)}${cl.type ? ` (${cl.type})` : ''} on ${STAT_INFO[cl.stat].name} · fight here ${dangerOf(here)}%</p>
+  return `<div class="cblock"><p class="lbl">Combat · ${esc(cl.verb)}${cl.type ? ` (${cl.type})` : ''} on ${STAT_INFO[cl.stat].name} · fight here ${dangerOf(here)}% · <span style="color:${composure() === 2 ? 'var(--crit)' : composure() ? 'var(--gold)' : 'var(--mint)'}">${COMPOSURE[composure()].toLowerCase()}</span></p>
     <div class="sblock">${STAT_KEYS.map((k) => { const v = effectiveStat(h, k); return `<div class="srow${k === cl.stat ? ' main' : ''}"><span>${STAT_INFO[k].name}</span><i><u style="width:${Math.round((v / topv) * 100)}%"></u></i><b>${n(v)}</b></div>`; }).join('')}</div>
     <div class="qrowb">${Object.entries(POTIONS).map(([k, x]) => `<button class="sm" type="button" data-act="use:${k}" title="${esc(x.hint)}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>${esc(x.name.split(' ')[0])} ×${S.bag[k] ?? 0}</button>`).join('')}<button class="sm quiet" type="button" data-ltab="stats">All gauges</button><button class="sm" type="button" data-growth="1">Growth · tier ${S.bust} · ${S.bustXp}%</button></div></div>`;
 }
@@ -2864,6 +2897,69 @@ const jobBoard = () => { const busy = Boolean(S.battle) || Boolean(S.standoff), 
   return `<h2>Jobs</h2><p>Work for coin and a good name. A notice says where, never what: you find out what kind of job it was when it is over. One at a time.</p>${cur ? `<div class="quest"><b>${esc(cur.title)}</b><small>In hand. Go to ${esc(PLACES.find((p) => p.id === cur.place).name)}.</small><div class="meta"><span class="ok">taken</span></div><button class="sm quiet" type="button" data-jobdrop="1">Hand it back</button></div>` : ''}
     ${JOBS.filter((j) => j.id !== S.job).map((j, i) => { const at = PLACES.find((p) => p.id === j.place), free = jobFree(j); return `<div class="quest${free ? '' : ' done'}"><b>A notice ${pins[i % pins.length]}</b><small>${free ? `Somebody wants a knight at ${esc(at.name)}.` : `Done. It will be back on the board in ${3 - (dayNow() - S.jobsDone[j.id])} day${3 - (dayNow() - S.jobsDone[j.id]) === 1 ? '' : 's'}.`}</small><div class="meta"><span>pay unknown</span><span>kind unknown</span></div><button class="sm primary" type="button" data-job="${j.id}"${free && !cur && !busy ? '' : ' disabled'}>Take it</button></div>`; }).join('')}`; };
 function dockTray() { const t = $('tray'), dock = $('trayDock'); if (!S.trayPos && dock) { if (t.parentElement !== dock) dock.appendChild(t); t.classList.add('docked'); } else { if (t.parentElement !== $('stage')) $('stage').appendChild(t); t.classList.remove('docked'); } }
+/* ---------- v26: composure, catcalls on the road, and thoughts that pop up round her ---------- */
+// Composure is how well she is holding herself together around people: chemistry and pheromones push it down, Willpower holds it up.
+const COMPOSURE = ['Composed', 'Flustered', 'Weak at the knees'];
+const composureScore = () => Math.max(0, Math.min(100, Math.round(S.chem * 0.5 + condOf('phero') * 0.5 + condOf('corrupt') * 0.25 - Math.min(30, (10 * effectiveStat(S.hero, 'WIL')) / Math.max(1, __m.stats.benchmarkStat(S.level))))));
+const composure = () => { const s = composureScore(); return s < 25 ? 0 : s < 55 ? 1 : 2; };
+const pickN = (list, n) => [...list].sort(() => Math.random() - 0.5).slice(0, n);
+const CALLERS = [['A mason on a scaffold', 'Oi, Dame! Is that armor painted on, or are you just pleased to see us?'], ['A carter', 'Room on the cart for one more, love. Two, counting the breastplate.'], ['A big smith in a doorway', 'You can lean that sword on my anvil any day.'], ['Two soldiers off duty', 'Left, right, left. Keep walking, Dame, we are counting.'], ['A sailor far from any sea', 'Three oceans, and never a figurehead like that.'], ['A porter with arms like hams', 'Carry your bags? Carry you? Carry both?'], ['A lad on a barrel', 'Marry me! Or wave! I will take a wave!'], ['A huntsman', 'I have seen fine sights on this road. You have just ruined all of them.'], ['A cooper', 'Mind the hoops, Dame. I have just the barrel for that armor.']];
+const CALLERS_WILD = [['A voice from the trees', 'Lost, pretty knight? We know every path. We will even show you one.'], ['Someone up on the ridge', 'That is a lot of shine to carry through our woods.'], ['A man by a campfire', 'Sit a while. We do not bite. Not hard.'], ['A big shape on a stump', 'Walk slower. Some of us are enjoying this.'], ['Two men mending a snare', 'She clanks. I like one that clanks.'], ['A whistle, then a laugh', 'Left a bit, Dame. No, our left. Lovely.']];
+const REACT = {
+  catcall: [['Rude. Probably rude. I will work it out later.', 'Eyes front, Valerie. You have a road to walk.', 'I am a knight. Knights do not blush. Much.', 'He means the armor. He definitely means the armor.'],
+    ['Why is my face hot? It is not even sunny.', 'That one had very large hands. Why did I notice his hands?', 'Do not look back. Do not look... I looked back.', 'Walk normally. How do I normally walk?'],
+    ['Oh no. I liked that. I am not supposed to like that.', 'He is enormous. Why was that the first thing I thought?', 'My knees have stopped taking orders.', 'Say it again. No! Do not say it again. ...Say it again.']],
+  meet: [['New person. Say a normal thing.', 'Smile. Not that much.'], ['She is looking at me. Am I standing strangely?', 'Words. I had some a moment ago.'], ['Everyone is so tall today.', 'If I trip now I will simply stay down there.']],
+  standoff: [['Four of them. I have fought worse. I think.', 'Feet apart. Chin up. Sword... where is the sword?'], ['They are bigger up close than they were from over there.', 'Do not let them see your hands shake.'], ['They are huge. All of them. Why do I keep counting shoulders?', 'If they come closer I do not know what my legs will do.']],
+  pinned: [['Up. Get up. It is only the ground.', 'I have been down here before and got up before.'], ['They are standing over me and I cannot think straight.', 'Do not look up. Looking up makes it worse.'], ['They look like towers from down here.', 'I should be more frightened than this. Why am I not more frightened?']],
+  growth: [['The breastplate was fine yesterday.', 'I should speak to the armorer. Again.'], ['It is doing it again. In public.', 'Everyone can tell. Can everyone tell?'], ['I think I like how it feels when it gets tighter.', 'Bigger. Good. Wait, why is that good?']],
+};
+function thoughtPops(lines) { // small thoughts appear round her head one after another, drift up and fade
+  const host = $('stage'), fig = $('sprL'); if (!host || !fig || !lines?.length) return; const st = host.getBoundingClientRect(), fb = fig.getBoundingClientRect(), pic = fig.firstElementChild; let top = fb.top + fb.height * 0.4;
+  if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * (S.sprL ?? 1); }
+  const spots = [[0.02, -62], [0.2, -124], [0.04, -186], [0.24, -248]]; document.body.classList.add('popping'); clearTimeout(S.popT); S.popT = setTimeout(() => document.body.classList.remove('popping'), lines.slice(0, 4).length * 750 + 5000);
+  lines.slice(0, 4).forEach((text, i) => setTimeout(() => { const el = document.createElement('span'); el.className = `tpop c${composure()}`; el.textContent = text;
+    el.style.left = `${Math.round(fb.left - st.left + fb.width * spots[i][0])}px`; el.style.top = `${Math.max(48, Math.round(top - st.top + spots[i][1]))}px`; host.appendChild(el); setTimeout(() => el.remove(), 5200); }, i * 750));
+}
+function catcallWalk(where, wild) { // three voices as she passes; what she makes of them depends on her composure
+  const band = composure(), pool = wild ? CALLERS_WILD : CALLERS, start = Math.floor(Math.random() * pool.length), three = [0, 1, 2].map((i) => pool[(start + i * 2) % pool.length]);
+  count('catcalls', 'being whistled at'); const chemUp = [3, 6, 9][band]; chem(chemUp, 'catcalls on the road');
+  const fx = applyFx(band === 0 ? { stress: 3 } : band === 1 ? { stress: 1 } : { stress: -3 }, 'catcalls on the road');
+  if (band && !hasPerk('shameless')) decency(-2, 'catcalls on the road'); if (band) { grow(3 * band, 'being looked at'); conduct('lewd', 0.5 * band); }
+  post({ big: { auto: false, why: `Three men called out as she passed. What it does depends on her composure, which right now is "${COMPOSURE[band]}" (${composureScore()} of 100: half her chemistry plus half her pheromones, less what her Willpower holds back). Composed: it only costs a little stress. Flustered: more chemistry, a little decency, and it feeds her bust (+3%). Weak at the knees: most chemistry, it takes stress away because part of her enjoys it, and it feeds her bust more (+6%). Catcalls come more often with pheromones and when she looks a state.` }, who: 'sys', plate: 'Catcalls', dice: `[${where} · ${COMPOSURE[band].toLowerCase()}]`, tone: 'fumble', say: three.map(([who, line]) => `${who}: “${line}”`).join(' '), fx: [`chemistry +${chemUp}`, ...fx, band ? `bust +${3 * band}%` : 'she lets it go by'] });
+  thoughtPops(pickN(REACT.catcall[band], 3));
+}
+/* ---------- v27: Amaranth, who comes at night ---------- */
+// A patron nobody asked for. When Valerie sleeps there is a chance she visits. Each visit is one choice, and Corruption keeps the score.
+const DREAM_OPEN = ['You are asleep, and then you are somewhere violet. A woman with horns like polished shell is sitting on the end of your bed as though she has always sat there.', 'The violet place again. She has brought a second chair this time, and it is for you.', 'You know the way here now. That is the part that should worry you.', 'You are there before you have finished falling asleep. She has been waiting, and you have been hurrying.'];
+const DREAM_SAY = [['There you are, little knight. All that luck, and nobody ever told you where it comes from.', 'Do not get up. I am only looking. I look in on all my investments.'], ['You came back. They always think that part was my doing.', 'Sit. You are tired. I can do something about tired.'], ['Look at you. Coming along beautifully.', 'Ask me for something. Go on. It is so much nicer when you ask.'], ['Mine, nearly. Do you feel it? I do.', 'One more yes, sweet thing. You are so good at yes.']];
+const DREAM_LORE = ['She was a patron of knights once. The order struck her name from its rolls and kept her gifts.', 'Your luck is not yours. It is a loan, and she has never once asked for a payment.', 'She cannot come to you when you are truly at rest. Something in you has to be awake already.'];
+REACT.dream = [['This is a dream. I am fairly sure this is a dream.', 'Do not agree to anything. That is the rule with horns.'], ['She is very close. Dreams should not have a temperature.', 'I ought to want to wake up more than I do.'], ['I missed her. That cannot be right.', 'Whatever she asks, I am going to say yes. I can feel it coming.']];
+const visitChance = () => Math.max(0, Math.min(80, 18 + Math.round(condOf('corrupt') / 2) + (S.chem >= 60 ? 15 : 0) + 5 * stepOf('phero') - (dayNow() <= 1 ? 18 : 0)));
+function maybeVisit(force) {
+  if (S.dream || S.battle || S.standoff || S.fallen) return false; if (!force && d() > visitChance()) return false;
+  const first = once('amaranth'), step = stepOf('corrupt'); count('visits', 'night visits'); S.dream = { n: S.count.visits }; S.lookR = Math.random() < 0.5 ? 'corrupter' : 'corrupter2'; S.nameR = 'Amaranth'; S.ctab = 'resp'; S.meet = null; S.talking = false; S.event = null;
+  if (first) journal('person', 'Amaranth, who calls herself a patron. She comes in dreams. She wants something, and she is patient about it.');
+  post({ who: 'sys', plate: 'A dream', dice: `[night · visit ${S.dream.n} · corruption ${condOf('corrupt')} · ${COND.corrupt.words[step]}]`, tone: 'affliction', say: DREAM_OPEN[step] });
+  post({ who: 'her', plate: 'Amaranth', say: pick(DREAM_SAY[step], S.dream.n), spoken: true });
+  setTimeout(() => thoughtPops(pickN(REACT.dream[composure()], 2)), 700); return true;
+}
+function dreamCells() { const dc = dcFor(S.level, 'normal'), step = stepOf('corrupt') + (hasPerk('marked') ? 1 : 0);
+  return `<div class="pgrid"><span class="prow">A dream · Amaranth is waiting for an answer</span>${cell('dream:no', 'Tell her no', `${STAT_INFO.WIL.name} · ${oddsOf('WIL', dc, -5 * step)}% · corruption −8`, 'primary')}${cell('dream:deal', 'Strike a bargain', `${STAT_INFO.INT.name} · ${oddsOf('INT', dc)}% · gold, at a price`)}${cell('dream:ask', 'Ask what she wants', `${STAT_INFO.LCK.name} · ${oddsOf('LCK', dcFor(S.level, 'easy'))}% · one true thing`)}${cell('dream:take', 'Take what she offers', 'no roll · rested, grown, +15 corruption', 'spot')}</div>`; }
+function dreamAct(kind) {
+  const step = stepOf('corrupt') + (hasPerk('marked') ? 1 : 0), L = Math.max(1, S.level), n = S.dream.n, fx = []; let say = '', hers = '', tone = 'hit', dice = '[no roll] Yes';
+  const roll = (title, stat, diff, bonus = 0) => { const r = rollCheck({ title: `${title} · Amaranth`, stat, dc: dcFor(S.level, diff), bonus, parts: bonus ? [`${bonus} her hold on you`] : [] }); dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${title}`; tone = r.degree; return r; };
+  const cor = (v, why) => { cond('corrupt', v, why); fx.push(`corruption ${v > 0 ? '+' : '−'}${Math.abs(v)}`); };
+  if (kind === 'no') { const r = roll('Tell her no', 'WIL', 'normal', -5 * step); if (r.success) { cor(-8, 'she said no'); fx.push(...applyFx({ stress: -6 }, 'she said no')); say = 'You say no. It comes out steadier than you expected.'; hers = 'Mm. I do love one that says no first. Sleep well, little knight.'; } else { cor(10, 'a no that was not one'); say = 'You mean to say no. What comes out is "not tonight", and she smiles at the difference.'; hers = 'Not tonight. I can work with not tonight.'; } }
+  else if (kind === 'deal') { const r = roll('Strike a bargain', 'INT', 'normal'); if (r.success) { cor(4, 'a bargain'); gainGold(12 * L, 'a bargain in a dream'); fx.push(`gold +${n2(12 * L)}`, ...applyFx({ exp: 0.05 }, 'a bargain')); say = 'You haggle with a demon and come out ahead by one purse and most of your soul. The purse is real in the morning.'; hers = 'Sharp. I like sharp. It cuts both ways, you know.'; } else { cor(12, 'a bad bargain'); say = 'You shake on something. You are not sure what. She is.'; hers = 'Done. Do not look so worried. You will hardly miss it.'; } }
+  else if (kind === 'ask') { const r = roll('Ask what she wants', 'LCK', 'easy'); if (r.success) { cor(2, 'she listened'); const lore = DREAM_LORE[(S.count.lore ?? 0) % DREAM_LORE.length]; count('lore', 'true things learned'); journal('person', `Amaranth, in a dream: ${lore}`); say = `She tells you one true thing. ${lore}`; hers = 'There. Was that so frightening? Ask me again another night.'; fx.push('written in the Backlog'); } else { cor(8, 'she listened too long'); chem(10, 'a dream that ran long'); say = 'She answers a different question from the one you asked, at length, from very close.'; hers = 'What do I want? Oh, little knight. What do you want?'; fx.push('chemistry up'); } }
+  else { cor(15, 'she said yes'); count('yeses', 'saying yes to her'); grow(30, 'her gift'); chem(12, 'her gift'); fx.push(...applyFx({ stress: -15 }, 'her gift'), 'bust +30%', 'chemistry up'); S.stam = S.spent ? 50 : 100; store.set('stam', S.stam); say = 'You say yes. You wake rested, glowing, and with the breastplate a notch tighter than you left it.'; hers = 'Good girl. See how easy that was?'; }
+  post({ big: { auto: false, why: `Amaranth can visit whenever Valerie sleeps: tonight the chance was ${visitChance()}% (18, plus half her corruption, plus 15 if her chemistry is 60 or more, plus 5 for each step of pheromones). Saying no rolls Willpower, and each step of corruption makes it 5 harder. A bargain rolls Arcana and pays gold either way it costs. Asking rolls Luck and writes one true thing in the Backlog. Saying yes needs no roll: full stamina, less stress, 30% of a bust tier, and 15 corruption. Corruption per 25: Flirt and Sway +3, Be friendly and Persuade −3, and it pulls her composure down. It fades each night by half her Willpower's resistance, and a blessing at the Wishing Well takes 20 off.` }, who: 'me', plate: 'A dream', dice, tone, say, fx });
+  post({ who: 'her', plate: 'Amaranth', say: hers, spoken: true });
+  S.dream = null; seat(); S.them = freshThem();
+  post({ who: 'sys', dice: `[morning] ${clockText()}`, say: 'You wake. The room is the room. There is a faint smell of violets that has no business being there.' });
+}
+const n2 = (v) => n(v);
 function renderHuds() {
   if ($('tray').parentElement !== $('stage')) $('stage').appendChild($('tray'));
   const h = S.hero, t = S.them;
@@ -3130,14 +3226,14 @@ function render() {
   document.body.classList.toggle('combat', combat);
   const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = Boolean(S.standoff) || (Boolean(S.battle) && !S.battle.state.combatants.companion); document.body.classList.toggle('keyR', $('sprR').classList.contains('keyedfig') && !$('sprR').hidden); document.body.classList.toggle('keyL', $('sprL').classList.contains('keyedfig')); document.body.classList.toggle('alone', !engaged);
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
-  document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
+  document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('dream', Boolean(S.dream)); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
   renderTray(); renderBig(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
-  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : 'Travelling';
+  $('mode').dataset.mode = S.mode; $('mode').textContent = S.dream ? 'Dreaming' : S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : 'Travelling';
   if (S.battle) renderBattleRow();
   else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>${so.pinned ? 'you are pinned' : `their nerve · round ${Math.min(8, so.round)} of 8`} · ${crowdSize(so)} of them</small><b style="color:${RANK_COLOR[foeRec(so.key ?? 'opportunists').rank] === 'var(--muted)' ? 'inherit' : RANK_COLOR[foeRec(so.key ?? 'opportunists').rank]}">${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
   else $('foe').hidden = true;
