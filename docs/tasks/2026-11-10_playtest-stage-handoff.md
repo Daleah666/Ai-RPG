@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| Tile map and sandbox (an experiment) | `TW`, `TH`, `TILE_LOOK`, `TILE_GLYPH`, `TILE_COST`, `TILE_RISK`, `tileMap(area)` (made once per area from `PLACES`, their `links` and `AREAS[area].exits`, with a seeded pattern for the ground), `tileSync`, `tileStep`, `tilePath`, `tileGo`, `tileKeyStep`, `tileSvg`, `tileKey`, `mapSwitch`, `S.mapStyle`, `S.tpos`, `S.sandbox` (read in `eventPool`), the `data-tile` click and the arrow-key listener |
 | Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
 | Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
 | The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
@@ -323,6 +324,25 @@ Choices made here that Del has not seen yet:
 - Two class names collided with older styles while building this (`you`, `me` and `turn` are taken). The strip uses `bwme` and `bwturn`.
 
 Tests that needed a change: `drive29` now opens the Story tab before typing in a box, and `drive32` and `drive34` open the Pictures tab before reading the poses.
+
+### A tile map and a sandbox switch (v45, artifact version 38)
+
+Del: "as a little experiment, if we wanted to use a different type of map, we have a thing on the top right so we could use the stuff from Ellen the game, and wing it with that and go to sandbox". Read as Elin, the sandbox roguelike with a tile overworld. Del did not confirm the reading.
+
+Built: a second way to draw the map (tiles) and a sandbox switch, both at the top right of the Map tab. See the README for the rules.
+
+What was not done, and why:
+
+- Nothing from that game is used: no tiles, pictures, maps, names or numbers. The grid, its colours and the small marks on the ground are drawn in code for this game. If Del has tile pictures of their own, `TILE_LOOK` and `TILE_GLYPH` are the two tables to replace.
+- Sandbox here means "the story waits". It does not add building, placing things, or a blank world.
+
+Choices made here that Del has not seen yet:
+
+- A place is the ground nearest to it, so she arrives when she crosses the dotted line, not when she reaches the marker. This keeps one rule the rest of the page relies on: she is always at some place.
+- The time shown on arrival is the time since she last arrived anywhere, wandering included.
+- Roaming is gentler than the bubble map's roads per tile, so a walk across open country is not a fight every few steps. A road leg by tiles is a little quicker and safer than the same leg by bubbles. Nothing here is balanced.
+- The ground pattern is the same every time (seeded by the area's name). Change the seed text in `tileMap` to get another.
+- The map sits in the right panel, so tiles are about 16 px at 1440 px wide and 22 px at 2000 px. A large view in the middle of the screen is the obvious next step if Del likes this.
 
 ## What Del asked for that is not built, in suggested order
 
