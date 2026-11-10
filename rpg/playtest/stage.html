@@ -1021,6 +1021,37 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v45: the tile map (an experiment) and the sandbox switch */
+.maptop{flex-wrap:wrap;gap:6px}
+.mapseg{margin-left:auto}
+.mapseg button{padding:3px 10px;font-size:.66rem;min-height:0}
+.sandbtn[aria-pressed="true"]{background:var(--gold);color:#16130a;border-color:var(--gold)}
+.tilemap{cursor:pointer;touch-action:manipulation}
+.tilemap .tl{stroke:rgba(0,0,0,.22);stroke-width:.35}
+.tilemap .tl:hover{stroke:#fff;stroke-width:.9}
+.tilemap .tl.block{cursor:not-allowed}
+.tilemap .gl{pointer-events:none;fill:rgba(0,0,0,.3)}
+.tilemap .edge{pointer-events:none;fill:none;stroke:rgba(255,255,255,.34);stroke-width:.5;stroke-dasharray:1.3 1.5}
+.tmark rect{fill:#12141c;stroke:var(--mint);stroke-width:1.1}
+.tmark.risky rect{stroke:var(--gold)}
+.tmark.wild rect{stroke:var(--crit)}
+.tmark.here rect{fill:var(--pink)}
+.tmark.shut{opacity:.62}
+.tmark.door rect{stroke:var(--cyan);stroke-dasharray:2 1.2}
+.tmark text{pointer-events:none;text-anchor:middle;font:700 5.9px var(--f-body);fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.8);stroke-width:1.7;stroke-linejoin:round}
+.tmark text.q{font-size:6.4px;fill:var(--gold);stroke-width:.9}
+.tmark text.n{font:700 4.8px var(--f-mono);fill:#fff}
+.tmark .res{fill:var(--pink);stroke:#000;stroke-width:.4}
+.thero{pointer-events:none}
+.thero circle:first-child{fill:none;stroke:#fff;stroke-width:1.2;animation:theroPulse 1.6s ease-in-out infinite}
+.thero circle:last-child{fill:var(--gold);stroke:#000;stroke-width:.5}
+@keyframes theroPulse{0%,100%{r:4.2px;opacity:1}50%{r:5.8px;opacity:.4}}
+@media (prefers-reduced-motion:reduce){.thero circle:first-child{animation:none}}
+#hudR .tline{margin:0;font-size:.74rem;line-height:1.35;color:var(--muted)}
+#hudR .tline b{color:var(--text)}
+#hudR .tkey{display:flex;flex-wrap:wrap;gap:3px 10px;margin:0;font:400 .6rem/1.3 var(--f-mono);letter-spacing:.02em;text-transform:none;color:var(--muted)}
+.tkey span{display:inline-flex;align-items:center;gap:4px}
+.tkey i{flex:none;width:10px;height:10px;border-radius:2px;background:var(--k);border:1px solid rgba(255,255,255,.25)}
 /* a question mark that opens an explanation */
 .qm{flex:none;display:inline-grid;place-items:center;width:18px;height:18px;min-width:0;min-height:0;padding:0;border-radius:50%;border:1px solid var(--edge2);background:transparent;color:var(--muted);font:600 .66rem var(--f-mono);line-height:1;cursor:pointer;vertical-align:middle;text-transform:none;letter-spacing:0;box-shadow:none}
 .qm[aria-expanded="true"]{background:var(--text);color:#111;border-color:var(--text)}
@@ -1826,7 +1857,7 @@ function worldPlate() {
 }
 function rightPanel() {
   const withThem = Boolean(S.who && (S.talking || S.meet));
-  if (withThem && S.autoThem !== S.who) { S.autoThem = S.who; S.rtab = 'here'; } if (!withThem) S.autoThem = null;
+  if (withThem && S.autoThem !== S.who) { S.autoThem = S.who; if (S.mapStyle !== 'tiles') S.rtab = 'here'; } if (!withThem) S.autoThem = null;
   const nowId = S.convo?.id ?? (S.guest && talker(S.guest) ? S.guest : null);
   if (S.convo && S.autoNow !== S.convo.id) { S.autoNow = S.convo.id; S.rtab = 'now'; } if (!S.convo && S.autoNow) { S.autoNow = null; if (S.rtab === 'now') S.rtab = 'map'; }
   const tab = S.battle ? S.rtab : S.rtab === 'fight' || (S.rtab === 'here' && !withThem) || (S.rtab === 'now' && !nowId) ? 'map' : S.rtab;
@@ -2090,7 +2121,7 @@ function pathTo(id) { // the shortest walk along the lines on the map
   while (queue.length) { const at = queue.shift(); if (at === id) break; for (const l of PLACES.find((p) => p.id === at).links) if (!(l in prev)) { prev[l] = at; queue.push(l); } }
   const out = []; for (let at = id; at && at !== S.place; at = prev[at]) out.unshift(at); return out;
 }
-function eventPool(p) { return questsAt(p).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); }); }
+function eventPool(p) { if (S.sandbox) return []; return questsAt(p).filter((e) => { const lv = e.when?.level ?? [1, 100]; return S.level >= lv[0] && S.level <= lv[1] && (!doneQuests.has(e.id) || e.when?.once === false); }); }
 function luckyFind(plate) { const fx = applyFx({ gold: 4, exp: 0.02 }, 'a lucky find'); post({ who: 'me', plate, dice: '[event] a lucky find', tone: 'hit', say: 'Half buried by the path: a dropped purse, and a map with one useful corner left.', fx }); }
 function goTo(id) {
   const from = placeNow(), to = PLACES.find((x) => x.id === id); if (!to || to.id === S.place) return; S.convo = null;
@@ -2383,6 +2414,102 @@ function dangerOf(p) { // percent chance of a fight: the place, the hour, the st
   const raw = (p.enc ?? 0) + (S.spent ? 10 : 0) + 4 * stepOf('phero') + Math.round(S.heat / 4) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0) + held;
   return Math.max(0, Math.min(90, Math.round(raw * (S.secured[area] ? 0.4 : 1))));
 }
+/* ---------- v45, an experiment: the same world drawn as a grid of tiles she walks on, and a sandbox switch ----------
+   The tiles are made from the places and roads the bubble map already has, so the two maps cannot drift apart.
+   Each place owns the ground nearest to it. Stepping onto another place's ground is arriving there. */
+const TW = 17, TH = 11, TU = 10;
+const TILE_LOOK = { // per area: colour and name of the four kinds of ground
+  city: { road: ['#8f897c', 'cobbles'], open: ['#62704d', 'a yard'], rough: ['#6c5c49', 'a back lot'], block: ['#3b302b', 'houses'] },
+  forest: { road: ['#8d7853', 'the track'], open: ['#4f7d46', 'grass'], rough: ['#2f5c35', 'deep trees'], block: ['#2a5874', 'water'] },
+  castle: { road: ['#9092a0', 'flagstones'], open: ['#646772', 'the bailey'], rough: ['#57514a', 'rubble'], block: ['#2b2d36', 'walls'] },
+  academy: { road: ['#bcab8b', 'paving'], open: ['#5e8b59', 'lawn'], rough: ['#6b6a7d', 'old stacks'], block: ['#2e4a35', 'hedges'] },
+  camps: { road: ['#b09d76', 'a cart rut'], open: ['#7a694a', 'dirt'], rough: ['#5d5037', 'mud'], block: ['#3a2c1f', 'the stockade'] },
+};
+const TILE_GLYPH = { // a small mark so the ground reads as ground, not only as a colour
+  rough: { forest: 'M5 1.8L8 8H2Z', city: 'M2 6h2.4v2.4H2zM5.6 3h2.4v2.4H5.6z', castle: 'M2 7l1.6-2.4L5 7zM5.4 5l1.4-2 1.4 2z', academy: 'M2.4 2.4h1.6v5.2H2.4zM5.9 2.4h1.6v5.2H5.9z', camps: 'M1.8 6.4q1.6-1.6 3.2 0t3.2 0v1.2q-1.6 1.6-3.2 0t-3.2 0z' },
+  block: { forest: 'M1.6 4q1.7-1.6 3.4 0t3.4 0v1q-1.7 1.6-3.4 0t-3.4 0zM1.6 6.6q1.7-1.6 3.4 0t3.4 0v1q-1.7 1.6-3.4 0t-3.4 0z', city: 'M1.2 5.2L5 2l3.8 3.2V8.6H1.2z', castle: 'M1 3h2v1.4h1.4V3h1.2v1.4H7V3h2v6H1z', academy: 'M1.4 3.4q3.6-2.4 7.2 0v5.2H1.4z', camps: 'M2 9V3l1-1.4L4 3v6zM5.6 9V3l1-1.4 1 1.4v6z' },
+};
+const TILE_COST = { road: 8, open: 11, rough: 16, place: 8, door: 8 }, TILE_RISK = { road: 0.1, open: 0.15, rough: 0.25, place: 0.1, door: 0.1 };
+const TMAPS = {};
+function tileSeed(str) { let h = 2166136261; for (const c of str) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return () => { h += 0x6D2B79F5; let t = h; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function tileMap(area) { if (TMAPS[area]) return TMAPS[area];
+  const A = AREAS[area], local = PLACES.filter((p) => areaOf(p) === area), rnd = tileSeed(`tiles:${area}`);
+  // ground: smooth noise, so houses, water and thickets come in clumps
+  const LW = 7, LH = 5, lat = Array.from({ length: LH }, () => Array.from({ length: LW }, () => rnd()));
+  const g = Array.from({ length: TH }, (_, y) => Array.from({ length: TW }, (_, x) => { const fx = (x / (TW - 1)) * (LW - 1), fy = (y / (TH - 1)) * (LH - 1), x0 = Math.min(LW - 2, Math.floor(fx)), y0 = Math.min(LH - 2, Math.floor(fy)), ax = fx - x0, ay = fy - y0;
+    const v = (lat[y0][x0] * (1 - ax) + lat[y0][x0 + 1] * ax) * (1 - ay) + (lat[y0 + 1][x0] * (1 - ax) + lat[y0 + 1][x0 + 1] * ax) * ay + (rnd() - 0.5) * 0.12; return v < 0.33 ? 'block' : v < 0.5 ? 'rough' : 'open'; }));
+  // places: one tile each, with clear ground around it
+  const spot = {}, taken = new Set();
+  for (const p of local) { let x = Math.max(1, Math.min(TW - 2, Math.round((p.x / 100) * (TW - 1)))), y = Math.max(1, Math.min(TH - 2, Math.round((p.y / A.h) * (TH - 1))));
+    while (taken.has(`${x},${y}`)) { x += 1; if (x > TW - 2) { x = 1; y = y >= TH - 2 ? 1 : y + 1; } }
+    taken.add(`${x},${y}`); spot[p.id] = [x, y]; }
+  for (const [x, y] of Object.values(spot)) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const yy = y + dy, xx = x + dx; if (yy >= 0 && yy < TH && xx >= 0 && xx < TW && g[yy][xx] === 'block') g[yy][xx] = 'open'; }
+  // ways out of the area sit on the nearest edge
+  const doors = (A.exits ?? []).map((e) => { const dx = e.x / 100 - 0.5, dy = e.y / A.h - 0.5, sx = Math.max(0, Math.min(TW - 1, Math.round((e.x / 100) * (TW - 1)))), sy = Math.max(0, Math.min(TH - 1, Math.round((e.y / A.h) * (TH - 1))));
+    const [x, y] = Math.abs(dy) >= Math.abs(dx) ? [sx, dy < 0 ? 0 : TH - 1] : [dx < 0 ? 0 : TW - 1, sy]; return { x, y, from: e.from, to: e.to, label: e.label }; }).filter((q) => spot[q.from]);
+  // roads: every line on the bubble map becomes a road of tiles
+  const carve = (ax, ay, bx, by) => { let x = ax, y = ay; const put = () => { if (g[y][x] !== 'place' && g[y][x] !== 'door') g[y][x] = 'road'; };
+    while (x !== bx) { x += Math.sign(bx - x); put(); } while (y !== by) { y += Math.sign(by - y); put(); } };
+  for (const [x, y] of Object.values(spot)) g[y][x] = 'place';
+  for (const q of doors) g[q.y][q.x] = 'door';
+  const seen = new Set();
+  for (const p of local) for (const l of p.links) { if (!spot[l]) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); const [a, b] = k.split('|'); carve(...spot[a], ...spot[b]); }
+  for (const q of doors) carve(q.x, q.y, ...spot[q.from]);
+  // each tile belongs to the nearest place
+  const ids = Object.keys(spot), owner = Array.from({ length: TH }, (_, y) => Array.from({ length: TW }, (_, x) => { let best = ids[0], bd = Infinity; for (const id of ids) { const dd = (spot[id][0] - x) ** 2 + (spot[id][1] - y) ** 2; if (dd < bd) { bd = dd; best = id; } } return best; }));
+  return (TMAPS[area] = { area, g, spot, doors, owner }); }
+function tileSync() { // she can arrive somewhere by the bubble map, fast travel or a story beat: put her marker back where she is
+  const here = placeNow(), area = areaOf(here), M = tileMap(area), t = S.tpos;
+  if (!t || t.area !== area || !M.g[t.y]?.[t.x] || M.g[t.y][t.x] === 'block' || M.owner[t.y][t.x] !== here.id) { const [x, y] = M.spot[here.id]; S.tpos = { area, x, y }; store.set('tpos', S.tpos); }
+  return M; }
+function tileHeld() { return S.dream ? 'You are asleep. She is waiting for an answer.' : S.battle || S.standoff ? 'You cannot walk away from this. Fight, talk them down, tempt them, or run.' : S.fallen ? 'You are on the ground. Get up first.' : ''; }
+function tileStep(nx, ny) { // one tile, by the same rules as a stretch of road. Returns false when the walk has to stop here.
+  const M = tileSync(), t = S.tpos, kind = M.g[ny]?.[nx]; if (!kind || kind === 'block') return false;
+  const from = placeNow(), mins = Math.max(1, Math.round(TILE_COST[kind] * (S.perks?.mapped ? 0.8 : 1)));
+  S.convo = null; S.event = null; if (S.mode === 'combat') S.mode = 'travel';
+  if (kind === 'door') { const q = M.doors.find((z) => z.x === nx && z.y === ny); if (!q) return false; if (S.place !== q.from) { setPlace(q.from); S.them = freshThem(); } S.trip = 0; goTo(q.to); return false; }
+  S.tpos = { area: t.area, x: nx, y: ny }; store.set('tpos', S.tpos); S.trip = (S.trip ?? 0) + mins; passTime(mins);
+  S.tstam = (S.tstam ?? 0) + mins; if (S.tstam >= 24) { S.tstam -= 24; count('stretches', 'walking'); useStam(Math.max(1, 3 - (hasPerk('roadworn') ? 1 : 0)), 'walking'); }
+  S.down = S.hero.hp <= 0; if (S.fallen) return false;
+  const owner = M.owner[ny][nx];
+  if (owner !== S.place) { const to = placeById(owner), walked = Math.round(S.trip); S.prev = from.id; setPlace(owner); S.them = freshThem(); S.walked[owner] = true; store.set('walked', S.walked); S.trip = 0; arrive(from, to, walked); }
+  const p = placeNow(), danger = dangerOf(p);
+  if (!S.standoff && !S.battle && danger && Math.random() * 100 < danger * TILE_RISK[kind]) { startStandoff(kind === 'rough' ? 'they were lying up off the road' : p.zone === 'safe' ? 'they do not like the look of you' : 'they stepped out in front of you'); return false; }
+  if (!S.standoff && !S.battle && !S.event && p.zone !== 'safe' && Math.random() * 100 < (p.evt ?? 0) * 0.1) { const pool = eventPool(p); if (pool.length && d() <= 40) { showEvent(pool[Math.floor(Math.random() * pool.length)].id); return false; } micro(p); if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero'); return false; }
+  if (kind === 'rough' && !S.standoff && !S.battle && !S.event && Math.random() * 100 < 5) { luckyFind('Off the road'); return false; }
+  return !(S.standoff || S.battle || S.event || S.meet || S.convo || S.fallen || S.dream); }
+function tilePath(M, sx, sy, tx, ty) { // the quickest way over ground she can cross; a way out of the area is only stepped on when it is the target
+  const key = (x, y) => y * TW + x, dist = new Map([[key(sx, sy), 0]]), prev = new Map(), open = [[sx, sy]];
+  while (open.length) { let bi = 0; for (let i = 1; i < open.length; i++) if (dist.get(key(...open[i])) < dist.get(key(...open[bi]))) bi = i; const [x, y] = open.splice(bi, 1)[0]; if (x === tx && y === ty) break;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const xx = x + dx, yy = y + dy, k = M.g[yy]?.[xx]; if (!k || k === 'block' || (k === 'door' && !(xx === tx && yy === ty))) continue;
+      const nd = dist.get(key(x, y)) + TILE_COST[k]; if (nd < (dist.get(key(xx, yy)) ?? Infinity)) { if (!dist.has(key(xx, yy))) open.push([xx, yy]); dist.set(key(xx, yy), nd); prev.set(key(xx, yy), [x, y]); } } }
+  if (!dist.has(key(tx, ty))) return null; const path = []; let cur = [tx, ty]; while (cur[0] !== sx || cur[1] !== sy) { path.unshift(cur); cur = prev.get(key(...cur)); } return path; }
+function tileGo(tx, ty) { // click a tile: walk there, and stop early if something happens on the way
+  const held = tileHeld(); if (held) return post({ who: 'sys', dice: esc(held) });
+  const M = tileSync(), t = S.tpos; if (t.x === tx && t.y === ty) return; const L = TILE_LOOK[M.area] ?? TILE_LOOK.city;
+  if (M.g[ty]?.[tx] === 'block') return toast('No way through', `That is ${L.block[1]}. She walks round it.`);
+  const path = tilePath(M, t.x, t.y, tx, ty); if (!path) return toast('No way through', 'There is no way there from here on foot.');
+  walkFx(); for (const [x, y] of path) if (!tileStep(x, y)) break; }
+function tileKeyStep(dx, dy) { const held = tileHeld(); if (held) return post({ who: 'sys', dice: esc(held) }); tileSync(); const t = S.tpos; if (tileMap(t.area).g[t.y + dy]?.[t.x + dx] === 'block') return; walkFx(); tileStep(t.x + dx, t.y + dy); }
+function mapSwitch() { return `<div class="seg mapseg" role="group" aria-label="How the map is drawn"><button type="button" data-mapstyle="bubbles" aria-pressed="${S.mapStyle !== 'tiles'}">Bubbles</button><button type="button" data-mapstyle="tiles" aria-pressed="${S.mapStyle === 'tiles'}" title="An experiment: the same world as a grid you walk on">Tiles</button></div><button class="bookbtn sandbtn" type="button" data-sandbox="1" aria-pressed="${Boolean(S.sandbox)}" title="Sandbox: the story waits. No chapters start. Fights, finds and people still happen.">Sandbox${S.sandbox ? ' · on' : ''}</button>`; }
+function tileSvg() { const M = tileSync(), here = placeNow(), area = M.area, L = TILE_LOOK[area] ?? TILE_LOOK.city, t = S.tpos; let cells = '', edges = '', marks = '';
+  for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) { const k = M.g[y][x], base = k === 'place' || k === 'door' ? 'road' : k, gl = TILE_GLYPH[k]?.[area] ?? TILE_GLYPH[k]?.city;
+    cells += `<rect class="tl ${k}" data-tile="${x},${y}" x="${x * TU}" y="${y * TU}" width="${TU}" height="${TU}" fill="${L[base][0]}"/>${gl ? `<path class="gl" transform="translate(${x * TU} ${y * TU})" d="${gl}"/>` : ''}`;
+    if (x + 1 < TW && M.owner[y][x] !== M.owner[y][x + 1]) edges += `M${(x + 1) * TU} ${y * TU}v${TU}`; if (y + 1 < TH && M.owner[y][x] !== M.owner[y + 1][x]) edges += `M${x * TU} ${(y + 1) * TU}h${TU}`; }
+  for (const p of PLACES.filter((z) => areaOf(z) === area)) { const [x, y] = M.spot[p.id], cx = x * TU + 5, cy = y * TU + 5, q = eventPool(p).length, who = residentOf(p.id), n = wanderersAt(p.id).length, shut = !openNow(p.hours), low = y >= TH - 2;
+    marks += `<g class="tmark ${p.zone}${p.id === here.id ? ' here' : ''}${shut ? ' shut' : ''}" data-tile="${x},${y}"><title>${esc(p.name)}${p.id === here.id ? ': you are on its ground' : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ', safe'}</title><rect x="${cx - 4.3}" y="${cy - 4.3}" width="8.6" height="8.6" rx="2.2"/>${p.boss || p.acts.includes('garrison') ? `<text class="q" x="${cx}" y="${cy + 2.2}">★</text>` : q ? `<text class="q" x="${cx}" y="${cy + 2.2}">!</text>` : ''}${who ? `<circle class="res" cx="${cx + 4.2}" cy="${cy - 4.2}" r="1.7"/>` : ''}${n ? `<text class="n" x="${cx - 4.6}" y="${cy - 2.6}">${n}</text>` : ''}<text class="nm" x="${cx}" y="${low ? cy - 6.4 : cy + 10.2}">${esc(p.short)}</text></g>`; }
+  for (const q of M.doors) { const cx = q.x * TU + 5, cy = q.y * TU + 5; marks += `<g class="tmark door" data-tile="${q.x},${q.y}"><title>The way to ${esc(AREAS[areaOf(placeById(q.to))].name)}</title><rect x="${cx - 4.3}" y="${cy - 4.3}" width="8.6" height="8.6" rx="2.2"/><text class="q" x="${cx}" y="${cy + 2.1}">${q.y === 0 ? '↑' : q.y === TH - 1 ? '↓' : q.x === 0 ? '←' : '→'}</text><text class="nm" x="${Math.max(12, Math.min(TW * TU - 12, cx))}" y="${q.y === TH - 1 ? cy - 6.4 : cy + 10.2}">${esc(q.label)}</text></g>`; }
+  const kind = M.g[t.y][t.x], base = kind === 'place' || kind === 'door' ? 'road' : kind, danger = dangerOf(here);
+  return `<svg class="map tilemap" viewBox="0 0 ${TW * TU} ${TH * TU}" role="group" aria-label="Tile map of ${esc(AREAS[area].name)}. Arrow keys or W A S D walk one tile.">${cells}<path class="edge" d="${edges}"/>${marks}<g class="thero" transform="translate(${t.x * TU + 5} ${t.y * TU + 5})"><circle r="4.4"/><circle r="2.1"/></g></svg>
+    <p class="tline" id="tileLine"><b>${esc(here.name)}</b> · ${esc(kind === 'place' ? 'the place itself' : L[base][1])} · ${TILE_COST[kind]} min a tile · ${danger ? `fight ${(danger * TILE_RISK[kind]).toFixed(1)}% a step` : 'safe ground'}${S.who && !S.meet ? ` · <b>${esc(castOf(S.who).name)}</b> is here` : ''}</p>`; }
+function tileKey() { const L = TILE_LOOK[areaOf(placeNow())] ?? TILE_LOOK.city;
+  return `<p class="tkey"><span><i style="--k:${L.road[0]}"></i>${esc(L.road[1])} · ${TILE_COST.road} min</span><span><i style="--k:${L.open[0]}"></i>${esc(L.open[1])} · ${TILE_COST.open} min</span><span><i style="--k:${L.rough[0]}"></i>${esc(L.rough[1])} · ${TILE_COST.rough} min, riskier, things get dropped there</span><span><i style="--k:${L.block[0]}"></i>${esc(L.block[1])} · no way through</span></p>
+    <p class="more">Arrow keys or W A S D walk one tile. Click a tile to walk there. Each place owns the ground nearest to it (the dotted lines), and the arrows on the edge lead out.${S.sandbox ? ' Sandbox is on: the story is waiting, and no chapters start.' : ''}</p>`; }
+document.addEventListener('keydown', (e) => { if (S.mapStyle !== 'tiles' || S.menu || S.cine || e.ctrlKey || e.metaKey || e.altKey) return; const a = document.activeElement;
+  if (/INPUT|TEXTAREA|SELECT/.test(a?.tagName ?? '') || a?.isContentEditable || a?.closest?.('.grip')) return; if (!document.querySelector('.tilemap')?.getClientRects().length) return;
+  const mv = { arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] }[e.key.toLowerCase()]; if (!mv) return;
+  e.preventDefault(); tileKeyStep(mv[0], mv[1]); render(); });
 function mapTab() {
   const here = placeNow(), area = areaOf(here), A = AREAS[area], local = PLACES.filter((p) => areaOf(p) === area), near = new Set(here.links), seen = new Set(), lines = [], roam = wandererAt();
   for (const p of local) for (const l of p.links) { const q = local.find((x) => x.id === l); if (!q) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); lines.push(roadPath(p, q, `${p.id === here.id || l === here.id ? 'on' : ''}${p.zone === 'wild' || q.zone === 'wild' ? ' wild' : ''}`)); }
@@ -2393,8 +2520,8 @@ function mapTab() {
   const who = S.who ? castOf(S.who) : null;
   const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
   return `
-    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span><button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div><svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}${countsFor(area)}</svg></div>
-    <div class="mapkey3"><p><b>People</b><span style="--k:var(--pink)">● lives there</span><span style="--k:var(--text)">② passing through</span><span style="--k:var(--crit)">☠ big trouble</span></p><p><b>To do</b><span style="--k:var(--gold)">! a chapter</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--gold)">★ stronghold</span></p><p><b>Places</b><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--crit)">◌ rough ground</span></p></div>
+    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span>${mapSwitch()}<button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div>${S.mapStyle === 'tiles' ? tileSvg() : `<svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}${countsFor(area)}</svg>`}</div>
+    ${S.mapStyle === 'tiles' ? tileKey() : `<div class="mapkey3"><p><b>People</b><span style="--k:var(--pink)">● lives there</span><span style="--k:var(--text)">② passing through</span><span style="--k:var(--crit)">☠ big trouble</span></p><p><b>To do</b><span style="--k:var(--gold)">! a chapter</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--gold)">★ stronghold</span></p><p><b>Places</b><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--crit)">◌ rough ground</span></p></div>`}
     ${passingRow()}
     <div class="gorow"><label class="walkto"><select data-goto="1" aria-label="Walk to a place"><option value="">Walk to…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>${fastSelect(here)}
     <label class="walkto jump"><select data-jump="1" aria-label="Jump straight to a place, for testing"><option value="">Jump (debug)…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>${helpBtn('travel')}</div>${helpBox('travel')}
@@ -3613,12 +3740,12 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v44', NEW_UI = [
-  ['.top [data-menu="her"]', 'Her page has tabs now: Sheet, Story, Gauges, Passives, Pictures. One thing on screen at a time, and it opens on the tab you left.'],
-  ['[data-htab="passives"]', 'Passives are sorted: earned, nearly there, and the locked ones folded away.'],
+const NEW_VER = 'v45', NEW_UI = [
+  ['.mapseg', 'An experiment: Tiles draws the same world as a grid. Arrow keys or W A S D walk one tile, a click walks there, and rough ground is slow, risky and worth searching.'],
+  ['.sandbtn', 'Sandbox: the story waits and no chapters start, so you can wander.'],
+  ['.top [data-menu="her"]', 'Her page has tabs: Sheet, Story, Gauges, Passives, Pictures.'],
+  ['#bWho', 'In a fight, everyone has a face above the buttons. The gold ring is whose turn it is, and you click an enemy to aim at it.'],
   ['[data-fold]', 'Anything with an arrow folds away, and stays how you left it.'],
-  ['#bWho', 'In a fight, everyone has a face above the buttons. Yours is first, the gold ring is whose turn it is, and you click an enemy to aim at it.'],
-  ['#sprL img, #sprL video', 'Still here from last time: right-click a character for her name, her mood, her pictures, and to flip her.'],
 ];
 function hideNew() { clearTimeout(S.newT); $('newLayer')?.remove(); }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -3774,7 +3901,7 @@ const OPENING = () => [
   { who: 'sys', dice: '[prologue] Walk to a place once and she knows the road. After that she can fast travel there.' },
 ];
 function startOver() { const keep = {}; // a new game: the save goes, the lead and the layout stay, and the page loads again so the opening plays
-  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
+  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen', 'mapStyle']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
     for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k);
     for (const [k, v] of Object.entries(keep)) localStorage.setItem(`oops-${k}`, v); } catch { /* storage is off: loading the page again starts fresh anyway */ }
   location.reload(); }
@@ -3908,7 +4035,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -4576,6 +4703,7 @@ document.addEventListener('click', (e) => {
   if (S.ctx && !e.target.closest?.('#ctx')) ctxClose();
   const node = e.target.closest('g[data-go], button[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   if (e.target.id === 'big') { S.big = null; return render(); }
+  const tl = e.target.closest?.('[data-tile]'); if (tl) { const [tx, ty] = tl.dataset.tile.split(',').map(Number); tileGo(tx, ty); return render(); }
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.pcpop) return void pcPop();
   if (b.dataset.ctx) return void ctxAct(b.dataset.ctx);
@@ -4583,6 +4711,8 @@ document.addEventListener('click', (e) => {
   if (b.dataset.cinestart) return void cineStart(b.dataset.cinestart);
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
   if (b.dataset.shownew) return void showNew(60000);
+  if (b.dataset.mapstyle) { S.mapStyle = b.dataset.mapstyle === 'tiles' ? 'tiles' : 'bubbles'; store.set('mapStyle', S.mapStyle); return render(); }
+  if (b.dataset.sandbox) { S.sandbox = !S.sandbox; store.set('sandbox', S.sandbox); post({ who: 'sys', plate: 'Sandbox', dice: S.sandbox ? '[sandbox] on' : '[sandbox] off', say: S.sandbox ? 'The story waits. No chapters start while this is on. Fights, finds, jobs and people carry on as usual.' : 'The story picks up where it was.' }); return render(); }
   if (b.dataset.htab) { S.htab = b.dataset.htab; store.set('htab', S.htab); S.menuForce = true; return render(); }
   if (b.dataset.fold) { S.folds[b.dataset.fold] = b.getAttribute('aria-expanded') !== 'true'; store.set('folds', S.folds); S.menuForce = true; return render(); }
   if (b.dataset.help) { S.help[b.dataset.help] = !S.help[b.dataset.help]; store.set('help', S.help); S.menuForce = true; return render(); }
@@ -4712,7 +4842,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
