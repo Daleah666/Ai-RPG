@@ -48,6 +48,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Falling down | `fallDown`, `getUp` |
 | Real fights | `startBattle`, `battleAct`, `battleExtra`, `syncBattle`, `leaveBattle`, `postEvents` |
 | Panels | `renderHuds`, `rightPanel`, `mapTab`, `hereTab`, `levelTab`, `debugTab`, `bioTab`, `spicyTab`, `settingsBlock`, `renderDebugger` |
+| Her sheet (left panel) | `leftPanel`, `rpgTab`, `momentsTab`, and the `@container` rules that open it up when it is dragged wide |
 | Inner voice | `pickThought`, `thinkAloud` (asks Claude's quick model when the toggle is on) |
 
 ## Decisions Del made (do not reopen)
@@ -58,6 +59,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Regulars have hidden numbers. A debugger at the top shows them, along with chances and what just changed.
 - Knight theme: four domains around the city (the Academy, the Castle and its dungeons, the Slaver Camps, the Forest), each with an Order meter the knight raises and a stronghold to break. The camps are enemy ground she frees people from.
 - Old tools are kept under Debug, never deleted.
+- Look and feel follows Del's own Solo Stage, Duet Stage and Character Card pages: the character picture is never framed or covered, one hairline separates things, colour is rationed to one accent per speaker, labels are tiny mono capitals, tabs are underlines. Keep to that.
+- The left panel is Del's character sheet in miniature. Pulled wide it should read like the Character Card page: picture on the left, tabbed sheet on the right. Del wants the right-hand panel to get the same treatment later.
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
@@ -73,7 +76,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 7. **Items inside the runner.** The page spends Valerie's turn itself when she drinks a potion (it edits the fight state, then plays Guard). The clean fix is item use in `engine/battle.js`, with tests. That is the one item here that belongs in the engine.
 8. **Stamina inside fights.** Stamina is spent after a fight, not during it. Del described falling down mid-fight and needing Willpower to stand.
 9. **Grok for the right-hand character.** The published page cannot call outside services. It needs a host that can, or a connector.
-10. **Phone layout** has not been rechecked since the tray, debugger and left tabs were added.
+10. **The right panel as a sheet.** Del showed the left one as the example; the resident's panel should open the same way.
+11. **Phone layout** has not been rechecked since the tray, debugger and left tabs were added.
 
 ## Known loose ends
 
