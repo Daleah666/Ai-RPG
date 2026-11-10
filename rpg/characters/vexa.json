@@ -1,0 +1,52 @@
+{
+  "id": "vexa",
+  "name": "Vexa Ashmaw",
+  "title": "the Ash Warlord Queen",
+  "rarity": 5,
+  "class": "Barbarian",
+  "trope": "The rival who becomes the frenemy, then the clingy bestie",
+  "temper": "Smug, loud, ultra competitive, fiercely loyal once you earn it",
+  "lore": "She rules the Ashmaw clans of the burned Cinder Pass, and won the crown at 19 by out-drinking, out-wrestling and out-flirting every chieftain. She hunts summoned heroes because a chosen one once humiliated her. She always keeps her word and always pays her debts.",
+  "want": "a rival worth losing to.",
+  "cost": "once you beat her she will not leave you alone, and she counts everything.",
+  "secret": "She sleeps hugging her axe. Its name is Cinderjaw.",
+  "body": {
+    "height": "6'1\"",
+    "build": "Warlord shoulders and axe arms",
+    "bust": 9,
+    "hips": 8
+  },
+  "look": "Dark brown skin, amber eyes, red war-paint stripe, long silver-white braids, black spiked iron crown, fang necklace, black fur and iron armor, tattered red cape, ember obsidian greataxe \"Cinderjaw\".",
+  "lines": {
+    "meet": "Cute lil adventurer... u wanna cross my pass? Beat me first, sweetie, or u're carrying my axe for a week.",
+    "flirty": "Put ur sword away, cutie. I don't bite... much.",
+    "battle": "RAAAH! U ripped my cape?! Ur DEAD, cutie!",
+    "turn": "Mmm, u actually scratched me... kinda hot, ngl. Fine. I'm coming with u.",
+    "soft": "Nobody touches my party. Nobody. Get behind me, babe."
+  },
+  "barks": [
+    "Bored. Somebody be scary.",
+    "Who moved my axe? ...Oh. I am holding it."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 4,
+    "poses": "sfaxd",
+    "start": "outskirts",
+    "range": [
+      "outskirts",
+      "hollow",
+      "road"
+    ],
+    "zones": [
+      "wild",
+      "risky"
+    ],
+    "routine": [
+      "outskirts",
+      "hollow",
+      "road",
+      "hollow"
+    ]
+  }
+}

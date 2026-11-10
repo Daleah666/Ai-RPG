@@ -103,6 +103,9 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Help windows, the attribute line, the numbers table | `HELP`, `helpBtn`, `helpBox`, `S.help`; `ATTR_USE`, `attrBars`, `attrLine`; `numbersHtml` (reads `__m.progression` and `__m.stats`) |
 | Right now (how she feels) | `HEART`, `STAGES`, `EMOS`, `HEART_DEF`, `HEART_COLD`, `MOOD_HEART`, `SAID_HEART`, `WANTS`, `THINKS`, `heartOf`, `stageOf`, `heartMove` (called from `talkPick`), `heartRest` (called from `worldTick` in the morning), `heartThink`, `nowCard`, the `now` tab in `rightPanel`, `S.heart` |
 | Chapters and the opening | `chapterList`, `chapterNo`, `CHAPTER_SAY`, `BOOK`, `chapterOpen` (from `showEvent`), `chapterClose` (from `chooseEvent`), `chaptersHtml`, `S.chap`, `S.book`; `OPENING`, `playOpening` |
+| The cast as files | `rpg/characters/*.json`, `rpg/characters/README.md`, `tools/build-playtest.mjs` (reads them into `DATA.characters`), `CHARS`, `CHAR`, and the lines that build `PCS`, `SECOND` and merge into `PROFILE`, `WANTS`, `LOOKTXT`, `BARKS`, `LOOPS` |
+| Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
+| Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
 | Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
 | The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
 | More than one answer | `swipeOpen`, `swipeSeal` (called first thing in `post`), `swipe`, `swipeBar`, `takeLine`, `TAKES`, `S.swipe` |
@@ -274,6 +277,20 @@ Del sent a screenshot of the page with both side panels empty, no buttons, no sc
 - **The page now reports its own errors** (the first script in `stage.html`): a red box with the message and line, and buttons to reload or to reset only the layout. If Del sends a screenshot of that box, the line number is a line of the built page.
 - **Start from the beginning** (`startOver`) is what Del had asked for. The old *Reset my save* reset some of the game in memory and left the rest (wanderers, hearts, chapters, layout) as it was; it now clears the save and reloads.
 - The Unity add-on is Unity's own plugin for coding agents, synced into Del's sessions. It has no start-up scripts; one of its skills can install Unity editors, which are large downloads. It was never used in this session and the game does not need it. Whatever was downloading was on Del's own computer, which this session cannot see.
+
+### Character files, Meme as a cat mage, cinematic (v42, artifact version 35)
+
+Del asked what Ember "really" is, what a mage like the cat would be, and whether there were files for the characters. Answer given: three slots (what she is, what she does, what she is called) and no, only Valerie had files. Del said "files ok and I want you to simulate a combat then", and added more while it was being built.
+
+- **Files.** `rpg/characters`, one JSON per character. A script read the tables out of `stage.html` and a check proved the files rebuild those tables exactly. The tables for the thirteen main cast are gone from the page; the rest (Town Girls, sisters, regulars, wanderers) are still tables.
+- **Meme** is the first character made only as a file. Her sheet is the assistant's (`drafted: true`).
+- **`npm run sim`** (`tools/sim-combat.mjs`) simulates a fight for any character file with the real rules and prints it. Over 200 fights each at level 3 against the Goblin Scouts, Meme, Ember and Pip each won every time; Meme alone at level 10 against the Skeleton Phalanx lost every time (the known rough spot).
+- **Cinematic** is Del's "a little chat box in the middle, like a visual novel, I just listen, or stop, fast forward, pause".
+- **The plate and rarity** are Del's "name and stuff on the bottom right with level, class or known type... rarer and stronger ones have different colour names". Rarity numbers for the cast are the assistant's picks.
+- **The switcher** is Del's "at the very top, the character that you are, at the very end left".
+- **Bars**: Del asked for HP red and mana blue; stamina green is the assistant's pick. The size strip became an indicator because Del does not want the labels.
+
+Asked for in the same breath and **not built yet** (Del's last voice note of that pass): right-click a character for her name, flip, her idles, how many pictures she has, whether she is on a still, her mood gauge, where she is, and an upper-body framing; a portrait for a character in a fight; a clock at the top; a slightly wider chat column and a slightly bigger smallest panel; figures tall enough that heads reach the top; in her menu, tabs at the top, bigger category tabs, collapsible sections, and the switch row under her portrait.
 
 ## What Del asked for that is not built, in suggested order
 

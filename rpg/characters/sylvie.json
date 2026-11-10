@@ -1,0 +1,47 @@
+{
+  "id": "sylvie",
+  "name": "Sylvie Shadebloom",
+  "title": "an elf shadow dancer",
+  "rarity": 3,
+  "race": "Elf",
+  "class": "Shadow dancer",
+  "trope": "The shy elf who is deadly in the dark",
+  "temper": "Quiet, blushy, poetic; fierce when her friends are hurt",
+  "lore": "Exiled from the moon elves for dancing with shadows instead of fighting them. She joined the first person who asked her to dance.",
+  "want": "to be noticed without being looked at.",
+  "cost": "she vanishes at the exact moment someone would have thanked her.",
+  "secret": "Her shadow has a mind of its own and is far more forward than she is. It has been flirting on her behalf.",
+  "body": {
+    "height": "5'6\"",
+    "build": "Slight and silent; her shadow stands closer than she does",
+    "bust": 8,
+    "hips": 8
+  },
+  "look": "Silver hair with blunt bangs, pointed elf ears, pale skin, ice-blue eyes, navy shadow-dancer outfit, twin crescent daggers.",
+  "lines": {
+    "meet": "I've been here the whole time... sorry.",
+    "flirty": "My shadow wants to hold your hand. Um. So do I.",
+    "battle": "Dance with the dark, then.",
+    "soft": "Stay close tonight? The moon makes me brave."
+  },
+  "barks": [
+    "...my shadow says hi.",
+    "Sorry. I was standing here. Quietly."
+  ],
+  "world": {
+    "side": "ally",
+    "poses": "sfad",
+    "start": "tankard",
+    "zones": [
+      "safe",
+      "risky",
+      "wild"
+    ],
+    "routine": [
+      "tankard",
+      "road",
+      "bridge",
+      "road"
+    ]
+  }
+}

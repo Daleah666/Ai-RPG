@@ -1,0 +1,51 @@
+{
+  "id": "scarlet",
+  "name": "Scarlet Ashbourne",
+  "title": "the Ember Witch Queen",
+  "rarity": 4,
+  "class": "Fire witch",
+  "trope": "The tsundere fire queen",
+  "temper": "Proud, fiery and quick-tempered, with a huge heart under the smoke",
+  "lore": "She rules the volcanic Cinder Crown and was set up to be the big bad. It turns out she was only burning the forest to keep the monster hordes out. She rides along \"temporarily\" and bosses everyone around.",
+  "want": "to be admired without having to demand it.",
+  "cost": "she scorches the compliment the moment she gets one.",
+  "secret": "She warms everybody's tent with her magic every night and pretends she does not.",
+  "body": {
+    "height": "5'8\"",
+    "build": "Runs hot; the hat adds a foot",
+    "bust": 9,
+    "hips": 8
+  },
+  "look": "fiery copper hair, amber eyes, olive skin, enormous black-and-crimson witch hat, cropped crimson corset with underboob, flame staff.",
+  "lines": {
+    "meet": "Ooh, a lost lil traveler~ Stay a while. It's gonna get hot 🔥",
+    "flirty": "Careful, darling. Play with fire and you might like it.",
+    "battle": "You DARE scorch my hat?! Inferno Spiral!",
+    "soft": "Hmph. I wasn't worried. My eyes are just watery from the... smoke."
+  },
+  "barks": [
+    "It is NOT hot in here. That is just me.",
+    "Who singed my hat? ...It was me. Fine."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 3,
+    "poses": "sfax",
+    "start": "hollow",
+    "range": [
+      "hollow",
+      "road",
+      "bridge"
+    ],
+    "zones": [
+      "wild",
+      "risky"
+    ],
+    "routine": [
+      "hollow",
+      "road",
+      "bridge",
+      "road"
+    ]
+  }
+}

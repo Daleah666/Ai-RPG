@@ -1,0 +1,14 @@
+{
+  "id": "valerie",
+  "name": "Valerie",
+  "title": "the Klutz Knight",
+  "rarity": 4,
+  "class": "Knight",
+  "play": {
+    "id": "valerie",
+    "name": "Valerie",
+    "full": "Valerie",
+    "look": "knight",
+    "calling": "knight"
+  }
+}

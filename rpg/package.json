@@ -4,13 +4,16 @@
   "private": true,
   "description": "Rules engine, data and exports for the Valerie isekai tactical JRPG. No dependencies.",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "node --test \"test/*.test.js\"",
     "check": "node tools/check-data.mjs",
     "events": "node tools/validate-events.mjs",
     "build": "node tools/build-blueprint.mjs && node sillytavern/build.mjs",
     "playtest": "node tools/build-playtest.mjs . playtest/stage.html playtest/out/oops-playtest.html",
-    "all": "npm test && npm run check && npm run events && npm run build"
+    "all": "npm test && npm run check && npm run events && npm run build",
+    "sim": "node tools/sim-combat.mjs"
   }
 }

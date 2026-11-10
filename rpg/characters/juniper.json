@@ -1,0 +1,47 @@
+{
+  "id": "juniper",
+  "name": "Juniper Moonwhisper",
+  "title": "the Moonlit Apprentice Witch",
+  "rarity": 4,
+  "class": "Witch",
+  "trope": "The clumsy sleepy apprentice who is secretly the chosen one",
+  "temper": "Sweet, dreamy, cuddly and secretly very powerful",
+  "lore": "The sleepiest apprentice at the Moon Tower failed every exam until an eclipse showed she can pull down real moonbeams. Her owl familiar Pip-Pip keeps her on schedule, badly. She came for the snacks and naps and stayed for the company.",
+  "want": "a nap, and for nobody to find out what she is.",
+  "cost": "the harder she hides it, the more it leaks out in her sleep.",
+  "secret": "The naps are not laziness. The moonbeams only come to her when she is half asleep.",
+  "body": {
+    "height": "5'3\"",
+    "build": "Soft and sleepy under a very large hat",
+    "bust": 9,
+    "hips": 7
+  },
+  "look": "lavender hair with side braid, enormous crescent-moon witch hat, owl familiar Pip-Pip, cropped lilac top with big underboob, striped thigh-highs.",
+  "lines": {
+    "meet": "Oopsie, did my moon spell just level up the whole map? 🌙✨",
+    "flirty": "Shh~ the moon's watching. Wanna give it a show? 😉",
+    "battle": "Crescent Beam! ...okay that was so cool, did u see that??",
+    "soft": "*yawn* five more minutes... unless u're coming to cuddle 💤"
+  },
+  "barks": [
+    "*yawn* Five more minutes, moon.",
+    "Pip-Pip, what day is it? ...Pip-Pip?"
+  ],
+  "world": {
+    "side": "ally",
+    "poses": "sfax",
+    "start": "lecture",
+    "zones": [
+      "safe",
+      "risky"
+    ],
+    "routine": [
+      "lecture",
+      "quad",
+      "archive",
+      "quad",
+      "square",
+      "quad"
+    ]
+  }
+}

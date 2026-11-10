@@ -1,0 +1,48 @@
+{
+  "id": "juno",
+  "name": "Juno Starhook",
+  "title": "a treasure hunter off the floating isles",
+  "rarity": 3,
+  "class": "Treasure hunter",
+  "trope": "The sunny adventurer who flirts like breathing",
+  "temper": "Upbeat, brave, playful, big-sister energy",
+  "lore": "An ex-sky-pirate who mapped every ruin on the floating isles. She wants the legendary Star Vault, mostly to buy the whole party snacks.",
+  "want": "the next horizon, and someone to show it to.",
+  "cost": "she leaves before a place can ask her to stay.",
+  "secret": "Her hook has never missed. Every time it \"missed\", she was aiming for somebody's arms.",
+  "body": {
+    "height": "5'7\"",
+    "build": "Athletic; always lands on her feet",
+    "bust": 8,
+    "hips": 9
+  },
+  "look": "Black space buns, dimples, brown eyes, deep brown skin, teal bandeau top, cropped white hooded jacket with star patch, pouch belt, grappling hook, thigh-high boots.",
+  "lines": {
+    "meet": "Ruins, traps, treasure? Best date ever.",
+    "flirty": "Catch me? I'm falling for you. Literally.",
+    "battle": "Hook, line and SMASH!",
+    "soft": "Wanna watch the stars from the airship tonight?"
+  },
+  "barks": [
+    "Ooh, is that a ruin? That is a ruin.",
+    "Left pocket: rope. Right pocket: more rope."
+  ],
+  "world": {
+    "side": "ally",
+    "poses": "sfad",
+    "start": "yard",
+    "zones": [
+      "safe",
+      "risky",
+      "wild"
+    ],
+    "routine": [
+      "yard",
+      "gates",
+      "road",
+      "hollow",
+      "road",
+      "gates"
+    ]
+  }
+}

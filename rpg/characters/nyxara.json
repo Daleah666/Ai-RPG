@@ -1,0 +1,47 @@
+{
+  "id": "nyxara",
+  "name": "Nyxara",
+  "title": "the Fallen Eclipse Priestess",
+  "rarity": 5,
+  "class": "Dark cleric",
+  "trope": "The corrupted saint who is a softie underneath",
+  "temper": "Smug, sultry, dramatic, secretly soft",
+  "lore": "The Sun Temple's brightest saint until she fell for a demon prince and was thrown out of heaven for \"excessive passion\". She runs the Eclipse Cathedral, tries hard to be the villain, and always heals the heroes she beats.",
+  "want": "to be forgiven without having to ask for it.",
+  "cost": "she tests everyone who is kind to her until most of them leave.",
+  "secret": "She leaves love notes in the packs of the heroes she beats.",
+  "body": {
+    "height": "5'10\"",
+    "build": "Statuesque under the vestments; the halo is cracked",
+    "bust": 9,
+    "hips": 9
+  },
+  "look": "Jet-black blunt bob with bangs, deep brown skin, glowing violet eyes, plum lips, small horns, cracked black halo, black-and-silver eclipse vestment, eclipse staff.",
+  "lines": {
+    "meet": "Your little goddess can't hear you down here, sweetie~",
+    "flirty": "Mm, you came all this way just to see me? I'm flattered... come closer. 😘",
+    "battle": "ECLIPSE! Kneel, darling, it's a good look on you!",
+    "soft": "...Fine. Take this healing potion. Don't tell anyone I'm nice."
+  },
+  "barks": [
+    "Mm. The candles are sulking again.",
+    "Do not kneel on the good rug."
+  ],
+  "world": {
+    "side": "rival",
+    "plus": 4,
+    "poses": "sfaxd",
+    "start": "vault",
+    "range": [
+      "vault",
+      "ruins"
+    ],
+    "zones": [
+      "wild"
+    ],
+    "routine": [
+      "vault",
+      "ruins"
+    ]
+  }
+}
