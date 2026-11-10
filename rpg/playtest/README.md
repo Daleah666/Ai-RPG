@@ -12,11 +12,13 @@ That writes `playtest/out/oops-playtest.html` (ignored by git). Open it from a f
 
 | Part | What it does |
 |---|---|
-| Left panel | Valerie's sheet, laid out like Del's Character Card page. Name, the Airhead range bar, her mood and four small vitals on top. Tabs: **Overview** (who she is at a glance: boxes for body and mind, what is core to her, likes and dislikes, and six live "bars" in words), **Status** (every gauge, purse and potions), **RPG** (fields, attribute boxes, accidents, moves, equipment), **Spicy**, **Settings**. A second row opens more underneath; click a tab again to close it: **Bio** (her description at three lengths, or have Claude's quick model draft it), **Drives** (wants, needs, the lie, fears: the narrator reads these), **Personality**, **Relationships** (reputation place by place, and people), **Moments**, **Body**. Drag the panel's edge toward the middle and her picture slides to the left edge with the sheet beside it; pulled out like that, Bio and Drives become editable and the sheet keeps going as you scroll: Tags, Items, Quests, Passives and a picture library to change her look. Ctrl and the mouse wheel over the panel makes its text bigger or smaller. |
-| Top of the middle | The mode pill (Travelling, Combat, Down), her level and mood, the clock, the **Debugger** toggle, her inner voice, and the **dice tray**: every roll lands there with its bands and its arithmetic. |
+| Left panel | Valerie's sheet, laid out like the left side of Del's Character Card page: her **portrait** (name, calling, level, gold, an EXP line), a row of **folds** under it (Backlog, AI fill, Bio, Drives, Personality, Relationships, Moments, Passives, Body), then the tabs: **Overview** (plain label-and-value rows, no boxes), **Status**, **RPG**, **Kit**, **Spicy**, **Settings**. Three sizes on the portrait: **Min**, **Half**, **Full**. Dragging the edge lets go onto the nearest one, and the chat column moves over to make room. At Full the portrait is a column of its own with the sheet beside it. Click the portrait to pick her pose on the stage and, separately, the face on the card. |
+| Beside the left panel | The **vitals rail**: HP, mana and stamina as three tubes with her mood under them. Hover it, or click to pin it, and it opens into her mood, the Airhead gauge, every bar with its numbers, and her states. |
+| Top of the middle | The mode pill (Travelling, Combat, Down), her level and mood, the **Debugger** toggle, **Jiggle free**, and her inner voice. |
+| Over the chat box | The **dice drawer**: every roll slides up out of the top of the chat box with a die showing the number, its bands and its arithmetic, then folds itself down to one line after seven seconds. Click the line to open or fold it. In a standoff the crowd's nerve bar sits just above it. |
 | Middle | The story, with new lines arriving at the bottom next to the box. Under it, four tabs: **Responses** (what the place offers), **Social** (who to talk to, and the spots), **Items** (purse and potions), **Debug** (jump to any place, heal, EXP, the sandbox). Exits sit under every tab but Debug. |
 | Right panel, Map | The city and the wilds as bubbles. Click one to walk there; time passes with distance. Red rings are the wilds. |
-| Right panel, top | **Around here**: the threat in words, each regular in this part of the world with a respect bar, and the men and women about, with how restless the crowd is and whether they see her or a type. |
+| Right panel, top | The **world plate**, always there: the time and phase, the date (four months of 28 days, one per season: Bloomtide, Highsun, Leaffall, Deepfrost), where she is and which domain, how dangerous it is in a word with the fight chance and the enemies' rough level, and what they know her as here with a bar. Under it, on the Map tab, **Around here**: each regular in this part of the world with a respect bar, and the men and women about. |
 | Right panel, Them | Only while she is dealing with someone: rename them, change class or look, flip the picture, or move someone else in. |
 | Right panel, Level | EXP, level up, training points, the path that decides why the bust grows, every move and its unlock level. |
 | Right panel, Debug | The older tools, kept: sparring sandbox, party fights, level box, place list, stress buttons, reset. |
@@ -58,6 +60,9 @@ These live in `stage.html`, not in `engine/`. They are playtest rules: cheap to 
 - **Every night they move.** At midnight each condition goes up by what her body did and down by half her resistance. Resistance is ten times her attribute over the level's benchmark, plus one point for every night she starts at 25 or more (up to 20). A morning report card shows the arithmetic and names the cure for the worst one.
 - **Jiggle free.** A button in the top bar that always works: it drops a fight, a standoff, a meeting, a spot or the floor and stands her back up where she is, with at least a quarter of her health and 20 stamina. If the stage ever shows nothing that can be pressed, the page notices, wiggles that button and adds a large copy under the story.
 - **Cheats and simulators.** The Debug tab under the story has the jump list and seventeen cheats (`CHEATS`: bars, gold, EXP, decency, suspicion, both conditions, a bust tier, the clock, a road event, a standoff, reputation). The Debug tab on the right has four simulators that change nothing in the save: 1,000 walks down every road from here, 1,000 social rolls against whoever is in front of her, 30 nights of her conditions, and 60 real fights played by the battle runner against itself.
+- **Collapsing in the open.** Running out of stamina in a safe place just puts her on the ground. Anywhere else she is also **Exhausted** until she sleeps in a bed (every social and standoff roll −10, stamina stops at 50, fight chance +10), and one d100 says who reaches her first: a crowd (40: a standoff starts the moment she tries to get up), thieves (30: a third of her gold), a kind stranger (12: stamina 12), or nobody.
+- **Backdrops follow the clock.** Nine city places have three paintings each, for day, dusk and night (`TOWN_SCENES`, `sceneOf`). Morning and afternoon use the first, evening the second, night the third.
+- **Asking Claude.** Four things on the page can ask Claude: her inner voice, replies in chat, the Bio writer, and **AI fill**. AI fill sends her sheet and a digest of every gauge (`gaugeDigest`) in one request and writes only the parts switched on: the Bio, the four Drives, and a short read of how she is coming across now. Each part shows its rough cost before sending, and a Quick or Smart model can be picked. Every call is counted under what it was for, and the Debugger shows the tally. The counts are estimates (characters ÷ 4); the page is not told real token counts.
 - **Stamina.** Walking and acting spend it; food, naps, baths and beds restore it. At zero she falls down and needs a Willpower roll to get up.
 - **Decency.** How presentable she is. Fumbles, falling over, sleeping rough and losing fights lower it; baths, a polished breastplate and a real bed raise it.
 - **Meeting people.** The first time she meets a regular she picks one of four approaches. Each button shows its chance, and the dice tray shows the arithmetic: her attribute, their taste, her Airhead, her reputation. The result sets a rapport the Debugger shows as a number.
@@ -77,7 +82,18 @@ art/bg/bg-lanterns.webp  art/bg/chat-classroom.webp  art/bg/bg-stacks.webp
 art/bg/bg-dungeon.webp   art/bg/bg-arena.webp        art/bg/chat-pool.webp
 art/bg/bg-nightpark.webp art/bg/chat-graffiti.webp   art/bg/bg-forest.webp
 art/bg/bg-candy.webp
+art/bg/town/{gate,well,guild,tavern,archive,baths,bar,alley,yard}-{1,2,3}.webp   (1 day, 2 dusk, 3 night)
+art/cut/val-close.webp  art/cut/val-guard.webp  art/cut/val-bar.webp  art/cut/val-offduty.webp
+art/cut/elf-green.webp  art/cut/elf-violet.webp
 ```
+
+| File | Used for |
+|---|---|
+| `art/bg/town/<place>-1/2/3.webp` | The nine city places, by time of day |
+| `art/cut/val-close.webp` | Valerie: a close-up, meant as the face on her card |
+| `art/cut/val-guard.webp`, `val-bar.webp`, `val-offduty.webp` | Valerie: other poses for the stage (gate duty, a bar shift, off duty) |
+| `art/cut/elf-green.webp` | Elowen Thistledown, the lecturer at the Lecture Hall |
+| `art/cut/elf-violet.webp` | Fizz, the alchemist who owns Fizz and Fettle |
 
 A missing file leaves an empty spot; the page still works. Anyone on the page can also drop in their own picture or clip for either side.
 
