@@ -88,6 +88,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Del's secondary cast, rivals who turn, playing as Pip | `SECOND`, `HOSTILE`, `rivalFight`, `turnRival`, `secPose`, the `ally` branch in `hail`, `S.turned`, `S.secMet`; `PCS`, `PC_ID`, `SHEET_KEY`, `playAs` |
 | API tab, vault, share codes | `apiHtml`, `apiClick`, `apiTest`, `VAULT`, `vaultConnect`, `vaultSave`, `vaultLoad`, `vaultTick` (called from `passTime`), `shareMake`, `shareLook`, `shareUse`, `shareDrop`, `cleanShare` |
 | The character page | `PROFILE`, `LOOKTXT`, `viewData`, `viewList`, `openViewer`, `viewerHtml`, `viewerClick`, `cvZoom`, `cvApply`, `S.viewing`, `S.cv` |
+| Conversations and expressions | `convoOpen`, `convoOptions`, `convoCells`, `talkPick`, `convoAsk` (the Claude prompt), `convoFallback`, `MOODS`, `moodLook`, `INTENT`, `talker`, `S.convo`, `S.secretKnown`, `S.aiTalk` |
+| The lead and the assistant | `PCS`, `PC_ID`, `ASSIST`, `VAL_CARD`, `heroLook`, `assist`, `asstTip`, `VAL_OPEN`, `VAL_CHEER` |
 | The Town Girls | `TOWN` (generated from Del's `Town_Girls` dialogue files), the `town` kind in `hail`, `S.townMet`, the Cast section in `castHtml` |
 | Wanderers and the movement maps | `countsFor` (the big map), `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
 | Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
@@ -184,6 +186,11 @@ Decisions made in that pass:
 - Del asked for an API tab that "connects, memorises, vaults and shares securely", from a key or "from your vault". Built without any key entry: a page in a browser cannot keep a key safe and this one cannot reach outside services. The credentials stay with the viewer's Claude account; the page gets `sample`, `db` and `user`. **Publishing must now declare all three capabilities** (`{sample:{}, db:{}, user:{}}`) or the vault stops working.
 - The vault and share codes have only been run against a stand-in database in the browser tests, not the real one.
 - Del asked to "zoom in on the main characters", with body dimensions and "a reveal or secret". That is the character page. Body numbers are tiers and a height, not measurements.
+
+- Del then sent Ember Vale ("main new character", then "Ember main character", then "Valerie will be her assistant", then "Valerie can be a main character, I don't know yet until I can get her a ref"). Built so both can be true: a fresh save leads with Ember and Valerie assists; the switch on the first tab puts Valerie back in the lead, and then there is no assistant. **Ember's lore, lines, secret and sheet were written for her because no sheet came with the pictures; replace them when Del sends one.**
+- "A system for multiple prompt responses that are aware of context and actually change expressions" is the conversation system. With Claude allowed it costs one small request per reply.
+- From the pose packs: Ember's "needy" clip and "dazed" picture are not on the page; Morwyn Duskthorn and ten others in the knocked-out pack have no sheet and are not in the game; the Seraphine in that pack is a different character from the courtesan Seraphine Luxe.
+- The browser tests are pinned to Valerie (`oops-pc`), except the ones that test switching.
 
 Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
 
