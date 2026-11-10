@@ -526,6 +526,34 @@ body.alone{--col:700px}
 .tray.shut .tray-h::after{content:"▴"}
 .foe{position:static;flex:none;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:12px;padding:6px 12px;border-radius:12px}
 .foe .track{margin:0;height:9px}
+/* the big window */
+.bigwrap{position:absolute;inset:0;z-index:20;display:grid;place-items:center;padding:20px;background:rgba(5,6,9,.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.big-in{width:min(620px,100%);max-height:100%;overflow:auto;scrollbar-width:thin;display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:20px 22px;border-radius:18px;background:var(--box2);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--edge2));box-shadow:0 30px 80px -20px #000,inset 0 0 0 3px rgba(8,9,13,.55),inset 0 0 0 4px color-mix(in srgb,var(--gold) 20%,transparent);--c:var(--gold)}
+.big-in h2{margin:0;font-family:var(--f-head);font-weight:600;font-size:1.35rem;letter-spacing:-.01em}
+.big-in p{margin:0}
+.big-in .prose{font-family:var(--f-serif);font-size:1.12rem;line-height:1.45}
+.big-dice{font-family:var(--f-mono);font-size:.7rem;color:var(--muted)}
+.big-in .over p{font-size:.86rem}
+.big-in .vrows{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.line .info{margin-top:5px;padding:2px 10px;font-size:.66rem}
+.hud.r .halfcard{position:relative;height:230px}
+.shadeface{display:grid;place-items:center;background:#07080c}.shadeface svg{width:100%;height:100%}
+/* the catalogue */
+.castwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.castwrap h3{margin:8px 0 0;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:500}
+.cnote{margin:0;font-size:.8rem;color:var(--muted)}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.ccard{display:grid;grid-template-columns:64px minmax(0,1fr);gap:10px;align-items:start;padding:9px;border-radius:12px;background:var(--box2);border:1px solid var(--edge)}
+.ccard.main{border-color:color-mix(in srgb,var(--gold) 45%,var(--edge))}
+.ccard.unmet{opacity:.62;border-style:dashed}
+.cthumb{position:relative;width:64px;height:84px;border-radius:9px;overflow:hidden;background:#07080c;border:1px solid var(--edge);display:grid;place-items:center}
+.cthumb img,.cthumb video{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block}
+.cthumb .face{position:absolute;inset:0;width:auto;height:auto;border:0;border-radius:0}
+.cthumb .shade{width:100%;height:100%}
+.ccard b{display:block;font-family:var(--f-head);font-weight:600;font-size:.86rem;line-height:1.15}
+.ccard i{display:block;font-family:var(--f-serif);color:var(--pink);font-size:.98rem;line-height:1.2;margin-bottom:3px}
+.ccard p{margin:0;font-size:.72rem;color:var(--muted);line-height:1.35}
+.pinnote{grid-column:1/-1;font-family:var(--f-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;color:var(--crit)}
 /* the same grid at every place: three rows of four */
 .pgrid{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .prow{grid-column:1/-1;font-family:var(--f-mono);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-top:2px}
@@ -672,6 +700,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
   <figure class="sprite r" id="sprR" aria-hidden="true"></figure>
 
   <div class="grip l" id="gripL" role="separator" aria-orientation="vertical" aria-label="Resize your panel" tabindex="0"></div>
+  <div class="bigwrap" id="big" hidden></div>
   <div class="rail" id="rail" aria-label="Health, mana, stamina and mood"></div>
   <div class="grip r" id="gripR" role="separator" aria-orientation="vertical" aria-label="Resize their panel" tabindex="0"></div>
   <aside class="hud l" id="hudL" aria-label="You"></aside>
@@ -683,6 +712,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
       <div class="tabs" role="tablist" aria-label="Views">
         <button role="tab" type="button" data-view="stage" aria-selected="true">Stage</button>
         <button role="tab" type="button" data-view="guild" aria-selected="false">Guild</button>
+        <button role="tab" type="button" data-view="cast" aria-selected="false">Cast</button>
         <button role="tab" type="button" data-view="tavern" aria-selected="false">SillyTavern</button>
       </div>
       <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
@@ -698,6 +728,7 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
     <div class="thought" id="thought" hidden></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
+    <section class="panel" id="cast" hidden aria-label="Everyone she knows, and the shapes she does not"></section>
     <section class="panel" id="tavern" hidden aria-label="SillyTavern guide"></section>
     <div class="foe" id="foe" hidden></div>
     <div class="tray" id="tray" hidden aria-live="polite"></div>
@@ -835,16 +866,16 @@ const PLACES = [
   { id: 'yard', area: 'castle', name: 'Castle Yard', short: 'Yard', x: 50, y: 18, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: ['castle'], who: null, acts: ['look', 'spar'], links: ['gates', 'ruins', 'bunks'],
     text: 'Sand, stands, and a row of practice dummies that have learned to lean away from you.',
     look: ['One dummy has a helmet on. On closer inspection it is your helmet, from last week.', 'The sand has been raked into neat lines. You have about a minute before that stops being true.'] },
-  { id: 'tankard', area: 'forest', name: 'The Mossy Tankard', short: 'Tankard', x: 84, y: 30, src: 'art/bg/bg-stacks.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['road'], roads: { road: 35 },
+  { id: 'tankard', area: 'forest', name: 'The Mossy Tankard', short: 'Tankard', x: 84, y: 30, src: 'art/bg/bg-stacks.webp', zone: 'safe', tags: [], who: 'marta', acts: ['look', 'rest'], links: ['road'], roads: { road: 35 },
     text: 'A woodsmen\'s inn built round a living tree, with a tinker\'s cart parked for good in the yard. Beds upstairs, potions out front, and nobody asks where you have been.',
     look: ['A branch has grown in through one window and out through another. Somebody hangs washing on it.', 'The tinker is asleep on his cart with a price list over his face.'] },
-  { id: 'bunks', area: 'castle', name: 'The Gatehouse Bunks', short: 'Bunks', x: 18, y: 22, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['yard'], roads: { yard: 25 },
+  { id: 'bunks', area: 'castle', name: 'The Gatehouse Bunks', short: 'Bunks', x: 18, y: 22, src: 'art/bg/bg-arena.webp', zone: 'safe', tags: [], who: 'odile', acts: ['look', 'rest'], links: ['yard'], roads: { yard: 25 },
     text: 'The old gatehouse, turned into a row of bunks for anyone holding the castle. The quartermaster sells out of a hatch in the wall and counts everything twice.',
     look: ['Every bunk has a name carved in it. Yours says HERE in chalk, as of a moment ago.', 'The quartermaster\'s hatch has a bell, and a sign that says DO NOT RING THE BELL.'] },
-  { id: 'lodge', area: 'academy', name: 'The Porter\'s Lodge', short: 'Lodge', x: 50, y: 52, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['quad'], roads: { quad: 25 },
+  { id: 'lodge', area: 'academy', name: 'The Porter\'s Lodge', short: 'Lodge', x: 50, y: 52, src: 'art/bg/chat-classroom.webp', zone: 'safe', tags: [], who: 'quill', acts: ['look', 'rest'], links: ['quad'], roads: { quad: 25 },
     text: 'The porter keeps a guest room for visitors who miss the gate, and a counter of reagents for students who miss their deadlines.',
     look: ['A board of keys, every one labelled NOT THIS ONE.', 'The reagent counter has a jar marked FREE SAMPLES. It is empty and looks pleased about it.'] },
-  { id: 'leanto', area: 'camps', name: 'The Smuggler\'s Lean-to', short: 'Lean-to', x: 16, y: 20, src: 'art/bg/bg-nightpark.webp', zone: 'safe', tags: [], who: null, acts: ['look', 'rest'], links: ['outskirts'], roads: { outskirts: 40 },
+  { id: 'leanto', area: 'camps', name: 'The Smuggler\'s Lean-to', short: 'Lean-to', x: 16, y: 20, src: 'art/bg/bg-nightpark.webp', zone: 'safe', tags: [], who: 'auntie', acts: ['look', 'rest'], links: ['outskirts'], roads: { outskirts: 40 },
     text: 'Canvas over a dry ditch, out of sight of the camps. A fence who will not give a name rents bedrolls and sells whatever fell off a wagon.',
     look: ['The whole place can be packed onto one mule in the time it takes to say "patrol".', 'The fence weighs your purse by eye and nods. You are not sure what was decided.'] },
   { id: 'road', area: 'forest', name: 'Greenwood Road', short: 'Road', x: 40, y: 22, src: 'art/bg/bg-forest.webp', zone: 'wild', enc: 30, evt: 25, foe: 0.75, tags: ['forest', 'road', 'mountain', 'bridge', 'cave'], who: null, acts: ['look', 'explore', 'hunt'], links: ['gates', 'bridge', 'hollow', 'tankard'],
@@ -882,11 +913,11 @@ const PLACES = [
 // Order (0 to 100) is how firmly a domain is held. Winning there raises it, losing lowers it, and it moves the fight chance.
 // exits draw a doorway on one map that leads to a place on another.
 const AREAS = {
-  city: { name: 'Gooseford', h: 80, exits: [{ from: 'gates', to: 'road', x: 78, y: 66, label: 'Forest' }, { from: 'gates', to: 'yard', x: 22, y: 66, label: 'Castle' }, { from: 'square', to: 'quad', x: 50, y: 7, label: 'Academy' }] },
-  forest: { name: 'The Greenwood', h: 74, start: 40, exits: [{ from: 'road', to: 'gates', x: 72, y: 9, label: 'City' }, { from: 'hollow', to: 'outskirts', x: 66, y: 62, label: 'Camps' }] },
-  castle: { name: 'Castle Greywatch', h: 74, start: 30, exits: [{ from: 'yard', to: 'gates', x: 82, y: 9, label: 'City' }] },
-  academy: { name: 'The Academy', h: 74, start: 60, exits: [{ from: 'quad', to: 'square', x: 82, y: 9, label: 'City' }] },
-  camps: { name: 'The Slaver Camps', h: 74, start: 10, exits: [{ from: 'outskirts', to: 'hollow', x: 82, y: 9, label: 'Forest' }] },
+  city: { name: 'Gooseford', folk: 'The townsfolk', h: 80, exits: [{ from: 'gates', to: 'road', x: 78, y: 66, label: 'Forest' }, { from: 'gates', to: 'yard', x: 22, y: 66, label: 'Castle' }, { from: 'square', to: 'quad', x: 50, y: 7, label: 'Academy' }] },
+  forest: { name: 'The Greenwood', folk: 'The woodsfolk', h: 74, start: 40, exits: [{ from: 'road', to: 'gates', x: 72, y: 9, label: 'City' }, { from: 'hollow', to: 'outskirts', x: 66, y: 62, label: 'Camps' }] },
+  castle: { name: 'Castle Greywatch', folk: 'The garrison', h: 74, start: 30, exits: [{ from: 'yard', to: 'gates', x: 82, y: 9, label: 'City' }] },
+  academy: { name: 'The Academy', folk: 'The faculty', h: 74, start: 60, exits: [{ from: 'quad', to: 'square', x: 82, y: 9, label: 'City' }] },
+  camps: { name: 'The Slaver Camps', folk: 'The camp bosses', h: 74, start: 10, exits: [{ from: 'outskirts', to: 'hollow', x: 82, y: 9, label: 'Forest' }] },
 };
 // The regulars. Their numbers are hidden from the player; the Debugger at the top shows them.
 // likes and dislikes move a first impression by 20. hours is when they are at their place.
@@ -894,7 +925,7 @@ const CAST = {
   bambi: { name: 'Bambi Soft', role: 'the barmaid at the Gilded Goose', cls: 'rogue', look: 'bambi-idle', likes: 'friendly', dislikes: 'clever',
     warm: 'Oh, I like you. Sit down before you fall down, I will bring you something.', cold: 'Mm-hm. Coasters are on the bar, hon. Please use one this time.',
     greet: ['Val! Sit, sit. You look like you fought a door again. Did the door win?', 'There she is, the hero who paid her tab in goblin teeth. Usual table?', 'Careful with the sword near the chandelier this time, hon. It has only just stopped swinging.'] },
-  sable: { name: 'Sable', role: 'a ranger who never stays in one place', cls: 'warrior', look: 'ranger', likes: 'bold', dislikes: 'flirt',
+  sable: { name: 'Sable', role: 'a ranger who never stays in one place', cls: 'warrior', guarded: true, look: 'ranger', likes: 'bold', dislikes: 'flirt',
     warm: 'Ha. Straight to it. Good. I am Sable; I go where the work is.', cold: 'Save it. I have a road to walk and you are standing on it.',
     greet: ['You again. I was two streets over an hour ago. Funny how that works.', 'Road east is crawling. Take a friend or take a lot of potions.', 'I do not live anywhere. I am just here until I am not.'] },
   lune: { name: 'Sister Lune', role: 'the keeper of the Wishing Well', cls: 'mage', look: 'priestess', likes: 'friendly', dislikes: 'bold',
@@ -909,7 +940,19 @@ const CAST = {
   fizz: { name: 'Fizz', role: 'the alchemist who owns Fizz and Fettle', cls: 'rogue', look: 'elf-violet', hours: [7, 21], likes: 'flirt', dislikes: 'clever',
     warm: 'Ooh, a customer who smiles first. Everything on that shelf just got friendlier, sweetheart.', cold: 'If you are going to tell me how my own potions work, the door is the tall rectangle behind you.',
     greet: ['Val! Mind the display. No, the other display. Never mind, I will catch it.', 'Healing is red, mana is blue, and the pink one is not for sale, it is for me.', 'You break it, you bought it. You look at it funny, you have also bought it.'] },
-  nyx: { name: 'Nyx Inkwell', role: 'the night archivist of the Old Archive', cls: 'mage', look: 'librarian', hours: [8, 24], likes: 'clever', dislikes: 'flirt',
+  marta: { name: 'Marta Burr', role: 'the keeper of the Mossy Tankard', cls: 'warrior', look: 'none', inn: true, likes: 'bold', dislikes: 'clever',
+    warm: 'Ha! Boots off, sword on the rack, sit. You will do.', cold: 'Do not explain my own roof to me, girl. Bed or door?',
+    greet: ['Mind the branch. It was here first.', 'Stew is on. It has been on since spring.', 'You pay before you sleep. People who pay after tend to leave by the window.'] },
+  odile: { name: 'Sergeant Odile Pike', role: 'who runs the Gatehouse Bunks', cls: 'warrior', look: 'none', inn: true, guarded: true, likes: 'friendly', dislikes: 'flirt',
+    warm: 'A polite one. Top bunk by the stove, then. Do not tell the others.', cold: 'That will be "Sergeant", and that will be all.',
+    greet: ['Lights out at ten. The castle does not care what time you think it is.', 'You snore in armor. I have a report about it.', 'Bunk four. Bunk five if you break bunk four.'] },
+  quill: { name: 'Mistress Quill', role: 'the porter at the Academy lodge', cls: 'mage', look: 'none', inn: true, likes: 'clever', dislikes: 'bold',
+    warm: 'A guest who reads the sign before knocking. The good room, I think.', cold: 'We do not shout at porters here. We fill in a form.',
+    greet: ['Sign the book. No, with a pen.', 'The gate shuts at dusk. I am the gate.', 'Guests are asked not to duel in the corridor. You, specifically, were asked.'] },
+  auntie: { name: 'Auntie', role: 'the fence at the Smuggler\'s Lean-to, who gives no other name', cls: 'rogue', look: 'none', inn: true, guarded: true, likes: 'flirt', dislikes: 'friendly',
+    warm: 'Oh, I like a girl who knows what a smile is for. Best bedroll, on the house rate.', cold: 'Nobody is that nice for nothing, dear. What do you want?',
+    greet: ['You were never here. Neither was I. Tea?', 'Everything on that crate fell off a wagon. Some of it was pushed.', 'Keep your voice down and your purse closed until I say.'] },
+  nyx: { name: 'Nyx Inkwell', role: 'the night archivist of the Old Archive', cls: 'mage', look: 'librarian', guarded: true, hours: [8, 24], likes: 'clever', dislikes: 'flirt',
     warm: 'A reader. In armor. Well. Come in, then, and touch nothing that hums.', cold: 'Shh. No. Whatever that was, the answer is the returns desk.',
     greet: ['Shh. No, quieter than that. The armor, dear. The armor is shouting.', 'Returns go on the left. Screaming books go on the right. You go nowhere near the candles.', 'I filed a note about you. It is under M, for miracle, clerical error, or both.'] },
 };
@@ -1013,7 +1056,7 @@ const S = {
   order: store.get('order', {}), secured: store.get('secured', {}),
   cls: store.get('cls', 'knight'), heat: store.get('heat', 0), cond: store.get('cond', {}), resist: store.get('resist', {}),
   journal: store.get('journal', []), seen: store.get('seen', {}), race: store.get('race', 'Human'), ctab: 'resp',
-  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
+  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), ai: store.get('ai', {}), fillSeg: store.get('fillSeg', { bio: true, drives: true, read: true }), fillTier: store.get('fillTier', 'quick'), fillNote: '', descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1186,6 +1229,7 @@ function battleAdvance() { // the rest of the party plays itself until it is you
 }
 function startBattle(spec) {
   if (!BT || S.battle) return;
+  once(`foe:${spec.boss ?? spec.encounter}`);
   const def = spec.boss ? DATA.bosses.bosses.find((x) => x.id === spec.boss) : DATA.encounters.encounters.find((x) => x.id === spec.encounter);
   if (!def) return post({ who: 'sys', dice: `No such fight: ${esc(spec.boss ?? spec.encounter)}` });
   const solo = !spec.boss && !S.party, level = spec.boss ? def.level : S.level, foeLevel = spec.level ?? (solo ? Math.max(1, Math.round(level * (placeNow().foe ?? 0.75))) : level);
@@ -1239,22 +1283,25 @@ function worldPlate() {
     <div class="w-time"><span class="g">${{ Morning: '☀', Afternoon: '☀', Evening: '☾', Night: '★' }[ph]}</span><b>${hhmm()}</b><span>${ph}</span><em title="Four months to a year, one for each season, 28 days each">${m[2]} ${dom} ${m[0]} · ${m[1]}</em></div>
     <div class="w-place"><b>${esc(here.name)}</b><span>${esc(AREAS[area].name)}${area === 'city' ? ' · inside the walls' : ''}</span></div>
     <div class="w-row"><span class="pilltag z-${word.split(' ')[0]}">${word}</span><span>${here.zone === 'safe' && !danger ? 'nothing hunts here' : `fight ${danger}% · enemies about level ${foe}`}${S.secured[area] ? ' · secured' : ''}</span></div>
-    <div class="w-rep"><div class="t"><span>They know you here as</span><b>${esc(label)} · ${fame}</b></div><div class="track"><i style="--k:${r >= 35 ? 'var(--mint)' : 'var(--crit)'};width:${r}%"></i><u style="left:35%"></u></div></div></div>`;
+    <div class="w-rep"><div class="t"><span>${esc(AREAS[area].folk)} know you as</span><b>${esc(label)} · ${fame}</b></div><div class="track"><i style="--k:${r >= 35 ? 'var(--mint)' : 'var(--crit)'};width:${r}%"></i><u style="left:35%"></u></div></div></div>`;
 }
 function rightPanel() {
   const withThem = Boolean(S.who && (S.talking || S.meet));
+  if (withThem && S.autoThem !== S.who) { S.autoThem = S.who; S.rtab = 'here'; } if (!withThem) S.autoThem = null;
   const tab = S.battle ? S.rtab : S.rtab === 'fight' || (S.rtab === 'here' && !withThem) ? 'map' : S.rtab;
   const tabs = [...(S.battle ? [['fight', 'Fight']] : []), ['map', 'Map'], ...(withThem ? [['here', 'Them']] : []), ['level', 'Level'], ['debug', 'Debug']];
   return `${worldPlate()}<div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
     tab === 'fight' ? battlePanel() : tab === 'here' ? hereTab() : tab === 'level' ? levelTab() : tab === 'debug' ? debugTab() : mapTab()}`;
 }
+function themFace() { const look = S.custom[S.lookR] ?? LOOKS.find((l) => l.id === S.lookR); return look?.src ? `<span class="face">${look.video ? `<video src="${esc(look.src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(look.src)}" alt="">`}</span>` : `<span class="face shadeface">${shade(2)}</span>`; }
 function hereTab() {
   const h = S.hero, t = S.them, top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
   const stressBand = t.stress >= 100 ? 'Cracking' : t.stress >= 50 ? 'Tense' : 'Steady';
   const picker = `<label><span class="lbl">Who lives here</span><select id="whoHere"><option value="">Nobody</option>${Object.keys(CAST).map((id) => `<option value="${id}"${id === S.who ? ' selected' : ''}>${esc(castOf(id).name)}</option>`).join('')}</select></label>`;
   if (!S.who) return `<div class="who"><p class="lbl">${esc(placeNow().name)}</p><h2>Nobody here</h2><p class="role">an empty spot</p></div><div class="set">${picker}</div><div class="over"><h3>Regulars</h3><p>Pick someone to live here. They will be here every time you come back, with their own look, name and class.</p></div>`;
   return `
-    <div class="who"><p class="lbl">${S.mode === 'combat' ? 'Sparring partner' : esc(castOf(S.who).role)} · level ${t.level}</p><h2>${esc(S.nameR)}</h2><p class="role">${esc(arche(S.classR).name)}</p></div>
+    <div class="halfcard them">${themFace()}<div class="hc-name"><h2>${esc(S.nameR)}</h2><p class="role">${esc(arche(S.classR).name)}</p></div><span class="lv" title="Level ${t.level}"><small>LV</small>${t.level}</span></div>
+    <p class="lbl">${S.mode === 'combat' ? 'Sparring partner' : esc(castOf(S.who).role)}</p><div class="chips"><span style="--k:var(--pink)">respect: ${tierOf(npcOf(S.who).rapport).toLowerCase()}</span>${castOf(S.who).guarded ? '<span style="--k:var(--gold)">guarded · an answer every visit</span>' : '<span style="--k:var(--mint)">easy company · never turns on you</span>'}</div>
     <div class="dial">${dial(t.stress, 200, [[0, 50, .1], [50, 100, .16], [100, 200, .24]], 'var(--pink)')}<div class="num"><b>${t.stress}</b><span>${stressBand}</span></div></div>
     ${emo(t, false)}
     <div class="bars">${bar('HP', t.hp, t.maxHp, 'var(--mint)')}${bar('MP', t.mp, t.maxMp, 'var(--cyan)')}${bar('Limit', t.limit, 100, 'var(--gold)')}</div>
@@ -1326,7 +1373,7 @@ function residentOf(placeId) {
   return id && CAST[id] ? id : null;
 }
 function seat() { // whoever is here takes the right side of the stage
-  S.who = residentOf(S.place);
+  S.who = residentOf(S.place); S.retest = false; S.passed = null;
   if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
   else { S.nameR = 'Practice Dummy'; S.classR = 'warrior'; S.lookR = 'none'; }
   S.meet = S.who && !npcOf(S.who).met ? S.who : null;
@@ -1364,7 +1411,7 @@ function levelUp() {
 }
 function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
 function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
-function useStam(amount, why) { if (amount > 0 && condOf('swell') >= 75) amount += 1; const was = S.stam; S.stam = Math.max(0, Math.min(S.spent ? 50 : 100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
+function useStam(amount, why) { if (amount > 0 && condOf('swell') >= 75) amount += 1; const was = S.stam; S.stam = Math.max(0, Math.min(S.spent ? 50 : 100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen && !S.standoff) fallDown(); }
 function decency(delta, why) { if (!delta) return; delta = swung(delta); if (delta < 0 && hasPerk('attention')) delta -= 1; if (delta < 0 && hasPerk('refitted')) delta = Math.min(0, delta + 1); if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
 const GROW_SAY = {
   warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
@@ -1405,7 +1452,7 @@ function renderTray() {
   el.innerHTML = `<button class="tray-h" type="button" data-tray="1" title="Fold or unfold the dice"><span class="die o-${tone}">${L.roll}</span><span class="lbl">${esc(L.title)}</span><b class="deg o-${tone}">${esc(String(L.degree).toUpperCase())}</b></button><div class="tray-b"><div class="tray-in">${stripHtml(segs, L.roll)}<p class="tray-m">${open ? esc(L.math ?? '') : `Rolled ${L.roll}. Their numbers are hidden: get to know them, or open the Debugger.`}</p></div></div>`;
   if (!S.trayFresh) return;
   S.trayFresh = false; el.classList.remove('land', 'shut', 'roll'); const m = el.querySelector('.mark'); void el.offsetWidth; el.classList.add('roll');
-  clearTimeout(S.trayT); S.trayT = setTimeout(() => el.classList.add('shut'), 7000);
+  clearTimeout(S.trayT); S.trayT = setTimeout(() => { if (!(S.meet || S.talking || S.standoff)) el.classList.add('shut'); }, 7000);
   if (m) { const to = m.style.left; m.style.transition = 'none'; m.style.left = '0%'; void m.offsetWidth; m.style.transition = 'left .8s cubic-bezier(.2,.8,.2,1)'; m.style.left = to; }
   setTimeout(() => el.classList.add('land'), 820);
 }
@@ -1438,6 +1485,7 @@ function meetBonus(kind) {
   return { total: like + tilt + tb + low + rb.total, parts: [...rb.parts, like && `${like > 0 ? '+' : '−'}20 they ${like > 0 ? 'like' : 'hate'} that`, tilt && `${tilt > 0 ? '+' : '−'}${Math.abs(tilt)} Airhead`, tb && `+${tb} bust`, low && '−10 low decency'].filter(Boolean) };
 }
 function meet(kind) {
+  if (S.retest) return retest(kind);
   const id = S.meet; if (!id || !APPROACH[kind]) return;
   const c = castOf(id), a = APPROACH[kind], rec = npcOf(id), b = meetBonus(kind);
   const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts });
@@ -1551,10 +1599,10 @@ function fallDown() {
   // Nowhere to rest out here. She is Exhausted until she sleeps in a bed, and one roll says who gets to her first.
   spent(true, `collapsed at ${p.short}`); decency(-8, 'lying in the road');
   const res = tableRoll(`Collapsed in the open · ${p.short} · who finds you first`, [['a crowd', 40, 'crit'], ['thieves', 30, 'fumble'], ['a kind stranger', 12, 'hit']]);
-  if (res === 'a crowd') { S.waiting = true; post({ who: 'sys', plate: 'Collapsed in the open', dice: '[found] Boots. Several pairs.', tone: 'crit', say: 'Somebody says "well, look at that" in a voice that is enjoying itself. They are standing round you, in no hurry. The moment you move, this starts.', fx: ['Exhausted', 'a standoff starts when you try to get up'] }); }
-  else if (res === 'thieves') { const lost = Math.min(S.gold, Math.max(5, Math.round(S.gold / 3))); S.gold -= lost; store.set('gold', S.gold); heat(6, 'robbed in the road'); post({ who: 'sys', plate: 'Collapsed in the open', dice: `[robbed] ${lost} gold gone`, tone: 'fumble', say: 'Quick hands, a jingle, and footsteps going away fast. They were polite enough to leave the sword. It is too heavy to steal.', fx: ['Exhausted', `gold −${lost}`] }); }
-  else if (res === 'a kind stranger') { S.stam = 12; store.set('stam', S.stam); post({ who: 'sys', plate: 'Collapsed in the open', dice: '[helped] A waterskin and a shoulder', tone: 'hit', say: 'A carter props you against a milestone, pours water into you, and says only "long day, was it." It was.', fx: ['Exhausted', 'stamina 12'] }); }
-  else post({ who: 'sys', plate: 'Collapsed in the open', dice: '[nobody] Just the road', say: 'Nobody comes. The sky is very large from down here. Everything aches in a new way.', fx: ['Exhausted'] });
+  if (res === 'a crowd') { S.waiting = true; post({ big: { why: WHY_COLLAPSE }, who: 'sys', plate: 'Collapsed in the open', dice: '[found] Boots. Several pairs.', tone: 'crit', say: 'Somebody says "well, look at that" in a voice that is enjoying itself. They are standing round you, in no hurry. The moment you move, this starts.', fx: ['Exhausted', 'a standoff starts when you try to get up'] }); }
+  else if (res === 'thieves') { const lost = Math.min(S.gold, Math.max(5, Math.round(S.gold / 3))); S.gold -= lost; store.set('gold', S.gold); heat(6, 'robbed in the road'); post({ big: { why: WHY_COLLAPSE }, who: 'sys', plate: 'Collapsed in the open', dice: `[robbed] ${lost} gold gone`, tone: 'fumble', say: 'Quick hands, a jingle, and footsteps going away fast. They were polite enough to leave the sword. It is too heavy to steal.', fx: ['Exhausted', `gold −${lost}`] }); }
+  else if (res === 'a kind stranger') { S.stam = 12; store.set('stam', S.stam); post({ big: { why: WHY_COLLAPSE }, who: 'sys', plate: 'Collapsed in the open', dice: '[helped] A waterskin and a shoulder', tone: 'hit', say: 'A carter props you against a milestone, pours water into you, and says only "long day, was it." It was.', fx: ['Exhausted', 'stamina 12'] }); }
+  else post({ big: { why: WHY_COLLAPSE }, who: 'sys', plate: 'Collapsed in the open', dice: '[nobody] Just the road', say: 'Nobody comes. The sky is very large from down here. Everything aches in a new way.', fx: ['Exhausted'] });
 }
 function spent(on, why) { if (Boolean(S.spent) === on) return; S.spent = on; store.set('spent', on); note(on ? `Exhausted · ${why}` : `no longer Exhausted · ${why}`); if (on && S.stam > 50) { S.stam = 50; store.set('stam', 50); } }
 function getUp() {
@@ -1587,7 +1635,7 @@ function doAct(id) {
   if (id.startsWith('opt:')) return doSpot(+id.slice(4));
   if (id.startsWith('use:')) return drink(id.slice(4));
   if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
-  if (id === 'talk') { if (!who) return; if (condOf('phero') >= 75 && who.dislikes === 'flirt') { S.talking = false; return post({ who: 'her', plate: who.name, say: 'Not while you are like that. Go and have a bath, and then we will talk.', spoken: true, fx: ['pheromones 75+: they will not talk to you'] }); } S.talking = true; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
+  if (id === 'talk') { if (!who) return; if (condOf('phero') >= 75 && who.dislikes === 'flirt') { S.talking = false; return post({ who: 'her', plate: who.name, say: 'Not while you are like that. Go and have a bath, and then we will talk.', spoken: true, fx: ['pheromones 75+: they will not talk to you'] }); } if (who.guarded && npcOf(S.who).met && S.passed !== S.who) { S.meet = S.who; S.retest = true; return post({ who: 'sys', plate: who.name, dice: '[guarded] She wants an answer first, every visit', say: `${who.name} looks you over the way she always does. Pick how you answer, or fall back on ${talentOf().name}.` }); } S.talking = true; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
   if (id === 'board') return setView('guild');
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
@@ -1606,8 +1654,9 @@ function travelGrid() {
   const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
   const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
   if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy'), hasPerk('surefoot') ? 10 : 0), 'primary');
+  if (S.standoff?.pinned) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total, left = 3 - S.standoff.pinRounds; return cell('so:struggle', 'Struggle up', `${odds('STR', dc, rb('strike') + (hasPerk('ragdoll') ? 10 : 0))} · back on your feet`, 'primary') + cell('so:wriggle', 'Wriggle free', `${odds('AGI', dc, rb('run') + (hasPerk('eel') ? 10 : 0))} · out and away`) + cell('so:plead', 'Talk from the ground', `${odds('WIL', dc, rb('persuade') - 10)} · nerve −30`) + cell('so:endure', 'Curl up', 'no roll · halve the next one') + `<span class="pinnote">Pinned · ${left} round${left === 1 ? '' : 's'} before they win</span>`; }
   if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; const cl = calling(), so = S.standoff, tell = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : ''; return cell('so:strike', cl.verb, `${odds(cl.stat, dc, rb('strike'))} · nerve −25${tell}`, 'primary') + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
-  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + own + exitCells(here);
+  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
   const closed = !openNow(here.hours);
   if (S.spot) { const spot = (SPOTS[here.id] ?? []).find((s) => s.id === S.spot);
     return spot.opts.map((o, i) => o.buy
@@ -1753,7 +1802,7 @@ function secure(area) {
 }
 const legMins = (a, b) => a.roads?.[b.id] ?? b.roads?.[a.id] ?? Math.round(dist(a, b) * (a.zone === 'wild' || b.zone === 'wild' ? 2.4 : 1.2));
 function dangerOf(p) { // percent chance of a fight: the place, the hour, the state she is in, and how well the domain is held
-  if (p.zone === 'safe') return (S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0) + (condOf('phero') >= 50 ? Math.round((condOf('phero') - 50) / 5) : 0);
+  if (p.zone === 'safe') return (S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0) + (condOf('phero') >= 50 ? Math.round((condOf('phero') - 50) / 5) : 0) + (['Villain', 'Town scandal'].includes(repLabel(areaOf(p))) ? 6 + 2 * passiveRank() : 0);
   const area = areaOf(p), held = area === 'city' ? 0 : Math.round((50 - orderOf(area)) * 0.3);
   const raw = (p.enc ?? 0) + (S.spent ? 10 : 0) + 4 * stepOf('phero') + Math.round(S.heat / 4) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0) + held;
   return Math.max(0, Math.min(90, Math.round(raw * (S.secured[area] ? 0.4 : 1))));
@@ -1938,7 +1987,8 @@ function startStandoff(why, encId) {
   const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
   const level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
   const kinds = ['slash', 'strike', 'thrust'], weak = kinds[Math.floor(Math.random() * 3)], tough = kinds[(kinds.indexOf(weak) + 1 + Math.floor(Math.random() * 2)) % 3];
-  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
+  once(`foe:${safe ? 'opportunists' : enc.id}`);
+  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
     foe: makeCombatant({ id: 'heckler', name: safe ? 'Opportunists' : enc.name, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
   post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
@@ -1979,6 +2029,7 @@ function standoffAct(kind) {
   const so = S.standoff; if (!so) return;
   if (kind === 'fight') { S.standoff = null; return startBattle({ encounter: so.id, level: so.level }); }
   if (kind === 'push') { so.push = !so.push; return; }
+  if (so.pinned) return pinnedAct(kind);
   let ended = null;
   if (kind === 'brace') { so.brace = true; useStam(-5, 'bracing'); post({ who: 'me', dice: '[no roll] Brace', say: 'You set your feet and get the shield arm up. Whatever comes next, half of it stays on the armor.' }); }
   else {
@@ -2004,8 +2055,8 @@ function standoffAct(kind) {
       useStam(kind === 'strike' ? 4 : 2, label);
     }
   }
-  if (!ended && (S.fallen || S.stam <= 0)) ended = 'forced';
-  if (!ended) heckle(so);
+  if (!ended && (S.fallen || S.stam <= 0)) pinDown(so);
+  if (!ended) { heckle(so); if (d() <= 8 * (so.rank ?? 0)) heckle(so); }
   if (!ended && so.nerve <= 0) ended = 'won';
   if (!ended && S.hero.hp <= 0) ended = 'lost';
   if (!ended && so.round >= 8) ended = so.nerve <= 40 ? 'bored' : 'forced';
@@ -2140,12 +2191,15 @@ Object.assign(PERKS, {
   attention: { name: 'Likes the Attention', quote: 'I did the sway on purpose that time. Since when do I do that?', does: 'Sway +5. Every decency loss is 1 bigger.', from: 'Sway at a crowd three times', need: ['sways', 3] },
   shameless: { name: 'Shameless', quote: 'Whistle all you like. I have a sword and a very good breastplate.', does: 'Catcalls no longer cost decency. The gossip grows twice as fast.', from: 'Get whistled at six times', need: ['catcalls', 6] },
   bruiser: { name: 'Short Fuse', quote: 'I hit first now. That is new, and I am not sure I love it.', does: 'Strike +5. Rough conduct counts double.', from: 'Strike at a crowd four times', need: ['strikes', 4] },
+  ragdoll: { name: 'Knows the View', quote: 'I know this view. It is mostly boots.', does: 'Struggle up +10.', from: 'Get pinned twice', need: ['pinned', 2] },
+  eel: { name: 'Hard to Hold', quote: 'There is always a gap. You just have to be willing to lose a cloak.', does: 'Wriggle free +10.', from: 'Wriggle out of a pin twice', need: ['wriggles', 2] },
   floor: { name: 'Friend of the Floor', quote: 'The ground and I have an understanding. It is always there for me.', does: 'Falling over no longer costs decency.', from: 'Fall down three times', need: ['falls', 3] },
 });
 function count(key, why) { S.count[key] = (S.count[key] ?? 0) + 1; store.set('count', S.count); for (const id of Object.keys(PERKS)) { const need = PERKS[id].need; if (need && need[0] === key && S.count[key] >= need[1]) grantPerk(id, why); } }
 function passiveBank() {
   const ids = Object.keys(PERKS).filter((id) => PERKS[id].quote), have = ids.filter(hasPerk), todo = ids.filter((id) => !hasPerk(id));
   return `<p>Things that keep happening to her leave a mark. Each passive changes a rule and joins her inner voice. They are not all good for her.</p>
+    <div class="bars">${bar(`Passive rank · her second level`, have.length, ids.length, 'var(--pink)')}</div><p>Each rank puts one more in every crowd, and makes a second voice in the crowd likelier each round (8% a rank). With a bad name, each rank also adds 2% to trouble on safe streets.</p>
     ${have.map((id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p><i>“${esc(PERKS[id].quote)}”</i></p><p>${esc(PERKS[id].does)}</p></div>`).join('')}
     ${todo.length ? `<p class="lbl">In the bank · ${todo.length} locked</p>${todo.map((id) => { const [k, n1] = PERKS[id].need; return `<div class="mcard locked"><b>${esc(PERKS[id].name)}<i>${Math.min(n1, S.count[k] ?? 0)} / ${n1}</i></b><p>${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</p></div>`; }).join('')}` : ''}`;
 }
@@ -2294,7 +2348,7 @@ function micro(to) {
   if (res.gold < 0) { const lost = Math.min(S.gold, -res.gold * Math.max(1, S.level)); S.gold -= lost; store.set('gold', S.gold); fx.push(`gold −${n(lost)}`); }
   if (res.hp < 0) { S.hero = { ...S.hero, hp: Math.max(1, Math.round(S.hero.hp + (S.hero.maxHp * res.hp) / 100)) }; fx.push(`HP ${res.hp}%`); }
   if (res.mins) { if (res.mins > 0) passTime(res.mins); else { S.clock += res.mins; store.set('clock', S.clock); } fx.push(res.mins > 0 ? `${res.mins} min lost` : `${-res.mins} min saved`); }
-  post({ who: 'me', plate: e.t, dice: r ? `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${STAT_INFO[e.stat].name}` : '[no roll]', tone: r ? r.degree : null, say: res.say, fx });
+  post({ big: { auto: Boolean(r && !r.success), why: `${e.stat ? `This one was rolled on ${STAT_INFO[e.stat].name} against a ${e.diff} target for her level.` : 'This one has no roll.'} It came out of the event share of a stretch roll on the road: four times in ten that share is a full story event, the rest of the time it is one of these small ones.` }, who: 'me', plate: e.t, dice: r ? `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${STAT_INFO[e.stat].name}` : '[no roll]', tone: r ? r.degree : null, say: res.say, fx });
   if (once(`micro:${e.t}`)) journal('quest', `On the road: ${e.t.toLowerCase()}.`);
 }
 /* ---------- conditions: two things her body does that the world answers ---------- */
@@ -2316,14 +2370,14 @@ function nightConditions(day) { // each morning: up by what her body did, down b
   }
   store.set('cond', S.cond); store.set('resist', S.resist);
   const worst = Object.keys(COND).sort((a, b) => condOf(b) - condOf(a))[0];
-  post({ who: 'sys', plate: `Morning report · day ${day}`, dice: esc(rows.join(' · ')), say: condOf(worst) >= 50 ? `${COND[worst].name}: ${COND[worst].words[stepOf(worst)]}. The town will notice before you do. What helps: ${COND[worst].cure}.` : 'Nothing about you is making the day harder than it needs to be.' });
+  post({ big: { why: WHY_MORNING, auto: false }, who: 'sys', plate: `Morning report · day ${day}`, dice: esc(rows.join(' · ')), say: condOf(worst) >= 50 ? `${COND[worst].name}: ${COND[worst].words[stepOf(worst)]}. The town will notice before you do. What helps: ${COND[worst].cure}.` : 'Nothing about you is making the day harder than it needs to be.' });
 }
 const FOLLOW = ['Two lads have found a reason to walk the same way you are walking.', 'A carter slows his horse to your pace and cannot say why.', 'Somebody across the road walks into a post, still looking at you.', 'A door opens as you pass. Then the one next to it.'];
 /* ---------- unstick, cheats and simulators ---------- */
 // Jiggle free: the one button that always works. It drops whatever is holding her and puts her back on her feet where she stands.
 function jiggle(auto) {
   const was = S.battle ? 'a fight' : S.standoff ? 'a standoff' : S.fallen || S.down ? 'the floor' : S.meet ? 'a first meeting' : S.spot ? 'a corner of the room' : S.talking ? 'a conversation' : S.mode === 'combat' ? 'the sparring ring' : 'nothing you could point at';
-  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
+  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
   if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(S.hero.maxHp * 0.25)), stress: Math.min(S.hero.stress, 90) };
   if (S.stam < 20) { S.stam = 20; store.set('stam', S.stam); }
@@ -2443,6 +2497,91 @@ function roadPath(a, b, cls) {
   pts.push([b.x, b.y]);
   return `<polyline class="${cls}" points="${pts.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ')}"/>${dots.join('')}`;
 }
+/* ---------- pinned: out of stamina in a standoff, she is on her back and has to get out of it ---------- */
+const passiveRank = () => Object.keys(PERKS).filter((id) => PERKS[id].quote && hasPerk(id)).length;
+const crowdSize = (so) => 3 + Math.min(5, Math.floor(so.level / 10)) + (so.rank ?? 0);
+function pinDown(so) {
+  so.pinned = true; so.pinRounds = 0; S.fallen = false; count('pinned', 'being pinned'); if (placeNow().zone !== 'safe') spent(true, 'pinned in the open');
+  post({ big: { why: WHY_PIN }, who: 'sys', plate: 'Pinned', dice: `<b>PINNED</b> · stamina 0 · ${esc(so.name)}`, tone: 'crit', say: 'Your legs go. You are on your back in the road with the armor holding you there like a tipped tortoise, and they close in round you, delighted. Get up, get out, or talk very fast. Three rounds of this and they have won.', fx: ['every hit lands harder while you are down'] }); pop('l', 'PINNED', 'var(--crit)');
+}
+function pinnedAct(kind) {
+  const so = S.standoff, dc = dcFor(so.level); let ended = null; so.pinRounds += 1;
+  if (kind === 'endure') { so.brace = true; S.stam = Math.min(S.spent ? 50 : 100, S.stam + 6); store.set('stam', S.stam); post({ who: 'me', dice: '[no roll] Curl up', say: 'You pull your knees in and get the shield over your head. It is not dignified. It works.', fx: ['the next one is halved', 'stamina +6'] }); }
+  else {
+    const [label, stat, own, rk] = { struggle: ['Struggle up', 'STR', hasPerk('ragdoll') ? 10 : 0, 'strike'], wriggle: ['Wriggle free', 'AGI', hasPerk('eel') ? 10 : 0, 'run'], plead: ['Talk from the ground', 'WIL', -10, 'persuade'] }[kind];
+    const rb = repBonus(rk), r = rollCheck({ title: `${label} · ${so.name}`, stat, dc, bonus: own + rb.total, parts: [own && `${own > 0 ? '+' : '−'}${Math.abs(own)} ${own > 0 ? 'practice' : 'from the ground'}`, ...rb.parts].filter(Boolean) }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`;
+    if (!r.success) { so.exposed = true; post({ who: 'me', dice, tone: r.degree, say: { struggle: 'You get one elbow under you. Somebody puts a boot on the sword and you go flat again.', wriggle: 'You roll for the gap. The cloak does not roll with you.', plead: 'You begin, "Now, be reasonable." They are not in a reasonable mood.' }[kind], fx: ['still pinned', 'their next one lands harder'] }); }
+    else if (kind === 'struggle') { so.pinned = false; S.stam = Math.max(S.stam, 15); store.set('stam', S.stam); if (r.degree === 'crit') so.nerve = Math.max(0, so.nerve - 20); post({ who: 'me', dice, tone: r.degree, say: 'You heave. The armor comes up with you like a drawbridge, and two of them go over backwards getting out of its way.', fx: ['on your feet', 'stamina 15', ...(r.degree === 'crit' ? ['their nerve −20'] : [])] }); }
+    else if (kind === 'wriggle') { count('wriggles', 'wriggling out'); ended = 'ran'; post({ who: 'me', dice, tone: r.degree, say: 'Out between two pairs of legs, across a ditch, and through a hedge that will remember you.' }); }
+    else { const hit = r.degree === 'crit' ? 60 : 30; so.nerve = Math.max(0, so.nerve - hit); post({ who: 'me', dice, tone: r.degree, say: 'From flat on your back, you explain that somebody\'s mother would be ashamed. Somebody\'s mother is, in fact, standing right there.', fx: [`their nerve −${hit}`] }); if (so.nerve <= 0) ended = 'won'; }
+  }
+  if (!ended) { heckle(so); if (d() <= 8 * (so.rank ?? 0)) heckle(so); }
+  if (!ended && so.nerve <= 0) ended = 'won';
+  if (!ended && S.hero.hp <= 0) ended = 'lost';
+  if (!ended && so.pinned && so.pinRounds >= 3) ended = 'lost';
+  if (ended) return endStandoff(ended, kind);
+  so.round += 1;
+  if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
+}
+/* ---------- the catalogue: her, the regulars, the innkeepers, and the shapes on the road ---------- */
+const FOE_TIER = { opportunists: 1, goblin_scouts: 1, bandit_archers: 2, skeleton_phalanx: 3, horde_at_the_gate: 4, hoard_drake: 5 };
+const TIER_WORD = ['', 'slight', 'wiry', 'broad', 'hulking', 'towering'];
+function shade(tier) { // a figure in the dark: the bigger it stands, the worse the fight
+  const w = 16 + tier * 6, h = 30 + tier * 7, head = 5.5 + tier * 0.9, cx = 30, base = 76, top = base - h;
+  return `<svg class="shade" viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="${cx}" cy="${base}" rx="${w * 0.7}" ry="3" fill="rgba(0,0,0,.55)"/><path d="M${cx - w / 2} ${base} Q${cx - w / 2 - tier} ${top + head * 2.2} ${cx - w * 0.36} ${top + head * 1.9} L${cx + w * 0.36} ${top + head * 1.9} Q${cx + w / 2 + tier} ${top + head * 2.2} ${cx + w / 2} ${base}Z" fill="#0c0d12" stroke="rgba(255,255,255,.14)" stroke-width=".6"/><circle cx="${cx}" cy="${top + head}" r="${head}" fill="#0c0d12" stroke="rgba(255,255,255,.14)" stroke-width=".6"/>${tier >= 3 ? `<circle cx="${cx - head * 0.38}" cy="${top + head}" r=".9" fill="var(--crit)"/><circle cx="${cx + head * 0.38}" cy="${top + head}" r=".9" fill="var(--crit)"/>` : ''}${tier >= 5 ? `<path d="M${cx - head} ${top + head * 0.4} l-5 -7 M${cx + head} ${top + head * 0.4} l5 -7" stroke="#0c0d12" stroke-width="2.4" stroke-linecap="round"/>` : ''}</svg>`;
+}
+function renderCast() {
+  const pic = (lookId) => { const l = LOOKS.find((x) => x.id === lookId); return l?.src ? (l.video ? `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(l.src)}" alt="" loading="lazy">`) : ''; };
+  const card = (thumb, name, role, lines, cls = '') => `<div class="ccard ${cls}"><div class="cthumb">${thumb}</div><div><b>${name}</b><i>${role}</i>${lines.filter(Boolean).map((t) => `<p>${t}</p>`).join('')}</div></div>`;
+  const person = ([id, c]) => { const rec = S.npc[id], met = rec?.met, home = PLACES.find((p) => p.who === id), where = id === 'sable' ? 'wanders' : home ? esc(home.name) : 'no fixed place';
+    return met ? card(pic(c.look) || shade(2), esc(c.name), esc(c.role), [`${where}${c.hours ? ` · ${c.hours[0]}:00 to ${c.hours[1] % 24}:00` : ''}`, `${esc(arche(c.cls).name)} · respect: ${tierOf(rec.rapport).toLowerCase()}`, `likes it when you ${esc(APPROACH[c.likes].label.toLowerCase())}`, c.guarded ? 'guarded: wants an answer every visit' : 'easy company: never turns on you'])
+      : card(shade(2), 'Someone you have not met', home ? `at ${esc(home.name)}` : 'on the roads', ['Say hello and they go in here.'], 'unmet'); };
+  const regs = Object.entries(CAST).filter(([, c]) => !c.inn), inns = Object.entries(CAST).filter(([, c]) => c.inn);
+  const foes = [['opportunists', 'Opportunists', 'locals who think a knight in that state is fair game'], ...DATA.encounters.encounters.map((e) => [e.id, e.name, 'on the roads and in the wilds']), ...DATA.bosses.bosses.map((b) => [b.id, b.name, 'a stronghold'])];
+  const rank = passiveRank();
+  $('cast').innerHTML = `<div class="castwrap">
+    <h3>Her</h3><div class="cgrid">${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
+    <h3>Regulars · ${regs.filter(([id]) => S.npc[id]?.met).length} of ${regs.length} met</h3><div class="cgrid">${regs.map(person).join('')}</div>
+    <h3>Innkeepers · ${inns.filter(([id]) => S.npc[id]?.met).length} of ${inns.length} met</h3><div class="cgrid">${inns.map(person).join('')}</div>
+    <h3>Shapes on the road</h3><p class="cnote">You only ever see how big they stand. The bigger the shape, the worse the fight. A name goes on it once you have faced it.</p>
+    <div class="cgrid">${foes.map(([id, name, where]) => { const tier = FOE_TIER[id] ?? (id.startsWith('boss') ? 5 : 2), seen = S.seen[`foe:${id}`]; return card(shade(tier), seen ? esc(name) : '???', `${TIER_WORD[tier]} · ${where}`, [seen ? 'You have faced these.' : 'Not met yet.'], seen ? 'foe' : 'foe unmet'); }).join('')}</div></div>`;
+}
+/* ---------- guarded people: an answer every visit, or her calling's way of dodging the question ---------- */
+const TALENTS = {
+  knight: { name: 'Trip Over Nothing', stat: 'LCK', say: 'You fall over a perfectly flat floor so thoroughly that the question is forgotten in the rush to help you up.', fail: 'You try to trip. For once in your life you stay upright. It is the worst possible moment for it.' },
+  mage: { name: 'Minor Glamour', stat: 'INT', say: 'A small light where no light should be. By the time anyone looks back, the moment has moved on without you.', fail: 'The small light goes off in your own face. Everyone waits for you to stop blinking.' },
+  rogue: { name: 'Slip the Question', stat: 'AGI', say: 'You are suddenly very interested in something over there. So, somehow, is she.', fail: 'You step sideways out of the conversation and into a coat stand.' },
+  courtesan: { name: 'Change the Subject', stat: 'LCK', say: 'You admire her earrings with such conviction that she forgets what she asked and tells you where she got them.', fail: 'You admire her earrings. She is not wearing earrings.' },
+};
+const talentOf = () => TALENTS[S.cls] ?? TALENTS.knight;
+function retest(kind) { // a guarded regular wants an answer before she will talk, every visit
+  const id = S.meet, c = castOf(id), rec = npcOf(id); S.meet = null; S.retest = false; passTime(10);
+  if (kind === 'talent') { const t = talentOf(); S.used.talent = true;
+    const r = rollCheck({ title: `${t.name} · ${c.name}`, stat: t.stat, dc: effectiveStat(S.them, 'WIL'), bonus: 10, parts: ['+10 her own trick'] }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(t.name)}`;
+    if (r.success) { S.passed = id; S.talking = true; return post({ who: 'me', dice, tone: r.degree, say: t.say, fx: ['the question never gets asked', 'respect unchanged'] }); }
+    rec.rapport = Math.max(0, rec.rapport - 2); saveNpc(); S.talking = false; return post({ who: 'me', dice, tone: r.degree, say: t.fail, fx: [`${c.name}: respect −2`, 'used up for this visit'] }); }
+  const a = APPROACH[kind]; if (!a) return;
+  const b = meetBonus(kind), r = rollCheck({ title: `An answer · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts }), delta = { crit: 6, hit: 3, miss: -2, fumble: -5 }[r.degree];
+  rec.rapport = Math.max(0, Math.min(100, rec.rapport + delta)); saveNpc(); if (a.tempt) conduct('lewd', 1);
+  post({ who: 'me', dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
+  if (r.success) { S.passed = id; S.talking = true; return post({ who: 'her', say: nextLine(c.greet), spoken: true, fx: [`${c.name}: respect ${delta > 0 ? '+' : ''}${delta}`, 'she will talk'] }); }
+  S.talking = false; post({ who: 'her', say: c.cold, spoken: true, fx: [`${c.name}: respect ${delta}`, 'not this time: try another answer'] });
+}
+/* ---------- the big window: one event, everything about it ---------- */
+const snapshot = () => { const h = S.hero, here = placeNow(); return [['HP', `${n(h.hp)} / ${n(h.maxHp)}`], ['Mana', `${n(h.mp)} / ${n(h.maxMp)}`], ['Stamina', `${S.stam} / ${S.spent ? 50 : 100}${S.spent ? ' · Exhausted' : ''}`], ['Stress', `${h.stress} / 200`], ['Decency', `${S.decency} / 100`], ['Suspicion', `${S.heat} / 100`], ['Swelling', `${condOf('swell')} · ${COND.swell.words[stepOf('swell')]}`], ['Pheromones', `${condOf('phero')} · ${COND.phero.words[stepOf('phero')]}`], ['Gold', n(S.gold)], [`Standing in ${AREAS[areaOf(here)].name}`, `${repOf(areaOf(here))} · ${repLabel(areaOf(here))}`], ['Fight chance here', `${dangerOf(here)}%`], ['When and where', `${clockText()} · ${here.name}`]]; };
+function keepCard(o, big) { const L = S.lastRoll && S.trayFresh ? S.lastRoll : null; S.cards.push({ title: o.plate ?? 'What just happened', dice: String(o.dice ?? '').replace(/<[^>]+>/g, ''), say: o.say ?? '', fx: o.fx ?? [], why: big.why ?? '', roll: L ? { title: L.title, math: L.math ?? '', degree: String(L.degree) } : null, snap: snapshot() }); if (S.cards.length > 40) { S.cards.shift(); S.cardBase += 1; } const id = S.cardBase + S.cards.length - 1; if (big.auto !== false && S.bigAuto) S.big = id; return id; }
+function renderBig() {
+  const el = $('big'), c = S.big === null ? null : S.cards[S.big - S.cardBase]; el.hidden = !c; if (!c) return;
+  el.innerHTML = `<div class="big-in" role="dialog" aria-modal="true" aria-label="${esc(c.title)}"><p class="lbl">What happened, in full</p><h2>${esc(c.title)}</h2>${c.dice ? `<p class="big-dice">${esc(c.dice)}</p>` : ''}${c.say ? `<p class="prose">${esc(c.say)}</p>` : ''}
+    ${c.roll ? `<div class="over"><h3>The roll</h3><p><b>${esc(c.roll.title)}</b> → ${esc(c.roll.degree)}</p><p class="simrow">${esc(c.roll.math)}</p></div>` : ''}
+    ${c.fx.length ? `<div class="over"><h3>What it changed</h3><div class="fx">${c.fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div></div>` : ''}
+    ${c.why ? `<div class="over"><h3>What it means</h3><p>${esc(c.why)}</p></div>` : ''}
+    <div class="over"><h3>Her, right after</h3><div class="vrows">${c.snap.map(([k, v]) => `<div class="vrow"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
+    <div class="set"><button class="sm primary" type="button" data-big="close">Close</button><button class="sm quiet" type="button" data-big="auto" aria-pressed="${S.bigAuto}">Open these by themselves: ${S.bigAuto ? 'on' : 'off'}</button></div></div>`;
+}
+const WHY_COLLAPSE = 'She ran out of stamina away from safe ground. She is Exhausted until she sleeps in a bed: every social and standoff roll is 10 lower, stamina stops at 50, and fights find her more easily. One d100 decided who reached her first: a crowd on 1 to 40, thieves on 41 to 70, a kind stranger on 71 to 82, nobody above that. The Roads list on the right marks which places have an inn.';
+const WHY_PIN = 'She ran out of stamina in the middle of a standoff, so she is on her back with the crowd round her. Struggle up puts her on her feet with 15 stamina. Wriggle free ends it and she gets away. Talking from the ground still takes 30 off their nerve, at 10 worse odds. Curl up halves the next thing that lands. Every failed try makes their next one hit half again as hard, and three rounds spent pinned mean they win.';
+const WHY_MORNING = 'Each night both conditions move: up by what her body did (2 per bust tier for swelling, a tenth of her chemistry for pheromones) and down by half her resistance. Resistance is ten times her attribute over the benchmark for her level, plus one for every night she started at 25 or more. A bed takes 10 off swelling; a soak takes 15 off pheromones and a Calming Tea 20.';
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -2467,7 +2606,8 @@ function stripHtml(segs, mark) {
   return `<div class="strip">${mark ? `<div class="mark" style="left:${mark - 0.5}%"><b>${mark}</b><i></i></div>` : ''}<div class="bands" role="img" aria-label="${esc(segs.map((s) => `${s.label} ${s.lo} to ${s.hi}`).join(', '))}">${segs.map((s) => `<span class="o-${s.cls}" style="flex:${s.hi - s.lo + 1}" title="${esc(s.label)} ${s.lo}–${s.hi}"></span>`).join('')}</div></div>
     <div class="key">${Object.entries(key).map(([k, v]) => `<span><i class="o-${v.cls}"></i>${esc(k)} ${v.n}%</span>`).join('')}</div>`;
 }
-function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '', face = '' }) {
+function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '', face = '', big = null }) {
+  if (big) extra += `<div><button class="sm quiet info" type="button" data-card="${keepCard({ plate, dice, say, fx }, big === true ? {} : big)}">Details</button></div>`;
   S.lines.push(`<div class="line ${who}${who === 'sys' && !plate && !extra ? ' cap' : ''}${face ? ' has-face' : ''}">${face ? `<span class="spk">${face}</span>` : ''}<span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
     ${dice ? `<p class="dice" style="--k:${TONE[tone] ?? 'var(--text)'}">${dice}</p>` : ''}${strip ?? ''}
     ${say ? `<p class="say${spoken ? ' spoken' : ''}">${esc(say)}</p>` : ''}${fx.length ? `<div class="fx">${fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${extra}</div>`);
@@ -2685,8 +2825,8 @@ function renderTavern() {
 function setView(view) {
   S.view = view; for (const id of ['tray', 'foe']) $(id).classList.toggle('offview', view !== 'stage');
   for (const b of document.querySelectorAll('[data-view]')) b.setAttribute('aria-selected', b.dataset.view === view);
-  $('log').hidden = view !== 'stage'; $('composer').hidden = view !== 'stage'; $('guild').hidden = view !== 'guild'; $('tavern').hidden = view !== 'tavern';
-  if (view === 'guild') renderGuild(); if (view === 'tavern') renderTavern();
+  $('log').hidden = view !== 'stage'; $('composer').hidden = view !== 'stage'; $('guild').hidden = view !== 'guild'; $('tavern').hidden = view !== 'tavern'; $('cast').hidden = view !== 'cast';
+  if (view === 'guild') renderGuild(); if (view === 'tavern') renderTavern(); if (view === 'cast') renderCast();
   if (view === 'stage') renderLog();
 }
 
@@ -2707,14 +2847,14 @@ function render() {
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
   document.body.classList.toggle('debug', S.debug); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
-  renderTray(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
+  renderTray(); renderBig(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
   $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : `Travelling · ${placeNow().short}`;
   if (S.battle) renderBattleRow();
-  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>their nerve · round ${Math.min(8, so.round)} of 8</small><b>${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
+  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>${so.pinned ? 'you are pinned' : `their nerve · round ${Math.min(8, so.round)} of 8`} · ${crowdSize(so)} of them</small><b>${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
   else $('foe').hidden = true;
   $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
   $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
@@ -2781,7 +2921,10 @@ function debugClick(what) {
 }
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go], button[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
+  if (e.target.id === 'big') { S.big = null; return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.card) { S.big = +b.dataset.card; return render(); }
+  if (b.dataset.big) { if (b.dataset.big === 'auto') { S.bigAuto = !S.bigAuto; store.set('bigAuto', S.bigAuto); } else S.big = null; return render(); }
   if (b.dataset.tray) { $('tray').classList.toggle('shut'); clearTimeout(S.trayT); return; }
   if (b.dataset.rail) { S.railOpen = !S.railOpen; return render(); }
   if (b.dataset.size) { sizeL(b.dataset.size); return render(); }
@@ -2844,6 +2987,7 @@ document.addEventListener('click', (e) => {
 for (const id of ['hudL', 'hudR']) $(id).addEventListener('click', (e) => { if (window.matchMedia('(max-width:900px)').matches && !e.target.closest('input,select,button,label')) $(id).classList.toggle('open'); });
 $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $('say').value.trim(); if (!t) return; $('say').value = ''; say(t); });
 
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
 document.addEventListener('dragstart', (e) => { if (document.body.classList.contains('dragging') || e.target.closest?.('.sprite, .halfcard, .scene')) e.preventDefault(); });
 const SIZES = { min: () => (window.innerWidth <= 1180 ? 196 : 224), half: () => Math.round(Math.max(340, Math.min(460, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
 const applyHud = {};
