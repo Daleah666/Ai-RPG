@@ -59,6 +59,9 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Panels | `renderHuds`, `rightPanel`, `mapTab`, `hereTab`, `levelTab`, `debugTab`, `bioTab`, `spicyTab`, `settingsBlock`, `renderDebugger` |
 | Her sheet (left panel) | `leftPanel`, `rpgTab`, `momentsTab`, and the `@container` rules that open it up when it is dragged wide |
 | Inner voice | `pickThought`, `thinkAloud` (asks Claude's quick model when the toggle is on) |
+| Road stretches, signs, suspicion | `goTo`, `jointsOf`, `stretchRows`, `sign`, `micro`, `MICRO`, `ENV`, `ENV_NIGHT`, `SUSPECT`, `FOLLOW`, `heat` |
+| Conditions | `COND`, `cond`, `condOf`, `stepOf`, `resistOf`, `nightConditions` (called from `newDay`), and the lines in `repBonus`, `dangerOf`, `useStam`, `heckle` and `aroundHere` that read them |
+| Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
 
@@ -83,21 +86,26 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
 
-## Agreed next: conditions and a job (planned, not built)
+## Conditions: half built
 
-Del asked for a resistance system in the manner of Karryn's Prison, re-themed. The plan Del was shown, with the two open choices settled by default because Del moved on without answering:
+Del asked for a resistance system in the manner of Karryn's Prison, re-themed, then asked for "the breast growth thing and the pheromone sensitive thing" first, and for the world to react to them.
 
-- Four conditions, each a 0 to 100 gauge resisted by an attribute she already has, each hurting one kind of roll and helping another: Swelling (Constitution; hurts Finesse and Run, helps Sway), Pheromones (Finesse; hurts Persuade and raises fight chance, helps Flirt), Fever (Might; hurts stamina costs and Clever, helps Strike), Corruption (Willpower; hurts Friendly and reputation gains, helps Bold and scaring crowds).
-- Resistance trains by exposure. Every night each condition moves: down by her resistance, up by what she did that day, reported in a morning card.
-- Thresholds at 25, 50 and 75. At 50 the rolls get harder; at 75 some regulars refuse to talk until it is treated.
-- A shift at the Gilded Goose (three rolls) pays gold and city reputation and risks catcalls. Gold buys cures at the shop.
-- Build order: conditions and the morning report; the bar shift; the refusals and cures.
+Built: Swelling (Constitution) and Pheromones (Finesse), each a 0 to 100 gauge with a step every 25, resistance that trains by exposure, a nightly move with a morning report, world reactions (roll bonuses and penalties, fight chance, catcall mix, followers on the road, the crowd row, a regular who refuses to talk at 75), and cures that already existed (a bed, a soak, a Calming Tea). `rpg/playtest/README.md` has the numbers.
+
+Not built, from the plan Del was shown (the two open choices were settled by default because Del moved on without answering):
+
+- Fever (Might; hurts stamina costs and Clever, helps Strike) and Corruption (Willpower; hurts Friendly and reputation gains, helps Bold). Add each as a row in `COND` and its reactions beside the existing two.
+- A shift at the Gilded Goose (three rolls) that pays gold and city reputation and risks catcalls, so there is a way to earn the cures.
+- A cure for Swelling sold at the shop. Today only a real bed lowers it.
+- Nothing is tuned. With no bust tiers Swelling only ever falls; Pheromones fall about five a night at level 1. The "30 nights" simulator shows the curve for the current save.
+
+Del also said there is a SillyTavern JSON with material to adapt into random events. Only a picture arrived in the session (a modern city crowd scene), with no card data inside it. The fourteen road events in `MICRO` are original. When the JSON arrives, adapt its events into `MICRO` rows (one roll each) or into `data/events/` packs (full story events), re-themed to the knight setting and kept PG-13.
 
 Also asked for and not built: three or four playable characters, one per calling, who sometimes join as a party (the callings exist now as ways to play Valerie, not as separate people); a portrait per mood (the hook is `MOOD_FACES`; Del has mood pictures for one character only).
 
 ## What Del asked for that is not built, in suggested order
 
-1. **A small dungeon between places.** Del wants a short stretch to cross when moving between two places, with gold and EXP in it. Suggested: a 3 to 5 room crawl on the Road → Ruins leg, each room one `tableRoll`.
+1. **A small dungeon between places.** Del wants a short stretch to cross when moving between two places, with gold and EXP in it. Roads now have one to four stretches with signs and one-roll events, which is the first half of this. Still missing: a named crawl of 3 to 5 rooms with its own reward at the end.
 2. **Area level variants.** `foe` on a place is the hook, and each domain now has an Order meter and a secured flag. Del wants the same area at different levels and safe areas that turn dangerous as numbers change. Decency already does the second for safe places.
 3. **Balance pass.** Nothing here is tuned. Known rough spots: level 1 solo against the eight-enemy Skeleton Phalanx; EXP per hunt swings from 7% to 68% of a level; Willpower is Valerie's weakest attribute, so getting up and Persuade are hard by design but may be too hard. Del does not need level 100 reachable; balance upward from level 1.
 4. **"Say your own thing."** The fifth button in a meeting or standoff is disabled. Del wants it read by a Game Master model with heavy randomness. The page already declares the `sample` capability; `say()` and `thinkAloud()` show how it is called.
@@ -111,6 +119,8 @@ Also asked for and not built: three or four playable characters, one per calling
 
 ## Known loose ends
 
+- Del reported being stuck with nothing to press on the version before Jiggle free. A 700-click random walk through the new version found no dead end, so the cause was not reproduced. If Del reports it again, ask what the mode badge in the top bar said.
+- The left panel still sets the `sheetL` body class when it is 544px or wider; it now only decides whether the extra sheet sections show. The sprite no longer slides.
 - The page's own rules have no tests. If one hardens, move it to `engine/` with a test.
 - The domains are thin: two to four places each, and most share a backdrop. The Academy and the Camps have no regulars and no spots yet. The camp garrison reuses the `horde_at_the_gate` encounter; the three strongholds reuse the three bosses.
 - A save from before this version loads, but its place may no longer exist; it falls back to the Castle Gates.

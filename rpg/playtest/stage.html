@@ -264,6 +264,10 @@ body:not(.debug) .dbg{display:none!important}
 .tray .key{display:none}
 .tray-m{margin:0;font-family:var(--f-mono);font-size:.6rem;color:var(--muted);overflow-wrap:anywhere}
 .dbgtop{flex:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:24vh;overflow:auto;padding:8px;border-radius:12px;background:var(--box2);border:1px dashed color-mix(in srgb,var(--gold) 70%,transparent);font-family:var(--f-mono);font-size:.62rem;line-height:1.45;scrollbar-width:thin}
+#jiggle.stuck{border-color:var(--gold);color:var(--gold);animation:wig .5s ease-in-out infinite alternate}
+@keyframes wig{from{rotate:-3deg}to{rotate:3deg}}
+@media (prefers-reduced-motion:reduce){#jiggle.stuck{animation:none}}
+.simrow{margin:2px 0;font-family:var(--f-mono);font-size:.6rem;line-height:1.45;color:var(--muted);overflow-wrap:anywhere}
 .dbgtop .dg{padding:6px 8px;border-radius:8px;background:var(--glass)}
 .dbgtop h4{margin:0 0 3px;font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:500}
 .dbgtop p{margin:0;color:var(--muted);overflow-wrap:anywhere}
@@ -399,10 +403,6 @@ body.sway .sprite>*{animation:breathe9 5.5s ease-in-out infinite;transform-origi
 .dialog{transition:margin-left .5s cubic-bezier(.2,.8,.2,1)}
 body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
 @media (min-width:901px){
-  body.sheetL .hud.l{left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--picL));width:calc(var(--hudL) - var(--picL))}
-  body.sheetL .sprite.l{left:12px;right:calc(100% - 12px - var(--picL));justify-content:center}
-  body.sheetL .sprite.l>img,body.sheetL .sprite.l>video{width:100%;height:100%;max-width:none;object-fit:cover;object-position:center top}
-  body.sheetL .sprite.l::after{content:attr(data-name);position:absolute;left:8px;bottom:14px;font-family:var(--f-head);font-weight:700;font-size:2rem;line-height:1;text-shadow:0 2px 18px rgba(0,0,0,.85)}
 }
 .quick{display:flex;flex-wrap:wrap;gap:4px 16px}
 .hud p.quick{font-size:.86rem}
@@ -476,7 +476,6 @@ body.alone{--col:700px}
 .backlog li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:7px;font-size:.8rem;color:var(--muted);line-height:1.4}
 .backlog li span{color:var(--gold)}
 .backlog small{display:block;font-family:var(--f-mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:var(--faint)}
-@media (min-width:901px){body.sheetL .face{display:none}}
 .tok{flex:none;display:block;width:44px;height:44px;border-radius:10px;border:1px solid var(--edge2)}
 .roster .r.foe-r{grid-template-columns:44px minmax(0,1fr);gap:9px;align-items:start}
 .roster .r.foe-r .rb{display:grid;gap:3px;min-width:0}
@@ -487,6 +486,16 @@ body.alone{--col:700px}
 .line.her.has-face .plate{left:66px;right:auto}
 .foe-h{display:flex;gap:8px;align-items:center}
 .foe .tok{width:34px;height:34px;border-radius:8px}
+.halfcard{position:relative;height:150px;border-radius:14px;overflow:hidden;border:1px solid var(--edge);background:#07080c}
+.halfcard .face{position:absolute;inset:0;width:auto;height:auto;border:0;border-radius:0;background:none}
+.halfcard .face img,.halfcard .face video{transform:none;object-fit:cover;object-position:50% 14%}
+.halfcard::after{content:"";position:absolute;inset:auto 0 0;height:62%;background:linear-gradient(transparent,rgba(8,9,13,.94));pointer-events:none}
+.hc-name{position:absolute;left:12px;right:54px;bottom:9px;z-index:1}
+.hc-name h2{margin:0;font-family:var(--f-head);font-weight:700;font-size:1.25rem;line-height:1.05;letter-spacing:-.01em}
+.hc-name .role{margin:2px 0 0;font-family:var(--f-serif);font-style:italic;color:var(--pink);font-size:1.02rem;line-height:1.2}
+.halfcard .lv{position:absolute;right:10px;top:10px;z-index:1;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--text);color:var(--ground);font-family:var(--f-head);font-weight:700;font-size:.85rem;box-shadow:0 0 0 2px var(--pink)}
+@container (min-width:290px){.halfcard{height:250px}.hc-name h2{font-size:2.1rem}.hc-name .role{font-size:1.3rem}}
+@container (min-width:460px){.halfcard{height:340px}}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -528,6 +537,7 @@ body.alone{--col:700px}
       <span class="clock head" id="headline"></span>
       <span class="clock" id="clock"></span>
       <button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false">Debugger</button>
+      <button class="sm quiet" id="jiggle" type="button" data-jiggle="1" title="Stuck? This drops whatever is holding you and stands you back up.">Jiggle free</button>
       <select class="dbg" id="place" aria-label="Place"></select>
       <label class="lbl dbg" for="level">Level</label>
       <input class="dbg" type="number" id="level" min="1" max="100" step="1" style="width:4.6em">
@@ -815,7 +825,7 @@ const S = {
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
   dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'over'),
   order: store.get('order', {}), secured: store.get('secured', {}),
-  cls: store.get('cls', 'knight'),
+  cls: store.get('cls', 'knight'), heat: store.get('heat', 0), cond: store.get('cond', {}), resist: store.get('resist', {}),
   journal: store.get('journal', []), seen: store.get('seen', {}), race: store.get('race', 'Human'), ctab: 'resp',
   perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1), talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), descLen: store.get('descLen', 'm'),
@@ -1082,6 +1092,8 @@ function debugTab() {
       <button class="sm" type="button" data-dbg="heal">Heal and calm</button>
       <button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button>
     </div>
+    ${simBlock()}
+    <div class="over"><h3>Cheats</h3><div class="set">${CHEATS.map(([id, label]) => `<button class="sm" type="button" data-cheat="${id}">${esc(label)}</button>`).join('')}<button class="sm" type="button" data-jiggle="1">Jiggle free</button></div></div>
     <div class="over"><h3>What the old controls are</h3><p>Turn them on and the top bar gets the place list, a level box and Rest, and the story box gets the story-event list, the sparring button and the three ways to stress her. The sparring sandbox (they attack, guard, rattle) is the Spar button at the Training Yard, or the button above.</p></div>
     <div class="over"><h3>Right now</h3><p>${S.battle ? `In a real fight, round ${S.battle.state.round}` : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${esc(placeNow().name)} · level ${S.level} · ${n(S.exp)} / ${n(needExp())} EXP · ${S.points} points · hunts are ${S.party ? 'party of four at your level' : 'solo, enemies at three quarters of your level'}.</p></div>`;
 }
@@ -1156,7 +1168,7 @@ function levelUp() {
 }
 function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
 function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
-function useStam(amount, why) { const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
+function useStam(amount, why) { if (amount > 0 && condOf('swell') >= 75) amount += 1; const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
 function decency(delta, why) { if (!delta) return; delta = swung(delta); if (delta < 0 && hasPerk('attention')) delta -= 1; if (delta < 0 && hasPerk('refitted')) delta = Math.min(0, delta + 1); if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
 const GROW_SAY = {
   warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
@@ -1165,7 +1177,7 @@ const GROW_SAY = {
 function grow(points, why) {
   if (!(points > 0) || S.bust >= 10) return;
   S.bustXp += points; note(`bust +${points}% · ${why}`);
-  while (S.bustXp >= 100 && S.bust < 10) { S.bustXp -= 100; S.bust += 1; const p = PATHS[S.path];
+  while (S.bustXp >= 100 && S.bust < 10) { S.bustXp -= 100; S.bust += 1; cond('swell', 12, 'another notch on the breastplate'); const p = PATHS[S.path];
     post({ who: 'sys', plate: `${p.name} · ${p.why}`, dice: `<b>BUST · TIER ${S.bust}</b> · Tempt +2 · Finesse −2% · ${esc(p.perk)}`, tone: 'fumble', say: GROW_SAY[S.path] }); pop('l', `TIER ${S.bust}`, 'var(--pink)'); }
   if (S.bust >= 10) S.bustXp = 0;
   store.set('bust', S.bust); store.set('bustXp', S.bustXp); rebuildHero();
@@ -1193,7 +1205,7 @@ function renderTray() {
   const el = $('tray'), L = S.lastRoll; el.hidden = !L; if (!L) return;
   const open = !L.hidden || S.dbgTop;
   const segs = L.segs ?? (open ? segments((r) => { const o = readRoll(r, L.bands ?? { pct: L.pct, critPct: Math.max(1, Math.floor(L.pct / 10)), fumbleFrom: 96 }); return { key: o, cls: o, label: NAMES[o] }; }) : [{ key: 'h', cls: 'miss', label: 'hidden', lo: 1, hi: 100 }]);
-  const tone = { crit: 'crit', hit: 'hit', miss: 'miss', fumble: 'fumble', bounce: 'bounce', fight: 'crit', event: 'hit', quiet: 'miss' }[L.degree] ?? 'hit';
+  const tone = { crit: 'crit', hit: 'hit', miss: 'miss', fumble: 'fumble', bounce: 'bounce', fight: 'crit', event: 'hit', sign: 'bounce', quiet: 'miss' }[L.degree] ?? 'hit';
   el.innerHTML = `<div class="tray-h"><span class="lbl">${esc(L.title)}</span><b class="deg o-${tone}">${esc(String(L.degree).toUpperCase())}</b></div>${stripHtml(segs, L.roll)}<p class="tray-m">${open ? esc(L.math ?? '') : `Rolled ${L.roll}. Their numbers are hidden: get to know them, or open the Debugger.`}</p>`;
   if (!S.trayFresh) return;
   S.trayFresh = false; el.classList.remove('land'); const m = el.querySelector('.mark');
@@ -1214,6 +1226,8 @@ function applyFx(fx, why) {
   if (fx.exp) { const xp = Math.round(needExp() * fx.exp); gainExp(xp, why); out.push(`${n(xp)} EXP`); }
   if (fx.rest) { useStam(-fx.rest, why); fed(Math.round(fx.rest / 2)); out.push(`stamina +${fx.rest}`); }
   if (fx.chem) chem(fx.chem, why);
+  if (fx.heat) { heat(fx.heat, why); out.push(`suspicion ${fx.heat > 0 ? '+' : '−'}${Math.abs(fx.heat)}`); }
+  if (fx.rep) { rep(fx.rep, why); out.push(`reputation ${fx.rep > 0 ? '+' : '−'}${Math.abs(fx.rep)}`); }
   if (fx.decency) { decency(fx.decency, why); out.push(`decency ${fx.decency > 0 ? '+' : '−'}${Math.abs(fx.decency)}`); }
   if (fx.grow && (!fx.growPath || fx.growPath === S.path)) grow(fx.grow, why);
   return out;
@@ -1275,7 +1289,7 @@ function drink(kind) {
   const full = kind === 'mana' && S.hero.mp >= S.hero.maxMp;
   S.bag[kind] -= 1; store.set('bag', S.bag); S.hero = p.use(S.hero); S.down = S.hero.hp <= 0; note(`${p.name}: ${p.hint}`);
   post({ who: 'me', plate: 'Satchel', dice: `[drink] ${esc(p.name)} · ${esc(p.hint)}`, say: 'It tastes like a colour. A good one.' });
-  if (kind === 'tea') vol(-2, 'a Calming Tea');
+  if (kind === 'tea') { vol(-2, 'a Calming Tea'); cond('phero', -20, 'a Calming Tea'); }
   if (full && S.path === 'mage') grow(20, 'more mana than she can hold');
 }
 
@@ -1296,15 +1310,20 @@ function goTo(id) {
   S.prev = S.place; let at = from, total = 0;
   for (const step of pathTo(id)) {
     const p = PLACES.find((x) => x.id === step), mins = legMins(at, p), wild = p.zone === 'wild' || at.zone === 'wild';
-    total += mins; passTime(mins); setPlace(step); S.them = freshThem(); S.down = S.hero.hp <= 0; useStam(Math.max(1, Math.round(mins / 9.6)), `walking to ${p.short}`); at = p;
-    const danger = dangerOf(p), evt = p.zone === 'safe' ? 0 : p.evt ?? 0;
+    const joints = jointsOf(mins), start = at, quietLeg = p.zone === 'safe' && at.zone === 'safe' && !dangerOf(p);
+    setPlace(step); S.them = freshThem(); at = p;
+    for (let j = 1; j <= joints; j++) {
+      total += mins / joints; passTime(mins / joints); useStam(Math.max(1, Math.round(mins / joints / 9.6)), `walking to ${p.short}`); S.down = S.hero.hp <= 0;
+      if (S.fallen) break;
+      if (quietLeg) { if (j === 1 && d() <= 35) sign(start, p, j, joints); continue; }
+      const res = tableRoll(`${start.short} → ${p.short} · stretch ${j} of ${joints}`, stretchRows(p, joints));
+      if (res === 'fight') { arrive(from, p, Math.round(total)); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : `they were waiting, ${j === joints ? 'right at the end' : 'part way along'}`); }
+      if (res === 'event') { const pool = eventPool(p); if (pool.length && d() <= 40) { arrive(from, p, Math.round(total)); return showEvent(pool[Math.floor(Math.random() * pool.length)].id); } micro(p); if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero'); }
+      if (res === 'sign') sign(start, p, j, joints);
+    }
     if (S.fallen) break;
-    if (!danger && !evt) continue;
-    const res = tableRoll(`Travel · ${p.name}`, [['fight', danger, 'crit'], ['event', evt, 'hit']]);
-    if (res === 'fight') { arrive(from, p, total); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : 'they were waiting on the road'); }
-    if (res === 'event') { arrive(from, p, total); const pool = eventPool(p); return pool.length ? showEvent(pool[Math.floor(Math.random() * pool.length)].id) : luckyFind('On the way'); }
   }
-  arrive(from, placeNow(), total);
+  arrive(from, placeNow(), Math.round(total));
 }
 function arrive(from, to, mins) {
   if (once(`place:${to.id}`)) journal('place', `${to.name} (${AREAS[areaOf(to)].name}): ${(to.acts ?? []).filter((a) => a !== 'look').map((a) => ACTS[a].label.toLowerCase()).join(', ') || 'nothing much to do'}${(SPOTS[to.id] ?? []).length ? `; spots: ${SPOTS[to.id].map((x) => x.name.toLowerCase()).join(', ')}` : ''}${to.hours ? `; open ${to.hours[0]}:00 to ${to.hours[1] % 24}:00` : ''}.`);
@@ -1359,19 +1378,19 @@ function doAct(id) {
   if (id.startsWith('opt:')) return doSpot(+id.slice(4));
   if (id.startsWith('use:')) return drink(id.slice(4));
   if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
-  if (id === 'talk') { if (!who) return; S.talking = true; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
+  if (id === 'talk') { if (!who) return; if (condOf('phero') >= 75 && who.dislikes === 'flirt') { S.talking = false; return post({ who: 'her', plate: who.name, say: 'Not while you are like that. Go and have a bath, and then we will talk.', spoken: true, fx: ['pheromones 75+: they will not talk to you'] }); } S.talking = true; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
   if (id === 'board') return setView('guild');
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
     if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A room is ${n(cost)} gold. You have ${n(S.gold)}.`, say: 'The bench at the Well is free, if lumpy.' });
-    sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; vol(-4, 'a real bed'); decency(20, 'a bath and a real bed');
+    sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; vol(-4, 'a real bed'); cond('swell', -10, 'armor let out properly at the inn'); decency(20, 'a bath and a real bed');
     return post({ who: 'sys', plate: 'The Gilded Goose', dice: `[rest] A room · ${n(cost)} gold · ${clockText()}`, tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled, armor buffed by someone who knows how. The gauge stays where you left it.' });
   }
   if (id === 'explore') return explore();
   if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
   if (id === 'hunt') { S.fightTag = { area: areaOf(here), job: here.id === 'guild' }; const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
   if (id === 'study') { S.used[id] = true; passTime(120); useStam(4, 'study'); const fx = applyFx({ airhead: -15, exp: 0.05, grow: 15, growPath: 'mage' }, 'Study'); return post({ who: 'me', plate: 'Study', dice: '[no roll] Two hours with a book', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.', fx }); }
-  if (id === 'soak') { S.used[id] = true; passTime(60); vol(-2, 'a long soak'); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
+  if (id === 'soak') { S.used[id] = true; passTime(60); vol(-2, 'a long soak'); cond('phero', -15, 'a long soak'); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
 }
 function cell(act, label, hint, cls = '', off = false) { return `<button class="cell bubble ${cls}" type="button" data-act="${esc(act)}"${off ? ' disabled' : ''}><b>${esc(label)}</b><small>${esc(hint)}</small></button>`; }
 function travelGrid() {
@@ -1394,7 +1413,7 @@ function travelGrid() {
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
-  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation here · ${repLabel()}`, repOf(areaOf(placeNow())), 100, 'var(--mint)')}${bar(`Stereotyped here · as ${(RACES[S.race] ?? RACES.Human).a}`, stereoOf(), 100, 'var(--violet)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
+  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation here · ${repLabel()}`, repOf(areaOf(placeNow())), 100, 'var(--mint)')}${bar(`Stereotyped here · as ${(RACES[S.race] ?? RACES.Human).a}`, stereoOf(), 100, 'var(--violet)')}${bar(`Swelling · ${COND.swell.words[stepOf('swell')]}`, condOf('swell'), 100, 'var(--pink)')}${bar(`Pheromones · ${COND.phero.words[stepOf('phero')]}`, condOf('phero'), 100, 'var(--violet)')}${bar('Suspicion', S.heat, 100, 'var(--crit)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
     <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''} ${{ Heroine: 'The town thinks she is a heroine.', Knight: 'The town thinks she is a decent knight.', 'Town scandal': 'The town is gossiping about her. Do some guild work.', Villain: 'The town is afraid of her. Do some guild work.', Layabout: 'The town is not sure what she is for. Do some guild work.' }[repLabel()]}</p></div>
     <div class="over"><h3>Purse and satchel</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0}</span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>`;
 }
@@ -1442,12 +1461,12 @@ function renderDebugger() {
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
     <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · respect ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
-    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>seen as ${esc((RACES[S.race] ?? RACES.Human).a)}: stereotype ${stereoOf()} here (race base ${(RACES[S.race] ?? RACES.Human).base} − 0.7 × reputation − willpower); at 40+ strangers apply ${esc(JSON.stringify((RACES[S.race] ?? RACES.Human).assume))}; someone who respects her ignores it</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
+    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>seen as ${esc((RACES[S.race] ?? RACES.Human).a)}: stereotype ${stereoOf()} here (race base ${(RACES[S.race] ?? RACES.Human).base} − 0.7 × reputation − willpower); at 40+ strangers apply ${esc(JSON.stringify((RACES[S.race] ?? RACES.Human).assume))}; someone who respects her ignores it</p><p>swelling ${condOf('swell')} (resist ${resistOf('swell')}, Constitution; +2 a night per bust tier, +12 on a tier; per 25: Run −5, Sway +3; at 75 every stamina cost +1) · pheromones ${condOf('phero')} (resist ${resistOf('phero')}, Finesse; half of every chemistry gain, + chemistry ÷ 10 a night; per 25: Persuade −5, Flirt and Sway +3, fight chance +4, one more catcall in the mix; at 50 safe streets roll for trouble and people follow; at 75 the prim ones will not talk)</p><p>suspicion ${S.heat} → +${Math.round(S.heat / 4)} to every fight chance outside safe places; signs on the road raise it, patrols and notices move it, −15 each night</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     ${S.standoff ? `<div class="dg"><h4>This crowd</h4><p>nerve ${S.standoff.nerve} · round ${S.standoff.round} · weak to ${S.standoff.weak} (×1.5) · shrugs off ${S.standoff.tough} (×0.5)</p><p>her attack: ${esc(calling().verb)}${calling().type ? ` (${calling().type})` : ' (no type)'} on ${STAT_INFO[calling().stat].name}</p></div>` : ''}<div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
 }
 /* ---------- the left panel: tabs over her bars, settings and save under them ---------- */
-function chem(delta, why) { if (!delta) return; delta = swung(delta); if (delta > 0 && hasPerk('noticed')) delta += 1; if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+function chem(delta, why) { if (!delta) return; delta = swung(delta); if (delta > 0 && hasPerk('noticed')) delta += 1; if (delta > 0) conduct('lewd', delta / 20); if (delta > 0) cond('phero', Math.max(1, Math.round(delta / 2)), why); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
   if (was < 60 && S.chem >= 60) count('chemHigh', 'her face went pink');
   if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
 function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
@@ -1523,9 +1542,9 @@ function secure(area) {
 }
 const legMins = (a, b) => a.roads?.[b.id] ?? b.roads?.[a.id] ?? Math.round(dist(a, b) * (a.zone === 'wild' || b.zone === 'wild' ? 2.4 : 1.2));
 function dangerOf(p) { // percent chance of a fight: the place, the hour, the state she is in, and how well the domain is held
-  if (p.zone === 'safe') return S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0;
+  if (p.zone === 'safe') return (S.decency < 30 ? Math.round((30 - S.decency) * 0.6) : 0) + (condOf('phero') >= 50 ? Math.round((condOf('phero') - 50) / 5) : 0);
   const area = areaOf(p), held = area === 'city' ? 0 : Math.round((50 - orderOf(area)) * 0.3);
-  const raw = (p.enc ?? 0) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0) + held;
+  const raw = (p.enc ?? 0) + 4 * stepOf('phero') + Math.round(S.heat / 4) + (phaseNow() === 'Night' ? 15 : 0) + Math.round(Math.max(0, 50 - S.decency) * 0.5) + (S.stam < 25 ? 10 : 0) + held;
   return Math.max(0, Math.min(90, Math.round(raw * (S.secured[area] ? 0.4 : 1))));
 }
 function mapTab() {
@@ -1574,7 +1593,7 @@ function leftPanel(h, top, gauge, band, locked) {
   const tabs = [['over', 'Overview'], ['stats', 'Status'], ['rpg', 'RPG'], ['kit', 'Kit'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'over';
   const body = tab === 'over' ? overviewTab() : tab === 'kit' ? kitTab() : tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
     : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
-  return `<div class="sheet"><div class="sheet-body"><div class="sheet-h">${face()}<div><h2>${heroName}</h2><p class="role">${esc(calling().name)}</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
+  return `<div class="sheet"><div class="sheet-body"><div class="halfcard">${face()}<div class="hc-name"><h2>${heroName}</h2><p class="role">${esc(calling().name)}</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
     <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
       <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
       <p class="settled"><i>${esc(band.name)}</i> ${gauge}<span>settled in ${esc(band.name)} · ${gauge <= 33 ? `${34 - gauge} to Ditzy` : gauge <= 66 ? `${67 - gauge} to Total Airhead` : `${gauge - 66} back to Ditzy`}</span></p></div>
@@ -1604,6 +1623,11 @@ function repBonus(kind) { // gossip changes how people take her. Each label help
   if (kind === 'strike' && hasPerk('bruiser')) add(5, 'short fuse');
   const seen = stereoBonus(kind); if (seen) add(seen[0], seen[1]);
   if (S.cls === 'courtesan' && ['flirt', 'sway', 'persuade'].includes(kind)) add(5, 'her trade');
+  const sw = stepOf('swell'), ph = stepOf('phero');
+  if (sw && kind === 'run') add(-5 * sw, 'swelling');
+  if (sw && kind === 'sway') add(3 * sw, 'swelling');
+  if (ph && kind === 'persuade') add(-5 * ph, 'nobody is listening to the words');
+  if (ph && ['flirt', 'sway'].includes(kind)) add(3 * ph, 'pheromones');
   return { total, parts };
 }
 
@@ -1631,7 +1655,7 @@ function startStandoff(why, encId) {
   pop('l', 'COMBAT', 'var(--crit)');
 }
 function heckle(so) {
-  const pool = HECKLES[areaOf(placeNow())] ?? HECKLES.city, kind = pool[Math.floor(Math.random() * pool.length)], soft = so.brace ? 0.5 : 1, hard = so.exposed ? 1.5 : 1; const braced = so.brace; so.brace = false; so.exposed = false;
+  const pool = [...(HECKLES[areaOf(placeNow())] ?? HECKLES.city), ...Array(stepOf('phero')).fill('lewd')], kind = pool[Math.floor(Math.random() * pool.length)], soft = so.brace ? 0.5 : 1, hard = so.exposed ? 1.5 : 1; const braced = so.brace; so.brace = false; so.exposed = false;
   if (kind === 'melee' || kind === 'thrown') {
     const sk = kind === 'melee' ? CLASSES.warrior.skill : CLASSES.rogue.skill, roll = d(), r = VC.enemyAttacksValerie(so.foe, S.hero, sk, fixedRolls([roll, d()]), { guarding: braced }), fx = [];
     const dmg = Math.round((r.damage ?? 0) * hard);
@@ -1730,7 +1754,7 @@ function rep(delta, why, area = areaOf(placeNow())) { // a friend who lives ther
 }
 function newDay(day) { // every morning: did the knight do any guild work? Gossip fades a little, and so does the wobble.
   if ((S.jobDay ?? 0) < day - 1) for (const a of AREA_IDS) rep(a === 'city' ? -4 : -2, 'no guild work yesterday', a);
-  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd); vol(-1, 'a night passed');
+  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd); vol(-1, 'a night passed'); heat(-15, 'a night passed'); nightConditions(day);
 }
 
 /* ---------- her sheet: the overview, and what opens underneath ---------- */
@@ -1874,7 +1898,7 @@ function aroundHere() {
   const crowd = danger >= 40 ? 'ugly' : danger >= 20 ? 'restless' : danger > 0 ? 'watchful' : 'easy';
   return `<div class="over around"><h3>Around here · threat ${threat}</h3><div class="roster">
     ${regs.map(([p, id]) => { const c = castOf(id), rec = npcOf(id); return row(rec.met ? c.name : 'Someone you have not met', rec.met ? `${arche(c.cls).name} · ${p.id === here.id ? 'right here' : `at the ${p.short}`}` : (p.id === here.id ? 'right here' : `at the ${p.short}`), rec.met ? rec.rapport : 0, 'var(--pink)', rec.met ? tierOf(rec.rapport) : 'a stranger'); }).join('')}
-    ${row('Men about', here.zone === 'safe' ? 'townsmen, guards, drinkers' : 'strangers on the road', Math.min(100, danger * 2), 'var(--crit)', crowd)}
+    ${row('Men about', here.zone === 'safe' ? 'townsmen, guards, drinkers' : 'strangers on the road', Math.min(100, danger * 2 + Math.round(condOf('phero') / 2)), 'var(--crit)', condOf('phero') >= 50 ? 'heads turning' : crowd)}
     ${row('Women about', here.zone === 'safe' ? 'townswomen, traders, gossips' : 'travellers, keeping their distance', stereoOf(area), 'var(--violet)', stereoOf(area) >= 40 ? `see ${(RACES[S.race] ?? RACES.Human).a}` : 'see you')}
   </div></div>`;
 }
@@ -1904,7 +1928,7 @@ function socialCells(here, who) {
 function itemCells() { return cell('x', `${n(S.gold)} gold`, 'the purse', '', true) + Object.entries(POTIONS).map(([k, p]) => cell(`use:${k}`, `${p.name} ×${S.bag[k] ?? 0}`, p.hint, '', !((S.bag[k] ?? 0) > 0))).join(''); }
 function debugCells() {
   return `<div class="exits"><span class="lbl">Jump to</span>${PLACES.map((p) => `<button class="go" type="button" data-tp="${p.id}"${p.id === S.place ? ' disabled' : ''}>${esc(p.short)}</button>`).join('')}</div>`
-    + `<button class="cell bubble" type="button" data-dbg="heal"><b>Heal and calm</b><small>every bar refills</small></button><button class="cell bubble" type="button" data-dbg="exp"><b>+1 level of EXP</b><small>then use the Level tab</small></button><button class="cell bubble" type="button" data-set="dbgTop"><b>Debugger ${S.dbgTop ? 'off' : 'on'}</b><small>the hidden numbers</small></button><button class="cell bubble" type="button" data-dbg="mode"><b>${S.mode === 'combat' ? 'Stop sparring' : 'Spar here'}</b><small>the old sandbox</small></button>`;
+    + cheatCells() + `<button class="cell bubble" type="button" data-set="dbgTop"><b>Debugger ${S.dbgTop ? 'off' : 'on'}</b><small>the hidden numbers</small></button><button class="cell bubble" type="button" data-sim="walks"><b>Simulators</b><small>open them on the right</small></button><button class="cell bubble" type="button" data-dbg="mode"><b>${S.mode === 'combat' ? 'Stop sparring' : 'Spar here'}</b><small>the old sandbox</small></button>`;
 }
 const MOOD_FACES = {}; // lookId → { Cheerful: 'art/…' }: one portrait per mood, for when the pictures exist
 function face() { const look = S.custom[S.lookL] ?? LOOKS.find((l) => l.id === S.lookL) ?? LOOKS[0], m = mood(S.hero, true)[1], src = MOOD_FACES[look.id]?.[m] ?? look.src; if (!src) return ''; return `<span class="face" title="${esc(m)}">${look.video && src === look.src ? `<video src="${esc(src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(src)}" alt="">`}</span>`; }
@@ -1936,6 +1960,144 @@ function tokenFor(name) {
   return `<svg class="tok" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="10" fill="${bg}"/>${art}</svg>`;
 }
 const TAUNTS = ['Nice armor. Be a shame if it ended up in a ditch with you still in it.', 'Talking is over, knight.', 'You had your chance to walk away. Well. You did not, really. But still.', 'Hand over the shiny bits and nobody has to trip over anything.', 'Look at that. A whole knight, all by herself.'];
+/* ---------- the road: every walk is a few stretches, and each stretch can say something ---------- */
+function heat(delta, why) { if (!delta) return; const was = S.heat; S.heat = Math.max(0, Math.min(100, S.heat + delta)); store.set('heat', S.heat); if (S.heat !== was) note(`suspicion ${delta > 0 ? '+' : '−'}${Math.abs(S.heat - was)} · ${why}`); }
+const ENV = {
+  city: ['A shutter bangs somewhere above you. Somebody is airing a quilt and an opinion.', 'A baker\'s boy goes past at a dead run with a tray he should not be running with.', 'Two cats are settling something on a rooftop.', 'The cobbles are still wet from a bucket somebody threw without looking.', 'A cart of cabbages has shed exactly one cabbage. It rolls after you for a while.'],
+  forest: ['Crows go up from the treeline all at once.', 'The road dips, and for a moment the trees are close enough to touch on both sides.', 'A deer watches you clank past. It is not impressed.', 'Something small keeps pace in the undergrowth, then loses interest.', 'Old waymarks, half swallowed by moss. Somebody maintained this road once.', 'The wind gets into the gold plate and makes it sing one flat note.'],
+  castle: ['Arrow slits, all the way up. You feel looked at by a building.', 'A banner snaps overhead. It has been mended more than once.', 'Your footsteps come back a half-beat late from the far wall.', 'Water drips somewhere below the flagstones, slow and regular.', 'A rusted portcullis, stuck one third down, like a yawn.'],
+  academy: ['A window opens, somebody says "No, the OTHER candle," and the window closes.', 'Chalk dust drifts across the path from an open door.', 'A book goes by overhead, flapping. A student chases it.', 'Someone has trimmed a hedge into a diagram. You cannot tell of what.', 'A bell rings. Nobody appears to do anything about it.'],
+  camps: ['Smoke, low and greasy, lying along the valley.', 'A dog barks twice and is told to stop.', 'Cart ruts, deep ones, all going the same way.', 'A lantern moves along the palisade and pauses where you are.', 'Somebody has left a child\'s shoe on a fence post, for whoever comes looking.'],
+};
+const ENV_NIGHT = ['It is properly dark. The gold plate is the brightest thing for a mile, which is not ideal.', 'An owl says something short and final.', 'Your breath shows. So does the moon, on every edge of the armor.'];
+const SUSPECT = ['Somebody on the ridge is keeping pace with you. When you look, there is nobody on the ridge.', 'A man leaning on a gate stops talking as you pass and starts again once you are by.', 'That is the second time you have seen that hat.', 'A whistle, two notes, from behind. Another, two notes, from ahead.', 'A rider overtakes you, looks hard at the armor, and spurs on without a word.'];
+// Small things that happen on the road. One roll each, on the attribute named, and the walk carries on.
+const MICRO = [
+  { t: 'A cart with a broken wheel', stat: 'STR', diff: 'normal', win: { say: 'You lift the axle while the carter knocks the pin home. He presses coins on you and will not hear no.', gold: 4, rep: 2 }, lose: { say: 'You lift the wrong end. The cart is now broken in a second place.', stress: 3 } },
+  { t: 'A purse in the mud', stat: 'LCK', diff: 'easy', win: { say: 'Not yours. Nobody\'s, now. It is not empty either.', gold: 5 }, lose: { say: 'It is a toad. It was always a toad.', airhead: 4 } },
+  { t: 'A man who says he collects the toll', stat: 'WIL', diff: 'normal', win: { say: 'You ask, very sincerely, to see the toll house. There is no toll house. He wishes you a good day.', exp: 0.02 }, lose: { say: 'You pay the toll. Forty paces on, you work out there is no toll.', gold: -3, stress: 2 } },
+  { t: 'A wayside shrine', stat: null, win: { say: 'Somebody keeps fresh flowers here. You stand a minute with your helmet off, and feel better for it.', stress: -8 } },
+  { t: 'A dog that has decided to walk with you', stat: null, win: { say: 'It trots at your heel for a mile, accepts half your lunch, and peels off at a farm gate without looking back.', stress: -5, rest: 3 } },
+  { t: 'Rain, sudden and sideways', stat: 'CON', diff: 'normal', win: { say: 'You put your head down and walk through it. The armor steams.', exp: 0.01 }, lose: { say: 'It gets in at the neck and stays. You squelch.', decency: -3, stress: 2 } },
+  { t: 'A pedlar with one good eye', stat: 'LCK', diff: 'normal', win: { say: 'He likes your face, he says, and throws in a flask for the look of the thing.', potion: 'tea' }, lose: { say: 'He sells you a map of a place that, he admits afterwards, is not this place.', gold: -2 } },
+  { t: 'Loose scree on the path', stat: 'AGI', diff: 'normal', win: { say: 'You go down it sideways like you meant to. It is the most graceful you have been all week.', exp: 0.02 }, lose: { say: 'You go down it on your back. The armor makes a noise like a kitchen falling over.', hp: -6, decency: -2 } },
+  { t: 'A patrol wants to know your business', stat: 'WIL', diff: 'normal', win: { say: 'You tell them the truth, at length. They get bored and wave you on.', heat: -10 }, lose: { say: 'You tell them the truth. It sounds like a lie when you say it.', heat: 12 } },
+  { t: 'A fork the map does not show', stat: 'INT', diff: 'normal', win: { say: 'Moss on the north side, sun over your left shoulder. You take the right-hand path and it is the right path.', mins: -15, exp: 0.02 }, lose: { say: 'You take the left. Then you come back and take the right.', mins: 25 } },
+  { t: 'Brambles heavy with fruit', stat: 'LCK', diff: 'easy', win: { say: 'Sweet, sun-warm, and none of them the bad kind.', hp: 5, stress: -3 }, lose: { say: 'The fruit was fine. The wasps had opinions.', hp: -3 } },
+  { t: 'Singing, from somewhere in the trees', stat: 'WIL', diff: 'hard', win: { say: 'It is lovely, and you keep walking, and it stops being anything but wind.', exp: 0.03 }, lose: { say: 'You stand and listen for longer than you can account for.', airhead: 8, mins: 30 } },
+  { t: 'A notice nailed to a tree', stat: 'INT', diff: 'easy', win: { say: 'A reward, a description, a date. Not you. You read it twice to be sure it is not you.', heat: -5 }, lose: { say: 'A reward and a drawing. The drawing has your hair. Probably a coincidence.', heat: 8 } },
+  { t: 'A stream that has taken the ford', stat: 'STR', diff: 'easy', win: { say: 'You wade it with the sword over your head like a festival banner.', rest: -2 }, lose: { say: 'You wade most of it.', decency: -3 } },
+];
+function sign(from, to, j, total) {
+  const area = areaOf(to), wild = to.zone !== 'safe' || from.zone !== 'safe', where = `${esc(from.short)} → ${esc(to.short)} · stretch ${j} of ${total}`;
+  if (condOf('phero') >= 50 && d() <= 45) { heat(4, 'being followed'); return post({ who: 'sys', dice: `[${where} · pheromones]`, say: pick(FOLLOW, d()) }); }
+  if (wild && d() <= 30) { heat(8, 'being watched'); return post({ who: 'sys', dice: `[${where} · suspicion]`, say: pick(SUSPECT, d()) }); }
+  post({ who: 'sys', dice: `[${where}]`, say: phaseNow() === 'Night' && d() <= 40 ? pick(ENV_NIGHT, d()) : pick(ENV[area] ?? ENV.city, d()) });
+}
+function micro(to) {
+  const e = MICRO[Math.floor(Math.random() * MICRO.length)];
+  const r = e.stat ? rollCheck({ title: `On the road · ${e.t}`, stat: e.stat, dc: dcFor(S.level, e.diff) }) : null, res = !r || r.success ? e.win : e.lose;
+  const fx = applyFx(res, e.t);
+  if (res.potion) { S.bag[res.potion] = (S.bag[res.potion] ?? 0) + 1; store.set('bag', S.bag); fx.push(`${POTIONS[res.potion].name} +1`); }
+  if (res.gold < 0) { const lost = Math.min(S.gold, -res.gold * Math.max(1, S.level)); S.gold -= lost; store.set('gold', S.gold); fx.push(`gold −${n(lost)}`); }
+  if (res.hp < 0) { S.hero = { ...S.hero, hp: Math.max(1, Math.round(S.hero.hp + (S.hero.maxHp * res.hp) / 100)) }; fx.push(`HP ${res.hp}%`); }
+  if (res.mins) { if (res.mins > 0) passTime(res.mins); else { S.clock += res.mins; store.set('clock', S.clock); } fx.push(res.mins > 0 ? `${res.mins} min lost` : `${-res.mins} min saved`); }
+  post({ who: 'me', plate: e.t, dice: r ? `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${STAT_INFO[e.stat].name}` : '[no roll]', tone: r ? r.degree : null, say: res.say, fx });
+  if (once(`micro:${e.t}`)) journal('quest', `On the road: ${e.t.toLowerCase()}.`);
+}
+/* ---------- conditions: two things her body does that the world answers ---------- */
+// Each is a 0–100 gauge resisted by an attribute she already has. Resistance trains by living with it. Every night they move.
+const COND = {
+  swell: { name: 'Swelling', stat: 'CON', words: ['fits', 'snug', 'straining', 'bursting'], cure: 'a night in a real bed' },
+  phero: { name: 'Pheromones', stat: 'AGI', words: ['faint', 'noticeable', 'heady', 'overwhelming'], cure: 'a long soak or a Calming Tea' },
+};
+const condOf = (k) => S.cond[k] ?? 0, stepOf = (k) => Math.min(3, Math.floor(condOf(k) / 25));
+const resistOf = (k) => Math.min(30, Math.round((10 * effectiveStat(S.hero, COND[k].stat)) / Math.max(1, __m.stats.benchmarkStat(S.level))) + (S.resist[k] ?? 0));
+function cond(k, delta, why) { if (!delta) return; const was = condOf(k); S.cond[k] = Math.max(0, Math.min(100, was + delta)); store.set('cond', S.cond); if (S.cond[k] !== was) note(`${COND[k].name.toLowerCase()} ${delta > 0 ? '+' : '−'}${Math.abs(S.cond[k] - was)} · ${why}`); }
+function nightConditions(day) { // each morning: up by what her body did, down by her resistance, and living with it toughens her
+  const rows = [];
+  for (const k of Object.keys(COND)) {
+    const before = condOf(k), up = k === 'swell' ? 2 * S.bust : Math.round(S.chem / 10), down = Math.round(resistOf(k) / 2);
+    S.cond[k] = Math.max(0, Math.min(100, before + up - down));
+    const trained = before >= 25 && (S.resist[k] ?? 0) < 20; if (trained) S.resist[k] = (S.resist[k] ?? 0) + 1;
+    rows.push(`${COND[k].name} ${before} → ${S.cond[k]} (+${up} overnight, −${down} resisted${trained ? ', resistance +1' : ''})`);
+  }
+  store.set('cond', S.cond); store.set('resist', S.resist);
+  const worst = Object.keys(COND).sort((a, b) => condOf(b) - condOf(a))[0];
+  post({ who: 'sys', plate: `Morning report · day ${day}`, dice: esc(rows.join(' · ')), say: condOf(worst) >= 50 ? `${COND[worst].name}: ${COND[worst].words[stepOf(worst)]}. The town will notice before you do. What helps: ${COND[worst].cure}.` : 'Nothing about you is making the day harder than it needs to be.' });
+}
+const FOLLOW = ['Two lads have found a reason to walk the same way you are walking.', 'A carter slows his horse to your pace and cannot say why.', 'Somebody across the road walks into a post, still looking at you.', 'A door opens as you pass. Then the one next to it.'];
+/* ---------- unstick, cheats and simulators ---------- */
+// Jiggle free: the one button that always works. It drops whatever is holding her and puts her back on her feet where she stands.
+function jiggle(auto) {
+  const was = S.battle ? 'a fight' : S.standoff ? 'a standoff' : S.fallen || S.down ? 'the floor' : S.meet ? 'a first meeting' : S.spot ? 'a corner of the room' : S.talking ? 'a conversation' : S.mode === 'combat' ? 'the sparring ring' : 'nothing you could point at';
+  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
+  if (S.rtab === 'fight') S.rtab = 'map';
+  S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(S.hero.maxHp * 0.25)), stress: Math.min(S.hero.stress, 90) };
+  if (S.stam < 20) { S.stam = 20; store.set('stam', S.stam); }
+  if (!PLACES.some((p) => p.id === S.place)) setPlace(AREAS.city.start);
+  for (const b of document.querySelectorAll('#log [data-resolve], #log [data-choice]')) b.disabled = true;
+  setView('stage');
+  post({ who: 'sys', plate: 'Jiggle free', dice: `[unstick${auto ? ' · the page saw no way forward' : ''}] out of ${was}`, tone: 'virtue', say: 'You wiggle. Something in the armor un-wedges with a clonk, and you are standing in the road again with every door open.' });
+}
+function stuckNow() { // true when the stage shows nothing the player can press to move the game on
+  if (S.view && S.view !== 'stage') return false;
+  return ![...document.querySelectorAll('#gridTravel button:not(.ctabs button), #rowsBattle button, #rowsCombat button')].some((b) => !b.disabled && b.offsetParent !== null && b.id !== 'bFlee');
+}
+const setCond = (k, v) => { S.cond[k] = Math.max(0, Math.min(100, v)); store.set('cond', S.cond); };
+const CHEATS = [
+  ['heal', 'Heal and calm', 'every bar refills', () => { reset(true); S.stam = 100; store.set('stam', 100); }],
+  ['exp', '+1 level of EXP', 'then use the Level tab', () => gainExp(Math.max(1, needExp() - S.exp), 'a cheat')],
+  ['gold', '+500 gold', 'no questions asked', () => gainGold(500, 'a cheat')],
+  ['stam', 'Stamina 100', 'fresh legs', () => { S.stam = 100; store.set('stam', 100); S.fallen = false; }],
+  ['tidy', 'Decency 100', 'spotless', () => decency(100 - S.decency, 'a cheat')],
+  ['mess', 'Decency 0', 'easy prey', () => decency(-S.decency, 'a cheat')],
+  ['cool', 'Suspicion 0', 'nobody saw anything', () => heat(-S.heat, 'a cheat')],
+  ['hot', 'Suspicion +25', 'somebody saw everything', () => heat(25, 'a cheat')],
+  ['swellUp', 'Swelling +25', 'the next step up', () => setCond('swell', condOf('swell') + 25)],
+  ['pheroUp', 'Pheromones +25', 'the next step up', () => setCond('phero', condOf('phero') + 25)],
+  ['calm', 'Conditions 0', 'both gauges cleared', () => { setCond('swell', 0); setCond('phero', 0); }],
+  ['bust', 'Bust tier +1', 'with the swelling that comes with it', () => grow(100, 'a cheat')],
+  ['hour', '+1 hour', 'the clock moves', () => passTime(60)],
+  ['dawn', 'Skip to tomorrow, 07:00', 'runs the night and its morning report', () => passTime(1440 - (S.clock % 1440) + 420)],
+  ['micro', 'Road event now', 'one of the small ones', () => micro(placeNow())],
+  ['ambush', 'Standoff now', 'a crowd, right here', () => { if (!S.battle && !S.standoff) startStandoff('you asked for it (cheat)'); }],
+  ['rep', 'Reputation +15', 'here', () => rep(15, 'a cheat')],
+];
+const cheatCells = () => CHEATS.map(([id, label, hint]) => `<button class="cell bubble" type="button" data-cheat="${id}"><b>${esc(label)}</b><small>${esc(hint)}</small></button>`).join('');
+// The stretch table the road really rolls on, in one place so the walk and the simulator cannot disagree.
+function stretchRows(p, joints) { return [['fight', Math.round((dangerOf(p) / joints) * 1.3), 'crit'], ['event', Math.round(((p.zone === 'safe' ? 0 : p.evt ?? 0) / joints) * 1.3), 'hit'], ['sign', 30, 'bounce']]; }
+const jointsOf = (mins) => Math.max(1, Math.min(4, Math.round(mins / 20)));
+function simWalks(runs = 1000) { // every road out of here, walked many times with nothing changed
+  const here = placeNow();
+  return here.links.map((id) => { const p = PLACES.find((x) => x.id === id), mins = legMins(here, p), joints = jointsOf(mins), rows = stretchRows(p, joints), quiet = p.zone === 'safe' && here.zone === 'safe' && !dangerOf(p); let fights = 0, events = 0, signs = 0;
+    for (let i = 0; i < runs; i++) for (let j = 0; j < joints; j++) { if (quiet) { if (j === 0 && d() <= 35) signs++; continue; } const roll = d(); let at = 0, hit = null; for (const [label, chance] of rows) { if (!(chance > 0)) continue; if (roll > at && roll <= at + chance) hit = label; at += chance; } if (hit === 'fight') { fights++; break; } if (hit === 'event') events++; if (hit === 'sign') signs++; }
+    return `${p.short}: ${mins} min in ${joints} stretch${joints > 1 ? 'es' : ''} · ambushed ${Math.round((fights / runs) * 100)}% of walks · ${(events / runs).toFixed(2)} events and ${(signs / runs).toFixed(2)} signs a walk`; });
+}
+function simNights(nights = 30) { // the two conditions, run forward with today's body and no cures
+  return Object.keys(COND).map((k) => { let v = condOf(k), r = S.resist[k] ?? 0; const base = resistOf(k) - r, marks = [];
+    for (let n = 1; n <= nights; n++) { const up = k === 'swell' ? 2 * S.bust : Math.round(S.chem / 10), was = v; v = Math.max(0, Math.min(100, v + up - Math.round(Math.min(30, base + r) / 2))); if (was >= 25 && r < 20) r++; if ([1, 7, 14, 30].includes(n)) marks.push(`night ${n}: ${v}`); }
+    return `${COND[k].name} from ${condOf(k)} · ${marks.join(' · ')} · resistance ends at ${Math.min(30, base + r)}`; });
+}
+function simRolls(runs = 1000) { // the social dice against whoever is in front of her, or a stranger of her level
+  const dc = S.standoff ? dcFor(S.standoff.level) : dcFor(S.level), who = S.who ? castOf(S.who) : null;
+  const rows = S.standoff ? [['Sway', 'LCK', temptBonus() + repBonus('sway').total], ['Persuade', 'WIL', repBonus('persuade').total], ['Run', 'AGI', repBonus('run').total]] : Object.entries(APPROACH).map(([k, a]) => [a.label, a.stat, who ? meetBonus(k).total : 0, who ? effectiveStat(S.them, a.vs) : null]);
+  return rows.map(([label, stat, bonus, vs]) => { const pct = __m.rng.contestPct(effectiveStat(S.hero, stat), vs ?? dc, bonus); let ok = 0, crit = 0, fumble = 0; for (let i = 0; i < runs; i++) { const r = __m.rng.check(pct, fixedRolls([d()])); if (r.success) ok++; if (r.degree === 'crit') crit++; if (r.degree === 'fumble') fumble++; }
+    return `${label} (${STAT_INFO[stat].name}): ${pct}% on paper · ${Math.round((ok / runs) * 100)}% landed · ${Math.round((crit / runs) * 100)}% crit · ${Math.round((fumble / runs) * 100)}% fumble`; });
+}
+function simFights(runs = 60) { // the real battle runner, playing itself: her alone against what a hunt can throw at her
+  if (!BT?.runBattle) return ['The battle runner is not in this build.'];
+  const here = placeNow(), pool = DATA.encounters.encounters.filter((x) => x.id !== 'hoard_drake'), foeLevel = Math.max(1, Math.round(S.level * (here.foe ?? 0.75))), bars = heroBars(S.level), by = {};
+  for (let i = 0; i < runs; i++) { const enc = pool[i % pool.length], row = (by[enc.id] ??= { name: enc.name ?? enc.id, n: 0, wins: 0, rounds: 0 });
+    try { const rng = __m.rng.makeRng(1 + Math.floor(Math.random() * 2147483646)), party = [BT.makeHero(DATA.valerie.archetype, S.level, { id: 'valerie', name: heroName, stats: bars.stats, maxHp: bars.hp, maxMp: bars.mp, flags: { airhead: V.airheadOf(S.hero) } })];
+      const st = BT.runBattle({ party, encounter: enc.id, level: foeLevel, data: DATA }, { rng }).state; row.n++; row.rounds += st.round; if (st.result === 'win') row.wins++; }
+    catch (e) { return [`The runner stopped on ${enc.id}: ${String(e.message ?? e)}`]; } }
+  const all = Object.values(by), n = all.reduce((s, r) => s + r.n, 0), w = all.reduce((s, r) => s + r.wins, 0);
+  return [`Her alone at level ${S.level} against level ${foeLevel}, the computer playing both sides: won ${Math.round((w / Math.max(1, n)) * 100)}% of ${n}`, ...all.map((r) => `${r.name}: won ${r.wins} of ${r.n} · ${(r.rounds / Math.max(1, r.n)).toFixed(1)} rounds a fight`)];
+}
+const SIMS = { walks: ['1,000 walks down every road from here', simWalks], rolls: ['1,000 social rolls, here and now', simRolls], nights: ['30 nights of her conditions', simNights], fights: ['60 real fights, her alone', simFights] };
+function runSim(id) { const [title, fn] = SIMS[id]; S.sim = { title, rows: fn(), at: clockText() }; }
+const simBlock = () => `<div class="over"><h3>Simulators · nothing here touches your save</h3><div class="set">${Object.entries(SIMS).map(([id, [title]]) => `<button class="sm" type="button" data-sim="${id}">${esc(title)}</button>`).join('')}</div>${S.sim ? `<p class="lbl">${esc(S.sim.title)} · ${esc(S.sim.at)}</p>${S.sim.rows.map((r) => `<p class="simrow">${esc(r)}</p>`).join('')}` : '<p>Pick one. The numbers come from the same tables the game rolls on.</p>'}</div>`;
 function renderHuds() {
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
@@ -2213,6 +2375,8 @@ function render() {
   $('s-wing').setAttribute('aria-pressed', S.stance === 'wing'); $('s-think').setAttribute('aria-pressed', S.stance === 'think');
   $('guard').setAttribute('aria-pressed', S.guarding); $('guard').textContent = `Guard: ${S.guarding ? 'on' : 'off'}`;
   renderLog();
+  const stuck = stuckNow(); $('jiggle').classList.toggle('stuck', stuck);
+  if (stuck) { const g = $('gridTravel'); g.hidden = false; g.insertAdjacentHTML('beforeend', '<button class="cell bubble primary" type="button" data-jiggle="1"><b>Jiggle free</b><small>nothing here can be pressed · this gets you out</small></button>'); }
 }
 let drawn = {};
 function drawSpriteOnce() {
@@ -2264,7 +2428,7 @@ function debugClick(what) {
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, cls: 'knight', journal: [], seen: {}, perks: {}, count: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, cls: 'knight', heat: 0, cond: {}, resist: {}, journal: [], seen: {}, perks: {}, count: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
     setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
@@ -2272,6 +2436,9 @@ function debugClick(what) {
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.jiggle) { jiggle(false); return render(); }
+  if (b.dataset.cheat) { const c = CHEATS.find((x) => x[0] === b.dataset.cheat); if (c) { c[3](); post({ who: 'sys', dice: `[cheat] ${esc(c[1])}` }); } return render(); }
+  if (b.dataset.sim) { runSim(b.dataset.sim); S.rtab = 'debug'; return render(); }
   if (b.dataset.ctab) { S.ctab = b.dataset.ctab; return render(); }
   if (b.dataset.tp) { S.standoff = null; S.fallen = false; S.mode = 'travel'; const from = placeNow(); setPlace(b.dataset.tp); S.them = freshThem(); arrive(from, placeNow(), 0); return render(); }
   if (b.dataset.look) { S.lookL = b.dataset.look; if (!S.lookL.startsWith('custom')) store.set('lookL', S.lookL); drawn.l = null; return render(); }
