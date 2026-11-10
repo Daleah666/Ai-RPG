@@ -98,6 +98,9 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Stat tiles (right panel), close-ups, growth portrait | `statStrip` (returns HTML; drawn into `#hudR #statStrip`), `closeFit`, `body.closeup`, `GROW_FACE`, `growFace` |
 | Routines, phrases outside the chat, the klutz | `LOOPS`, `stepToward`, `loopNext`, `wanderStep` (`wait`, `leg`), `BARKS`, `placeBark`, `bark`, `barkOf`, `barkTick`, the `#bark` element; `KLUTZ`, `klutzMoment` |
 | Meme, the helper | `MEME_HELLO`, `MEME_RULES`, `memeFacts`, `askMeme`, `memeToggle`, `memeCell`, `idleR`, `S.meme` |
+| Layout circles, what changed | `LAYS`, `layPill`, `applyLay`, `setLay`, `S.lay`, the `lay1`/`lay2`/`lay3` body classes; `NEW_VER`, `NEW_UI`, `showNew`, `hideNew`, the `#newLayer` element |
+| Moves on the chat bar, attribute help | `movesNow`, `moveCells`, `moveAct`, `MOVE_SAY`, the *Your moves* row in `placeGrid`; `ATTR_USE`, `attrHelp`, `S.attrHelp` |
+| The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
 | More than one answer | `swipeOpen`, `swipeSeal` (called first thing in `post`), `swipe`, `swipeBar`, `takeLine`, `TAKES`, `S.swipe` |
 | One-line arrivals, no repeats | `arrive` (description only on a first visit), the guard at the top of `post`, `S.said` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
@@ -219,6 +222,25 @@ Decisions made in that pass:
 - Del asked whether the page could "hook up directly to Featherless as an API thing" through an extension. Answer given: yes, through Del's own SillyTavern extension in `desktop-companion/st-card-creator/extension`. **Built** as version 0.1.6 of that extension (Daleah666/desktop-companion pull request 16): a Game button and a wand-menu entry open this page over the whole window; `game/adapter.js` sends the page's `sample` calls through SillyTavern's `generateRaw`, so it runs on whatever SillyTavern is connected to, with no key in the page; saves and the vault go to the extension's IndexedDB. After this page changes, rebuild it there with `node build-game.mjs <path to rpg/playtest/out/oops-playtest.html>`. Pictures are not in git: the `art` folder is copied to `game/art` by hand. Checked only against a stand-in for SillyTavern, never inside a real one or against Featherless itself.
 
 Loose ends from that pass: the browser test `drive28` once failed on a button that was redrawn between being found and being clicked (a timer render); it passes when run again. Meme, the arrows and the phrases have only been run against a stand-in for Claude.
+
+### Added on 2026-11-10, after that (v38, artifact version 32)
+
+Built and merged, from two voice notes:
+
+- "I'm a little bit overwhelmed... a little button that's rainbow so I know exactly where it is... three little circles that I could click and change the layout... give a little explanation": the rainbow ring beside Say with three circles (`setLay`). It sits in the Say row because the top bar has no room at 1440 px and the Say row is on screen in every mode.
+- "Put RGB around certain things that you changed... give me some picture": `showNew`. **When a later pass changes the page, update `NEW_VER` and `NEW_UI`** (a selector and one sentence per change) so Del gets the rings again, and send Del a screenshot of them.
+- "I don't really know the explanation of this attributes thing": `attrHelp`.
+- "Any of my moves should be on the chat bar": the *Your moves* row. In a real fight the moves were already the skill list.
+- "I gave you them in files and folders, so they should be together... auto sort... picture library should have a little tab that just has the people and then some miscellaneous": the library tabs and `sortFile`.
+
+Decisions made in that pass:
+
+- Del said again: "You are doing Karryn's Prison passives... not the sexual stuff, but they are gonna be very incentivizing." What was built: six more passives in this game's own bank, in the same shape (something she keeps doing, a counter, a permanent change), each one a plain reward so there is a reason to chase it, plus the note when one is in reach. That game's passive list, names, numbers and text are still not imported, and the assistant told Del so. Keep to it.
+- Outside a fight a move had no meaning before this pass. The meaning given (one roll, once per visit, reward by attribute) is the assistant's pick; Del has not seen it yet.
+- Pictures Del adds through the library are held by the browser tab only. Keeping them needs the `assets` capability, which the page does not declare.
+- The move buttons and the library use Valerie's skill list for every lead, as the Kit tab already did. Ember and Pip have no moves of their own yet.
+
+Loose ends from that pass: in the smallest layout the left panel is the bars alone, and the size strip under them still works independently of the circles (picking a circle sets the size; picking a size does not move the circle). The rings are placed once when shown and do not follow a resize.
 
 ## What Del asked for that is not built, in suggested order
 
