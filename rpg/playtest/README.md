@@ -12,15 +12,29 @@ That writes `playtest/out/oops-playtest.html` (ignored by git). Open it from a f
 
 | Part | What it does |
 |---|---|
-| Left panel | Valerie: Airhead gauge, mood, HP, MP, stress, attributes, her look. Drag its edge to resize. |
-| Middle | The story. Every beat is one dice line, then one paragraph. Under it, a grid of what you can do where you stand. |
-| Right panel, Map | The town as bubbles. Click one to go there. A pink dot means someone lives there; a number is quests waiting. |
-| Right panel, Here | Whoever lives where you are: rename them, change their class or look, flip the picture, or move someone else in. |
-| Right panel, Level | EXP, level up, training points, and every move with the level it unlocks. |
-| Right panel, Debug | The older tools, kept: sparring sandbox, party fights, level box, place list, stress buttons, a reset. |
+| Left panel | Valerie. Airhead gauge and mood on top, then three tabs: **Stats** (bars, attributes, stamina, decency, purse and potions), **Bio** (her character sheet), **Spicy** (bust, hips, size, chemistry and how she feels). Settings and Save sit under the tabs. |
+| Top of the middle | The clock, the mode pill (Travelling, Combat, Down), the **Debugger** toggle, and the **dice tray**: every roll lands there with its bands and its arithmetic. |
+| Middle | The story, then her inner voice, then a grid of what you can do where you stand. Out of combat the buttons are bubbles; in a fight they are square. |
+| Right panel, Map | The city and the wilds as bubbles. Click one to walk there; time passes with distance. Red rings are the wilds. |
+| Right panel, Here | Whoever is where you are: rename them, change class or look, flip the picture, or move someone else in. |
+| Right panel, Level | EXP, level up, training points, the path that decides why the bust grows, every move and its unlock level. |
+| Right panel, Debug | The older tools, kept: sparring sandbox, party fights, level box, place list, stress buttons, reset. |
 | Right panel, Fight | Appears in a real fight: the enemy, phase, wind-ups, every fighter's bars. |
 
-Fights are run by `engine/battle.js`. A hunt is Valerie alone against enemies at three quarters of her level; the Debug tab switches hunts to a party of four. Boss bounties always bring a party.
+## The rules the page adds on top of the engine
+
+These live in `stage.html`, not in `engine/`. They are playtest rules: cheap to change, and not yet covered by the test suite.
+
+- **Clock.** Walking, talking and resting move a clock. Four phases tint the scene. Shops, the guild and the bar keep hours, and a regular is only at their place during theirs.
+- **Zones.** Each place is `safe`, `risky` or `wild`, with a fight chance (`enc`), an event chance (`evt`) and an enemy strength (`foe`, a share of her level). Entering or exploring a place that is not safe rolls one d100 against that table.
+- **Fight chance.** Place + 15 at night + half of every point of decency under 50 + 10 when stamina is under 25. In a safe place it is zero until decency drops under 30; then even townsfolk try it.
+- **Combat.** A fight starts as a standoff: Fight, Persuade (Willpower), Tempt (Luck) or Run (Finesse). You cannot walk away. A failed roll starts the fight. Inside a non-boss fight the same three are offered again and a failure costs the turn; potions cost the turn too.
+- **Stamina.** Walking and acting spend it; food, naps, baths and beds restore it. At zero she falls down and needs a Willpower roll to get up.
+- **Decency.** How presentable she is. Fumbles, falling over, sleeping rough and losing fights lower it; baths, a polished breastplate and a real bed raise it.
+- **Meeting people.** The first time she meets a regular she picks one of four approaches. The regular's numbers, likes and dislikes are hidden; the Debugger shows them. The result sets a hidden rapport.
+- **Spots.** Some places have spots (the bar counter, the card table, the well) with three things to do each.
+- **Gold and potions.** Fights and luck pay gold. Fizz and Fettle sells a Healing Draught, a Mana Tonic and a Calming Tea.
+- **Bust, hips, chemistry.** Body trackers from her character sheet. The path picked on the Level tab decides why the bust grows: Warrior (hormones), Mage (spare mana) or Rogue (greed). Each tier is Tempt +2, Finesse −2% and the path's perk. Hips and size only tick.
 
 ## Art is not in the repository
 
@@ -33,20 +47,22 @@ art/succubus-idle.mp4  art/librarian-idle.mp4
 art/bg/bg-lanterns.webp  art/bg/chat-classroom.webp  art/bg/bg-stacks.webp
 art/bg/bg-dungeon.webp   art/bg/bg-arena.webp        art/bg/chat-pool.webp
 art/bg/bg-nightpark.webp art/bg/chat-graffiti.webp   art/bg/bg-forest.webp
+art/bg/bg-candy.webp
 ```
 
 A missing file leaves an empty spot; the page still works. Anyone on the page can also drop in their own picture or clip for either side.
 
 ## Changing the town
 
-Three tables near the top of the script in `stage.html`:
+The tables near the top of the script in `stage.html`:
 
-- `PLACES`: each bubble. Position on the map, backdrop, what you can do there, who lives there, which bubbles it connects to, and the tags that tie it to story events.
-- `CAST`: the regulars. Name, role, class, look, and the lines they greet you with.
-- `ACTS`: the things a place can offer.
+- `PLACES`: each bubble. Map position, backdrop, zone, chances, hours, what you can do there, who lives there, which bubbles it connects to, the lines for Look around, and the tags that tie it to story events.
+- `CAST`: the regulars. Name, role, class, look, hours, what they like and hate, and their lines.
+- `SPOTS`: the spots inside a place, three options each: a stat and a difficulty, a cost, and what winning or losing does.
+- `APPROACH`, `POTIONS`, `PATHS`, `THOUGHTS`: the four approaches, the shop stock, the growth paths, and her canned inner voice.
 
-Add a row and the map, the buttons and the resident list pick it up.
+Add a row and the map, the buttons and the Debugger pick it up.
 
 ## Not built yet
 
-A bestiary for spare art, enemy pictures in fights, items in battle, and a live Grok connection for the right-hand character (the page cannot call outside services from where it is published).
+Enemy pictures and a bestiary, a small dungeon to cross between places, the free-text "say your own thing" answer judged by a Game Master model, levels of the same area, growth for the regulars, items inside the engine's battle runner (the page spends her turn itself), and a live Grok connection (the page cannot call outside services from where it is published). `docs/tasks/2026-11-10_playtest-stage-handoff.md` at the repository root has the full list and the order to take it in.
