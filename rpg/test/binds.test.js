@@ -5,6 +5,9 @@ import { makeRng, d100, contestPct } from '../engine/rng.js';
 import { makeCombatant, effectiveStat, effectiveStats } from '../engine/stats.js';
 import { BASIC_ATTACK, damage, expectedDamage, hitChance, healAmount, stressTaken, initiative } from '../engine/combat.js';
 import { befuddledPart } from '../engine/valerie.js';
+import { readData } from '../engine/data-node.js';
+import { statsAt } from '../engine/progression.js';
+import { benchmarkStat } from '../engine/stats.js';
 import {
   BIND_RULES, NEVER_SEALED, boundParts, isBound, isTrussed, trussedDamageMult, isSealed, sealedBy, usableSkills, canFlee,
   bindResistOf, timesBound, bindOdds, bindChance, applyBind, tryBind, tickBinds, cureBinds, struggle, endBattleBinds,
@@ -486,6 +489,57 @@ test('what each bind is worth, in this engine\'s numbers', () => {
   let trussed = even;
   for (const part of BIND_PARTS) trussed = applyBind(trussed, part, 2);
   assert.equal(share(expectedDamage(even, trussed, BASIC_ATTACK, { damageMult: trussedDamageMult(trussed) })), '165.5');
+});
+
+// ---------------------------------------------------------------- the blueprint
+
+test('the lookup tables and worked example printed in blueprint/03_psych_status.md', () => {
+  const lucky = (lck, flags = {}) => fighter(300, { LCK: lck }, { flags });
+  // Bind chance by Luck ratio (rows) and skill chance 25 / 35 / 45 / 55 / 80 (columns).
+  const pairs = [[150, 600], [300, 600], [400, 600], [300, 300], [450, 300], [600, 300], [600, 150]];
+  const row = ([mine, theirs]) => [25, 35, 45, 55, 80].map((base) => bindChance(lucky(mine), lucky(theirs), 'legs', base));
+  assert.deepEqual(pairs.map(row), [
+    [5, 5, 9, 19, 44],
+    [5, 15, 25, 35, 60],
+    [13, 23, 33, 43, 68],
+    [25, 35, 45, 55, 80],
+    [37, 47, 57, 67, 92],
+    [45, 55, 65, 75, 95],
+    [61, 71, 81, 91, 95],
+  ]);
+  assert.deepEqual(pairs.map(([mine, theirs]) => Math.round(bindOdds(lucky(mine), lucky(theirs), 'legs', 50).swing)), [-36, -20, -12, 0, 12, 20, 36]);
+  // Bind resist (rows) against the 1st / 2nd / 3rd / 4th bind on a part, for skill chances 45, 55 and 80.
+  const worn = (base, resist) => [0, 1, 2, 3].map((count) => bindChance(lucky(300), lucky(300, { bindResist: resist, bindCount: { legs: count } }), 'legs', base));
+  const table = [0, 10, 20, 30, 40, 50, 60, 70, 80].map((resist) => [45, 55, 80].map((base) => worn(base, resist)));
+  assert.deepEqual(table, [
+    [[45, 23, 11, 6], [55, 28, 14, 7], [80, 40, 20, 10]],
+    [[41, 20, 10, 5], [50, 25, 12, 6], [72, 36, 18, 9]],
+    [[36, 18, 9, 5], [44, 22, 11, 6], [64, 32, 16, 8]],
+    [[32, 16, 8, 5], [39, 19, 10, 5], [56, 28, 14, 7]],
+    [[27, 14, 7, 5], [33, 17, 8, 5], [48, 24, 12, 6]],
+    [[23, 11, 6, 5], [28, 14, 7, 5], [40, 20, 10, 5]],
+    [[18, 9, 5, 5], [22, 11, 6, 5], [32, 16, 8, 5]],
+    [[14, 7, 5, 5], [17, 8, 5, 5], [24, 12, 6, 5]],
+    [[9, 5, 5, 5], [11, 6, 5, 5], [16, 8, 5, 5]],
+  ]);
+  // The worked example: a level 50 Rogue, a 45% arms bind, an elite with 30 arms resist.
+  const rogue = makeCombatant({ id: 'rogue', level: 50, stats: statsAt(readData('archetypes').archetypes.find((a) => a.id === 'rogue'), 50) });
+  const elite = makeCombatant({ id: 'elite', level: 50, rank: 'elite', stats: { STR: 330, INT: 150, AGI: 240, CON: 300, WIL: 200, LCK: 240 }, flags: { bindResist: { head: 40, arms: 30, legs: 30 } } });
+  assert.equal(rogue.stats.LCK, 384);
+  const odds = bindOdds(rogue, elite, 'arms', 45);
+  assert.equal(odds.swing.toFixed(1), '13.8');
+  assert.equal(odds.pct, 41);
+  const bound = tryBind(rogue, elite, 'arms', 45, 2, dice([31]));
+  assert.deepEqual([bound.success, bound.crit, bound.turns], [true, false, 2]);
+  assert.equal(effectiveStat(bound.combatant, 'STR'), 165);
+  assert.equal(Math.round((100 * damage(bound.combatant, rogue)) / damage(elite, rogue)), 40);
+  assert.equal(bindChance(rogue, bound.combatant, 'arms', 45), 21);
+  // The hero's Accidental Trip at the level it unlocks, against a benchmark enemy and a boss with 50 legs resist.
+  const valerie = makeCombatant({ level: 40, stats: statsAt(readData('valerie').archetype, 40) });
+  const foe = (resist) => makeCombatant({ level: 40, stats: { LCK: benchmarkStat(40) }, flags: { bindResist: resist } });
+  assert.deepEqual([valerie.stats.LCK, benchmarkStat(40)], [325, 242]);
+  assert.equal(bindChance(valerie, foe(0), 'legs', 55), 64);
+  assert.equal(bindChance(valerie, foe(50), 'legs', 55), 32);
 });
 
 // ---------------------------------------------------------------- purity

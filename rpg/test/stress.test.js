@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { SCALE, RESOLVE, STAT_KEYS, MOD_CLAMP, FUMBLE_FROM } from '../engine/constants.js';
 import { makeRng, d100 } from '../engine/rng.js';
 import { makeCombatant, effectiveStat, benchmarkStat } from '../engine/stats.js';
-import { stressTaken, hitChance } from '../engine/combat.js';
+import { stressTaken, hitChance, damage } from '../engine/combat.js';
+import { statAt, statsAt, priceAt, priceForFights } from '../engine/progression.js';
 import { readData } from '../engine/data-node.js';
 import { stressFilter, resolveShiftForAllies } from '../engine/valerie.js';
 import { applyBind } from '../engine/binds.js';
@@ -13,7 +14,7 @@ import {
   withStateOpts, consumeFirstRefusal, addStress, applyStress, relieveStress, breather, clampShift, resolveVirtuePct, isDoubles,
   resolveBands, validateResolveTables, readResolveRoll, startResolve, resolveCheck, forceResolve, partyResolveShift,
   gainMark, removeMark, spendSilverLining, clearResolve, snapOut, actOutChance, actOutCheck, pickByRoll,
-  breakdownChoices, breakdown, endBattle, rest, ENEMY_STRESS, enemyStressEvent,
+  breakdownChoices, breakdown, endBattle, rest, ENEMY_STRESS, enemyStressEvent, isOutOfIt,
 } from '../engine/stress.js';
 
 // ---------------------------------------------------------------- fixtures
@@ -266,6 +267,22 @@ test('applyStress lands exactly what combat.stressTaken says, with source, ignor
   assert.equal(eased.after, 25);
 });
 
+test('nobody who is knocked out or has Stormed Off takes stress', () => {
+  const down = hero(300, { hp: 0, stress: 95 });
+  const hit = applyStress(down, 40, { ignoreWill: true });
+  assert.equal(hit.taken, 0);
+  assert.equal(hit.after, 95);
+  assert.equal(hit.event, null);
+  assert.equal(isOutOfIt(down), true);
+  const gone = hero(300, { stress: 50, flags: { stormedOff: true } });
+  assert.equal(applyStress(gone, 40, { ignoreWill: true }).taken, 0);
+  assert.equal(isOutOfIt(hero()), false);
+  // No hp on the sheet at all is not the same as none left.
+  assert.equal(applyStress(makeCombatant({ stats: { WIL: 300 } }), 12, { ignoreWill: true }).taken, 12);
+  // Relief still reaches them: the party can talk to someone on the floor.
+  assert.equal(relieveStress(down, 10).relieved, 10);
+});
+
 test('a bound head lets more stress through: the two systems meet in effective WIL', () => {
   const free = hero(600);
   const bound = applyBind(free, 'head', 2);
@@ -455,12 +472,18 @@ test('the personal entry replaces the table entry on even rolls only, and only f
   // Half the die is even, so about half of a hero's results are her own.
   const own = Array.from({ length: 100 }, (_, i) => check(i + 1, personal)).filter((r) => r.personal).length;
   assert.equal(own, 50);
-  // An entry with only id, name and text (as data/valerie.json ships them) still makes a working state.
-  const state = check(60, personal).combatant.resolve;
-  assert.equal(state.name, 'Self-Aware');
+  // An entry with only id, name and text still makes a working state.
+  const bare = { affliction: { id: 'aff_test_bare', name: 'Bare', text: 'Nothing but a name.' } };
+  const state = check(60, bare).combatant.resolve;
+  assert.equal(state.name, 'Bare');
   assert.deepEqual(state.effects, []);
   assert.equal(state.behavior, null);
-  assert.equal(check(60, personal).party, null);
+  assert.equal(check(60, bare).party, null);
+  // The hero's own entry carries machine fields: it locks her gauge and costs the party 5.
+  const hers = check(60, personal);
+  assert.equal(hers.combatant.resolve.name, 'Self-Aware');
+  assert.ok(hers.combatant.resolve.effects.some((e) => e.kind === 'airheadLock'));
+  assert.equal(hers.party.stress, 5);
 });
 
 test('permanent or temporary is read off the roll: doubles leave a mark', () => {
@@ -486,9 +509,11 @@ test('permanent or temporary is read off the roll: doubles leave a mark', () => 
   assert.equal(lucky.mark.id, SILVER_LINING.id);
 
   // A personal entry that names no mark of its own leaves the generic one for its side.
-  const personal = valerieData.resolve;
-  assert.equal(resolveCheck(hero(), dice([44]), { tables, personal }).mark.id, GENERIC_SCAR.id);
-  assert.equal(resolveCheck(hero(), dice([22]), { tables, personal }).mark.id, SILVER_LINING.id);
+  const bare = { affliction: { id: 'aff_test_bare', name: 'Bare', text: 'Nothing but a name.' }, virtue: { id: 'vir_test_bare', name: 'Bare', text: 'Nothing but a name.' } };
+  assert.equal(resolveCheck(hero(), dice([44]), { tables, personal: bare }).mark.id, GENERIC_SCAR.id);
+  assert.equal(resolveCheck(hero(), dice([22]), { tables, personal: bare }).mark.id, SILVER_LINING.id);
+  // The hero's affliction names a Scar of its own.
+  assert.equal(resolveCheck(hero(), dice([44]), { tables, personal: valerieData.resolve }).mark.id, 'aff_scar_val_saw_the_strings');
   // Eight rolls in a hundred scar and two leave a Silver Lining at the base odds.
   const marks = Array.from({ length: 100 }, (_, i) => resolveCheck(hero(), dice([i + 1]), { tables })).filter((r) => r.permanent);
   assert.equal(marks.filter((r) => r.kind === 'affliction').length, 8);
@@ -919,9 +944,9 @@ test('a Virtue flourishes on a low roll; with no state there is no roll at all',
   const none = actOutCheck(hero(), unused);
   assert.deepEqual({ roll: none.roll, pct: none.pct, outcome: none.outcome, act: none.act }, { roll: null, pct: 0, outcome: 'none', act: null });
   assert.equal(unused.calls, 0);
-  // A personal entry with no behavior (the hero's, as shipped) never rolls either.
-  const selfAware = inState('affliction', valerieData.resolve.affliction);
-  assert.equal(actOutCheck(selfAware, unused).outcome, 'none');
+  // A personal entry with no behavior never rolls either.
+  const bare = inState('affliction', { id: 'aff_test_bare', name: 'Bare', text: 'Nothing but a name.' });
+  assert.equal(actOutCheck(bare, unused).outcome, 'none');
   assert.equal(unused.calls, 0);
 });
 
@@ -1066,6 +1091,83 @@ test('enemies get no Resolve Check: Rattled at 100, Routed at 200, and only the 
   if (text('routed')) {
     assert.ok(/minion or standard/i.test(text('routed')) && text('routed').includes('100'), 'data/skills.json "routed" and ENEMY_STRESS disagree');
   }
+});
+
+// ---------------------------------------------------------------- the blueprint
+
+test('the lookup tables printed in blueprint/03_psych_status.md', () => {
+  const archetypes = readData('archetypes').archetypes;
+  const wil = (id, level) => statAt(archetypes.find((a) => a.id === id), 'WIL', level);
+  // 3.3: what a Medium hit lands on Warrior / Mage / Rogue.
+  const lands = (level) => ['warrior', 'mage', 'rogue'].map((id) => stressTaken(stressBase('medium', level), makeCombatant({ level, stats: { WIL: wil(id, level) } })));
+  assert.deepEqual([1, 10, 25, 50, 75, 100].map(lands), [[12, 12, 12], [12, 11, 12], [13, 11, 13], [14, 11, 13], [15, 10, 14], [16, 10, 14]]);
+  // 3.4: rolls that leave a mark, by shift, and what one check costs the rest of the party on average.
+  const shifts = [-15, -10, -5, 0, 5, 10, 15];
+  const marks = (kind) => shifts.map((shift) => resolveBands(tables, shift).filter((b) => b.kind === kind).reduce((sum, b) => sum + b.doubles.length, 0));
+  assert.deepEqual(marks('affliction'), [10, 9, 9, 8, 8, 7, 7]);
+  assert.deepEqual(marks('virtue'), [0, 1, 1, 2, 2, 3, 3]);
+  const partyCost = (shift) => {
+    let sum = 0;
+    for (let roll = 1; roll <= 100; roll++) sum += readResolveRoll(roll, { tables, virtueShift: shift }).entry.onStart.partyStress;
+    return (sum / 100).toFixed(1);
+  };
+  assert.deepEqual([0, 10, 15, -15].map(partyCost), ['3.3', '1.7', '1.0', '5.5']);
+  // 3.5 and 3.6: what the attribute changes are worth against an even opponent, as a percentage of normal.
+  const even = hero();
+  const pct = (value) => Math.round((100 * value) / damage(even, even));
+  assert.equal(pct(damage(inState('affliction', aff('aff_backseat_hero')), even)), 113);
+  assert.equal(pct(damage(inState('affliction', aff('aff_spooked')), even)), 74);
+  assert.equal(pct(damage(inState('virtue', vir('vir_on_a_roll')), even)), 134);
+  assert.equal(pct(damage(even, inState('affliction', aff('aff_martyr_complex')))), 105);
+  assert.equal(pct(damage(even, inState('virtue', vir('vir_mother_hen')))), 92);
+  assert.equal(pct(damage(even, inState('virtue', vir('vir_second_wind')))), 94);
+  // 3.5: the relief it takes to calm an Affliction.
+  const asked = (entry, stress) => {
+    const c = { ...inState('affliction', entry), stress };
+    let points = 0;
+    while (!relieveStress(c, points).calmed) points++;
+    return points;
+  };
+  assert.equal(asked(aff('aff_spooked'), 100), 51);
+  assert.equal(asked(aff('aff_spooked'), 120), 71);
+  assert.equal(asked(aff('aff_doomsayer'), 100), 101);
+  // 3.9: prices.
+  const levels = [1, 10, 25, 50, 75, 100];
+  assert.deepEqual(levels.map((l) => priceForFights(l, SERVICES.camp.cost.fights)), levels.map((l) => 40 * l));
+  assert.deepEqual(levels.map((l) => priceForFights(l, SERVICES.inn.cost.fights)), levels.map((l) => 20 * l));
+  assert.deepEqual(levels.map((l) => priceForFights(l, SERVICES.night_off.cost.fights)), levels.map((l) => 80 * l));
+  assert.deepEqual(levels.map((l) => priceAt(l, SERVICES.talk_it_out.cost.levelShare)), [160, 2500, 10000, 32500, 67500, 115000]);
+  assert.deepEqual([RELIEF.CRIT, RELIEF.VICTORY, RELIEF.BOSS_VICTORY, RELIEF.COMFORT, RELIEF.RALLY, RELIEF.UNWIND, RELIEF.INN], [3, 5, 15, 15, 5, 30, 25]);
+});
+
+test('the worked Resolve Check in blueprint/03_psych_status.md', () => {
+  const archetypes = readData('archetypes').archetypes;
+  const warrior = makeCombatant({ id: 'warrior', level: 50, stats: statsAt(archetypes.find((a) => a.id === 'warrior'), 50), stress: 92, hp: 1, maxHp: 1 });
+  assert.equal(warrior.stats.WIL, 153);
+  const hit = applyStress(warrior, stressBase('medium', 50), { source: 'horror' });
+  assert.deepEqual([stressBase('medium', 50), hit.taken, hit.after, hit.event], [18, 14, 106, 'resolve']);
+  const mage = { ...inState('affliction', aff('aff_spooked')), id: 'mage' };
+  const valerie = makeCombatant({ id: 'valerie', level: 50, hp: 1, flags: { airhead: 80 } });
+  const shift = partyResolveShift([mage, valerie], resolveShiftForAllies(valerie));
+  assert.equal(shift, 5);
+  const r = resolveCheck(hit.combatant, dice([66]), { tables, virtueShift: shift });
+  assert.equal(r.virtuePct, 30);
+  assert.deepEqual(r.band, { lo: 62, hi: 71, id: 'aff_tinfoil_helm', name: 'Tinfoil Helm' });
+  assert.equal(r.personal, false);
+  assert.equal(r.permanent, true);
+  assert.equal(r.mark.name, 'Trust Issues');
+  assert.equal(effectiveStat(r.combatant, 'WIL'), 122);
+  assert.equal(r.party.stress, 8);
+  assert.equal(actOutChance(r.combatant), 30);
+  assert.equal(readResolveRoll(27, { tables, virtueShift: shift }).entry.name, 'Second Wind');
+  assert.equal(readResolveRoll(27, { tables }).entry.name, 'Martyr Complex');
+  // The turn check example: a Tinfoil Helm on 130 stress.
+  const tinfoil = { ...r.combatant, stress: 130 };
+  assert.equal(actOutChance(tinfoil), 35);
+  assert.deepEqual([65, 66, 95, 96].map((roll) => actOutCheck(tinfoil, dice([roll])).outcome), ['composed', 'act_out', 'act_out', 'meltdown']);
+  // In the Zone against an even opponent.
+  const zone = inState('virtue', vir('vir_in_the_zone'));
+  assert.deepEqual(hitChance(zone, hero(), undefined, withStateOpts(zone)), { hitPct: 90, critPct: 15, fumbleFrom: 101 });
 });
 
 // ---------------------------------------------------------------- purity

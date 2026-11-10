@@ -276,9 +276,14 @@ export function addStress(combatant, amount) {
   return { combatant: { ...combatant, stress: after }, taken, before, after, event };
 }
 
+/** Knocked out (hp known and at 0) or Stormed Off: out of the scene, so no stress reaches them. */
+export function isOutOfIt(combatant) {
+  return (Number.isFinite(combatant?.hp) && combatant.hp <= 0) || Boolean(combatant?.flags?.stormedOff);
+}
+
 /**
- * A stress hit of baseStress from the world: effective WIL mitigates it (combat.stressTaken), the current
- * state and marks scale it, the bar clamps to 0..200.
+ * A stress hit of baseStress: effective WIL mitigates it (combat.stressTaken), the current state and marks
+ * scale it, the bar clamps to 0..200. Someone who is knocked out or has Stormed Off takes none.
  * opts: source (a STRESS_SOURCE_TAGS tag, default 'general'), ignoreWill, mult (scales gains).
  * A negative base is relief and goes through relieveStress. Returns { combatant, taken, before, after, event }.
  */
@@ -290,7 +295,7 @@ export function applyStress(combatant, baseStress, opts = {}) {
     return { combatant: r.combatant, taken: -r.relieved, before: r.before, after: r.after, event: null, source, calmed: r.calmed };
   }
   const scale = nonNeg(mult) * stressMultFor(combatant, source);
-  const taken = base === 0 || scale <= 0 ? 0 : stressTaken(base, combatant, { ignoreWill, mult: scale });
+  const taken = base === 0 || scale <= 0 || isOutOfIt(combatant) ? 0 : stressTaken(base, combatant, { ignoreWill, mult: scale });
   return { ...addStress(combatant, taken), source, calmed: false };
 }
 
