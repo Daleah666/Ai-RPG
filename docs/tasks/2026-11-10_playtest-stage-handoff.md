@@ -105,6 +105,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Chapters and the opening | `chapterList`, `chapterNo`, `CHAPTER_SAY`, `BOOK`, `chapterOpen` (from `showEvent`), `chapterClose` (from `chooseEvent`), `chaptersHtml`, `S.chap`, `S.book`; `OPENING`, `playOpening` |
 | The cast as files | `rpg/characters/*.json`, `rpg/characters/README.md`, `tools/build-playtest.mjs` (reads them into `DATA.characters`), `CHARS`, `CHAR`, and the lines that build `PCS`, `SECOND` and merge into `PROFILE`, `WANTS`, `LOOKTXT`, `BARKS`, `LOOPS` |
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
+| Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
 | Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
 | The picture library | `ownerOf`, `libPeople`, `sortFile`, `LIB_ALIAS`, `libAdd`, `backdrops`, `libraryHtml`, `S.libTab`, `S.libWho`; the two file inputs `#libAdd` and `#libAddDir` sit in the page itself so a redraw cannot replace them |
@@ -290,7 +291,20 @@ Del asked what Ember "really" is, what a mage like the cat would be, and whether
 - **The switcher** is Del's "at the very top, the character that you are, at the very end left".
 - **Bars**: Del asked for HP red and mana blue; stamina green is the assistant's pick. The size strip became an indicator because Del does not want the labels.
 
-Asked for in the same breath and **not built yet** (Del's last voice note of that pass): right-click a character for her name, flip, her idles, how many pictures she has, whether she is on a still, her mood gauge, where she is, and an upper-body framing; a portrait for a character in a fight; a clock at the top; a slightly wider chat column and a slightly bigger smallest panel; figures tall enough that heads reach the top; in her menu, tabs at the top, bigger category tabs, collapsible sections, and the switch row under her portrait.
+Asked for in the same breath (Del's last voice note of that pass) and mostly built in the pass after it, below.
+
+### Right-click, the clock, a little more room (v43, artifact version 36)
+
+From Del's long voice note at the end of the previous pass. Built:
+
+- "If I right click a character, they could reverse so they face me... it would say the character's name... how many images they have... if they're in a stale expression... their emotion state... the area that they're in... the upper half body": the right-click card. The mood line is a ten-step gauge; it is not a copy of the gauge in Del's Hub page, which the assistant did not open.
+- "I just gotta put a clock somewhere... at the very tip": the mode pill shows the time while she travels.
+- "Have the chat bar be a little bit wider... make the minimum a little bit bigger": `--col`, `SIZES.slim`.
+- "Their head could reach the ceiling... everyone fits on the screen": the figure lanes are a little wider, so figures are taller on wide screens. Not full height: a figure as tall as the screen would be covered by the chat at 1440 px. Ctrl + scroll over a figure still sizes it by hand.
+- "Her name will be in her portrait, the very bottom left. Under the portrait, the characters I could switch into": done in her menu.
+- "Make the category tabs a little bit bigger": the menu tabs.
+
+Still **not built** from that note: a portrait for a character in a real fight (fights show name plates); tabs inside her menu so it is not one long page; collapsible sections for the passive bank and the rest.
 
 ## What Del asked for that is not built, in suggested order
 
