@@ -31,7 +31,7 @@
     },
     {
       "id": "war_p_share_the_shield", "name": "Share the Shield", "archetype": "warrior", "unlock": 60, "trigger": "self_uses_guard",
-      "text": "When you use the Guard action, the ally with the lowest share of HP also gains Guard until their next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5.",
+      "text": "When you use the Guard action, the ally with the lowest share of HP also gains Guard until the start of your next turn. Your own Guard that turn is ×0.6 damage instead of ×0.5.",
       "choice": "You give away part of your cover every time, wanted or not: two people half protected instead of one door properly shut.",
       "effects": [{ "kind": "status", "id": "guard", "turns": 1 }]
     },

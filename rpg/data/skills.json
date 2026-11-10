@@ -9,7 +9,7 @@
     { "id": "auto_crit_next_think", "name": "It All Clicks", "polarity": "good", "text": "Valerie only. Her next planned skill is an automatic crit, then this ends." },
     { "id": "plot_armor", "name": "Plot Armor", "polarity": "good", "text": "Valerie only. Once per battle, a blow that would drop her leaves her at 1 HP if she passes a Luck check at normal difficulty (+Airhead/5)." },
     { "id": "guard_broken", "name": "Guard Broken", "polarity": "bad", "text": "Loses Guard and cannot Guard for the rest of this round." },
-    { "id": "guard", "name": "Guard", "polarity": "good", "text": "Takes ×0.5 damage until the duration runs out. The same state as the basic Guard action. It does not reduce stress and does not stack with Fortified or Bulwark." },
+    { "id": "guard", "name": "Guard", "polarity": "good", "text": "Takes ×0.5 damage. A Guard you raise yourself lasts until the start of your next turn; a Guard someone else gives you lasts until the start of their next turn. It does not reduce stress and does not stack with Fortified or Bulwark." },
     { "id": "provoked", "name": "Provoked", "polarity": "bad", "text": "Must aim its single-target attacks at the character who provoked it. Area attacks are unaffected. Ends early if that character is downed or Hidden." },
     { "id": "covered", "name": "Covered", "polarity": "good", "text": "Single-target attacks aimed at this character hit the ally covering it instead, against the coverer's defenses. Ends early if the coverer is downed or has bound legs." },
     { "id": "counter", "name": "Counter Stance", "polarity": "good", "text": "Every melee attack rolled against this character, hit or miss, is answered with a free basic attack on the attacker if this character is still standing. Ends if it Guards or its arms are bound." },
@@ -79,7 +79,7 @@
         { "kind": "status", "id": "guard", "turns": 1 },
         { "kind": "bind", "target": "self", "part": "legs", "chance": 100, "turns": 1 }
       ],
-      "text": "Everyone behind the shield. Every ally, you included, gains Guard (damage ×0.5) until their next turn and can still act. You brace so hard that your legs are bound for 1 turn, so the wall cannot go up two turns running."
+      "text": "Everyone behind the shield. Every ally, you included, gains Guard (damage ×0.5) until the start of your next turn and can still act. You brace so hard that your legs are bound for 1 turn, so the wall cannot go up two turns running."
     },
     {
       "id": "war_can_opener", "name": "Can Opener", "archetype": "warrior", "unlock": 19, "tier": 2,
@@ -521,9 +521,9 @@
       "tags": ["melee"],
       "effects": [
         { "kind": "cleanse", "what": "mods" },
-        { "kind": "limit", "amount": 12, "target": "self" }
+        { "kind": "limit", "amount": 12, "target": "self", "onHit": true }
       ],
-      "text": "You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit; its buffs are removed and you gain 12 Limit."
+      "text": "You bump into them and leave with more than you arrived with. Damage to one enemy from your Finesse at +5 to hit. On a hit its buffs are removed and you gain 12 Limit."
     },
     {
       "id": "rog_roast", "name": "Roast", "archetype": "rogue", "unlock": 66, "tier": 7,
