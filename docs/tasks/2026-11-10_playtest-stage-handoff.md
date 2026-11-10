@@ -45,6 +45,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Meeting, spots, shop | `meet`, `doSpot`, `buy`, `drink` |
 | Travel and danger | `goTo`, `pathTo`, `dangerOf`, `explore`, `startStandoff`, `standoffAct` |
 | Domains and order | `AREAS`, `areaOf`, `order`, `secure`, `knightAct`, `mapTab` |
+| Heckle fights | `startStandoff`, `standoffAct`, `heckle`, `endStandoff`, `HECKLES`, `HECKLE_SAY` |
+| Reputation | `rep`, `repLabel`, `repBonus`, `job`, `conduct`, `newDay` |
 | Falling down | `fallDown`, `getUp` |
 | Real fights | `startBattle`, `battleAct`, `battleExtra`, `syncBattle`, `leaveBattle`, `postEvents` |
 | Panels | `renderHuds`, `rightPanel`, `mapTab`, `hereTab`, `levelTab`, `debugTab`, `bioTab`, `spicyTab`, `settingsBlock`, `renderDebugger` |
@@ -55,7 +57,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 
 - Valerie is the focus. Hunts and random fights are her alone. Boss bounties keep a party of four.
 - Layout: stats left, story middle with a button grid under it, tabbed panel right. Movement is clicking bubbles on a map.
-- Combat is announced by the word COMBAT and locks movement. The ways out are fight, persuade, tempt or run.
+- Combat is announced by the word COMBAT and locks movement. For now ambushes are heckle fights against a crowd's nerve (strike, sway, persuade, brace, run), with the crowd doing physical, mental or lewd damage. Del asked to focus less on enemies for now; the full battle runner stays for hunts and strongholds.
+- Reputation: neglect guild work and the town labels her. Del's words were "an evil person or a slut"; the page says Villain and Town scandal, and treats both as gossip with trade-offs, not a verdict.
 - Regulars have hidden numbers. A debugger at the top shows them, along with chances and what just changed.
 - Knight theme: four domains around the city (the Academy, the Castle and its dungeons, the Slaver Camps, the Forest), each with an Order meter the knight raises and a stronghold to break. The camps are enemy ground she frees people from.
 - Old tools are kept under Debug, never deleted.
