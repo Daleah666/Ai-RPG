@@ -84,6 +84,11 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Story choices in the grid | `showEvent` (sets `S.event`), `eventCells` |
 | Composure, catcalls, thought pops | `composure`, `composureScore`, `COMPOSURE`, `catcallWalk`, `CALLERS`, `REACT`, `thoughtPops` |
 | Amaranth and Corruption | `maybeVisit`, `visitChance`, `dreamCells`, `dreamAct`, `DREAM_*`, the `corrupt` row of `COND`, the `bless` act, `S.dream` |
+| News, notifications, big trouble | `WORLD`, `worldEvent`, `worldTick` (called from `passTime` when the phase changes), `toast`, `newsBox`, `REACT_W`, `BADDIES`, `baddieAt`, `baddieCheck`, `bigResult`, `openCell`, `S.news`, `S.baddieDown`, `S.loose` |
+| Wanderers and the movement maps | `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
+| Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
+| Lore and Claude-written news | `LORE`, `loreDigest`, `newsGen`, `S.lore`, `S.newsBank`, `S.autoNews` |
+| Stat strip, close-ups, growth portrait | `statStrip`, `closeFit`, `body.closeup`, `GROW_FACE`, `growFace` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -141,14 +146,30 @@ Built in the last pass and merged: screen-scaled layout with the chat dead centr
 
 Asked for and not built yet:
 
-1. **A pause menu that holds all the character information: "the beta character creator, tab 5".** Del wants the sheet's folds and tabs gathered into one pause screen that doubles as a character creator.
+1. ~~A pause menu that holds all the character information~~ Built in v28 as the **Valerie** full-screen menu. It edits her story, calling, race and looks; it does not yet create a second character from nothing.
 2. **Chat text that is not in a bubble and means different things.** Narration is unboxed now; Del wants more kinds of unboxed text with distinct meanings (for example sounds, time passing, a rumour).
-3. **A stat block in the format of Del's older "companion hub" page**, for a quick read of any character. The Combat block on her panel is a first version. The older page's format was not available in this session.
+3. **A stat block for a quick read of any character.** Her own numbers now use the card creator's tile format in the strip under the top bar. The same tiles for the person on the right are not built.
 4. **More action buttons at the minimum panel size.** Potions and Growth are there; Del asked for "buttons of action".
 5. **Separate people for the four callings**, who sometimes join as a party.
 6. **Full sex-combat in the downed state and Karryn's Prison's own passive list.** Not built and not going to be: see Decisions. The pinned state and the original passives are the version this project has.
 7. Fever, Corruption, the bar shift and a shop cure for Swelling, from the conditions plan.
 8. The SillyTavern JSON Del mentioned has never arrived in a session; only pictures have.
+
+### Added on 2026-11-10, later pass (v28, artifact version 25)
+
+Built and merged: twelve-hour clock; top tabs that open full-screen menus (**Valerie**, **Cast**, **Lore**, Settings), which is the "pause menu / beta character creator" Del had asked for; a stat strip under the top bar in the card creator's `.dstat` tile format (taken from `desktop-companion/st-card-creator`, which is what Del meant by "the single character creator's stat thing"); news with weights and notifications; seven big enemies including Brakk the Breaker and the one behind cell nine; twenty wanderers in three categories with a movement map; close-ups in dialogue; a portrait that follows growth. The README's rules list has each of these.
+
+Decisions made in that pass:
+
+- Del's name for the roaming enemy was not PG-13. He is "Brakk the Breaker, whom the camps call something ruder".
+- "Add these characters to be random spawns" arrived before its attachments. The forty pictures in `Nyx_Classes` (one blonde elf in seven class outfits) became the seven Vantari sisters. Only the `_v1` pictures are used (21 files); the `_v2` set is spare.
+- The orcs in Del's cell picture became two hostile wanderers and one friendly cook, plus Gorefist behind cell nine.
+- "Categorise NPCs: important, non-violent, leavers" is `CATS`: important (the regulars, who have a place), peaceful, leavers, hostile, big trouble.
+- "Wish Valerie in the portrait had bigger breasts": pictures cannot be repainted here, so her card now climbs through the bustier pictures already supplied as her growth tier rises.
+- A dungeon corridor picture Del pasted did not reach the disk in that session, so it is not on the page. If it is sent again as a file it belongs on the Castle Dungeons (`TOWN_SCENES.ruins`).
+- The old `#cast` panel and `renderCast` are still in the file but nothing opens them; the Cast tab calls `castHtml` into the menu.
+
+Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
 
 ## What Del asked for that is not built, in suggested order
 
