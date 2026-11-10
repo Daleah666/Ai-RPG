@@ -421,6 +421,24 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
   .dialog{margin:0;margin-left:max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2));width:min(var(--col),calc(100% - max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) - var(--hudR) - 30px))}
   .sprite.r{left:calc(max(calc(var(--hudL) + 30px),calc(50% - var(--col) / 2)) + var(--col) - 104px)}
 }
+.vitals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 12px}
+.vitals .track{height:5px}
+.boxes{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:5px}
+.box{display:grid;align-content:start;gap:1px;padding:7px 9px 8px;border-radius:10px;border:1px solid var(--edge);background:var(--glass);min-width:0}
+.box.wide{grid-column:span 2}
+.box span{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.box b{font-weight:600;font-size:.86rem;line-height:1.25;overflow-wrap:anywhere}
+.box small{font-size:.68rem;color:var(--muted);line-height:1.3}
+.hud p.facts{font-size:.84rem}
+.facts b{color:var(--text)}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pills.good span{border-color:color-mix(in srgb,var(--mint) 45%,var(--edge));background:color-mix(in srgb,var(--mint) 8%,transparent)}
+.pills.bad span{border-color:color-mix(in srgb,var(--crit) 45%,var(--edge));background:color-mix(in srgb,var(--crit) 8%,transparent)}
+.pills.bars2 span{border-color:var(--edge);background:none}
+.pills.bars2 i{font-style:normal;font-size:.66rem;color:var(--faint);margin-right:3px}
+.hud p.prose{font-family:var(--f-serif);font-size:1.02rem;line-height:1.45;color:var(--text)}
+.ed{display:grid;gap:3px;min-width:0}
+.ed textarea{font-family:var(--f-body);font-size:.84rem;line-height:1.4}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -429,7 +447,7 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
   .stage{height:auto;min-height:100%;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));align-content:start}
   .hud,.hud.l,.hud.r{position:static;width:auto;max-height:none}
   .grip,.foe{display:none}
-  .hud .attrs,.hud .set,.hud .over,.hud .more,.hud:not(.open) .fgrid,.hud:not(.open) .abox,.hud:not(.open) .mcard,.hud:not(.open) .moves,.hud:not(.open) .rtabs,.hud:not(.open) .bars{display:none}
+  .hud:not(.open) .boxes,.hud:not(.open) .pills,.hud:not(.open) .feats,.hud:not(.open) .duo,.hud:not(.open) .facts,.hud .attrs,.hud .set,.hud .over,.hud .more,.hud:not(.open) .fgrid,.hud:not(.open) .abox,.hud:not(.open) .mcard,.hud:not(.open) .moves,.hud:not(.open) .rtabs,.hud:not(.open) .bars{display:none}
   .hud.open .attrs,.hud.open .set,.hud.open .over{display:grid}
   .dialog{grid-column:1/-1;width:100%;height:auto;padding:0}
   .log{max-height:none;overflow:visible;-webkit-mask-image:none;mask-image:none;padding-top:14px}
@@ -746,8 +764,9 @@ const S = {
   exp: store.get('exp', 0), points: store.get('points', 0), bonus: store.get('bonus', {}), flips: store.get('flips', {}),
   clock: store.get('clock', 540), gold: store.get('gold', 30), bag: store.get('bag', {}), npc: store.get('npc', {}), stam: store.get('stam', 100), decency: store.get('decency', 70),
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
-  dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'stats'),
+  dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'over'),
   order: store.get('order', {}), secured: store.get('secured', {}),
+  repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
 };
@@ -1082,7 +1101,7 @@ function levelUp() {
 function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
 function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
 function useStam(amount, why) { const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
-function decency(delta, why) { if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
+function decency(delta, why) { if (!delta) return; delta = swung(delta); const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
 const GROW_SAY = {
   warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
   mage: 'The spare mana has to go somewhere. It goes where it always goes. The breastplate creaks and lets a strap out a notch.',
@@ -1102,6 +1121,7 @@ function rollCheck({ title, stat, dc, bonus = 0, parts = [], hidden = false }) {
   const mine = effectiveStat(S.hero, stat), r = __m.rng.check(__m.rng.contestPct(mine, dc, bonus), fixedRolls([d()]));
   S.lastRoll = { title, pct: r.pct, roll: r.roll, degree: r.degree, hidden, math: `${STAT_INFO[stat].name} ${mine}${parts.map((p) => `, ${p}`).join('')} against ${dc}: ${r.pct}% · rolled ${r.roll}` };
   S.trayFresh = true; note(`d100 ${r.roll} vs ${r.pct}%: ${r.degree} · ${title}`);
+  if (r.degree === 'fumble') vol(1, 'a fumble'); else if (r.degree === 'crit') vol(-1, 'a clean success');
   return r;
 }
 function tableRoll(title, rows) { // one d100 against a table of [label, chance, colour]; whatever is left over is quiet
@@ -1197,6 +1217,7 @@ function drink(kind) {
   const full = kind === 'mana' && S.hero.mp >= S.hero.maxMp;
   S.bag[kind] -= 1; store.set('bag', S.bag); S.hero = p.use(S.hero); S.down = S.hero.hp <= 0; note(`${p.name}: ${p.hint}`);
   post({ who: 'me', plate: 'Satchel', dice: `[drink] ${esc(p.name)} · ${esc(p.hint)}`, say: 'It tastes like a colour. A good one.' });
+  if (kind === 'tea') vol(-2, 'a Calming Tea');
   if (full && S.path === 'mage') grow(20, 'more mana than she can hold');
 }
 
@@ -1248,7 +1269,7 @@ const STAND_SAY = {
   tempt: ['You smile, the armor catches the light, and three of them forget what they were holding. One of them pays you to go away happy.', 'You strike a pose. Your foot finds the only loose stone for a mile.'],
   run: ['You run. The sword steers. Against all odds it steers the right way.', 'You turn to run and the cloak decides to stay.'] };
 function fallDown() {
-  S.fallen = true; S.spot = null; decency(-6, 'fell over in public');
+  S.fallen = true; S.spot = null; decency(-6, 'fell over in public'); vol(1, 'fell over');
   post({ who: 'sys', plate: 'Out of stamina', dice: '<b>DOWN</b> · stamina 0', tone: 'crit', say: 'Your legs file a complaint and the armor seconds it. You are on the ground, and getting up is going to take willpower.' }); pop('l', 'DOWN', 'var(--crit)');
 }
 function getUp() {
@@ -1284,14 +1305,14 @@ function doAct(id) {
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
     if (!spend(cost)) return post({ who: 'sys', dice: `[gold] A room is ${n(cost)} gold. You have ${n(S.gold)}.`, say: 'The bench at the Well is free, if lumpy.' });
-    sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; decency(20, 'a bath and a real bed');
+    sleepUntil(7); reset(true); seat(); S.them = freshThem(); S.stam = 100; store.set('stam', 100); S.fallen = false; vol(-4, 'a real bed'); decency(20, 'a bath and a real bed');
     return post({ who: 'sys', plate: 'The Gilded Goose', dice: `[rest] A room · ${n(cost)} gold · ${clockText()}`, tone: 'virtue', say: 'Bars refilled, binds gone, nerves settled, armor buffed by someone who knows how. The gauge stays where you left it.' });
   }
   if (id === 'explore') return explore();
   if (id === 'spar') return setMode('combat', `you and ${S.nameR}`);
   if (id === 'hunt') { S.fightTag = { area: areaOf(here), job: here.id === 'guild' }; const pool = DATA.encounters.encounters.filter((x) => S.party || x.id !== 'hoard_drake'); return startBattle({ encounter: pool[Math.floor(Math.random() * pool.length)].id }); }
   if (id === 'study') { S.used[id] = true; passTime(120); useStam(4, 'study'); const fx = applyFx({ airhead: -15, exp: 0.05, grow: 15, growPath: 'mage' }, 'Study'); return post({ who: 'me', plate: 'Study', dice: '[no roll] Two hours with a book', say: 'You read a whole page about footwork without knocking anything over. The page was about footwork. You are almost sure.', fx }); }
-  if (id === 'soak') { S.used[id] = true; passTime(60); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
+  if (id === 'soak') { S.used[id] = true; passTime(60); vol(-2, 'a long soak'); const fx = applyFx({ hp: 30, stress: -20, decency: 15, rest: 30 }, 'Soak'); return post({ who: 'me', plate: 'Soak', dice: '[no roll] An hour in the water', say: 'You remember to take the armor off first this time. The water is warm, the stones are warm, and nothing needs a hero for a while.', fx }); }
 }
 function cell(act, label, hint, cls = '', off = false) { return `<button class="cell bubble ${cls}" type="button" data-act="${esc(act)}"${off ? ' disabled' : ''}><b>${esc(label)}</b><small>${esc(hint)}</small></button>`; }
 function travelGrid() {
@@ -1314,7 +1335,7 @@ function travelGrid() {
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
-  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation · ${repLabel()}`, S.rep, 100, 'var(--mint)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
+  return `<div class="over"><h3>Dashboard</h3><div class="bars">${bar(`Reputation here · ${repLabel()}`, repOf(areaOf(placeNow())), 100, 'var(--mint)')}${bar('Stamina', S.stam, 100, 'var(--gold)')}${bar('Decency', S.decency, 100, 'var(--cyan)')}${bar(`Bust · tier ${S.bust} · ${p.why}`, S.bustXp, 100, 'var(--pink)')}</div>
     <p>${S.stam <= 0 ? 'On the ground.' : S.stam < 25 ? 'Running on fumes: fights find you more easily.' : 'On her feet.'} ${S.decency < 30 ? 'She looks like easy prey: even townsfolk may try it.' : S.decency < 50 ? 'A bit of a state: the wilds notice.' : 'Presentable.'}${v ? ` Fight chance here: ${v}%.` : ''} ${{ Heroine: 'The town thinks she is a heroine.', Knight: 'The town thinks she is a decent knight.', 'Town scandal': 'The town is gossiping about her. Do some guild work.', Villain: 'The town is afraid of her. Do some guild work.', Layabout: 'The town is not sure what she is for. Do some guild work.' }[repLabel()]}</p></div>
     <div class="over"><h3>Purse and satchel</h3><p><b>${n(S.gold)}</b> gold</p>${Object.entries(POTIONS).map(([k, x]) => `<div class="pot"><span>${esc(x.name)} ×${S.bag[k] ?? 0}</span><button class="sm" type="button" data-act="use:${k}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>Drink</button></div>`).join('')}</div>`;
 }
@@ -1362,12 +1383,12 @@ function renderDebugger() {
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
     <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · rapport ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
-    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>reputation ${S.rep} (${repLabel()}) · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
+    <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     <div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
 }
 /* ---------- the left panel: tabs over her bars, settings and save under them ---------- */
-function chem(delta, why) { if (!delta) return; if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
+function chem(delta, why) { if (!delta) return; delta = swung(delta); if (delta > 0) conduct('lewd', delta / 20); const was = S.chem; S.chem = Math.max(0, Math.min(100, S.chem + delta)); store.set('chem', S.chem); if (S.chem !== was) note(`chemistry ${delta > 0 ? '+' : '−'}${Math.abs(S.chem - was)} · ${why}`);
   if (S.chem >= 100 && S.path === 'warrior') { S.chem = 40; store.set('chem', 40); grow(30, 'hormones, frankly'); } }
 function fed(points) { S.hipsXp += points; while (S.hipsXp >= 100 && S.hips < 10) { S.hipsXp -= 100; S.hips += 1; note(`hips tier ${S.hips}`); } if (S.hips >= 10) S.hipsXp = 0; store.set('hips', S.hips); store.set('hipsXp', S.hipsXp); }
 function bioTab() {
@@ -1419,7 +1440,7 @@ async function thinkAloud(key, band) {
     if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
     if (!sampler) return;
     const last = (S.lines[S.lines.length - 1] ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 300);
-    const out = await sampler(`Write ONE short inner thought (under 18 words, no quotes) for Dame Valerie Bellweather, a kind, clumsy, absurdly lucky knight in a light fantasy comedy. ${band === 'lucid' ? 'Right now the ordinary modern person inside her body is thinking: dry, a bit overwhelmed, practical.' : 'Right now Valerie herself is thinking: sunny, earnest, a beat behind, never sarcastic.'} PG-13. Situation: ${key}; she is at ${placeNow().name}; Airhead ${V.airheadOf(S.hero)}/100; stamina ${S.stam}; just happened: ${last}`, { modelTier: 'quick', cache: false });
+    const out = await sampler(`Write ONE short inner thought (under 18 words, no quotes) for Dame Valerie Bellweather, a kind, clumsy, absurdly lucky knight in a light fantasy comedy. ${band === 'lucid' ? 'Right now the ordinary modern person inside her body is thinking: dry, a bit overwhelmed, practical.' : 'Right now Valerie herself is thinking: sunny, earnest, a beat behind, never sarcastic.'} PG-13. What drives her: ${drivesText()} Situation: ${key}; she is at ${placeNow().name}; Airhead ${V.airheadOf(S.hero)}/100; stamina ${S.stam}; just happened: ${last}`, { modelTier: 'quick', cache: false });
     const t = (out?.text ?? '').trim().replace(/^["']|["']$/g, ''); if (t) { S.thought = { text: t.slice(0, 160), voice: band === 'lucid' ? 'you' : 'her' }; renderThought(); }
   } catch (e) { if (e?.code === 'not_granted') { S.aiThoughts = false; store.set('aiThoughts', false); } }
   finally { S.thinking = false; }
@@ -1429,7 +1450,7 @@ function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden 
 const areaOf = (p) => p.area ?? 'city';
 const orderOf = (area) => S.order[area] ?? AREAS[area]?.start ?? 50;
 function order(area, delta, why) {
-  if (area === 'city' || !delta) return; const was = orderOf(area);
+  if (area === 'city' || !delta) return; delta = swung(delta); const was = orderOf(area);
   S.order[area] = Math.max(0, Math.min(100, was + delta)); store.set('order', S.order);
   if (S.order[area] !== was) note(`${AREAS[area].name}: order ${delta > 0 ? '+' : '−'}${Math.abs(S.order[area] - was)} · ${why}`);
 }
@@ -1487,13 +1508,14 @@ function momentsTab() {
   return `${mine.length ? `<p class="lbl">This run · ${mine.length}</p>${mine.map(card).join('')}` : '<p>Nothing yet this run. Quests you finish land here.</p>'}${old.length ? `<p class="lbl">Before you arrived</p>${old.map(card).join('')}` : ''}`;
 }
 function leftPanel(h, top, gauge, band, locked) {
-  const tabs = [['stats', 'Overview'], ['rpg', 'RPG'], ['bio', 'Bio'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'stats';
-  const body = tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
+  const tabs = [['over', 'Overview'], ['stats', 'Status'], ['rpg', 'RPG'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'over';
+  const body = tab === 'over' ? overviewTab() : tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
     : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
   return `<div class="sheet"><div class="sheet-body"><div class="sheet-h"><div><h2>${heroName}</h2><p class="role">Klutz Knight</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
     <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
       <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}></div>
     ${emo(h, true)}
+    <div class="vitals">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Stamina', S.stam, 100, 'var(--gold)')}</div>
     <div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
     ${body}
     ${underTabs()}</div></div>`;
@@ -1503,8 +1525,6 @@ function exitCells(here) {
     return `<button class="go" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${esc(castOf(r).name)}` : ''}</small></button>`; }).join('')}</div>`;
 }
 /* ---------- reputation: what the town says about her ---------- */
-function repLabel() { return S.rep >= 70 ? 'Heroine' : S.rep >= 35 ? 'Knight' : S.lewd > S.mean && S.lewd > 0 ? 'Town scandal' : S.mean > 0 ? 'Villain' : 'Layabout'; }
-function rep(delta, why) { if (!delta) return; const was = S.rep; S.rep = Math.max(0, Math.min(100, S.rep + delta)); store.set('rep', S.rep); if (S.rep !== was) note(`reputation ${delta > 0 ? '+' : '−'}${Math.abs(S.rep - was)} · ${why}`); }
 function job(why) { S.jobDay = dayNow(); store.set('jobDay', S.jobDay); rep(6, why); }
 function conduct(kind, amount = 1) { S[kind] = Math.max(0, (S[kind] ?? 0) + amount); store.set(kind, S[kind]); }
 function repBonus(kind) { // gossip changes how people take her. Each label helps one thing and hurts another.
@@ -1514,10 +1534,6 @@ function repBonus(kind) { // gossip changes how people take her. Each label help
   if (l === 'Town scandal') { if (['friendly', 'clever', 'bold', 'persuade'].includes(kind)) add(-10, 'they have heard the gossip'); if (['flirt', 'sway'].includes(kind)) add(10, 'the gossip helps'); }
   if (l === 'Layabout') { if (['friendly', 'bold', 'persuade'].includes(kind)) add(-5, 'nobody knows what she is for'); }
   return { total, parts };
-}
-function newDay(day) { // every morning the town checks whether the knight did any guild work
-  if ((S.jobDay ?? 0) < day - 1) rep(-4, 'no guild work yesterday');
-  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd);
 }
 
 /* ---------- hecklers: a crowd with nerve, not a stat block ---------- */
@@ -1563,7 +1579,7 @@ function endStandoff(how) {
   if (how === 'won') { order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
   if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
   if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
-  decency(-10, 'beaten by a crowd'); rep(-3, 'beaten by a crowd'); order(area, -4, 'hecklers won'); S.down = S.hero.hp <= 0;
+  vol(2, 'beaten by a crowd'); decency(-10, 'beaten by a crowd'); rep(-3, 'beaten by a crowd'); order(area, -4, 'hecklers won'); S.down = S.hero.hp <= 0;
   post({ who: 'sys', plate: 'Combat over', dice: `<b>THEY WON</b> · ${esc(so.name)}`, tone: 'crit', say: 'They take your coin purse off its hook, think better of it when they feel how light it is, and leave you sitting in the road.' });
 }
 function standoffAct(kind) {
@@ -1611,15 +1627,79 @@ function rpgTab(h) {
     <p class="lbl">Moves · ${have.length}</p><ul class="feats">${have.map((s) => `<li><b>${esc(s.name)}</b> ${esc(s.text ?? '')}</li>`).join('')}</ul>
     ${gear.length ? `<p class="lbl">Equipment</p><div class="pills gear">${gear.map((g) => `<span>${esc(g)}</span>`).join('')}</div>` : ''}`;
 }
+/* ---------- volatility: mistakes make every gauge swing harder until she steadies ---------- */
+const swung = (n0) => { const v = Math.round(n0 * (1 + 0.25 * S.vol)); return v === 0 ? Math.sign(n0) : v; };
+function vol(delta, why) { const was = S.vol; S.vol = Math.max(0, Math.min(4, S.vol + delta)); store.set('vol', S.vol); if (S.vol !== was) note(`volatility ${S.vol > was ? '+' : '−'}${Math.abs(S.vol - was)} · ${why} · gauges now move ×${1 + 0.25 * S.vol}`); }
+
+/* ---------- reputation, place by place ---------- */
+const AREA_IDS = ['city', 'forest', 'castle', 'academy', 'camps'];
+const repOf = (area) => S.repBy[area] ?? 40;
+function repLabel(area = areaOf(placeNow())) { const r = repOf(area); return r >= 70 ? 'Heroine' : r >= 35 ? 'Knight' : S.lewd > S.mean && S.lewd > 0 ? 'Town scandal' : S.mean > 0 ? 'Villain' : 'Layabout'; }
+function vouchIn(area) { const moved = store.get('residents', {}); return Object.keys(CAST).find((id) => S.npc[id]?.met && S.npc[id].rapport >= 45 && PLACES.some((p) => areaOf(p) === area && (p.id in moved ? moved[p.id] : p.who) === id)); }
+function rep(delta, why, area = areaOf(placeNow())) { // a friend who lives there halves what she loses; volatility stretches everything
+  if (!delta) return; let d1 = swung(delta); const friend = d1 < 0 ? vouchIn(area) : null; if (friend) d1 = Math.min(-1, Math.round(d1 / 2));
+  const was = repOf(area); S.repBy[area] = Math.max(0, Math.min(100, was + d1)); store.set('repBy', S.repBy);
+  S.rep = Math.round(AREA_IDS.reduce((sum, a) => sum + repOf(a) * (a === 'city' ? 2 : 1), 0) / (AREA_IDS.length + 1)); store.set('rep', S.rep);
+  if (S.repBy[area] !== was) note(`${AREAS[area].name}: reputation ${d1 > 0 ? '+' : '−'}${Math.abs(S.repBy[area] - was)} · ${why}${friend ? ` · ${castOf(friend).name} vouched for her` : ''}`);
+}
+function newDay(day) { // every morning: did the knight do any guild work? Gossip fades a little, and so does the wobble.
+  if ((S.jobDay ?? 0) < day - 1) for (const a of AREA_IDS) rep(a === 'city' ? -4 : -2, 'no guild work yesterday', a);
+  S.mean = Math.round((S.mean ?? 0) * 0.8); S.lewd = Math.round((S.lewd ?? 0) * 0.8); store.set('mean', S.mean); store.set('lewd', S.lewd); vol(-1, 'a night passed');
+}
+
+/* ---------- her sheet: the overview, and what opens underneath ---------- */
+const sheetOf = (key, fallback) => (S.sheet[key] ?? '').trim() || fallback || '';
+const drivesText = () => { const p = DATA.card?.profile ?? {}; return `Wants: ${sheetOf('want', p.want)} Needs: ${sheetOf('need', p.need)} Believes: ${sheetOf('lie', p.lie)} Fears: ${sheetOf('fears', p.fears)}`; };
+function overviewTab() {
+  const c = DATA.card ?? {}, p = c.profile ?? {}, box = (k, v, sub) => (v ? `<div class="box"><span>${k}</span><b>${esc(v)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div>` : '');
+  const list = (text) => String(text ?? '').split(/,\s*/).map((x) => x.trim()).filter(Boolean), band = DATA.valerie.gauge.bands.find((b) => b.id === V.airheadBand(V.airheadOf(S.hero)));
+  const core = [...(c.highlights ?? []), ...((c.noticed?.pers ?? []).filter((x) => x.imp >= 3).map((x) => x.t))].slice(0, 7);
+  const bars = [['Lucid ↔ airhead', band?.name], ['Standing here', repLabel()], ['Steady ↔ volatile', S.vol === 0 ? 'Steady' : S.vol >= 3 ? 'All over the place' : 'Wobbly'], ['Presentable ↔ a state', S.decency >= 50 ? 'Presentable' : S.decency >= 30 ? 'A bit of a state' : 'Easy prey'], ['Fresh ↔ spent', S.stam >= 60 ? 'Fresh' : S.stam >= 25 ? 'Tiring' : 'Spent'], ['Path', PATHS[S.path].name]];
+  return `<div class="boxes">${box('Age', p.age)}${box('Gender', p.gender, p.pronouns)}${box('Height', p.height)}${box('Hair', p.hair)}${box('Eyes', p.eyes)}${box('Physique', p.build)}</div>
+    <p class="lbl">Mind</p><div class="boxes">${box('Zodiac', p.zodiac)}${box('MBTI', p.mbti)}${box('Enneagram', p.enneagram)}${box('DISC', p.disc)}${box('Education', p.education)}${box('Wits', p.iq_word, p.smart_at ? `sharp about ${String(p.smart_at).split('.')[0].toLowerCase()}` : '')}</div>
+    <p class="facts">${[p.occupation && `<b>${esc(p.occupation)}</b>`, p.status && esc(p.status), p.talent && `really good at <b>${esc(String(p.talent).replace(/^./, (ch) => ch.toLowerCase()))}</b>`].filter(Boolean).join(' · ')}</p>
+    ${core.length ? `<p class="lbl">Core to her</p><ul class="feats">${core.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    ${p.hobbies ? `<p class="lbl">Into</p><div class="pills">${list(p.hobbies).map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}
+    <div class="duo"><div><p class="lbl">Likes</p><div class="pills good">${list(p.likes).map((x) => `<span>${esc(x)}</span>`).join('')}</div></div><div><p class="lbl">Dislikes</p><div class="pills bad">${list(p.dislikes).map((x) => `<span>${esc(x)}</span>`).join('')}</div></div></div>
+    <p class="lbl">Her bars · right now</p><div class="pills bars2">${bars.map(([k, v]) => `<span><i>${k}</i> ${esc(v ?? '')}</span>`).join('')}</div>`;
+}
 function underTabs() {
-  const c = DATA.card ?? {}, tabs = [['body', 'Body'], ['pers', 'Personality'], ['rel', 'Relationships'], ['moments', 'Moments']], open = S.ltab2;
-  const f = (k, v) => `<div class="fcell"><span>${esc(k)}</span><b>${esc(v)}</b></div>`, card = (title, text, sub) => `<div class="mcard"><b>${esc(title)}${sub ? `<i>${esc(sub)}</i>` : ''}</b><p>${esc(text)}</p></div>`;
-  const met = Object.keys(CAST).filter((id) => S.npc[id]?.met);
-  const body = open === 'body' ? `<div class="fgrid">${(c.body?.stats ?? []).map((x) => f(x.k, x.v)).join('')}</div>${(c.body?.notes ?? []).map((x) => card(x.k, x.v)).join('')}`
-    : open === 'pers' ? `<p class="lbl">Resting mood · ${esc(c.emotions?.resting ?? 'Cheerful')}</p><div class="pills">${[...(c.emotions?.often ?? []), ...(c.emotions?.rare ?? [])].map((e) => `<span>${esc(e)}</span>`).join('')}</div>${(c.noticed?.pers ?? []).map((x) => card(x.t, `Noticed by ${x.by}.`)).join('')}`
-    : open === 'rel' ? `${met.length ? `<p class="lbl">People you have met here</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}${(c.people ?? []).length ? `<p class="lbl">Her party, from her sheet</p>${c.people.map((x) => card(x.name, x.dyn ?? '', x.rel)).join('')}` : ''}`
-    : open === 'moments' ? momentsTab() : '';
+  const c = DATA.card ?? {}, p = c.profile ?? {}, tabs = [['bio', 'Bio'], ['drives', 'Drives'], ['pers', 'Personality'], ['rel', 'Relationships'], ['moments', 'Moments'], ['body', 'Body']], open = S.ltab2, wide = document.body.classList.contains('sheetL');
+  const f = (k, v) => `<div class="fcell"><span>${esc(k)}</span><b>${esc(v)}</b></div>`, card = (title, text, sub) => `<div class="mcard"><b>${esc(title)}${sub ? `<i>${esc(sub)}</i>` : ''}</b>${text ? `<p>${esc(text)}</p>` : ''}</div>`;
+  const edit = (key, label, fallback, rows = 3) => (wide ? `<label class="ed"><span class="lbl">${label}</span><textarea data-edit="${key}" rows="${rows}">${esc(sheetOf(key, fallback))}</textarea></label>` : `<div class="fcell"><span>${label}</span><b>${esc(sheetOf(key, fallback))}</b></div>`);
+  let body = '';
+  if (open === 'bio') {
+    const full = sheetOf('desc', p.description), cut = full.match(/[^.!?]+[.!?]+(\s|$)/g) ?? [full], shown = S.descLen === 's' ? cut.slice(0, 2).join('') : S.descLen === 'm' ? cut.slice(0, 5).join('') : full;
+    body = `<div class="crow"><span class="lbl">Length</span>${[['s', 'Short'], ['m', 'Medium'], ['l', 'Long']].map(([k, n1]) => `<button class="sm${S.descLen === k ? '' : ' quiet'}" type="button" data-sheet="len:${k}" aria-pressed="${S.descLen === k}">${n1}</button>`).join('')}<button class="sm quiet" type="button" data-sheet="ai"${S.writing ? ' disabled' : ''}>${S.writing ? 'Writing…' : 'Write it for me'}</button></div>
+      ${wide ? `<label class="ed"><span class="lbl">Her description · edit it here</span><textarea data-edit="desc" rows="9">${esc(full)}</textarea></label>` : `<p class="prose">${esc(shown.trim())}</p><p class="more">pull the panel out to the middle to edit</p>`}`;
+  } else if (open === 'drives') {
+    body = `<p>The narrator reads these. They colour how people answer her and what her inner voice says.</p><div class="fgrid">${edit('want', 'Wants', p.want)}${edit('need', 'Needs', p.need)}${edit('lie', 'The lie she believes', p.lie)}${edit('fears', 'Fears', p.fears)}</div>
+      ${f('What it costs her', p.cost ?? '')}${(c.motives ?? []).length ? `<p class="lbl">Motives</p><div class="pills">${c.motives.map((m) => `<span>${esc(m)}</span>`).join('')}</div>` : ''}${wide ? '' : '<p class="more">pull the panel out to the middle to edit</p>'}`;
+  } else if (open === 'pers') {
+    const types = [['MBTI', p.mbti, 'How she takes in the world. ESFP: here, now, out loud, and with feeling.'], ['Enneagram', p.enneagram, 'What she is chasing. 7w6: the next good thing, with friends along.'], ['DISC', p.disc, 'How she moves people. Influence: warmth first, plan later.'], ['Zodiac', p.zodiac, 'Flavour only. Sagittarius: aims high, trips cheerfully.']].filter((t) => t[1]);
+    body = `<div class="boxes">${types.map(([k, v, note1]) => `<div class="box wide"><span>${k}</span><b>${esc(v)}</b><small>${note1}</small></div>`).join('')}</div>
+      <p class="lbl">Resting mood · ${esc(c.emotions?.resting ?? 'Cheerful')}</p><div class="pills">${[...(c.emotions?.often ?? []), ...(c.emotions?.rare ?? [])].map((e) => `<span>${esc(e)}</span>`).join('')}</div>
+      <p>These are a glimpse for now: later they can steer how she reacts on her own.</p>${(c.noticed?.pers ?? []).map((x) => card(x.t, `Noticed by ${x.by}.`)).join('')}`;
+  } else if (open === 'rel') {
+    const met = Object.keys(CAST).filter((id) => S.npc[id]?.met), here = areaOf(placeNow());
+    body = `<p class="lbl">Reputation, place by place</p><div class="roster">${AREA_IDS.map((a) => { const friend = vouchIn(a); return `<div class="dom${a === here ? ' on' : ''}"><div class="h"><b>${esc(AREAS[a].name)}</b><span>${repLabel(a)} · ${repOf(a)}${friend ? ` · ${esc(castOf(friend).name)} vouches` : ''}</span></div><div class="track"><i style="--k:var(--mint);width:${repOf(a)}%"></i></div></div>`; }).join('')}</div>
+      <p>Guild work raises it where you do it. A morning with no guild work the day before lowers it everywhere. A friend who lives in a place halves what you lose there.${S.vol ? ` <b>Volatile ×${1 + 0.25 * S.vol}:</b> a recent mistake is making every gauge swing harder. Sleep, a soak or a Calming Tea steadies it.` : ' Steady: gauges move at their normal size.'}</p>
+      ${met.length ? `<p class="lbl">People you have met</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}
+      ${(c.people ?? []).length ? `<p class="lbl">Her party, from her sheet</p>${c.people.map((x) => card(x.name, x.dyn ?? '', x.rel)).join('')}` : ''}`;
+  } else if (open === 'moments') body = momentsTab();
+  else if (open === 'body') body = `<div class="fgrid">${(c.body?.stats ?? []).map((x) => f(x.k, x.v)).join('')}</div>${(c.body?.notes ?? []).map((x) => card(x.k, x.v)).join('')}`;
   return `<div class="rtabs under" role="tablist" aria-label="More about her">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab2="${id}" aria-selected="${id === open}">${name}</button>`).join('')}</div>${body}`;
+}
+async function writeBio() { // Claude's quick model drafts the description at the chosen length
+  if (S.writing) return; S.writing = true; render();
+  try {
+    if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+    if (!sampler) { post({ who: 'sys', dice: '[sheet] Writing needs this page to be allowed to ask Claude. You can still type it yourself.' }); return; }
+    const p = DATA.card?.profile ?? {}, words = { s: 45, m: 100, l: 180 }[S.descLen] ?? 100;
+    const out = await sampler(`Write a character description of about ${words} words, third person, warm and lightly comic, PG-13, no lists. Character: Dame ${p.first ?? 'Valerie'} ${p.last ?? ''}, ${p.archetype ?? ''}. Looks: ${p.height ?? ''}, ${p.build ?? ''}, ${p.hair ?? ''} hair, ${p.eyes ?? ''} eyes. ${drivesText()} Flaw: ${p.flaw ?? ''}. Strength: ${p.strength ?? ''}. Right now in the story: level ${S.level}, known in town as "${repLabel('city')}". Return only the description.`, { modelTier: 'quick', cache: false });
+    const t = (out?.text ?? '').trim(); if (t) { S.sheet.desc = t; store.set('sheet', S.sheet); note('sheet: description rewritten'); }
+  } catch (e) { post({ who: 'sys', dice: `[sheet] ${e?.code === 'rate_limited' ? 'Too many requests. Give it a moment.' : 'No description came back this time.'}` }); }
+  finally { S.writing = false; render(); }
 }
 function renderHuds() {
   const h = S.hero, t = S.them;
@@ -1832,7 +1912,7 @@ async function say(text) {
   if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
   if (!sampler) { post({ who: 'sys', say: 'Replies need this page to be allowed to ask Claude. Open it on claude.ai and allow it, or keep playing with the buttons.', spoken: true }); return render(); }
   const state = `Valerie: level ${S.level}, Airhead ${V.airheadOf(S.hero)}/100 (${V.airheadBand(V.airheadOf(S.hero))}), stress ${S.hero.stress}/200. ${S.nameR}: a ${arche(S.classR).name}, stress ${S.them.stress}/200.`;
-  const prompt = `You are ${S.nameR}, ${S.who ? castOf(S.who).role : `a ${arche(S.classR).name}`} in the town of Gooseford, talking with Dame Valerie Bellweather at ${placeNow().name} in a light fantasy comedy. Valerie is a brave, kind, spectacularly clumsy knight who is absurdly lucky without knowing it. The person talking to you is inside Valerie. Reply in character in one to three short sentences, warm and playful, PG-13, no narration of Valerie's actions. Current state: ${state}\n\nValerie says: ${text}`;
+  const prompt = `You are ${S.nameR}, ${S.who ? castOf(S.who).role : `a ${arche(S.classR).name}`} in the town of Gooseford, talking with Dame Valerie Bellweather at ${placeNow().name} in a light fantasy comedy. Valerie is a brave, kind, spectacularly clumsy knight who is absurdly lucky without knowing it. The person talking to you is inside Valerie. Reply in character in one to three short sentences, warm and playful, PG-13, no narration of Valerie's actions. What drives Valerie, for subtext only, never quoted: ${drivesText()} In this part of the world she is seen as: ${repLabel()}. Current state: ${state}\n\nValerie says: ${text}`;
   const idx = S.lines.length; post({ who: 'her', say: '…', spoken: true }); render();
   try {
     const out = await sampler(prompt, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(t)}</p></div>`; renderLog(); } });
@@ -1928,6 +2008,7 @@ document.addEventListener('input', (e) => {
 function renderHudsKeepFocus() { const v = $('gauge').value; renderHuds(); const g = $('gauge'); g.value = v; g.focus(); $('why').textContent = heroCheck() ?? (skillById(S.skill).text ?? ''); $('act').disabled = Boolean(heroCheck()); }
 document.addEventListener('change', (e) => {
   const t = e.target;
+  if (t.dataset.edit) { S.sheet[t.dataset.edit] = t.value; store.set('sheet', S.sheet); note(`sheet: ${t.dataset.edit} edited`); return; }
   if (t.id === 'lookL') { S.lookL = t.value; if (!t.value.startsWith('custom')) store.set('lookL', t.value); render(); }
   else if (t.id === 'lookR') { S.lookR = t.value; saveCast(); render(); }
   else if (t.id === 'classR') { S.classR = t.value; saveCast(); S.them = freshThem(); S.down = S.hero.hp <= 0; render(); }
@@ -1954,7 +2035,7 @@ function debugClick(what) {
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
     setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
@@ -1962,6 +2043,7 @@ function debugClick(what) {
 document.addEventListener('click', (e) => {
   const node = e.target.closest('g[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.sheet) { const k = b.dataset.sheet; if (k === 'ai') { writeBio(); return; } if (k.startsWith('len:')) { S.descLen = k.slice(4); store.set('descLen', S.descLen); } return render(); }
   if (b.dataset.ltab2) { S.ltab2 = S.ltab2 === b.dataset.ltab2 ? null : b.dataset.ltab2; return render(); }
   if (b.dataset.ltab) { S.ltab = b.dataset.ltab; store.set('ltab', S.ltab); return render(); }
   if (b.dataset.set) { settingClick(b.dataset.set); return render(); }
@@ -2010,7 +2092,7 @@ $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $
 
 for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
-  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') document.body.classList.toggle('sheetL', v >= 544); };
+  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') { const was = document.body.classList.contains('sheetL'); document.body.classList.toggle('sheetL', v >= 544); if (was !== (v >= 544)) renderHuds(); } };
   const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') document.body.classList.toggle('sheetL', saved >= 544); }
   grip.addEventListener('pointerdown', (e) => { grip.setPointerCapture(e.pointerId); grip.classList.add('on'); document.body.classList.add('dragging');
     const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
