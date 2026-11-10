@@ -48,6 +48,9 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Heckle fights | `startStandoff`, `standoffAct`, `heckle`, `endStandoff`, `HECKLES`, `HECKLE_SAY` |
 | Reputation by place, volatility | `rep`, `repOf`, `repLabel`, `repBonus`, `vouchIn`, `job`, `conduct`, `newDay`, `vol`, `swung` |
 | Perks and passives | `PERKS`, `hasPerk`, `grantPerk`, `tally`, `count`, `kitTab`, `passiveBank`, `moreSections` |
+| Backlog, stereotype, who is around | `journal`, `once`, `journalTab`, `RACES`, `stereoOf`, `stereoBonus`, `aroundHere` |
+| Tabs under the story | `composerTabs`, `socialCells`, `itemCells`, `debugCells` |
+| Guild board | `renderGuild` (notices are blind on purpose) |
 | Sheet tabs | `overviewTab`, `underTabs`, `sheetOf`, `drivesText`, `writeBio` |
 | Falling down | `fallDown`, `getUp` |
 | Real fights | `startBattle`, `battleAct`, `battleExtra`, `syncBattle`, `leaveBattle`, `postEvents` |
@@ -75,6 +78,18 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 - Body trackers (bust, hips, size, chemistry) are wanted, with a different reason per class: warrior hormones, mage mana, rogue greed.
 - Text stays PG-13. Del's card has `aiBias.lewd: 0` and the trackers switched off; the page shows the trackers as numbers and keeps the writing clean.
 - Karryn's Prison and Corruption of Champions are references for structure and layout only. No content, names or numbers were taken from either, and none should be.
+
+## Agreed next: conditions and a job (planned, not built)
+
+Del asked for a resistance system in the manner of Karryn's Prison, re-themed. The plan Del was shown, with the two open choices settled by default because Del moved on without answering:
+
+- Four conditions, each a 0 to 100 gauge resisted by an attribute she already has, each hurting one kind of roll and helping another: Swelling (Constitution; hurts Finesse and Run, helps Sway), Pheromones (Finesse; hurts Persuade and raises fight chance, helps Flirt), Fever (Might; hurts stamina costs and Clever, helps Strike), Corruption (Willpower; hurts Friendly and reputation gains, helps Bold and scaring crowds).
+- Resistance trains by exposure. Every night each condition moves: down by her resistance, up by what she did that day, reported in a morning card.
+- Thresholds at 25, 50 and 75. At 50 the rolls get harder; at 75 some regulars refuse to talk until it is treated.
+- A shift at the Gilded Goose (three rolls) pays gold and city reputation and risks catcalls. Gold buys cures at the shop.
+- Build order: conditions and the morning report; the bar shift; the refusals and cures.
+
+Also asked for and not built: three playable characters with three classes who sometimes join as a party; a portrait per mood (the hook is `MOOD_FACES`; Del has mood pictures for one character only).
 
 ## What Del asked for that is not built, in suggested order
 
