@@ -606,7 +606,7 @@ function syncBattle() {
   S.hero = st.combatants.valerie; if (st.combatants.companion && S.who) S.them = st.combatants.companion;
   if (BT.currentActor(st)) return;
   const won = st.result === 'win', r = st.rewards;
-  post({ who: 'sys', dice: `<b>${won ? (st.outcome === 'concession' ? 'CONCEDED' : 'VICTORY') : 'DEFEAT'}</b> · ${esc(st.name)} · ${st.round} rounds${r ? ` · ${n(r.exp)} EXP · ${n(r.gold)} gold` : ''}`, tone: won ? 'virtue' : 'crit', say: won ? 'The dust settles. You are back on the road, with whatever the fight left on your bars.' : 'The party drags itself out. A night at the Gilded Goose (Rest) puts everyone back together.' });
+  post({ who: 'sys', dice: `<b>${won ? (st.outcome === 'concession' ? 'CONCEDED' : 'VICTORY') : 'DEFEAT'}</b> · ${esc(st.name)} · ${st.round} rounds${r && won ? ` · ${n(r.exp)} EXP · ${n(r.gold)} gold` : ''}`, tone: won ? 'virtue' : 'crit', say: won ? 'The dust settles. You are back on the road, with whatever the fight left on your bars.' : 'You limp out of it. Take a room at the Gilded Goose, or soak at the Baths, before you try anything else.' });
   if (won && r?.exp) gainExp(r.exp, state_name(st));
   leaveBattle();
 }
