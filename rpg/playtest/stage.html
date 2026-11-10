@@ -439,6 +439,10 @@ body.dragging .sprite,body.dragging .hud,body.dragging .dialog{transition:none}
 .hud p.prose{font-family:var(--f-serif);font-size:1.02rem;line-height:1.45;color:var(--text)}
 .ed{display:grid;gap:3px;min-width:0}
 .ed textarea{font-family:var(--f-body);font-size:.84rem;line-height:1.4}
+.hud p.settled{text-align:center;font-size:.7rem;color:var(--faint);font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+.settled i{font-family:var(--f-serif);font-style:italic;font-size:1.05rem;color:var(--pink);text-transform:none;letter-spacing:0;margin-right:4px}
+.settled span{display:block}
+.dots{margin:0;padding-left:16px;display:grid;gap:3px;font-size:.8rem;color:var(--muted);line-height:1.4}
 @media (max-width:1180px){
   :root{--hudL:196px;--hudR:196px;--col:440px}
 }
@@ -766,6 +770,7 @@ const S = {
   path: store.get('path', 'warrior'), bust: store.get('bust', 0), bustXp: store.get('bustXp', 0), hips: store.get('hips', 0), hipsXp: store.get('hipsXp', 0), chem: store.get('chem', 20),
   dbgTop: store.get('dbgTop', false), aiThoughts: store.get('aiThoughts', false), ltab: store.get('ltab', 'over'),
   order: store.get('order', {}), secured: store.get('secured', {}),
+  perks: store.get('perks', {}), count: store.get('count', {}),
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1052,7 +1057,7 @@ const placeNow = () => PLACES.find((x) => x.id === S.place) ?? PLACES[0];
 const castOf = (id) => ({ ...CAST[id], ...(store.get('cast', {})[id] ?? {}) });
 function npcOf(id) { S.npc[id] ??= { met: false, rapport: 20, talked: -1 }; return S.npc[id]; }
 const saveNpc = () => store.set('npc', S.npc);
-const tierOf = (r) => (r >= 70 ? 'Close' : r >= 45 ? 'Friendly' : r >= 25 ? 'Acquaintance' : 'Wary');
+const tierOf = (r) => (r >= 70 ? 'Trusted' : r >= 45 ? 'Respected' : r >= 25 ? 'Noticed' : 'Wary');
 function wandererAt() { const pool = PLACES.filter((p) => p.zone === 'safe' && !p.who && !p.area); return pool[(dayNow() * 5 + PHASE_ORDER.indexOf(phaseNow()) * 3) % pool.length].id; }
 function residentOf(placeId) {
   const moved = store.get('residents', {}), place = PLACES.find((p) => p.id === placeId);
@@ -1101,7 +1106,7 @@ function levelUp() {
 function gainGold(amount, why) { const got = Math.max(1, Math.round(amount * (S.path === 'rogue' ? 1 + 0.05 * S.bust : 1))); S.gold += got; store.set('gold', S.gold); note(`gold +${got} · ${why}`); if (S.path === 'rogue') grow(Math.max(1, Math.round((got / Math.max(1, S.level)) * 1.5)), 'coin in the purse'); return got; }
 function spend(amount) { if (S.gold < amount) return false; S.gold -= amount; store.set('gold', S.gold); note(`gold −${amount}`); return true; }
 function useStam(amount, why) { const was = S.stam; S.stam = Math.max(0, Math.min(100, S.stam - amount)); store.set('stam', S.stam); if (S.stam !== was) note(`stamina ${S.stam < was ? '−' : '+'}${Math.abs(S.stam - was)} · ${why}`); if (was > 0 && S.stam === 0 && !S.battle && !S.fallen) fallDown(); }
-function decency(delta, why) { if (!delta) return; delta = swung(delta); const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
+function decency(delta, why) { if (!delta) return; delta = swung(delta); if (delta < 0 && hasPerk('refitted')) delta = Math.min(0, delta + 1); if (!delta) return; const was = S.decency; S.decency = Math.max(0, Math.min(100, S.decency + delta)); store.set('decency', S.decency); if (S.decency !== was) note(`decency ${delta > 0 ? '+' : '−'}${Math.abs(S.decency - was)} · ${why}`); }
 const GROW_SAY = {
   warrior: 'Your pulse does something silly, the breastplate gives a small defeated ping, and one more strap lets itself out a notch. Nobody told the armor it was that kind of day.',
   mage: 'The spare mana has to go somewhere. It goes where it always goes. The breastplate creaks and lets a strap out a notch.',
@@ -1175,9 +1180,9 @@ function meet(kind) {
   const r = rollCheck({ title: `First impression · ${c.name} · ${a.label}`, stat: a.stat, dc: effectiveStat(S.them, a.vs), bonus: b.total, parts: b.parts });
   if (a.tempt) conduct('lewd', 1);
   rec.met = true; rec.rapport = Math.max(0, Math.min(100, 20 + { crit: 35, hit: 22, miss: 6, fumble: -8 }[r.degree])); saveNpc(); S.meet = null;
-  note(`${c.name}: rapport ${rec.rapport} (${tierOf(rec.rapport)})`);
+  note(`${c.name}: respect ${rec.rapport} (${tierOf(rec.rapport)})`);
   post({ who: 'me', dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(a.label)}`, tone: r.degree, say: a.say[r.success ? 0 : 1] });
-  post({ who: 'her', say: r.success ? c.warm : c.cold, spoken: true, fx: [r.success ? `${c.name} warms to you` : `${c.name} is not sure about you`] });
+  post({ who: 'her', say: r.success ? c.warm : c.cold, spoken: true, fx: [r.success ? `${c.name} respects that` : `${c.name} is not impressed`] });
   if (r.degree === 'fumble') decency(-4, 'a first impression gone wrong');
   if (r.success) grow(S.path === 'warrior' ? 20 : a.tempt && S.path === 'rogue' ? 12 : 0, `meeting ${c.name}`);
   if (r.success) chem(a.tempt ? 14 : 8, `meeting ${c.name}`);
@@ -1273,9 +1278,9 @@ function fallDown() {
   post({ who: 'sys', plate: 'Out of stamina', dice: '<b>DOWN</b> · stamina 0', tone: 'crit', say: 'Your legs file a complaint and the armor seconds it. You are on the ground, and getting up is going to take willpower.' }); pop('l', 'DOWN', 'var(--crit)');
 }
 function getUp() {
-  const r = rollCheck({ title: 'Get up · Willpower', stat: 'WIL', dc: dcFor(S.level, 'easy') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Get up`;
+  const r = rollCheck({ title: 'Get up · Willpower', stat: 'WIL', dc: dcFor(S.level, 'easy'), bonus: hasPerk('surefoot') ? 10 : 0, parts: hasPerk('surefoot') ? ['+10 sure-footed'] : [] }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Get up`;
   passTime(20);
-  if (r.success) { S.fallen = false; S.stam = r.degree === 'crit' ? 30 : 15; store.set('stam', S.stam); return post({ who: 'me', dice, tone: r.degree, say: 'One knee, then the other, then a long negotiation with the sword. You are up.', fx: [`stamina ${S.stam}`] }); }
+  if (r.success) { tally('getUps', 'surefoot', 2, 'getting back up, twice'); S.fallen = false; S.stam = r.degree === 'crit' ? 30 : 15; store.set('stam', S.stam); return post({ who: 'me', dice, tone: r.degree, say: 'One knee, then the other, then a long negotiation with the sword. You are up.', fx: [`stamina ${S.stam}`] }); }
   const fx = applyFx({ stress: 6 }, 'could not get up'); post({ who: 'me', dice, tone: r.degree, say: 'You get as far as one elbow. The ground is very persuasive.', fx });
   const p = placeNow(), danger = dangerOf(p) + (p.zone === 'safe' ? 0 : 15);
   if (danger && d() <= danger) { S.fallen = false; S.stam = 10; store.set('stam', S.stam); startStandoff('they found you on the ground'); }
@@ -1300,7 +1305,7 @@ function doAct(id) {
   if (id.startsWith('opt:')) return doSpot(+id.slice(4));
   if (id.startsWith('use:')) return drink(id.slice(4));
   if (id === 'look') { passTime(10); return post({ who: 'me', plate: 'Look around', say: `${nextLine(here.look)}${S.who ? ` ${castOf(S.who).name} is here.` : ''}` }); }
-  if (id === 'talk') { if (!who) return; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: rapport ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
+  if (id === 'talk') { if (!who) return; const rec = npcOf(S.who), stamp = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()); if (rec.talked !== stamp) { rec.talked = stamp; rec.rapport = Math.min(100, rec.rapport + 2); saveNpc(); note(`${who.name}: respect ${rec.rapport}`); } passTime(10); return post({ who: 'her', say: nextLine(who.greet), spoken: true }); }
   if (id === 'board') return setView('guild');
   if (id === 'rest') {
     const cost = 8 * Math.max(1, S.level);
@@ -1318,7 +1323,7 @@ function cell(act, label, hint, cls = '', off = false) { return `<button class="
 function travelGrid() {
   const here = placeNow(), who = S.who ? castOf(S.who) : null, L = Math.max(1, S.level);
   const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
-  if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy')), 'primary');
+  if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy'), hasPerk('surefoot') ? 10 : 0), 'primary');
   if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; return cell('so:strike', 'Strike', `${odds('STR', dc, rb('strike'))} · their nerve −25`, 'primary') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
   if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total), i === 0 ? 'primary' : '')).join('') + own + exitCells(here);
   const closed = !openNow(here.hours);
@@ -1382,7 +1387,7 @@ function renderDebugger() {
   el.innerHTML = `
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
-    <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · rapport ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
+    <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · respect ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
     <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     <div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>What just changed</h4>${S.changes.length ? S.changes.map((x) => `<p>${esc(x)}</p>`).join('') : '<p>nothing yet</p>'}</div>`;
@@ -1479,7 +1484,7 @@ function mapTab() {
     <svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg>
     <p class="more">bubble: walk there · box: another map · ★ stronghold</p>
     <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
-    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `You are ${tierOf(npcOf(S.who).rapport).toLowerCase()} with them.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
+    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `Their respect for you: ${tierOf(npcOf(S.who).rapport).toLowerCase()}.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
     <div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`;
 }
 function knightAct(id) { // the things only the outer domains offer
@@ -1508,12 +1513,13 @@ function momentsTab() {
   return `${mine.length ? `<p class="lbl">This run · ${mine.length}</p>${mine.map(card).join('')}` : '<p>Nothing yet this run. Quests you finish land here.</p>'}${old.length ? `<p class="lbl">Before you arrived</p>${old.map(card).join('')}` : ''}`;
 }
 function leftPanel(h, top, gauge, band, locked) {
-  const tabs = [['over', 'Overview'], ['stats', 'Status'], ['rpg', 'RPG'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'over';
-  const body = tab === 'over' ? overviewTab() : tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
+  const tabs = [['over', 'Overview'], ['stats', 'Status'], ['rpg', 'RPG'], ['kit', 'Kit'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'over';
+  const body = tab === 'over' ? overviewTab() : tab === 'kit' ? kitTab() : tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
     : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
   return `<div class="sheet"><div class="sheet-body"><div class="sheet-h"><div><h2>${heroName}</h2><p class="role">Klutz Knight</p></div><span class="lv" title="Level ${h.level}">${h.level}</span></div>
     <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
-      <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}></div>
+      <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
+      <p class="settled"><i>${esc(band.name)}</i> ${gauge}<span>settled in ${esc(band.name)} · ${gauge <= 33 ? `${34 - gauge} to Ditzy` : gauge <= 66 ? `${67 - gauge} to Total Airhead` : `${gauge - 66} back to Ditzy`}</span></p></div>
     ${emo(h, true)}
     <div class="vitals">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Stamina', S.stam, 100, 'var(--gold)')}</div>
     <div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
@@ -1533,6 +1539,8 @@ function repBonus(kind) { // gossip changes how people take her. Each label help
   if (l === 'Villain') { if (['friendly', 'flirt', 'clever'].includes(kind)) add(-10, 'they have heard things'); if (['persuade', 'strike', 'bold'].includes(kind)) add(10, 'they are a little afraid'); }
   if (l === 'Town scandal') { if (['friendly', 'clever', 'bold', 'persuade'].includes(kind)) add(-10, 'they have heard the gossip'); if (['flirt', 'sway'].includes(kind)) add(10, 'the gossip helps'); }
   if (l === 'Layabout') { if (['friendly', 'bold', 'persuade'].includes(kind)) add(-5, 'nobody knows what she is for'); }
+  if (kind === 'strike' && hasPerk('duelist')) add(5, 'dueled a rival');
+  if (kind === 'sway' && hasPerk('crowd')) add(5, 'crowd pleaser');
   return { total, parts };
 }
 
@@ -1564,19 +1572,19 @@ function heckle(so) {
     const sk = kind === 'melee' ? CLASSES.warrior.skill : CLASSES.rogue.skill, roll = d(), r = VC.enemyAttacksValerie(so.foe, S.hero, sk, fixedRolls([roll, d()]), { guarding: braced }), fx = [];
     const dmg = Math.round((r.damage ?? 0) * hard);
     if (dmg) { S.hero = { ...S.hero, hp: Math.max(0, S.hero.hp - dmg) }; fx.push(`HP −${pctOf(dmg, S.hero.maxHp)}`); bump('l', 'hit'); pop('l', `−${pctOf(dmg, S.hero.maxHp)}`, r.outcome === 'crit' ? 'var(--crit)' : 'var(--gold)'); }
-    if (r.reflected || r.selfBind) { so.nerve = Math.max(0, so.nerve - 15); fx.push('their nerve −15'); pop('l', r.reflected ? 'BOUNCE' : 'OOPS', 'var(--cyan)'); }
+    if (r.reflected || r.selfBind) { const cut = hasPerk('sender') ? 20 : 15; so.nerve = Math.max(0, so.nerve - cut); fx.push(`their nerve −${cut}`); pop('l', r.reflected ? 'BOUNCE' : 'OOPS', 'var(--cyan)'); }
     if (r.outcome === 'miss') { bump('l', 'hop'); pop('l', 'MISS', 'var(--muted)'); }
     if (r.limitGain) { S.hero = { ...S.hero, limit: Math.min(100, S.hero.limit + r.limitGain) }; fx.push(`MCE +${r.limitGain}`); }
     S.lastRoll = { title: `${so.name} · ${kind === 'melee' ? 'a shove' : 'something thrown'}`, pct: r.hitPct, roll, degree: r.outcome, bands: { pct: r.hitPct, critPct: r.critPct, fumbleFrom: r.fumbleFrom }, math: `they hit on ${r.hitPct} or less · crit on ${r.critPct} or less · fumble on ${r.fumbleFrom}+ · rolled ${roll}` }; S.trayFresh = true;
     return post({ who: 'her', plate: so.name, dice: `[physical · ${kind === 'melee' ? 'melee' : 'direct'} · d100 ${roll} vs ${r.hitPct}: <b>${r.outcome}</b>]`, tone: r.outcome, say: HECKLE_SAY[kind][r.outcome] ?? HECKLE_SAY[kind].hit, fx });
   }
-  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard)) }, 'jeering'); return post({ who: 'her', plate: so.name, dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
+  if (kind === 'mental') { const fx = applyFx({ stress: Math.max(1, Math.round(7 * soft * hard) - (hasPerk('thick') ? 2 : 0)) }, 'jeering'); return post({ who: 'her', plate: so.name, dice: '[mental · direct] jeering', tone: 'affliction', say: pick(HECKLE_SAY.mental, so.round), fx }); }
   const cut = Math.max(1, Math.round(4 * soft * hard)); decency(-cut, 'catcalls'); chem(6, 'catcalls'); conduct('lewd', 0.5);
   const fx = applyFx({ stress: 3 }, 'catcalls'); post({ who: 'her', plate: so.name, dice: '[lewd · direct] catcalls', tone: 'fumble', say: pick(HECKLE_SAY.lewd, so.round), fx: [`decency −${cut}`, 'chemistry +6', ...fx] });
 }
-function endStandoff(how) {
+function endStandoff(how, last) {
   const so = S.standoff, area = areaOf(placeNow()); S.standoff = null; S.mode = 'travel'; passTime(20);
-  if (how === 'won') { order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
+  if (how === 'won') { tally('heckWins', 'thick', 2, 'two crowds broken'); if (last === 'sway') grantPerk('crowd', 'a crowd broken with a sway'); order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
   if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
   if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
   vol(2, 'beaten by a crowd'); decency(-10, 'beaten by a crowd'); rep(-3, 'beaten by a crowd'); order(area, -4, 'hecklers won'); S.down = S.hero.hp <= 0;
@@ -1609,7 +1617,7 @@ function standoffAct(kind) {
   if (!ended && so.nerve <= 0) ended = 'won';
   if (!ended && S.hero.hp <= 0) ended = 'lost';
   if (!ended && so.round >= 8) ended = 'bored';
-  if (ended) return endStandoff(ended);
+  if (ended) return endStandoff(ended, kind);
   so.round += 1;
   if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
 }
@@ -1637,7 +1645,7 @@ const repOf = (area) => S.repBy[area] ?? 40;
 function repLabel(area = areaOf(placeNow())) { const r = repOf(area); return r >= 70 ? 'Heroine' : r >= 35 ? 'Knight' : S.lewd > S.mean && S.lewd > 0 ? 'Town scandal' : S.mean > 0 ? 'Villain' : 'Layabout'; }
 function vouchIn(area) { const moved = store.get('residents', {}); return Object.keys(CAST).find((id) => S.npc[id]?.met && S.npc[id].rapport >= 45 && PLACES.some((p) => areaOf(p) === area && (p.id in moved ? moved[p.id] : p.who) === id)); }
 function rep(delta, why, area = areaOf(placeNow())) { // a friend who lives there halves what she loses; volatility stretches everything
-  if (!delta) return; let d1 = swung(delta); const friend = d1 < 0 ? vouchIn(area) : null; if (friend) d1 = Math.min(-1, Math.round(d1 / 2));
+  if (!delta) return; let d1 = swung(delta); if (d1 > 0 && hasPerk('ballad')) d1 += 1; const friend = d1 < 0 ? vouchIn(area) : null; if (friend) d1 = Math.min(-1, Math.round(d1 / 2));
   const was = repOf(area); S.repBy[area] = Math.max(0, Math.min(100, was + d1)); store.set('repBy', S.repBy);
   S.rep = Math.round(AREA_IDS.reduce((sum, a) => sum + repOf(a) * (a === 'city' ? 2 : 1), 0) / (AREA_IDS.length + 1)); store.set('rep', S.rep);
   if (S.repBy[area] !== was) note(`${AREAS[area].name}: reputation ${d1 > 0 ? '+' : '−'}${Math.abs(S.repBy[area] - was)} · ${why}${friend ? ` · ${castOf(friend).name} vouched for her` : ''}`);
@@ -1660,6 +1668,7 @@ function overviewTab() {
     <p class="facts">${[p.occupation && `<b>${esc(p.occupation)}</b>`, p.status && esc(p.status), p.talent && `really good at <b>${esc(String(p.talent).replace(/^./, (ch) => ch.toLowerCase()))}</b>`].filter(Boolean).join(' · ')}</p>
     ${core.length ? `<p class="lbl">Core to her</p><ul class="feats">${core.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
     ${p.hobbies ? `<p class="lbl">Into</p><div class="pills">${list(p.hobbies).map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}
+    ${p.quirks || p.habits ? `<div class="duo">${p.quirks ? `<div><p class="lbl">Quirks</p><ul class="dots">${String(p.quirks).split(/\.\s+/).map((x) => x.replace(/\.$/, '').trim()).filter(Boolean).slice(0, 4).map((x) => `<li>${esc(x)}.</li>`).join('')}</ul></div>` : ''}${p.habits ? `<div><p class="lbl">Habits</p><ul class="dots">${String(p.habits).split(/\.\s+/).map((x) => x.replace(/\.$/, '').trim()).filter(Boolean).slice(0, 4).map((x) => `<li>${esc(x)}.</li>`).join('')}</ul></div>` : ''}</div>` : ''}
     <div class="duo"><div><p class="lbl">Likes</p><div class="pills good">${list(p.likes).map((x) => `<span>${esc(x)}</span>`).join('')}</div></div><div><p class="lbl">Dislikes</p><div class="pills bad">${list(p.dislikes).map((x) => `<span>${esc(x)}</span>`).join('')}</div></div></div>
     <p class="lbl">Her bars · right now</p><div class="pills bars2">${bars.map(([k, v]) => `<span><i>${k}</i> ${esc(v ?? '')}</span>`).join('')}</div>`;
 }
@@ -1684,7 +1693,7 @@ function underTabs() {
     const met = Object.keys(CAST).filter((id) => S.npc[id]?.met), here = areaOf(placeNow());
     body = `<p class="lbl">Reputation, place by place</p><div class="roster">${AREA_IDS.map((a) => { const friend = vouchIn(a); return `<div class="dom${a === here ? ' on' : ''}"><div class="h"><b>${esc(AREAS[a].name)}</b><span>${repLabel(a)} · ${repOf(a)}${friend ? ` · ${esc(castOf(friend).name)} vouches` : ''}</span></div><div class="track"><i style="--k:var(--mint);width:${repOf(a)}%"></i></div></div>`; }).join('')}</div>
       <p>Guild work raises it where you do it. A morning with no guild work the day before lowers it everywhere. A friend who lives in a place halves what you lose there.${S.vol ? ` <b>Volatile ×${1 + 0.25 * S.vol}:</b> a recent mistake is making every gauge swing harder. Sleep, a soak or a Calming Tea steadies it.` : ' Steady: gauges move at their normal size.'}</p>
-      ${met.length ? `<p class="lbl">People you have met</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}
+      ${met.length ? `<p class="lbl">People you have met · how much they respect you</p>${met.map((id) => card(castOf(id).name, `${castOf(id).role.replace(/^./, (ch) => ch.toUpperCase())}.`, tierOf(S.npc[id].rapport))).join('')}` : '<p>Nobody in Gooseford knows you yet.</p>'}
       ${(c.people ?? []).length ? `<p class="lbl">Her party, from her sheet</p>${c.people.map((x) => card(x.name, x.dyn ?? '', x.rel)).join('')}` : ''}`;
   } else if (open === 'moments') body = momentsTab();
   else if (open === 'body') body = `<div class="fgrid">${(c.body?.stats ?? []).map((x) => f(x.k, x.v)).join('')}</div>${(c.body?.notes ?? []).map((x) => card(x.k, x.v)).join('')}`;
@@ -1700,6 +1709,31 @@ async function writeBio() { // Claude's quick model drafts the description at th
     const t = (out?.text ?? '').trim(); if (t) { S.sheet.desc = t; store.set('sheet', S.sheet); note('sheet: description rewritten'); }
   } catch (e) { post({ who: 'sys', dice: `[sheet] ${e?.code === 'rate_limited' ? 'Too many requests. Give it a moment.' : 'No description came back this time.'}` }); }
   finally { S.writing = false; render(); }
+}
+/* ---------- her kit: perks are earned from moments, and each one changes a number ---------- */
+const PERKS = {
+  ballad: { name: 'A True Ballad', does: 'Reputation gains are 1 bigger.', from: 'Finish "The Bard Got It Right"', event: 'val.the_bard_got_it_right' },
+  sender: { name: 'Return to Sender', does: 'A bounce or an enemy fumble costs a crowd 20 nerve, not 15.', from: 'Finish "Return to Sender"', event: 'val.return_to_sender' },
+  refitted: { name: 'Refitted', does: 'Every decency loss is 1 smaller.', from: 'Finish "Armor Fitting Emergency"', event: 'val.armor_fitting_emergency' },
+  duelist: { name: 'Dueled a Rival', does: 'Strike +5 against a crowd.', from: 'Finish "A Rival Demands a Duel"', event: 'val.rival_demands_a_duel' },
+  thick: { name: 'Thick-skinned', does: 'Jeering costs 2 less stress.', from: 'Break two crowds' },
+  crowd: { name: 'Crowd Pleaser', does: 'Sway +5.', from: 'Break a crowd with a Sway' },
+  surefoot: { name: 'Sure-footed', does: 'Get up +10.', from: 'Get back up twice' },
+};
+const hasPerk = (id) => Boolean(S.perks[id]);
+function grantPerk(id, why) {
+  if (!PERKS[id] || hasPerk(id)) return; S.perks[id] = true; store.set('perks', S.perks); note(`perk: ${PERKS[id].name}`);
+  post({ who: 'sys', plate: 'New perk', dice: `<b>${esc(PERKS[id].name.toUpperCase())}</b> · from a moment: ${esc(why)}`, tone: 'virtue', say: `${PERKS[id].does} It is on her Kit tab now, and it is always on.` }); pop('l', 'PERK', 'var(--mint)');
+}
+function tally(key, perk, at, why) { S.count[key] = (S.count[key] ?? 0) + 1; store.set('count', S.count); if (S.count[key] >= at) grantPerk(perk, why); }
+function kitTab() {
+  const have = Object.keys(PERKS).filter(hasPerk), todo = Object.keys(PERKS).filter((id) => !hasPerk(id)), moves = DATA.valerie.skills.filter((s) => s.unlock <= S.level);
+  const gear = String(DATA.card?.profile?.rpg_gear ?? '').split(/,\s+(?![^(]*\))/).map((x) => x.trim()).filter(Boolean);
+  return `<p class="lbl">Perks · always on · ${have.length} of ${Object.keys(PERKS).length}</p>
+    ${have.length ? have.map((id) => `<div class="mcard"><b>${esc(PERKS[id].name)}</b><p>${esc(PERKS[id].does)}</p></div>`).join('') : '<p>None yet. Perks come from moments: things she does, and quests she finishes.</p>'}
+    ${todo.length ? `<p class="lbl">Still to earn</p><ul class="feats">${todo.map((id) => `<li><b>${esc(PERKS[id].name)}</b> ${esc(PERKS[id].from)}. ${esc(PERKS[id].does)}</li>`).join('')}</ul>` : ''}
+    <p class="lbl">Moves · rolled on her stats</p><div class="pills">${moves.map((s) => `<span title="${esc(s.text ?? '')}">${esc(s.name)}</span>`).join('')}</div>
+    ${gear.length ? `<p class="lbl">Gear · counts while equipped</p><div class="pills gear">${gear.map((g) => `<span>${esc(g)}</span>`).join('')}</div>` : ''}`;
 }
 function renderHuds() {
   const h = S.hero, t = S.them;
@@ -1885,7 +1919,7 @@ function chooseEvent(evId, choiceId) {
   }
   const firstTime = !doneQuests.has(evId);
   S.hero = hero; doneQuests.add(evId); store.set('quests', [...doneQuests]);
-  if (firstTime) { const xp = Math.round(needExp() * 0.15); fx.push(`${n(xp)} EXP`); gainExp(xp, ev.title); job(`quest: ${ev.title}`); }
+  if (firstTime) { const xp = Math.round(needExp() * 0.15); fx.push(`${n(xp)} EXP`); gainExp(xp, ev.title); job(`quest: ${ev.title}`); const pk = Object.keys(PERKS).find((id) => PERKS[id].event === evId); if (pk) grantPerk(pk, ev.title); }
   const good = r.branch === 'success' || r.branch === 'crit';
   post({ who: 'me', dice: r.roll === null ? `[no roll] ${esc(choice.label)}` : `[d100 ${r.roll} vs ${pct}: <b>${r.branch}</b>] ${esc(choice.label)}`, tone: r.roll === null ? null : good ? 'hit' : 'fumble', say: r.text, fx });
   if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero');
@@ -2035,7 +2069,7 @@ function debugClick(what) {
   else if (what === 'wipe') {
     if (!S.wipeArmed) { S.wipeArmed = true; return; }
     try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k); } catch {}
-    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
+    Object.assign(S, { level: 1, exp: 0, points: 0, bonus: {}, flips: {}, debug: false, party: false, wipeArmed: false, rtab: 'map', mode: 'travel', lines: [], clock: 540, gold: 30, bag: {}, npc: {}, stam: 100, decency: 70, path: 'warrior', bust: 0, bustXp: 0, hips: 0, hipsXp: 0, chem: 20, changes: [], lastRoll: null, spot: null, standoff: null, fallen: false, battle: null, order: {}, secured: {}, perks: {}, count: {}, repBy: {}, vol: 0, sheet: {}, rep: 40, mean: 0, lewd: 0, jobDay: 0, ltab2: null }); doneQuests.clear(); seen = 0; drawn = {};
     setPlace('gates'); reset(false); post({ who: 'sys', plate: 'Game Master', say: 'A clean slate. Level 1, the Castle Gates, nobody met yet.' });
   }
   if (what !== 'wipe') S.wipeArmed = false;
