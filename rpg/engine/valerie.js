@@ -40,9 +40,19 @@ export const POCKET = Object.freeze({ BASE_SLOTS: 3, LEVELS_PER_SLOT: 20, MISPLA
 
 const clampGauge = (v) => Math.max(0, Math.min(SCALE.AIRHEAD_MAX, Math.round(v)));
 
-/** The stored gauge. */
+/**
+ * A Resolve state can lock the gauge: her Self-Aware affliction pins it at 0 until it ends.
+ * Returns the locked value, or null when the gauge is free.
+ */
+export function airheadLock(valerie) {
+  const fx = (valerie.resolve?.effects ?? []).find((e) => e?.kind === 'airheadLock');
+  return fx ? clampGauge(fx.value ?? 0) : null;
+}
+
+/** The gauge as the player sees it: the locked value while a lock holds, otherwise the stored one. */
 export function airheadOf(valerie) {
-  return clampGauge(valerie.flags?.airhead ?? AIRHEAD.START);
+  const lock = airheadLock(valerie);
+  return lock !== null ? lock : clampGauge(valerie.flags?.airhead ?? AIRHEAD.START);
 }
 
 /**
@@ -53,6 +63,8 @@ export function airheadOf(valerie) {
  */
 export function passiveAirhead(valerie) {
   if ((valerie.flags?.goodHeroTurns ?? 0) > 0) return SCALE.AIRHEAD_MAX;
+  const lock = airheadLock(valerie);
+  if (lock !== null) return lock;
   const gauge = airheadOf(valerie);
   return valerie.flags?.ledgerFlipped ? SCALE.AIRHEAD_MAX - gauge : gauge;
 }
@@ -63,8 +75,9 @@ export function airheadBand(value) {
   return 'airhead';
 }
 
-/** Returns a copy of her with the gauge moved. */
+/** Returns a copy of her with the gauge moved. A locked gauge does not move. */
 export function shiftAirhead(valerie, amount) {
+  if (airheadLock(valerie) !== null) return { ...valerie, flags: { ...valerie.flags } };
   return { ...valerie, flags: { ...valerie.flags, airhead: clampGauge(airheadOf(valerie) + amount) } };
 }
 

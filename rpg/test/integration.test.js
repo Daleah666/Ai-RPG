@@ -191,3 +191,121 @@ test('stress on Valerie: fear slides off, the truth does not', () => {
   assert.equal(truth.airheadDelta, -10);
   assert.equal(stressOnValerie(airhead, -10, 'general').taken, -10);
 });
+
+// ---------- the hero through the stress and bind systems ----------
+import { applyStressToValerie, partyResolveCheck, befuddle } from '../engine/valerie-combat.js';
+import { resolveBands, validateResolveTables } from '../engine/stress.js';
+import { boundParts, isSealed } from '../engine/binds.js';
+import { airheadOf, passiveAirhead, incomingOpts, shiftAirhead } from '../engine/valerie.js';
+import { effectiveStat } from '../engine/stats.js';
+
+const tables = { afflictions: readData('afflictions').afflictions, virtues: readData('virtues').virtues };
+const personal = valerieData.resolve;
+
+test('the shipped Resolve tables are valid and fill the d100 exactly', () => {
+  assert.equal(validateResolveTables(tables).ok, true);
+  const bands = resolveBands(tables, 0);
+  assert.equal(bands[0].lo, 1);
+  assert.equal(bands.at(-1).hi, 100);
+  for (let i = 1; i < bands.length; i++) assert.equal(bands[i].lo, bands[i - 1].hi + 1);
+});
+
+test('stress reaches her bar through her filter: fear does nothing, the truth lands in full and drops the gauge', () => {
+  const v = val(50, 90);
+  const scared = applyStressToValerie(v, 30, 'horror');
+  assert.equal(scared.taken, 0);
+  assert.equal(scared.combatant.stress, 0);
+  assert.equal(scared.allyRelief, 3);
+  const told = applyStressToValerie(v, 30, 'realization');
+  assert.equal(told.taken, 30);
+  assert.equal(told.combatant.stress, 30);
+  assert.equal(airheadOf(told.combatant), 80);
+  assert.equal(airheadOf(v), 90, 'the input is not mutated');
+});
+
+test('enough truth takes her to a Resolve Check', () => {
+  let v = val(50, 90, { stress: 0 });
+  let event = null;
+  for (let i = 0; i < 4 && !event; i++) {
+    const r = applyStressToValerie(v, 30, 'realization');
+    v = r.combatant;
+    event = r.event;
+  }
+  assert.equal(event, 'resolve');
+  assert.ok(v.stress >= 100);
+});
+
+test('her Resolve Check: an odd roll reads the table, an even roll is one of her own', () => {
+  const v = { ...val(50, 60), stress: 100 };
+  const odd = partyResolveCheck(v, [], fixedRolls([61]), { tables, personal });
+  assert.equal(odd.kind, 'affliction');
+  assert.equal(odd.personal, false);
+  assert.ok(tables.afflictions.some((a) => a.id === odd.entry.id));
+  const evenBad = partyResolveCheck(v, [], fixedRolls([60]), { tables, personal });
+  assert.equal(evenBad.kind, 'affliction');
+  assert.equal(evenBad.personal, true);
+  assert.equal(evenBad.entry.id, 'aff_val_self_aware');
+  const evenGood = partyResolveCheck(v, [], fixedRolls([12]), { tables, personal });
+  assert.equal(evenGood.kind, 'virtue');
+  assert.equal(evenGood.entry.id, 'vir_val_good_hero');
+});
+
+test('Self-Aware locks the gauge at 0: the accidents go quiet, planned skills open up, and the party feels it', () => {
+  const v = { ...val(50, 95), stress: 100 };
+  const rc = partyResolveCheck(v, [], fixedRolls([60]), { tables, personal });
+  const aware = rc.combatant;
+  assert.equal(airheadOf(aware), 0);
+  assert.equal(passiveAirhead(aware), 0);
+  assert.equal(incomingOpts(aware, at(archetypes[0], 50), BASIC_ATTACK).hitCap, 95, 'no more accidental dodging');
+  assert.equal(airheadOf(shiftAirhead(aware, 40)), 0, 'winging it cannot move a locked gauge');
+  assert.ok(effectiveStat(aware, 'LCK') < effectiveStat(v, 'LCK'));
+  assert.equal(rc.party.stress, 5, 'allies who relied on her nerve take stress');
+  const calledShot = valerieData.skills.find((s) => s.id === 'val_called_shot');
+  assert.ok(valerieAttacks(aware, at(archetypes[0], 50), calledShot, 'think', fixedRolls([10, 50])).damage > 0);
+});
+
+test('A Good Hero: stress stops reaching her and the party sheds some', () => {
+  const v = { ...val(50, 60), stress: 100 };
+  const rc = partyResolveCheck(v, [], fixedRolls([12]), { tables, personal });
+  assert.equal(rc.combatant.stress, 60);
+  assert.equal(rc.party.stress, -10);
+  assert.equal(applyStressToValerie(rc.combatant, 40, 'realization').taken, 0);
+  assert.equal(applyStressToValerie(rc.combatant, 40, 'general').taken, 0);
+});
+
+test('she lends allies Virtue chance: +10 as a Total Airhead, nothing when Lucid or down', () => {
+  const warrior = { ...at(archetypes.find((a) => a.id === 'warrior'), 50), stress: 100 };
+  const pct = (others) => partyResolveCheck(warrior, others, fixedRolls([50]), { tables, personal }).virtuePct;
+  assert.equal(pct([]), 25);
+  assert.equal(pct([val(50, 90)]), 35);
+  assert.equal(pct([val(50, 50)]), 30);
+  assert.equal(pct([val(50, 10)]), 25);
+  assert.equal(pct([{ ...val(50, 90), hp: 0 }]), 25);
+  // A roll of 30 is an Affliction alone and a Virtue with her beside you.
+  assert.equal(partyResolveCheck(warrior, [], fixedRolls([31]), { tables, personal }).kind, 'affliction');
+  assert.equal(partyResolveCheck(warrior, [val(50, 90)], fixedRolls([31]), { tables, personal }).kind, 'virtue');
+  // An ally never gets her personal entries, even on an even roll.
+  assert.equal(partyResolveCheck(warrior, [val(50, 90)], fixedRolls([60]), { tables, personal }).personal, false);
+});
+
+test('an enemy that fumbles inside her aura binds its own part for a turn, read off the same roll', () => {
+  const v = val(50, 100);
+  const brute = at(archetypes.find((a) => a.id === 'warrior'), 50);
+  const swing = enemyAttacksValerie(brute, v, BASIC_ATTACK, fixedRolls([97]));
+  assert.equal(swing.outcome, 'fumble');
+  const { part, combatant } = befuddle(brute, swing.roll);
+  assert.equal(part, swing.selfBind);
+  assert.deepEqual(boundParts(combatant), [part]);
+  assert.deepEqual(boundParts(brute), [], 'the input is not mutated');
+});
+
+test('bound arms seal her weapon skills but never her basic attack', () => {
+  const dummy = at(archetypes.find((a) => a.id === 'warrior'), 50);
+  const bound = { ...val(50, 20), binds: { head: 0, arms: 2, legs: 0 } };
+  const calledShot = valerieData.skills.find((s) => s.id === 'val_called_shot');
+  assert.equal(isSealed(bound, calledShot), true);
+  assert.throws(() => valerieAttacks(bound, dummy, calledShot, 'think', fixedRolls([10, 50])), /bound/);
+  const basic = valerieAttacks(bound, dummy, BASIC_ATTACK, 'think', fixedRolls([10, 50]));
+  const free = valerieAttacks(val(50, 20), dummy, BASIC_ATTACK, 'think', fixedRolls([10, 50]));
+  assert.ok(basic.damage > 0 && basic.damage < free.damage, 'halved Might, not a lost turn');
+});

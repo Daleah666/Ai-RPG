@@ -4,7 +4,9 @@
 import { d100 } from './rng.js';
 import { SCALE } from './constants.js';
 import { hitChance, damage, rollVariance, resolveAttack, stressTaken, BASIC_ATTACK } from './combat.js';
-import { incomingOpts, readIncoming, befuddledPart, stanceEffects, canUseInBand, chaosWave, stressFilter, airheadOf } from './valerie.js';
+import { incomingOpts, readIncoming, befuddledPart, stanceEffects, canUseInBand, chaosWave, stressFilter, airheadOf, shiftAirhead, resolveShiftForAllies } from './valerie.js';
+import { applyStress, resolveCheck, partyResolveShift, withStateOpts } from './stress.js';
+import { applyBind, isSealed } from './binds.js';
 
 export const EXTRA_SLIPPERY = 10; // Whoopsie Daisy: enemy hit ceiling drops this much more until her next turn
 export const ANALYZED_HIT_BONUS = 20; // Wait, Look Closely
@@ -47,8 +49,10 @@ export function enemyAttacksValerie(attacker, valerie, skill = BASIC_ATTACK, rng
 export function valerieAttacks(valerie, target, skill = BASIC_ATTACK, stance, rng, opts = {}) {
   if (skill.stance && skill.stance !== stance) throw new Error(`${skill.name ?? skill.id} needs the "${skill.stance}" stance`);
   if (!canUseInBand(valerie, skill)) throw new Error(`${skill.name ?? skill.id} is sealed at Airhead ${airheadOf(valerie)}`);
+  if (isSealed(valerie, skill)) throw new Error(`${skill.name ?? skill.id} is sealed: her ${skill.part} are bound`);
   const fx = stanceEffects(valerie, stance);
-  const attackOpts = { ...fx.opts, ...opts };
+  // A Resolve state (an affliction's shaky hands, a virtue's steady ones) moves her bands too.
+  const attackOpts = withStateOpts(valerie, { ...fx.opts, ...opts });
   if (target.flags?.analyzed) attackOpts.hitBonus = (attackOpts.hitBonus ?? 0) + ANALYZED_HIT_BONUS;
   const result = resolveAttack(valerie, target, skill, rng, attackOpts);
   return {
@@ -68,4 +72,42 @@ export function stressOnValerie(valerie, baseStress, source = 'general') {
   const filtered = stressFilter(valerie, baseStress, source);
   const taken = filtered.amount === 0 ? 0 : stressTaken(filtered.amount, valerie, { ignoreWill: filtered.ignoreWill });
   return { taken, allyRelief: filtered.allyRelief, airheadDelta: filtered.airheadDelta, note: filtered.note };
+}
+
+const isValerie = (c) => c?.id === 'valerie' || c?.archetype === 'klutz_knight';
+
+/**
+ * A stress hit on Valerie, all the way onto her bar: her filter, then Willpower, then the thresholds.
+ * Returns { combatant, taken, before, after, event, allyRelief, airheadDelta, note }.
+ *   event       null, 'resolve' (make a Resolve Check) or 'breakdown'
+ *   allyRelief  stress every ally who saw it sheds (Inspirational Ignorance)
+ */
+export function applyStressToValerie(valerie, baseStress, source = 'general') {
+  const f = stressFilter(valerie, baseStress, source);
+  const r = f.amount === 0
+    ? { combatant: valerie, taken: 0, before: valerie.stress, after: valerie.stress, event: null }
+    : applyStress(valerie, f.amount, { source, ignoreWill: f.ignoreWill });
+  const combatant = f.airheadDelta ? shiftAirhead(r.combatant, f.airheadDelta) : r.combatant;
+  return { combatant, taken: r.taken, before: r.before, after: r.after, event: r.event, allyRelief: f.allyRelief, airheadDelta: f.airheadDelta, note: f.note };
+}
+
+/**
+ * The Resolve Check for anyone in Valerie's party. One d100.
+ * For an ally, she lends Virtue chance while she is standing and not Lucid. For Valerie herself, an even
+ * roll swaps in her own affliction or virtue. Returns what stress.resolveCheck returns.
+ *   tables   { afflictions, virtues } from data/
+ *   personal data/valerie.json "resolve"
+ */
+export function partyResolveCheck(member, others, rng, { tables, personal } = {}) {
+  const her = isValerie(member);
+  const valerie = her ? null : (others ?? []).find(isValerie);
+  const lend = valerie ? resolveShiftForAllies(valerie) : 0;
+  const virtueShift = partyResolveShift(others, lend);
+  return resolveCheck(member, rng, { tables, virtueShift, personal: her ? personal : undefined });
+}
+
+/** An enemy that fumbled inside her aura binds one of its own parts for a turn. No contest, no extra roll. */
+export function befuddle(enemy, fumbleRoll) {
+  const part = befuddledPart(fumbleRoll);
+  return { part, combatant: applyBind(enemy, part, 1, { ownTurn: true }) };
 }
