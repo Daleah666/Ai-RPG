@@ -890,7 +890,8 @@ body.railhover #railPop,#railPop.open{display:grid}
 /* close-ups: while somebody is talking, both figures come in to head and shoulders */
 body.closeup .sprite img,body.closeup .sprite video{scale:calc(var(--z) * 1.75);translate:0 var(--liftY,0px);transform-origin:50% var(--headY,0%);transition:scale .5s cubic-bezier(.2,.8,.2,1),translate .5s cubic-bezier(.2,.8,.2,1)}
 body.closeup .sprite .flip{scale:calc(-1.75 * var(--z)) calc(var(--z) * 1.75)}
-body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);translate:none}
+body.closeup .sprite video.ghost,body.closeup .sprite img.ghost,body.closeup .sprite .boxed{scale:var(--z);translate:none}
+body.closeup .sprite .boxed.flip{scale:calc(-1 * var(--z)) var(--z)}
 @media (prefers-reduced-motion:reduce){body.closeup .sprite img,body.closeup .sprite video{transition:none}}
 /* the full-screen menus */
 .char-top{align-items:center}.char-top .lbl{margin-left:auto}
@@ -950,6 +951,16 @@ body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);t
 #thought.asst{left:auto;right:calc(var(--hudR) + 22px);border-radius:12px 12px 2px 12px}#thought.asst::after{left:auto;right:18px}
 .ccard.asst{order:2}
 .sprite video.keyw,.cv-pic.keyw,.face video.keyw{filter:url(#keyWhite)}
+.sprite video.keyb,.cv-pic.keyb{filter:url(#keyBlack)}
+.swipe{display:flex;align-items:center;gap:8px}.swipe .mono{font-size:.7rem;letter-spacing:.08em;opacity:.75;min-width:3.2em;text-align:center}.swipe button[disabled]{opacity:.35}
+.growclip{display:flex;gap:8px;justify-content:center}.growclip video{width:min(200px,44%);border-radius:10px;display:block}
+/* v35: stat tiles in the right panel, notifications over the scene, phrases over the right-hand figure */
+.hud .statstrip{grid-template-columns:repeat(3,minmax(0,1fr));margin:8px 0 2px}
+#dbgBtn{display:none!important}
+.toasts{left:auto;right:22px;translate:none;top:14px;width:calc(var(--hudR) - 20px)}
+#bark{position:absolute;z-index:4;right:calc(var(--hudR) + 22px);top:30%;width:clamp(170px,calc(50vw - var(--col)/2 - var(--hudR) - 30px),300px);margin:0;padding:8px 12px 9px;border-left:0;border-radius:12px 12px 2px 12px;background:color-mix(in srgb,var(--ground) 86%,var(--pink));border:1px solid color-mix(in srgb,var(--pink) 45%,var(--edge2));box-shadow:0 10px 26px rgba(0,0,0,.45);animation:toastin .25s ease-out}
+#bark i{font-family:var(--f-serif);font-size:1rem;line-height:1.3}
+@media (max-width:900px){#bark{display:none}}
 </style>
 
 <div class="stage" id="stage">
@@ -959,9 +970,10 @@ body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);t
 
   <div class="grip l" id="gripL" role="separator" aria-orientation="vertical" aria-label="Resize your panel" tabindex="0"></div>
   <div class="thought" id="thought" hidden></div>
+  <div class="thought" id="bark" hidden></div>
   <div class="rail-pop" id="railPop"></div>
   <div class="tray" id="tray" hidden aria-live="polite"></div>
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="keyWhite" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -20 -20 -20 60 -0.6"/></filter></svg>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="keyBlack" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  7 7 7 0 -0.5"/></filter><filter id="keyWhite" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -20 -20 -20 60 -0.6"/></filter></svg>
   <div class="bigwrap" id="big" hidden></div>
   <div class="charmenu" id="charmenu" hidden></div>
   <div class="toasts" id="toasts" aria-live="polite"></div>
@@ -986,7 +998,6 @@ body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);t
       <span class="topend"><button class="sm quiet ico" type="button" data-news="1" title="What is going on, here and elsewhere">News<b id="newsN" hidden></b></button><button class="sm quiet ico" type="button" data-full="1" title="Full screen" aria-label="Full screen">⛶</button><button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false" title="The hidden numbers">Debug</button>
       <button class="sm quiet" id="jiggle" type="button" data-jiggle="1" title="Jiggle free. Stuck? This drops whatever is holding you and stands you back up.">Jiggle</button></span>
     </div>
-    <div class="statstrip" id="statStrip" aria-label="Her numbers at a glance"></div>
     <div class="dbgtop" id="dbgTop" hidden></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
@@ -1104,6 +1115,11 @@ const LOOKS = [
   { id: 'val-bar', name: 'Valerie, bar shift', src: 'art/cut/val-bar.webp', hero: true },
   { id: 'val-offduty', name: 'Valerie, off duty', src: 'art/cut/val-offduty.webp', hero: true },
   { id: 'val-jailer', name: 'Valerie, cell duty', src: 'art/cut/val-jailer.webp', hero: true, boxed: true },
+  { id: 'val-turn', name: 'Valerie, turning (clip)', src: 'art/val-turn.mp4', video: true, keyed: true, hero: true, loopFor: ['knight'] },
+  { id: 'val-loop', name: 'Valerie, her new look (clip)', src: 'art/val-front.mp4', video: true, boxed: true, hero: true, faces: 'left' },
+  { id: 'val-loop-2', name: 'Valerie, her new look, second take (clip)', src: 'art/val-front2.mp4', video: true, boxed: true, hero: true, faces: 'left' },
+  { id: 'val-loop-back', name: 'Valerie, over her shoulder (clip)', src: 'art/val-back.mp4', video: true, boxed: true, hero: true, faces: 'left' },
+  { id: 'val-loop-back2', name: 'Valerie, over her shoulder, second take (clip)', src: 'art/val-back2.mp4', video: true, boxed: true, hero: true, faces: 'left' },
   { id: 'elf-green', name: 'Elowen, the visiting lecturer', src: 'art/cut/elf-green.webp', bust: true, as: ['Elowen Thistledown', 'mage'] },
   { id: 'elf-violet', name: 'Fizz, the alchemist', src: 'art/cut/elf-violet.webp', bust: true, as: ['Fizz', 'rogue'] },
   { id: 'corrupter', name: 'Amaranth, waving', src: 'art/amaranth.mp4', video: true, ghost: true },
@@ -1206,6 +1222,8 @@ const LOOKS = [
   { id: 's-vexa-loop-f', name: 'Vexa Ashmaw, showing off (clip)', src: 'art/vexa-loop-f.mp4', video: true, keyw: true, loopFor: ['s-vexa', 's-vexa-f'], w: true },
   { id: 's-vexa-loop-a', name: 'Vexa Ashmaw, swinging (clip)', src: 'art/vexa-loop-a.mp4', video: true, keyw: true, loopFor: ['s-vexa-a'], w: true },
   { id: 's-vexa-loop-x', name: 'Vexa Ashmaw, on her throne (clip)', src: 'art/vexa-loop-x.mp4', video: true, keyw: true, loopFor: ['s-vexa-x'], w: true },
+  { id: 'meme', name: 'Meme, walking (clip)', src: 'art/meme-walk.mp4', video: true, keyb: true, w: true },
+  { id: 'meme-prone', name: 'Meme, lounging (clip)', src: 'art/meme-prone.mp4', video: true, keyb: true, w: true },
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
@@ -1467,7 +1485,7 @@ const skillById = (id) => heroSkills().find((s) => s.id === id) || BASIC_ATTACK;
 const loopOf = (id) => (S.loopPrio === false ? id : LOOKS.find((l) => l.video && l.src && (l.loopFor ?? []).includes(id))?.id ?? id); // a loop clip, where one exists, stands in for the still
 function drawSprite(el, lookIdIn) {
   const lookId = loopOf(lookIdIn), look = S.custom[lookId] ?? LOOKS.find((l) => l.id === lookId) ?? (el.id === 'sprL' ? LOOKS[0] : LOOKS.find((l) => l.id === 'none'));
-  const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${look.ghost ? ' ghost' : ''}${look.keyw ? ' keyw' : ''}${S.flips[lookIdIn] ? ' flip' : ''}`;
+  const cls = `${look.keyed ? 'keyed' : ''}${look.boxed ? ' boxed' : ''}${look.ghost ? ' ghost' : ''}${look.keyw ? ' keyw' : ''}${look.keyb ? ' keyb' : ''}${Boolean(S.flips[lookIdIn]) !== Boolean(look.faces && (look.faces === 'left') === (el.id === 'sprL')) ? ' flip' : ''}`;
   el.innerHTML = !look.src ? '' : look.video
     ? `<video src="${esc(look.src)}" class="${cls}" autoplay muted loop playsinline></video>`
     : `<img src="${esc(look.src)}" class="${cls}" alt="">`;
@@ -1679,7 +1697,7 @@ function rightPanel() {
   if (withThem && S.autoThem !== S.who) { S.autoThem = S.who; S.rtab = 'here'; } if (!withThem) S.autoThem = null;
   const tab = S.battle ? S.rtab : S.rtab === 'fight' || (S.rtab === 'here' && !withThem) ? 'map' : S.rtab;
   const tabs = [...(S.battle ? [['fight', 'Fight']] : []), ['map', 'Map'], ...(withThem ? [['here', 'Them']] : []), ['level', 'Level'], ['debug', 'Debug']];
-  return `${worldPlate()}<div id="trayDock"></div><div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
+  return `${worldPlate()}<div class="statstrip" id="statStrip" aria-label="Her numbers at a glance">${statStrip()}</div><div id="trayDock"></div><div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
     tab === 'fight' ? battlePanel() : tab === 'here' ? hereTab() : tab === 'level' ? levelTab() : tab === 'debug' ? debugTab() : mapTab()}`;
 }
 function themFace() { const look = S.custom[S.lookR] ?? LOOKS.find((l) => l.id === S.lookR); return look?.src ? `<span class="face">${look.video ? `<video src="${esc(look.src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(look.src)}" alt="">`}</span>` : `<span class="face shadeface">${shade(2)}</span>`; }
@@ -1765,7 +1783,7 @@ function residentOf(placeId) {
 function seat() { // whoever is here takes the right side of the stage
   S.who = residentOf(S.place); S.retest = false; S.passed = null;
   if (S.who) { const c = castOf(S.who); S.nameR = c.name; S.classR = c.cls; S.lookR = c.look; }
-  else { S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; S.classR = 'warrior'; S.lookR = ASSIST ? ASSIST.look : 'none'; }
+  else { [S.lookR, S.nameR] = idleR(); S.classR = 'warrior'; }
   S.meet = S.who && !npcOf(S.who).met ? S.who : null; if (S.meet) setTimeout(() => thoughtPops(pickN(REACT.meet[composure()], 2)), 500);
 }
 function refreshWho() { const was = S.who; seat(); if (S.who === was) return; S.them = freshThem(); drawn.r = null; post({ who: 'sys', dice: `[town] ${S.who ? `${esc(S.nameR)} turns up.` : `${esc(castOf(was).name)} heads off.`}` }); }
@@ -1965,12 +1983,12 @@ function goTo(id) {
   arrive(from, placeNow(), Math.round(total));
 }
 function arrive(from, to, mins, held) {
-  if (once(`place:${to.id}`)) journal('place', `${to.name} (${AREAS[areaOf(to)].name}): ${(to.acts ?? []).filter((a) => a !== 'look').map((a) => ACTS[a].label.toLowerCase()).join(', ') || 'nothing much to do'}${(SPOTS[to.id] ?? []).length ? `; spots: ${SPOTS[to.id].map((x) => x.name.toLowerCase()).join(', ')}` : ''}${to.hours ? `; open ${hr12(to.hours[0])} to ${hr12(to.hours[1] % 24)}` : ''}.`);
-  const q = eventPool(to).length;
-  post({ who: 'sys', plate: to.name, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: openNow(to.hours) ? to.text : `${to.text} It is shut until ${hr12(to.hours[0])}.`, fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(q ? ['something to do around here'] : [])] });
+  const first = once(`place:${to.id}`), q = eventPool(to).length, shut = !openNow(to.hours), ids = S.calm ? [] : wanderersAt(to.id);
+  if (first) journal('place', `${to.name} (${AREAS[areaOf(to)].name}): ${(to.acts ?? []).filter((a) => a !== 'look').map((a) => ACTS[a].label.toLowerCase()).join(', ') || 'nothing much to do'}${(SPOTS[to.id] ?? []).length ? `; spots: ${SPOTS[to.id].map((x) => x.name.toLowerCase()).join(', ')}` : ''}${to.hours ? `; open ${hr12(to.hours[0])} to ${hr12(to.hours[1] % 24)}` : ''}.`);
+  post({ who: 'sys', plate: first ? to.name : undefined, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: first ? to.text : undefined,
+    fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(shut ? [`shut until ${hr12(to.hours[0])}`] : []), ...(q ? ['something to do around here'] : []), ...(S.who && !S.meet ? [`${castOf(S.who).name} is here`] : []), ...ids.slice(0, 3).map((id) => `${WANDER[id].short} is passing through`)] });
   if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
-  else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-  if (!held) arriveCheck(to);
+  if (!held) { arriveCheck(to); klutzMoment(); }
 }
 function explore() {
   const p = placeNow(), pool = eventPool(p); passTime(30); useStam(5, 'exploring'); if (S.fallen) return;
@@ -2029,6 +2047,7 @@ function doAct(id) {
   if (id === 'jobopen') { S.jobOpen = true; return; }
   if (id === 'jobback') { S.jobOpen = false; return; }
   if (id.startsWith('job:')) return doJob(+id.slice(4));
+  if (id === 'meme') return memeToggle();
   if (id.startsWith('asst:')) return assist(id.slice(5));
   if (id.startsWith('talk:')) return void talkPick(id.slice(5));
   if (id === 'talkleave') return convoEnd('[you say goodbye]');
@@ -2200,7 +2219,7 @@ async function thinkAloud(key, band) {
   } catch (e) { if (e?.code === 'not_granted') { S.aiThoughts = false; store.set('aiThoughts', false); } }
   finally { S.thinking = false; }
 }
-function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : ASSIST ? 'Valerie, helpfully' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; placeThought(); setTimeout(placeThought, 450); }
+function renderThought() { const el = $('thought'); if (!S.thought || (ASSIST && (S.lookR !== ASSIST.look || $('sprR').hidden))) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : ASSIST ? 'Valerie, helpfully' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; placeThought(); setTimeout(placeThought, 450); }
 function placeThought() { // just above the top of her picture, wherever that is for this pose and size
   const el = $('thought'); if (el.hidden) return; const onR = Boolean(ASSIST) && S.lookR === ASSIST.look && !$('sprR').hidden; el.classList.toggle('asst', onR); const fig = $(onR ? 'sprR' : 'sprL'), pic = fig.firstElementChild, st = $('stage').getBoundingClientRect(), fb = fig.getBoundingClientRect(); let top = fb.top + fb.height * 0.4;
   if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * ((onR ? S.sprR : S.sprL) ?? 1); }
@@ -2283,7 +2302,7 @@ function leftPanel(h, top, gauge, band, locked) {
 }
 /* ---------- asking Claude: every call is counted under what it was for ---------- */
 // The page is never told real token counts, so these are estimates: characters ÷ 4, both ways.
-const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town', news: 'World news', test: 'Connection test', talk: 'What people say back' };
+const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town', news: 'World news', test: 'Connection test', talk: 'What people say back', meme: 'Meme, the oracle' };
 const tok = (text) => Math.ceil(String(text ?? '').length / 4);
 function meter(seg, prompt, reply) { const m = (S.ai[seg] ??= { calls: 0, in: 0, out: 0 }); m.calls += 1; m.in += tok(prompt); m.out += tok(reply); m.last = clockText(); store.set('ai', S.ai); }
 async function metered(seg, prompt, opts) { const out = await sampler(prompt, opts); meter(seg, prompt, out?.text ?? ''); return out; }
@@ -2703,9 +2722,9 @@ function renderGuild() {
 function composerTabs(tab) { return `<div class="ctabs" role="tablist" aria-label="What to do">${[['resp', 'Responses'], ['social', 'Social'], ['items', 'Items'], ['debug', 'Debug']].map(([id, name]) => `<button type="button" role="tab" data-ctab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>`; }
 function socialCells(here, who) {
   const closed = !openNow(here.hours), spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
-  if (!who && ASSIST && !S.guest) return cell('asst:tip', 'Ask Valerie what to do', 'she keeps the notes', 'primary') + cell('asst:cheer', 'Let Valerie cheer you up', S.asstDay === dayNow() ? 'done today, but she will anyway' : 'stress −5 · once a day') + (closed ? '' : (SPOTS[here.id] ?? []).map((sp) => cell(`spot:${sp.id}`, sp.name, `${sp.opts.length} things to do`, 'spot')).join(''));
+  if (!who && ASSIST && !S.guest) return cell('asst:tip', 'Ask Valerie what to do', 'she keeps the notes', 'primary') + cell('asst:cheer', 'Let Valerie cheer you up', S.asstDay === dayNow() ? 'done today, but she will anyway' : 'stress −5 · once a day') + memeCell() + (closed ? '' : (SPOTS[here.id] ?? []).map((sp) => cell(`spot:${sp.id}`, sp.name, `${sp.opts.length} things to do`, 'spot')).join(''));
   const talk = who ? cell('talk', `Talk to ${who.name.length <= 12 ? who.name : who.name.split(' ')[0]}`, `respect: ${tierOf(npcOf(S.who).rapport).toLowerCase()}`, 'primary') : cell('x', 'Nobody to talk to', 'find a bubble with a dot', '', true);
-  return talk + spots.join('');
+  return talk + spots.join('') + memeCell();
 }
 function itemCells() { return cell('x', `${n(S.gold)} gold`, 'the purse', '', true) + Object.entries(POTIONS).map(([k, p]) => cell(`use:${k}`, `${p.name} ×${S.bag[k] ?? 0}`, p.hint, '', !((S.bag[k] ?? 0) > 0))).join(''); }
 function debugCells() {
@@ -3009,7 +3028,7 @@ function castHtml() {
   const scard = ([id, x]) => { const me = S.wander[id], playing = x.playable === PC_ID; return card(pic(`s-${id}`), esc(x.name), esc(x.role), [`${esc(x.cls)} · ${esc(x.temper)}`, `${esc(x.trope)}.`, esc(x.lore), playing ? 'You are playing her.' : S.calm ? 'the world is held still' : wanderOut(id) ? 'not about today' : `now at ${esc(placeById(me.at).name)}`, x.lead ? 'A main character.' : '', x.drafted ? 'Her words are a first draft written for her. Change them on her own tab.' : '', x.playable && !playing ? 'Playable: switch on the first tab of this menu.' : x.enemy ? (S.turned[id] ? `On your side since day ${S.turned[id]}.` : `+${x.plus} levels. Beat her once and she comes round.`) : ''], x.enemy && !S.turned[id] ? 'foe' : x.playable ? 'main' : '', `sec:${id}`); };
   const wsec = (cat) => Object.entries(WANDER).filter(([id]) => catOf(id) === cat).map(wcard).join('');
   return `<div class="castwrap">
-    <h3>${ASSIST ? 'The lead, and her assistant' : 'Her'}</h3><div class="cgrid">${ASSIST ? card(pic('knight'), 'Valerie', esc(ASSIST.role), ['The klutz knight, now carrying the bags and keeping the notes.', 'When nobody else is about she stands beside you. Ask her things on the Social tab.', 'She can be the lead instead: switch on the first tab of this menu.'], 'main asst', 'asst:valerie') : ''}${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
+    <h3>${ASSIST ? 'The lead, and her assistant' : 'Her'}</h3><div class="cgrid">${ASSIST ? card(pic('knight'), 'Valerie', esc(ASSIST.role), ['The klutz knight, now carrying the bags and keeping the notes.', 'When nobody else is about she stands beside you. Ask her things on the Social tab.', 'She can be the lead instead: switch on the first tab of this menu.'], 'main asst', 'asst:valerie') : ''}${card(pic('meme'), 'Meme', 'the cat priestess who has read every scroll', ['Your helper. Call her from the Social tab and type a question.', 'She answers from what is true in the game right now, with Claude when it is allowed.'], 'main asst', 'meme:meme')}${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
     <h3>Regulars · ${regs.filter(([id]) => S.npc[id]?.met).length} of ${regs.length} met</h3><div class="cgrid">${regs.map(person).join('')}</div>
     <h3>Innkeepers · ${inns.filter(([id]) => S.npc[id]?.met).length} of ${inns.length} met</h3><div class="cgrid">${inns.map(person).join('')}</div>
     <p class="cnote">Click anyone with a picture for her own page: a view you can zoom, her numbers, her lines and a secret to unlock.</p>
@@ -3108,7 +3127,7 @@ async function chatGen() { // six new lines, each tied to one gauge tag, banked 
 }
 // Growth: the whole of the bust mechanic in one window.
 function openGrowth() { const p = PATHS[S.path], sw = condOf('swell');
-  S.cards.push({ title: `Growth · tier ${S.bust} of 10`, dice: `${S.bustXp}% of the way to tier ${Math.min(10, S.bust + 1)} · path: ${p.name} (${p.cls})`, say: `Why it grows on this path: ${p.why}.`, roll: null,
+  S.cards.push({ title: `Growth · tier ${S.bust} of 10`, dice: `${S.bustXp}% of the way to tier ${Math.min(10, S.bust + 1)} · path: ${p.name} (${p.cls})`, say: `Why it grows on this path: ${p.why}.`, roll: null, html: PC_ID === 'valerie' ? '<div class="growclip"><video src="art/val-front.mp4" muted loop autoplay playsinline></video><video src="art/val-back.mp4" muted loop autoplay playsinline></video></div>' : '',
     fx: [`Tempt +${temptBonus()}`, `Finesse −${2 * S.bust}%`, `${p.perk} ×${S.bust}`, `swelling ${sw} · ${COND.swell.words[stepOf('swell')]}`],
     why: `Each tier is Tempt +2, Finesse −2% and one step of her path's perk. Progress comes from what her path feeds on: winning over people and crowds for a warrior, study and spare mana for a mage, gold and gambles for a rogue. A Bloom Draught from any trader adds 40% at once. Every tier gained adds 12 swelling, and each night adds 2 per tier, less her Constitution's resistance. Swelling makes Run harder and Sway easier, and at 75 every stamina cost goes up by one. A night in a real bed takes 10 off.`, snap: snapshot() });
   if (S.cards.length > 40) { S.cards.shift(); S.cardBase += 1; } S.big = S.cardBase + S.cards.length - 1; }
@@ -3237,7 +3256,7 @@ function dreamAct(kind) {
   else { cor(15, 'she said yes'); count('yeses', 'saying yes to her'); grow(30, 'her gift'); chem(12, 'her gift'); fx.push(...applyFx({ stress: -15 }, 'her gift'), 'bust +30%', 'chemistry up'); S.stam = S.spent ? 50 : 100; store.set('stam', S.stam); say = 'You say yes. You wake rested, glowing, and with the breastplate a notch tighter than you left it.'; hers = 'Good girl. See how easy that was?'; }
   post({ big: { auto: false, why: `Amaranth can visit whenever Valerie sleeps: tonight the chance was ${visitChance()}% (18, plus half her corruption, plus 15 if her chemistry is 60 or more, plus 5 for each step of pheromones). Saying no rolls Willpower, and each step of corruption makes it 5 harder. A bargain rolls Arcana and pays gold either way it costs. Asking rolls Luck and writes one true thing in the Backlog. Saying yes needs no roll: full stamina, less stress, 30% of a bust tier, and 15 corruption. Corruption per 25: Flirt and Sway +3, Be friendly and Persuade −3, and it pulls her composure down. It fades each night by half her Willpower's resistance, and a blessing at the Wishing Well takes 20 off.` }, who: 'me', plate: 'A dream', dice, tone, say, fx });
   post({ who: 'her', plate: 'Amaranth', say: hers, spoken: true });
-  S.dream = null; seat(); S.them = freshThem(); if (!S.who) { S.lookR = 'corrupter3'; S.nameR = 'Amaranth'; setTimeout(() => { if (S.lookR === 'corrupter3') { S.lookR = ASSIST ? ASSIST.look : 'none'; S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; render(); } }, 5200); }
+  S.dream = null; seat(); S.them = freshThem(); if (!S.who) { S.lookR = 'corrupter3'; S.nameR = 'Amaranth'; setTimeout(() => { if (S.lookR === 'corrupter3') { [S.lookR, S.nameR] = idleR(); render(); } }, 5200); }
   post({ who: 'sys', dice: `[morning] ${clockText()}`, say: 'You wake. The room is the room. There is a faint smell of violets that has no business being there.' });
 }
 const n2 = (v) => n(v);
@@ -3268,11 +3287,13 @@ function stripHtml(segs, mark) {
     <div class="key">${Object.entries(key).map(([k, v]) => `<span><i class="o-${v.cls}"></i>${esc(k)} ${v.n}%</span>`).join('')}</div>`;
 }
 function post({ who = 'sys', plate, dice, tone, strip, say, spoken, fx = [], extra = '', face = '', big = null }) {
+  swipeSeal();
+  if (say && who === 'sys') { if (S.said.includes(say)) { say = undefined; if (!dice && !fx.length && !extra && !big) return; } else { S.said.push(say); if (S.said.length > 30) S.said.shift(); } }
   if (big) extra += `<div><button class="sm quiet info" type="button" data-card="${keepCard({ plate, dice, say, fx }, big === true ? {} : big)}">Details</button></div>`;
   S.lines.push(`<div class="line ${who}${who === 'sys' && !plate && !extra ? ' cap' : ''}${face ? ' has-face' : ''}">${face ? `<span class="spk">${face}</span>` : ''}<span class="plate">${esc(plate ?? (who === 'me' ? heroName : who === 'her' ? S.nameR : 'Game Master'))}</span>
     ${dice ? `<p class="dice" style="--k:${TONE[tone] ?? 'var(--text)'}">${dice}</p>` : ''}${strip ?? ''}
     ${say ? `<p class="say${spoken ? ' spoken' : ''}">${esc(say)}</p>` : ''}${fx.length ? `<div class="fx">${fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div>` : ''}${extra}</div>`);
-  if (S.lines.length > 160) { S.lines.shift(); seen = Math.max(0, seen - 1); }
+  if (S.lines.length > 160) { S.lines.shift(); seen = Math.max(0, seen - 1); if (S.swipe) S.swipe.idx -= 1; }
 }
 let seen = 0;
 function renderLog() { const el = $('log'); el.innerHTML = S.lines.map((h, i) => (i >= seen ? h.replace('class="line ', 'class="line enter ') : h)).join(''); seen = S.lines.length; el.scrollTop = el.scrollHeight; }
@@ -3449,9 +3470,25 @@ function checkDown() {
   }
 }
 
+/* ---------- more than one answer: the newest written reply keeps its takes; the arrows flip between them and the last arrow asks for a fresh one ---------- */
+const TAKES = 6;
+const swipeBar = (sw) => `<div class="swipe"><button class="sm quiet" type="button" data-swipe="-1"${sw.at ? '' : ' disabled'} aria-label="Previous answer">◀</button><span class="mono">${sw.at + 1} / ${sw.list.length}</span>${sw.at + 1 < sw.list.length ? '<button class="sm quiet" type="button" data-swipe="1" aria-label="Next answer">▶</button>' : sw.list.length < TAKES ? '<button class="sm quiet" type="button" data-swipe="1">Another answer</button>' : ''}</div>`;
+const takeLine = (name, text, sw) => `<div class="line her"><span class="plate">${esc(name)}</span><p class="say spoken">${esc(text)}</p>${sw ? swipeBar(sw) : ''}</div>`;
+function swipeOpen(idx, name, key, prompt, text) { S.swipe = { idx, name, key, prompt, list: [text], at: 0, busy: false }; S.lines[idx] = takeLine(name, text, S.swipe); }
+function swipeSeal() { const sw = S.swipe; if (!sw) return; S.swipe = null; if (S.lines[sw.idx] && !sw.busy) S.lines[sw.idx] = takeLine(sw.name, sw.list[sw.at]); }
+async function swipe(d) { const sw = S.swipe; if (!sw || sw.busy || !S.lines[sw.idx]) return; const to = sw.at + d; if (to < 0) return;
+  if (to < sw.list.length) { sw.at = to; S.lines[sw.idx] = takeLine(sw.name, sw.list[to], sw); return; }
+  if (sw.list.length >= TAKES || !sampler) return;
+  sw.busy = true; S.lines[sw.idx] = takeLine(sw.name, '…'); renderLog();
+  try { const out = await metered(sw.key, `${sw.prompt}\n\nYou already gave the answers below. Give a new one that says something different, in the same voice and length.\n${sw.list.map((t) => `- ${t}`).join('\n')}`, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { if (S.swipe === sw) { S.lines[sw.idx] = takeLine(sw.name, t); renderLog(); } } });
+    const t = String(out?.text ?? '').trim(); if (t) { sw.list.push(t); sw.at = sw.list.length - 1; if (sw.key === 'meme') { S.memeAsks = (S.memeAsks ?? 0) + 1; store.set('memeAsks', S.memeAsks); } } }
+  catch (e) { if (e?.code === 'not_granted') sampler = null; toast('No new answer', e?.code === 'rate_limited' ? 'Too many at once. Give it a moment.' : 'That one did not arrive. The earlier answers are still here.', 'gold'); }
+  finally { sw.busy = false; if (S.swipe === sw && S.lines[sw.idx]) S.lines[sw.idx] = takeLine(sw.name, sw.list[sw.at], sw); render(); } }
+
 /* ---------- talking: Claude answers as the other character when the page is allowed to ask ---------- */
 let sampler; // undefined = not asked yet, null = unavailable
 async function say(text) {
+  if (S.meme && !S.who) return askMeme(text);
   if (S.who) S.talking = true;
   post({ who: 'me', say: text, spoken: true }); render();
   if (!S.who && S.lookR === 'none') { post({ who: 'sys', say: 'Nobody is here to answer. Walk to a bubble with a pink dot, or move someone in from the Here tab.', spoken: true }); return render(); }
@@ -3463,7 +3500,7 @@ async function say(text) {
   const idx = S.lines.length; post({ who: 'her', say: '…', spoken: true }); render();
   try {
     const out = await metered('chat', prompt, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(t)}</p></div>`; renderLog(); } });
-    S.lines[idx] = `<div class="line her"><span class="plate">${esc(S.nameR)}</span><p class="say spoken">${esc(out.text)}</p></div>`;
+    swipeOpen(idx, S.nameR, 'chat', prompt, String(out?.text ?? '').trim() || '…');
   } catch (e) {
     S.lines[idx] = `<div class="line sys"><span class="plate">Game Master</span><p class="say spoken">${e?.code === 'rate_limited' ? 'Too many replies at once. Give it a moment.' : 'No reply this time. The buttons still work.'}</p></div>`;
     if (e?.code === 'not_granted') sampler = null;
@@ -3493,7 +3530,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
 // News has a weight from 1 (a cart lost a wheel) to 5 (a wall came down). Weight decides who hears of it and how hard they take it.
@@ -3758,23 +3795,17 @@ const placeById = (id) => PLACES.find((p) => p.id === id);
 function wanderInit() { for (const [id, w] of Object.entries(WANDER)) if (!S.wander[id] || !placeById(S.wander[id].at)) S.wander[id] = { at: w.start, from: w.start, t: S.clock }; }
 const wanderOut = (id) => (Boolean(S.wanderDown[id]) && dayNow() - S.wanderDown[id] < 2) || !inTown(id);
 const wanderersAt = (placeId) => (S.calm ? [] : Object.keys(WANDER).filter((id) => S.wander[id].at === placeId && !wanderOut(id)));
-function wanderStep() { // everyone who feels like it takes one road; most of the time they do not double back
-  for (const [id, w] of Object.entries(WANDER)) { const me = S.wander[id]; if (w.leaver && !inTown(id)) { me.away = true; continue; } if (me.away) { S.wander[id] = { at: w.start, from: w.start, t: S.clock }; continue; } if (wanderOut(id) || d() > w.pace) continue;
-    const opts = placeById(me.at).links.map(placeById).filter((p) => p && w.zones.includes(p.zone) && (!w.range || w.range.includes(p.id))); if (!opts.length) continue;
-    const onward = opts.filter((p) => p.id !== me.from), pool = onward.length && d() <= 75 ? onward : opts, to = pool[Math.floor(Math.random() * pool.length)];
-    S.wander[id] = { at: to.id, from: me.at, t: S.clock }; }
-}
 function wanderHours(h0) { if (S.calm) return; const steps = Math.min(4, Math.floor(S.clock / 60) - h0); for (let i = 0; i < steps; i++) wanderStep(); if (steps > 0) store.set('wander', S.wander); }
 function wanderNotice() { // a wanderer who walks in while she is standing still gets a notification; arriving somewhere gets a line in the chat instead
-  const ids = wanderersAt(S.place); if (S.wSeen.place === S.place) for (const id of ids) if (!S.wSeen.ids.includes(id)) toast('Passing through', `${WANDER[id].name}, ${WANDER[id].role}, has just walked in.`, HOSTILE.has(WANDER[id].kind) ? 'crit' : 'gold');
+  const ids = wanderersAt(S.place);
   S.wSeen = { place: S.place, ids };
   if (S.who || S.dream || S.battle) { S.guest = null; return; }
   const g = ids.find((id) => WANDER[id].look) ?? null;
-  if (g) { if (S.lookR === ASSIST?.look || !String(S.lookR).startsWith(WANDER[g].look)) { S.lookR = WANDER[g].look; S.nameR = WANDER[g].name; } } else if (S.guest) { S.lookR = ASSIST ? ASSIST.look : 'none'; S.nameR = ASSIST ? ASSIST.name : 'Practice Dummy'; }
+  if (g) { if (S.lookR === idleR()[0] || !String(S.lookR).startsWith(WANDER[g].look)) { S.lookR = WANDER[g].look; S.nameR = WANDER[g].name; } } else if (S.guest) { [S.lookR, S.nameR] = idleR(); }
+  if (g && g !== S.guest && BARKS[g]) setTimeout(() => { if (S.guest === g) bark(WANDER[g].name, barkOf(g)); }, 700);
   S.guest = g; }
 const pose = (id, p) => { const want = `${WANDER[id].look}${p ? `-${p}` : ''}`; if (WANDER[id].look && S.guest === id && LOOKS.some((l) => l.id === want)) S.lookR = want; };
 function arriveCheck(to) { if (S.calm) return; const ids = wanderersAt(to.id);
-  if (ids.length) post({ who: 'sys', dice: `[passing through] ${ids.map((id) => `<b>${esc(WANDER[id].name)}</b>, ${esc(WANDER[id].role)}`).join(' · ')}` });
   baddieCheck(to); if (S.standoff || S.battle || S.dream || S.meet || S.fallen) return;
   const foe = ids.find((id) => { const k = WANDER[id].kind; return k === 'hostile' || (k === 'nemesis' && to.zone !== 'safe'); }); if (foe && d() <= (WANDER[foe].kind === 'nemesis' ? 35 : 45)) rivalFight(foe, `${WANDER[foe].name} saw you first`);
 }
@@ -3822,7 +3853,7 @@ function movesBox() { if (S.calm) return '<div class="over"><h3>On the move</h3>
     return `<figure class="mini${aid === areaOf(placeNow()) ? ' on' : ''}"><figcaption>${esc(A.name)}</figcaption><svg viewBox="0 0 100 ${A.h}" role="img" aria-label="Who is moving in ${esc(A.name)}">${lines.join('')}${local.map((p) => `<circle class="pl${p.id === S.place ? ' me' : ''} ${p.zone}" cx="${p.x}" cy="${p.y}" r="3.4"/><text class="pn" x="${p.x}" y="${p.y + 8.6}">${esc(p.short)}</text>`).join('')}${tokensFor(aid, 'mini')}</svg></figure>`; };
   const line = (k, name, tag, where, here) => `<p class="mv${here ? ' here' : ''}"><i style="--k:${k}"></i><b>${esc(name)}</b> <em>${esc(tag)}</em><span>${where}</span></p>`;
   const wrow = (id) => { const w = WANDER[id], me = S.wander[id], at = placeById(me.at), from = placeById(me.from), ago = Math.max(0, Math.round((S.clock - me.t) / 60));
-    return line(KIND[w.kind][0], w.name, KIND[w.kind][1], `${me.from !== me.at ? `${esc(from.short)} → ` : ''}${esc(at.short)} · ${esc(AREAS[areaOf(at)].name)} · ${me.from === me.at ? 'has not moved yet' : ago ? `${ago} h ago` : 'just now'}`, me.at === S.place); };
+    return line(KIND[w.kind][0], w.name, KIND[w.kind][1], `${me.from !== me.at ? `${esc(from.short)} → ` : ''}${esc(at.short)} · ${esc(AREAS[areaOf(at)].name)} · ${me.from === me.at ? 'has not moved yet' : ago ? `${ago} h ago` : 'just now'}${(me.wait ?? 0) > 0 ? ' · waiting' : LOOPS[id] && loopNext(id) !== me.at ? ` · heading for ${esc(placeById(loopNext(id)).short)}` : ''}`, me.at === S.place); };
   const about = Object.keys(WANDER).filter((id) => !wanderOut(id)).sort((a, b) => S.wander[b].t - S.wander[a].t), gone = Object.keys(WANDER).filter(wanderOut).map((id) => WANDER[id].short);
   const lively = about.filter((id) => S.wander[id].at === S.place || (S.wander[id].from !== S.wander[id].at && S.clock - S.wander[id].t <= 180));
   const castUnused = () => PLACES.map((p) => [p, residentOf(p.id)]).filter(([, id]) => id).map(([p, id]) => line(CATS.important[1], castOf(id).name, castOf(id).guarded ? 'guarded' : 'never fights', `${esc(p.short)} · ${esc(AREAS[areaOf(p)].name)}`, p.id === S.place)).join('');
@@ -3843,7 +3874,7 @@ function statStrip() { // the same tile the card creator uses: what it is, the n
   const h = S.hero, now = Date.now(), rows = [['stress', 'Stress', h.stress ?? 0, 100, 'var(--pink)', -1], ['level', 'Level', S.level, null, 'var(--violet)', 1], ['gold', 'Gold', S.gold, null, 'var(--gold)', 1], ['rep', 'Reputation', repOf(areaOf(placeNow())), 100, 'var(--mint)', 1], ['heat', 'Suspicion', S.heat, 100, 'var(--crit)', -1], ['dec', 'Decency', S.decency, 100, 'var(--cyan)', 1]];
   const tiles = rows.map(([key, label, v, max, k, good]) => { const prev = S.statPrev[key]; if (prev !== undefined && prev.v !== v) S.statPrev[key] = { v, d: v - prev.v, t: now }; else if (prev === undefined) S.statPrev[key] = { v, d: 0, t: 0 }; const rec = S.statPrev[key], live = rec.d && now - rec.t < 6000, up = live && rec.d * good > 0, p = key === 'level' ? (S.exp / Math.max(1, needExp())) * 100 : max ? (v / max) * 100 : 0;
     return `<div class="dstat${live ? (up ? ' up' : ' down') : ''}" style="--k:${k};--p:${Math.max(0, Math.min(100, p))}%"><span>${esc(label)}</span><b>${n(v)}${key === 'level' ? `<small> · ${Math.round(p)}%</small>` : ''}</b>${live ? `<em>${rec.d > 0 ? '+' : '−'}${n(Math.abs(rec.d))}</em>` : ''}<i></i></div>`; }).join('');
-  $('statStrip').innerHTML = tiles;
+  return tiles;
 }
 /* ---------- the API tab: what this page is connected to, the vault, and share codes ---------- */
 // No key is ever typed into this page. Asking Claude and the vault both go through the viewer's own Claude account, which keeps the credentials.
@@ -3946,11 +3977,12 @@ const PROFILE = {
   juno: { h: "5'7\"", build: 'Athletic; always lands on her feet', bust: 8, hips: 9, secret: 'Her hook has never missed. Every time it "missed", she was aiming for somebody\'s arms.' },
   sylvie: { h: "5'6\"", build: 'Slight and silent; her shadow stands closer than she does', bust: 8, hips: 8, secret: 'Her shadow has a mind of its own and is far more forward than she is. It has been flirting on her behalf.' },
   ember: { h: "5'9\"", build: 'Tall and strong; the armour is polished and the cape is singed', bust: 9, hips: 9, secret: 'She has forgotten the exact words of the oath that lit her sword, and is terrified the sword will notice.' },
+  meme: { h: "5'5\"", build: 'Soft and unhurried; a tail that gives her away', bust: 9, hips: 8, secret: 'About half the scrolls she quotes, she wrote herself. Last week.' },
   copper: { h: "5'3\"", build: 'Short, freckled and all pockets', bust: 9, hips: 8, secret: 'She once stole a dragon\'s nap. She still has it, and is saving it for an emergency.' },
 };
 const LOOKTXT = {"nyxara": "Jet-black blunt bob with bangs, deep brown skin, glowing violet eyes, plum lips, small horns, cracked black halo, black-and-silver eclipse vestment, eclipse staff.", "vexa": "Dark brown skin, amber eyes, red war-paint stripe, long silver-white braids, black spiked iron crown, fang necklace, black fur and iron armor, tattered red cape, ember obsidian greataxe \"Cinderjaw\".", "vexara": "black blunt bangs, curled horns, violet eyes, pale skin, black obsidian corset gown with slit, glowing void orb.", "scarlet": "fiery copper hair, amber eyes, olive skin, enormous black-and-crimson witch hat, cropped crimson corset with underboob, flame staff.", "lumi": "pink curly pigtails, freckles, green eyes, warm tan skin, white-and-teal cropped hero coat, glowing gold grimoire.", "juniper": "lavender hair with side braid, enormous crescent-moon witch hat, owl familiar Pip-Pip, cropped lilac top with big underboob, striped thigh-highs.", "juno": "Black space buns, dimples, brown eyes, deep brown skin, teal bandeau top, cropped white hooded jacket with star patch, pouch belt, grappling hook, thigh-high boots.", "kestra": "Black high ponytail with a silver streak, sharp violet eyes, fair skin, black leather assassin crop corset and hood, glowing green poison dagger.", "marisol": "Long dark glam curls, gold circlet, deep brown skin, golden eyes, plum cape over black-and-gold corset crop top, gold chain whip.", "copper": "Copper-red wavy bob with a braid, freckles, amber eyes, green hooded cape, brown leather corset crop top, pouch shorts, glowing blue dagger.", "raven": "Wild long red hair, gold fox eyes, berry lipstick, black leather crop corset, crimson tattered cape, gold coin belt, twin daggers.", "sylvie": "Silver hair with blunt bangs, pointed elf ears, pale skin, ice-blue eyes, navy shadow-dancer outfit, twin crescent daggers.", "tansy": "Copper-red hair in a long side braid, bright blue eyes, pointed ears, brown-and-cream laced dirndl with a ruffled apron, black spade choker. Usually carrying two overflowing tankards and a look like she already won the argument.", "elna": "Warm brown hair in a high ponytail tied with a floral scarf, soft blue eyes, pointed ears, brown laced bodice, cream apron, black choker. She waves with her free hand and hides behind a wicker basket of loaves when talk gets hard.", "seraphine": "Lavender-lilac hair swept into a polished updo, one icy-blue eye winking, pointed ears, ivory lace bodysuit with sheer stockings and a floating silk robe, gold door at her back and a come-hither finger curl. Everything about her looks expensive on purpose.", "kessa": "Deep brown skin, long black box braids with gold cuffs, gold hoop earrings, warm brown eyes, off-shoulder cream blouse and brown laced corset, sitting sidesaddle on a barrel with a foaming mug and a tongue-out grin.", "marigold": "Copper-red hair in a flour-dusted bun, green eyes, freckles, pointed ears, flour on her cheeks and tied cream blouse, brown laced apron, one hand on her hip beside a stool of fresh loaves.", "brenna": "Auburn hair in a high ponytail, steel-blue eyes, soot smudged on her cheek and forearms, tied cream crop, heavy leather work skirt with gloves at the hip, hammer over one shoulder and a smirk she would deny.", "lira": "Long dark waves under a wild crown of pink and white blossoms, green eyes, light freckles, pointed ears, off-shoulder cream tie-top, green embroidered skirt with a rose wrap, looking back over her shoulder with a flower basket on her arm.", "anya": "Long black ponytail tied with a burgundy bow, amber-brown eyes, cream blouse under a wine-red laced dress, a big brass key hanging at her hip, leaning on the inn counter with a knowing smile and a finger at her chin.", "imani": "Deep brown skin, dark curls in a high puff with soft baby hairs, gold-amber eyes, pointed ears, a simple white towel-dress, seated on a wooden bench with one finger to her lips and a almost-smile she barely permits.", "juni": "Short black bob with bangs, warm brown eyes, a measuring tape slung around her, maroon laced corset, pinstripe mini skirt, pincushion on her wrist, a bolt of gold-and-purple cloth over one arm, blowing a kiss that is probably an insult.", "poppy": "Deep brown hair in a side braid with a white plumeria tucked in, warm brown eyes, gold drop earrings, cream tied blouse and wine-red skirt with a little apron, a wooden milk pail in one hand, pointing at herself like she just remembered she exists.", "zariah": "Wild copper-red curls, gold-amber eyes, pointed ears, gold hoops and stacked bangles, an unbuttoned cream shirt under a patterned shawl, a coin-and-silk hip scarf, seated at a small table with a crystal ball and a fan of tarot."};
 LOOKTXT.ember = 'Flame-orange hair in a high ponytail, green eyes, freckles, white-and-gold plate over a blue pleated skirt, a red cape, white thigh boots and a sword that burns along its edge.';
-function viewList() { return [...(ASSIST ? ['asst:valerie'] : []), ...Object.keys(SECOND).map((id) => `sec:${id}`), ...TOWN.map((t) => `town:${t.id}`), ...LEAVERS.map((id) => `sis:${id}`), ...Object.keys(CAST).filter((id) => S.npc[id]?.met && LOOKS.some((l) => l.id === CAST[id].look && l.src)).map((id) => `cast:${id}`)]; }
+function viewList() { return [...(ASSIST ? ['asst:valerie'] : []), 'meme:meme', ...Object.keys(SECOND).map((id) => `sec:${id}`), ...TOWN.map((t) => `town:${t.id}`), ...LEAVERS.map((id) => `sis:${id}`), ...Object.keys(CAST).filter((id) => S.npc[id]?.met && LOOKS.some((l) => l.id === CAST[id].look && l.src)).map((id) => `cast:${id}`)]; }
 function viewData(vid) { const [kind, id] = String(vid).split(':'), posesOf = (base) => LOOKS.filter((l) => l.src && (l.id === base || l.id.startsWith(`${base}-`))).sort((a, b) => (S.loopPrio === false ? 0 : Number(Boolean(b.video)) - Number(Boolean(a.video)))).map((l) => l.id), at = (wid) => (S.calm ? 'The world is held still.' : wanderOut(wid) ? 'Not about today.' : `Now at ${placeById(S.wander[wid].at).name}.`), pr = PROFILE[id];
   if (kind === 'sec' && SECOND[id]) { const x = SECOND[id], w = WANDER[id], rival = w.kind === 'nemesis', met = S.secMet[id] ?? 0, playing = x.playable === PC_ID, open = Boolean(S.secretKnown[id]);
     return { name: x.name, role: x.role, chips: [x.cls, x.lead ? 'main character' : '', rival ? 'rival' : 'ally', x.playable ? 'playable' : ''], looks: posesOf(`s-${id}`), pr, look: LOOKTXT[id], lore: x.lore, temper: x.temper, trope: x.trope,
@@ -3960,7 +3992,8 @@ function viewData(vid) { const [kind, id] = String(vid).split(':'), posesOf = (b
   if (kind === 'town') { const t = TOWN.find((x) => x.id === id); if (!t) return null; const met = S.townMet[id] ?? 0;
     return { name: t.name, role: t.role, chips: [t.race, 'townsfolk', t.main ? 'main character' : ''], looks: posesOf(`t-${id}`), pr, look: LOOKTXT[id], temper: t.temper, trope: t.trope, voice: t.voice,
       lines: [['She does not know you', t.lines[0]], ['You are being a bit much', t.lines[1]], ['You are being very loud about it', t.lines[2]], ['Hello', t.lines[3]]], where: at(id), bond: met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'You have not spoken yet.', secret: { open: Boolean(S.secretKnown[id]), how: `Talk to her three times (${Math.min(3, met)} of 3), then ask her.` } }; }
-  if (kind === 'asst' && ASSIST) { const vp = VAL_CARD?.profile ?? {}; return { name: 'Valerie', role: ASSIST.role, chips: ['Klutz Knight', 'assistant'], looks: ['knight', 'forest', 'val-close', 'val-guard', 'val-bar', 'val-offduty', 'val-jailer'].filter((l) => LOOKS.some((x) => x.id === l && x.src)), temper: 'Brave, kind, bubbly, spectacularly clumsy', trope: 'The airhead who is luckier than she knows', lore: String(vp.description ?? '').split(/(?<=[.!?])\s+/).slice(0, 3).join(' '), lines: [['Helping', `${VAL_OPEN[0]} the Guild Hall has notices nobody has taken.${VAL_CLOSE[2]}`], ['Cheering you up', VAL_CHEER[0]], ['More cheering', VAL_CHEER[3]]], where: 'Right behind you, holding the bags.', bond: 'Ask her what to do, or for a pep talk, on the Social tab.' }; }
+  if (kind === 'asst' && ASSIST) { const vp = VAL_CARD?.profile ?? {}; return { name: 'Valerie', role: ASSIST.role, chips: ['Klutz Knight', 'assistant'], looks: ['val-turn', 'val-loop', 'val-loop-2', 'val-loop-back', 'val-loop-back2', 'knight', 'forest', 'val-close', 'val-guard', 'val-bar', 'val-offduty', 'val-jailer'].filter((l) => LOOKS.some((x) => x.id === l && x.src)), temper: 'Brave, kind, bubbly, spectacularly clumsy', trope: 'The airhead who is luckier than she knows', lore: String(vp.description ?? '').split(/(?<=[.!?])\s+/).slice(0, 3).join(' '), lines: [['Helping', `${VAL_OPEN[0]} the Guild Hall has notices nobody has taken.${VAL_CLOSE[2]}`], ['Cheering you up', VAL_CHEER[0]], ['More cheering', VAL_CHEER[3]]], where: 'Right behind you, holding the bags.', bond: 'Ask her what to do, or for a pep talk, on the Social tab.' }; }
+  if (kind === 'meme') return { name: 'Meme', role: 'the cat priestess who has read every scroll', chips: ['Priestess', 'oracle', 'answers with AI'], looks: ['meme', 'meme-prone'], pr: PROFILE.meme, look: 'Cat ears on a rune-stitched hood, long blonde hair over one eye, red glasses, a fang when she smiles, a staff with a bell and a pink bow, and pink runes that glow when she is reading.', temper: 'Playful, a little smug, purrs', trope: 'The helper who knows everything and makes you ask nicely', lore: 'She keeps the older, quieter shrine behind the Wishing Well and has read every scroll in Gooseford twice, including the ones she was not meant to. Call her from the Social tab and type a question: she answers from what is true in the game right now.', lines: [['Hello', MEME_HELLO], ...BARKS.meme.map((t) => ['To herself', t])], where: S.meme ? 'With you, listening.' : 'Curled up somewhere warm. Call her from the Social tab.', bond: `You have asked her ${S.memeAsks ?? 0} thing${(S.memeAsks ?? 0) === 1 ? '' : 's'}.`, secret: { open: (S.memeAsks ?? 0) >= 3, how: `Ask her three things (${Math.min(3, S.memeAsks ?? 0)} of 3).` } };
   if (kind === 'sis' && WANDER[id]) { const w = WANDER[id]; return { name: w.name, role: w.role, chips: ['a Vantari sister', KIND[w.kind][1]], looks: posesOf(w.look), lore: 'One of seven sisters who look exactly alike and chose seven different callings. About three of them are in the world on any one day.', lines: [['When it goes well', w.good], ...(w.bad ? [['When it does not', w.bad]] : [])], where: at(id), bond: S.hailed[id] ? 'You have spoken.' : 'You have not spoken yet.' }; }
   if (kind === 'cast' && CAST[id]) { const c = castOf(id), rec = npcOf(id), home = PLACES.find((p) => p.who === id);
     return { name: c.name, role: c.role, chips: [arche(c.cls).name, c.guarded ? 'guarded' : 'easy company'], looks: posesOf(c.look), lines: [], where: home ? `Lives at ${home.name}${c.hours ? `, ${hr12(c.hours[0])} to ${hr12(c.hours[1] % 24)}` : ''}.` : 'No fixed place.', bond: `Respect: ${tierOf(rec.rapport).toLowerCase()}. Likes it when you ${APPROACH[c.likes].label.toLowerCase()}.` }; }
@@ -3969,7 +4002,7 @@ function openViewer(vid) { if (!viewData(vid)) return; if (vid !== S.viewing) cv
 function cvApply() { const pic = document.querySelector('#charmenu .cv-pic'); if (pic) pic.style.transform = `translate(${S.cv.x}px, ${S.cv.y}px) scale(${S.cv.z})`; const zl = document.querySelector('#charmenu .cv-z'); if (zl) zl.textContent = `${Math.round(S.cv.z * 100)}%`; }
 function cvZoom(to) { const c = S.cv; if (to === 'fit') Object.assign(c, { z: 1, x: 0, y: 0 }); else if (to === 'face') Object.assign(c, { z: 2.6, x: 0, y: 0 }); else if (to === 'upper') Object.assign(c, { z: 1.7, x: 0, y: 0 }); else c.z = Math.max(1, Math.min(4, Math.round((c.z + (to === 'in' ? 0.3 : -0.3)) * 10) / 10)); if (c.z === 1) { c.x = 0; c.y = 0; } cvApply(); }
 function viewerHtml() { const vid = S.viewing, v = viewData(vid); if (!v) { S.viewing = null; return castHtml(); } const list = viewList(), i = list.indexOf(vid), c = S.cv, pose = v.looks[Math.min(c.pose, v.looks.length - 1)], l = LOOKS.find((x) => x.id === pose), tile = (k, val, p) => `<div class="dstat" style="--k:var(--pink);--p:${p ?? 0}%"><span>${k}</span><b>${esc(String(val))}</b><i></i></div>`;
-  return `<div class="cv"><div class="cv-left"><div class="cv-stage" data-cvstage="1">${l ? (l.video ? `<video class="cv-pic${l.keyw ? ' keyw' : ''}" src="${esc(l.src)}" muted loop autoplay playsinline></video>` : `<img class="cv-pic" src="${esc(l.src)}" alt="${esc(v.name)}" draggable="false">`) : shade(3)}</div>
+  return `<div class="cv"><div class="cv-left"><div class="cv-stage" data-cvstage="1">${l ? (l.video ? `<video class="cv-pic${l.keyw ? ' keyw' : ''}${l.keyb ? ' keyb' : ''}" src="${esc(l.src)}" muted loop autoplay playsinline></video>` : `<img class="cv-pic" src="${esc(l.src)}" alt="${esc(v.name)}" draggable="false">`) : shade(3)}</div>
       <div class="cv-bar"><button class="sm" type="button" data-cvz="fit">Whole view</button><button class="sm" type="button" data-cvz="upper">Upper body</button><button class="sm" type="button" data-cvz="face">Face</button><button class="sm quiet" type="button" data-cvz="out" aria-label="Zoom out">−</button><span class="cv-z">${Math.round(c.z * 100)}%</span><button class="sm quiet" type="button" data-cvz="in" aria-label="Zoom in">+</button>${v.looks.length > 1 ? `<button class="sm${S.cvPlay ? ' primary' : ' quiet'}" type="button" data-cvplay="1" aria-pressed="${Boolean(S.cvPlay)}">${S.cvPlay ? '❚❚ Playing' : '▶ Play through'}</button>` : ''}<span class="more">scroll to zoom · drag to move</span></div>
       ${v.looks.length > 1 ? `<div class="lib cv-poses">${v.looks.map((id, k) => { const x = LOOKS.find((y) => y.id === id); return `<button class="thumb${k === Math.min(c.pose, v.looks.length - 1) ? ' on' : ''}" type="button" data-cvpose="${k}" title="${esc(x.name)}" aria-label="${esc(x.name)}" aria-pressed="${k === c.pose}">${x.video ? `<video src="${esc(x.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(x.src)}" alt="" loading="lazy">`}</button>`; }).join('')}</div>` : ''}</div>
     <div class="cv-right"><div class="cv-head"><button class="sm quiet" type="button" data-cvnav="back">← Everyone</button><span><button class="sm quiet" type="button" data-cvnav="${list[(i - 1 + list.length) % list.length]}" aria-label="Previous character">‹</button><button class="sm quiet" type="button" data-cvnav="${list[(i + 1) % list.length]}" aria-label="Next character">›</button></span></div>
@@ -3988,6 +4021,59 @@ document.addEventListener('wheel', (e) => { if (!e.target.closest?.('[data-cvsta
   document.addEventListener('pointermove', (e) => { if (!drag) return; S.cv.x = e.clientX - drag.x; S.cv.y = e.clientY - drag.y; cvApply(); });
   for (const ev of ['pointerup', 'pointercancel']) document.addEventListener(ev, () => { if (drag) { drag = null; document.querySelector('[data-cvstage]')?.classList.remove('grab'); } }); }
 
+/* ---------- routines: the major characters walk their own loop through the day, wait where they stop, and sometimes wander off it ---------- */
+const LOOPS = { lumi: ['guild', 'square', 'shop', 'square', 'tavern', 'square'], juniper: ['lecture', 'quad', 'archive', 'quad', 'square', 'quad'], juno: ['yard', 'gates', 'road', 'hollow', 'road', 'gates'], sylvie: ['tankard', 'road', 'bridge', 'road'], copper: ['shop', 'square', 'bar', 'alley', 'tavern', 'square'], ember: ['yard', 'gates', 'square', 'guild', 'square', 'gates'],
+  nyxara: ['vault', 'ruins'], vexa: ['outskirts', 'hollow', 'road', 'hollow'], vexara: ['quad', 'lecture', 'quad', 'archive'], scarlet: ['hollow', 'road', 'bridge', 'road'], kestra: ['alley', 'bar', 'alley', 'tavern'], marisol: ['bar', 'alley'], raven: ['bridge', 'road', 'hollow', 'road'],
+  seraphine: ['bar', 'square', 'tavern', 'square'], brenna: ['guild', 'square', 'gates', 'square'], zariah: ['alley', 'bar', 'alley', 'tavern'] };
+function stepToward(from, to, w) { if (from === to) return null; const seen = new Set([from]), queue = [[from, null]]; // the first road on the shortest way there, over ground she is willing to walk
+  while (queue.length) { const [at, first] = queue.shift(); for (const l of placeById(at).links) { if (seen.has(l)) continue; const p = placeById(l); if (!p || (l !== to && !w.zones.includes(p.zone))) continue; if (l === to) return first ?? l; seen.add(l); queue.push([l, first ?? l]); } } return null; }
+const loopNext = (id) => { const loop = LOOPS[id]; return loop ? loop[((S.wander[id].leg ?? 0) + 1) % loop.length] : null; };
+function wanderStep() { const night = phaseNow() === 'Night', dwell = () => (night ? 3 : 1) + Math.floor(Math.random() * 3);
+  for (const [id, w] of Object.entries(WANDER)) { const me = S.wander[id]; if (w.leaver && !inTown(id)) { me.away = true; continue; } if (me.away) { S.wander[id] = { at: w.start, from: w.start, t: S.clock, wait: 1 }; continue; }
+    if (wanderOut(id)) continue; if ((me.wait ?? 0) > 0) { me.wait -= 1; continue; }
+    const near = () => placeById(me.at).links.map(placeById).filter((p) => p && w.zones.includes(p.zone) && (!w.range || w.range.includes(p.id))), loop = LOOPS[id]; let to = null, arrived = false;
+    if (loop) { const target = loopNext(id); if (me.at === target) { me.leg = ((me.leg ?? 0) + 1) % loop.length; me.wait = dwell(); continue; }
+      const side = d() <= 12 ? near() : [], next = side.length ? side[Math.floor(Math.random() * side.length)].id : stepToward(me.at, target, w); to = next ? placeById(next) : null; arrived = Boolean(to) && to.id === target; }
+    else { if (d() > w.pace) continue; const opts = near(); if (!opts.length) continue; const onward = opts.filter((p) => p.id !== me.from), pool = onward.length && d() <= 75 ? onward : opts; to = pool[Math.floor(Math.random() * pool.length)]; }
+    if (!to) continue;
+    S.wander[id] = { at: to.id, from: me.at, t: S.clock, leg: arrived ? ((me.leg ?? 0) + 1) % loop.length : me.leg ?? 0, wait: loop ? (arrived ? dwell() : 0) : Math.floor(Math.random() * 3) }; }
+}
+/* ---------- phrases outside the chat: a small bubble over whoever is standing on the right ---------- */
+const BARKS = { nyxara: ['Mm. The candles are sulking again.', 'Do not kneel on the good rug.'], vexa: ['Bored. Somebody be scary.', 'Who moved my axe? ...Oh. I am holding it.'], vexara: ['Nobody look at the tea.', 'I am being ominous. Do not interrupt.'], scarlet: ['It is NOT hot in here. That is just me.', 'Who singed my hat? ...It was me. Fine.'], kestra: ['...You did not see me.', 'I was here first. You were just not looking.'], marisol: ['Kneeling is free today, darlings.', 'Somebody count my crowns. Again.'], raven: ['Jingle, jingle. That is your purse leaving.', 'Toll is double for staring.'],
+  lumi: ['Stats check! ...Still cute.', 'Grimoire says today is a good day. It says that every day.'], juniper: ['*yawn* Five more minutes, moon.', 'Pip-Pip, what day is it? ...Pip-Pip?'], juno: ['Ooh, is that a ruin? That is a ruin.', 'Left pocket: rope. Right pocket: more rope.'], sylvie: ['...my shadow says hi.', 'Sorry. I was standing here. Quietly.'], copper: ['SKILL: SNACK. ...Aw, it did not work.', 'Is this loot? Can I loot this?'], ember: ['Halt! ...Nobody was moving. Sorry.', 'Still lit. Good sword.'],
+  seraphine: ['Compliments are lovely. Gifts are lovelier.', 'Mind the silk, darling.'], brenna: ['It is not a gallery. ...Stop looking at the sword.', 'Hammer first. Questions never.'], zariah: ['You were going to stop anyway.', 'The cards say: sit down.'], meme: ['Mrrp. Ask me anything. I have read every scroll, twice.', 'I know what that number means. Do you?', '*purr* The scrolls say you should drink some water.'] };
+function placeBark() { const el = $('bark'); if (!el || el.hidden) return; const fig = $('sprR'), pic = fig.firstElementChild, st = $('stage').getBoundingClientRect(), fb = fig.getBoundingClientRect(); let top = fb.top + fb.height * 0.4;
+  if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * (S.sprR ?? 1); } el.style.top = `${Math.max(54, Math.round(top - st.top - el.offsetHeight - 4))}px`; }
+function bark(name, text, ms = 6500) { const el = $('bark'); if (!el || !text || $('sprR').hidden) return; el.innerHTML = `<span class="lbl">${esc(name)}</span><i>${esc(text)}</i>`; el.hidden = false; placeBark(); clearTimeout(S.barkT); S.barkT = setTimeout(() => { el.hidden = true; }, ms); }
+const barkOf = (key) => { const list = BARKS[key]; return list ? list[Math.floor(Math.random() * list.length)] : null; };
+function barkTick() { if (document.hidden || S.menu || S.battle || S.standoff || S.convo || S.dream || S.fallen || (S.view && S.view !== 'stage')) return; if (S.guest && BARKS[S.guest]) bark(WANDER[S.guest].name, barkOf(S.guest)); else if (S.meme && !S.who && S.lookR === 'meme') bark('Meme', barkOf('meme')); }
+setInterval(barkTick, 34000);
+// Valerie is still a klutz. When she is the assistant, something small now and then goes wrong beside you. It is said over her head, never in the chat.
+const KLUTZ = [['Oops! I tripped on the cobbles... and there was a coin under my face!', () => gainGold(2, 'Valerie fell on it')], ['I dropped the bag. Everything is fine. Most things are fine.', null], ['I waved at a goose and it waved back! With its beak. On my leg.', () => applyFx({ stress: -1 }, 'Valerie and the goose')], ['I sat on the map. It is a flatter map now.', null], ['I polished your shield with my sleeve. The sleeve is the dirty one now.', () => { S.decency = Math.min(100, S.decency + 1); store.set('decency', S.decency); }], ['I walked into the sign. Good news: the sign says we are here!', null]];
+function klutzMoment() { if (!ASSIST || S.calm || d() > 18) return; setTimeout(() => { if (S.lookR !== ASSIST.look || $('sprR').hidden || S.standoff || S.battle) return; const [text, fn] = KLUTZ[Math.floor(Math.random() * KLUTZ.length)]; if (fn) fn(); note('Valerie: a small accident'); bark('Valerie', text, 7500); render(); }, 1100); }
+/* ---------- Meme, the cat priestess: call her over and ask her anything. She answers from the state of the game, with Claude when it is allowed ---------- */
+const MEME_HELLO = 'Mrrp! I am Meme. I have read every scroll in Gooseford, twice. Ask me anything in the box below, where to go or what a number means, and I will tell you what the scrolls say. I borrow a little outside cleverness for it.';
+const MEME_RULES = 'Stamina runs out from walking and acting; at zero she falls and needs Willpower to stand; beds, baths and food restore it. Decency is how presentable she is; low decency draws trouble even in town. Suspicion rises from shady things and makes roads worse; the watch can lower it. Reputation is per area. Order is per area and rises when she wins and patrols. Rivals start a standoff on rough ground and become allies for good after one win. An ally tells her secret if asked after three conversations. Big trouble moves when the light changes and is shown as a skull on the map. The vault in the API tab saves the whole game.';
+const idleR = () => (S.meme ? ['meme', 'Meme'] : ASSIST ? [ASSIST.look, ASSIST.name] : ['none', 'Practice Dummy']);
+function memeFacts() { const here = placeNow(), area = areaOf(here), ids = wanderersAt(S.place), bad = baddiesIn(area), job = jobNow();
+  return [`Player character: ${PC.full}, ${calling().name}, level ${S.level}, ${n(S.gold)} gold. Day ${dayNow()}, ${hhmm()}, ${phaseNow().toLowerCase()}.`, [].concat(gaugeDigest()).join('\n'),
+    `Where: ${here.name} in ${AREAS[area].name} (${here.zone}${dangerOf(here) ? `, fight chance ${dangerOf(here)}%` : ', safe'}). Things to do here: ${(here.acts ?? []).map((a) => ACTS[a]?.label).filter(Boolean).join(', ') || 'look around'}.`,
+    `Roads from here: ${here.links.map((l) => { const p = placeById(l); return `${p.name} (${legMins(here, p)} min${dangerOf(p) ? `, fight ${dangerOf(p)}%` : ''})`; }).join('; ')}.`,
+    `Here now: ${S.who ? castOf(S.who).name : 'nobody who lives here'}${ids.length ? `; passing through: ${ids.map((id) => WANDER[id].name).join(', ')}` : ''}.`, bad.length ? `Big trouble in this area: ${bad.map((id) => `${BADDIES[id].name} at ${placeById(baddieAt(id)).name}`).join('; ')}.` : 'No big trouble in this area right now.',
+    job ? `Guild job in hand: ${job.title}, at ${placeById(job.place)?.name}.` : 'No guild job in hand. The Guild tab has notices.', S.news.length ? `News: ${S.news.slice(0, 3).map((x) => `${AREAS[x.area].name}: ${x.text}`).join(' | ')}` : 'No news yet.', `The most useful next thing, by the notes: ${asstTip()}`, `How the game works: ${MEME_RULES}`].join('\n'); }
+const memeLine = (text) => takeLine('Meme', text);
+async function askMeme(text) { if (S.memeBusy || !text) return; S.memeBusy = true; post({ who: 'me', say: text, spoken: true });
+  const idx = S.lines.length; S.lines.push(memeLine('…')); S.closeUntil = Date.now() + 9000; setTimeout(render, 9100); if (S.guest === null && !S.who) S.lookR = 'meme'; render();
+  try { if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+    if (!sampler) { S.lines[idx] = memeLine(`The scrolls are shut to me here, so plainly: ${asstTip()}`); return; }
+    const prompt = `You are Meme, a cat-eared priestess in a light fantasy comedy game who has read every scroll in Gooseford. You are playful, a little smug, and you purr. You help the player understand the game and decide what to do next. Answer the question in two to four short sentences, in character. Use only the facts below; if they do not say, say you do not know. Finish with one concrete suggestion. PG-13. No lists.\n\nFACTS\n${memeFacts()}\n\nQUESTION: ${String(text).slice(0, 500)}`;
+    const out = await metered('meme', prompt, { cache: false, modelTier: 'quick', onText: ({ text: t }) => { S.lines[idx] = memeLine(t); renderLog(); } });
+    swipeOpen(idx, 'Meme', 'meme', prompt, String(out?.text ?? '').trim() || 'Mrrp. The scroll was blank. Ask me again?'); S.memeAsks = (S.memeAsks ?? 0) + 1; store.set('memeAsks', S.memeAsks); }
+  catch (e) { if (e?.code === 'not_granted') sampler = null; S.lines[idx] = memeLine(e?.code === 'rate_limited' ? 'Too many questions at once. Give me a moment to find the scroll.' : `I could not reach the scrolls just now. Plainly, then: ${asstTip()}`); }
+  finally { S.memeBusy = false; render(); } }
+function memeToggle() { S.meme = !S.meme; store.set('meme', S.meme); $('say').placeholder = S.meme ? 'Ask Meme anything…' : `Say something as ${heroName}…`; if (!S.who && !S.guest) [S.lookR, S.nameR] = idleR();
+  if (S.meme) { S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); post({ who: 'her', plate: 'Meme', dice: '[the oracle] she pads over', say: once('meme') ? MEME_HELLO : 'Mrrp. Back again? Ask away, in the box below.', spoken: true }); } else post({ who: 'sys', dice: '[the oracle] Meme curls up somewhere warm. Call her back from the Social tab.' }); }
+const memeCell = () => cell('meme', S.meme ? 'Send Meme home' : 'Call Meme', S.meme ? 'she is listening · type below' : 'the cat priestess · answers anything, with AI', S.meme ? '' : 'spot');
 /* ---------- Valerie, the assistant: when somebody else is the lead, she carries the bags, keeps the notes and cheers ---------- */
 const VAL_OPEN = ['Okay so! I wrote it on my hand:', 'Ooh, I know this one!', 'Hang on, it is in my notes, under the jam stain:', 'I asked a pigeon and then a person, and the person said:', 'Assistant report!'];
 const VAL_CLOSE = ['', ' ...I think.', ' Good job, me!', ' Was that helpful? I am trying to be helpful.', ''];
@@ -4068,7 +4154,7 @@ function render() {
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
   document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('dream', Boolean(S.dream)); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
-  wanderNotice(); statStrip(); closeFit(); document.body.classList.toggle('closeup', Boolean(S.closeups) && !S.battle && !S.standoff && (Boolean(S.talking || S.meet || S.dream || S.retest) || Date.now() < S.closeUntil)); renderTray(); renderBig(); renderMenu(); renderDebugger(); renderThought(); $('newsN').hidden = !S.newsUnread; $('newsN').textContent = S.newsUnread; store.set('fallen', S.fallen);
+  wanderNotice(); closeFit(); document.body.classList.toggle('closeup', Boolean(S.closeups) && !S.battle && !S.standoff && (Boolean(S.talking || S.meet || S.dream || S.retest) || Date.now() < S.closeUntil)); renderTray(); renderBig(); renderMenu(); renderDebugger(); renderThought(); $('newsN').hidden = !S.newsUnread; $('newsN').textContent = S.newsUnread; store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
@@ -4088,8 +4174,8 @@ function render() {
 let drawn = {};
 function drawSpriteOnce() {
   const bust = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.bust), keyed = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.keyed);
-  const L = `${heroLook()}${S.loopPrio === false ? '|still' : ''}`.split('|')[0], LK = `${L}|${S.loopPrio}`; if (drawn.l !== LK) { drawSprite($('sprL'), L); drawn.l = LK; $('sprL').classList.toggle('bust', bust(L)); $('sprL').classList.toggle('keyedfig', keyed(L)); }
-  const RK = `${S.lookR}|${S.loopPrio}`; if (drawn.r !== RK) { drawSprite($('sprR'), S.lookR); drawn.r = RK; $('sprR').classList.toggle('bust', bust(S.lookR)); $('sprR').classList.toggle('keyedfig', keyed(S.lookR)); }
+  const L = `${heroLook()}${S.loopPrio === false ? '|still' : ''}`.split('|')[0], LK = `${L}|${S.loopPrio}`; if (drawn.l !== LK) { drawSprite($('sprL'), L); drawn.l = LK; $('sprL').classList.toggle('bust', bust(loopOf(L))); $('sprL').classList.toggle('keyedfig', keyed(loopOf(L))); }
+  const RK = `${S.lookR}|${S.loopPrio}`; if (drawn.r !== RK) { drawSprite($('sprR'), S.lookR); drawn.r = RK; $('sprR').classList.toggle('bust', bust(loopOf(S.lookR))); $('sprR').classList.toggle('keyedfig', keyed(loopOf(S.lookR))); }
 }
 function reset(keepGauge) {
   S.hero = freshHero(keepGauge ? S.hero : null); S.them = freshThem(); S.down = false;
@@ -4160,6 +4246,7 @@ document.addEventListener('click', (e) => {
   if (b.dataset.full) return fullscreen();
   if (b.dataset.news) { S.rtab = 'map'; store.set('rtab', 'map'); S.rfold = 'news'; store.set('rfold', 'news'); S.newsUnread = 0; if (S.view && S.view !== 'stage') setView('stage'); return render(); }
   if (b.dataset.hail) { hail(b.dataset.hail); return render(); }
+  if (b.dataset.swipe) return void swipe(Number(b.dataset.swipe)).then(render);
   if (b.dataset.pc) return playAs(b.dataset.pc);
   if (b.dataset.jiggle) { jiggle(false); return render(); }
   if (b.dataset.cheat) { const c = CHEATS.find((x) => x[0] === b.dataset.cheat); if (c) { c[3](); post({ who: 'sys', dice: `[cheat] ${esc(c[1])}` }); } return render(); }
@@ -4260,13 +4347,13 @@ $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}
 setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'gates') : 'gates');
 $('event').innerHTML = `<option value="">Story event…</option>${events.map((e) => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('')}`;
 if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) document.body.classList.add('sway');
-reset(false); $('sprL').dataset.name = heroName; document.querySelector('.top [data-menu="her"]').textContent = heroName; $('say').placeholder = `Say something as ${heroName}…`; if (store.get('vaultOn', false)) setTimeout(() => void vaultConnect(true), 1500);
+reset(false); $('sprL').dataset.name = heroName; document.querySelector('.top [data-menu="her"]').textContent = heroName; $('say').placeholder = S.meme ? 'Ask Meme anything…' : `Say something as ${heroName}…`; if (store.get('vaultOn', false)) setTimeout(() => void vaultConnect(true), 1500);
 document.documentElement.style.setProperty('--zoomL', S.zoomL);
 $('hudL').addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDefault(); S.zoomL = Math.max(0.8, Math.min(1.6, Math.round((S.zoomL + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set('zoomL', S.zoomL); document.documentElement.style.setProperty('--zoomL', S.zoomL); }, { passive: false });
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>

@@ -95,7 +95,11 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Wanderers and the movement maps | `countsFor` (the big map), `WANDER`, `KIND`, `CATS`, `catOf`, `inTown`, `wanderStep`, `wanderHours` (called from `passTime`), `wanderNotice`, `arriveCheck` (end of `arrive`), `hail`, `tokensFor`, `movesBox`, `passingRow`, `S.wander`, `S.guest` |
 | Full-screen menus | `MENUS`, `renderMenu`, `herHtml`, `castHtml`, `loreHtml`, `settingsHtml`, `loreClick`, `S.menu`; the overlay element is `#charmenu` |
 | Lore and Claude-written news | `LORE`, `loreDigest`, `newsGen`, `S.lore`, `S.newsBank`, `S.autoNews` |
-| Stat strip, close-ups, growth portrait | `statStrip`, `closeFit`, `body.closeup`, `GROW_FACE`, `growFace` |
+| Stat tiles (right panel), close-ups, growth portrait | `statStrip` (returns HTML; drawn into `#hudR #statStrip`), `closeFit`, `body.closeup`, `GROW_FACE`, `growFace` |
+| Routines, phrases outside the chat, the klutz | `LOOPS`, `stepToward`, `loopNext`, `wanderStep` (`wait`, `leg`), `BARKS`, `placeBark`, `bark`, `barkOf`, `barkTick`, the `#bark` element; `KLUTZ`, `klutzMoment` |
+| Meme, the helper | `MEME_HELLO`, `MEME_RULES`, `memeFacts`, `askMeme`, `memeToggle`, `memeCell`, `idleR`, `S.meme` |
+| More than one answer | `swipeOpen`, `swipeSeal` (called first thing in `post`), `swipe`, `swipeBar`, `takeLine`, `TAKES`, `S.swipe` |
+| One-line arrivals, no repeats | `arrive` (description only on a first visit), the guard at the top of `post`, `S.said` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -155,7 +159,7 @@ Asked for and not built yet:
 
 1. ~~A pause menu that holds all the character information~~ Built in v28 as the **Valerie** full-screen menu. It edits her story, calling, race and looks; it does not yet create a second character from nothing.
 2. **Chat text that is not in a bubble and means different things.** Narration is unboxed now; Del wants more kinds of unboxed text with distinct meanings (for example sounds, time passing, a rumour).
-3. **A stat block for a quick read of any character.** Her own numbers now use the card creator's tile format in the strip under the top bar. The same tiles for the person on the right are not built.
+3. **A stat block for a quick read of any character.** Her own numbers now use the card creator's tile format, in the right panel under the world plate. The same tiles for the person on the right are not built.
 4. **More action buttons at the minimum panel size.** Potions and Growth are there; Del asked for "buttons of action".
 5. **A party.** Del's allies exist and can be hailed, but nobody joins a fight yet. The four callings are still all Valerie (or Pip).
 6. **Full sex-combat in the downed state and Karryn's Prison's own passive list.** Not built and not going to be: see Decisions. The pinned state and the original passives are the version this project has.
@@ -195,7 +199,26 @@ Decisions made in that pass:
 
 - "Have the loop videos have priority in the play list": clips now stand in for the stills they match, lead the pose lists, and a character page can play through her poses. Ember's two clips have a shaded studio backdrop, so they show framed; Vexa's three are on white and are keyed. A clip exported on plain white will key the same way: add `keyw: true`.
 
-Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; on screens narrower than 1700 px the Debug button leaves the top bar to make room (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
+Loose ends from that pass: `newsGen` has only been run against a stand-in for Claude; the Debug button has since left the top bar at every width (Settings and the Debug tab still have it); thought bubbles are placed for the un-zoomed figure, so in a close-up they sit a little off her head; the wanderers have no art apart from the sisters and show as silhouettes in the Cast menu.
+
+### Added on 2026-11-10, last pass (v34 to v36, artifact version 31)
+
+Built and merged:
+
+- Five clips of Valerie's new look ("have videos inversed for Val"): each plays forwards then backwards so the loop is seamless, and `faces` mirrors a clip so she looks into the scene from either side. The turnaround clip is her standing picture as the assistant.
+- **Meme** ("her name is Meme, use AI, you help out and stuff"): the cat-eared priestess is the helper. She answers through Claude from facts the page writes (`memeFacts`), so she cannot invent rules.
+- Del's voice note about the chat: "the middle bar has so much stuff on top of it", "Troll Bridge is said repeatable times", "I don't like all these repeatable things", "the level, put that on the right side", "Debug". What changed: the stat tiles moved to the right panel; the Debug button left the top bar for good (it is a switch in Settings and in the Debug tab); a place is described once and later arrivals are one line; the Game Master will not repeat a sentence it said in its last thirty; the walk-in notification is gone (the map count, the Passing through row and the spoken phrase already say it); notifications sit over the right panel.
+- "A loop of other major characters going through their own little loops, RNG movement and waiting": `LOOPS` and the new `wanderStep`.
+- "A phrase she would say that wouldn't even be in the chat box": `BARKS`, shown in `#bark`.
+- "We started with Val being a very big klutz, we could work with that": `KLUTZ`.
+- "A system that allows multiple responses, very smooth": the arrows under the newest written reply (`swipe`). Conversation buttons (the `talkPick` replies) do not have arrows yet; they return a mood with the line, so a second take would also have to redraw her face.
+
+Decisions made in that pass:
+
+- Meme has no still picture (the one Del pasted did not reach the disk), no sheet and no secret; her page says so. Her clips are on black and she wears light colours, so they use the `keyb` filter. Valerie's turnaround is on black too but her outfit is dark, so it stays `keyed`.
+- Del asked whether the page could "hook up directly to Featherless as an API thing" through an extension. Answer given: yes, through Del's own SillyTavern extension in `desktop-companion/st-card-creator/extension`. Its `shim.js` already stands in for `window.claude` (`sample` goes to whatever SillyTavern is connected to, `db` to IndexedDB), so this page would run there against Featherless with no key in the page. **Not built yet**: the playtest page has not been added to that extension, and the art folder would have to be copied beside it by hand because pictures are not in git.
+
+Loose ends from that pass: the browser test `drive28` once failed on a button that was redrawn between being found and being clicked (a timer render); it passes when run again. Meme, the arrows and the phrases have only been run against a stand-in for Claude.
 
 ## What Del asked for that is not built, in suggested order
 
