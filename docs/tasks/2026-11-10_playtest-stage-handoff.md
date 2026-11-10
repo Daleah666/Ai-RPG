@@ -66,6 +66,8 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Backdrops by time of day | `TOWN_SCENES`, `sceneOf`, `drawScene` |
 | Collapsing in the open | `fallDown`, `spent`, `S.waiting`, the first line of `getUp` |
 | Asking Claude, and counting it | `metered`, `meter`, `aiUsage`, `gaugeDigest`, `FILL`, `fillPrompt`, `fillSheet`, `fillBox` |
+| The fixed place grid, street actions | `HERE_ROW`, `TROUBLE_ROW`, `streetAct`, `streetCell`, `placeGrid`, `actCell` inside `travelGrid` |
+| Roads on the map and in the panel | `roadPath`, `roadsBox`, `jointsOf`, `stretchRows` |
 | Unstick, cheats, simulators | `jiggle`, `stuckNow` (called at the end of `render`), `CHEATS`, `cheatCells`, `SIMS`, `simWalks`, `simRolls`, `simNights`, `simFights`, `simBlock` |
 
 ## Decisions Del made (do not reopen)
@@ -128,6 +130,8 @@ Also asked for and not built: three or four playable characters, one per calling
 
 - Dragging the panel edge inward used to die after the first nudge because the browser started dragging the picture under the pointer. `dragstart` is now cancelled while resizing. If resizing ever feels sticky again, look there first.
 - AI fill and the token tally were tested with a stand-in for Claude that returns fixed text. They have not been run against the real model. The token numbers are estimates and say so.
+- Del asked for "4 shops 4 inns maybe". It was read as one inn-and-trader per outer domain. If Del meant four of each inside the city, add places to the city map; `SPOTS` takes a `shelf` spot per place and `rest` works anywhere.
+- The four waystations have no regulars and three of them borrow a town backdrop (`TOWN_SCENES`).
 - Seasons are display only. Nothing reads the month yet.
 - Del reported being stuck with nothing to press on the version before Jiggle free. A 700-click random walk through the new version found no dead end, so the cause was not reproduced. If Del reports it again, ask what the mode badge in the top bar said.
 - The left panel still sets the `sheetL` body class when it is 544px or wider; it now only decides whether the extra sheet sections show. The sprite no longer slides.
