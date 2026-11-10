@@ -825,6 +825,101 @@ body.railhover #railPop,#railPop.open{display:grid}
   .sprite.l{left:0;right:50%}.sprite.r{right:0;left:50%}
 }
 @media (prefers-reduced-motion:reduce){.mode::before,.line.enter,.pop,.sprite.hit,.sprite.hop,body.sway .sprite>*{animation:none}.track i{transition:none}}
+/* ---------- v28: notifications, the character menu, the news, wanderers on the map ---------- */
+.toasts{position:fixed;top:108px;left:50%;translate:-50% 0;z-index:60;display:grid;gap:6px;width:min(460px,88vw);pointer-events:none}
+.toast{display:grid;gap:2px;padding:9px 13px;background:color-mix(in srgb,var(--ground) 90%,var(--k));border:1px solid color-mix(in srgb,var(--k) 55%,var(--edge2));border-left:4px solid var(--k);box-shadow:0 10px 30px rgba(0,0,0,.5);animation:toastin .28s ease-out,toastout .5s 8.4s ease-in forwards;--k:var(--gold)}
+.toast.t-crit{--k:var(--crit)}
+.toast b{font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--k)}
+.toast span{font-size:.86rem;line-height:1.35;color:var(--text)}
+@keyframes toastin{from{opacity:0;translate:0 -10px}}@keyframes toastout{to{opacity:0;translate:0 -6px}}
+.tabs button[data-charmenu]{color:var(--gold)}
+.topend .ico{padding:5px 8px;min-width:0;position:relative}
+.topend .ico b{position:absolute;top:-5px;right:-5px;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--crit);color:#fff;font:600 .56rem/15px var(--f-mono);text-align:center}
+.top .tabs button{padding:5px 10px}
+.charmenu{position:fixed;inset:0;z-index:70;display:grid;padding:clamp(8px,1.6vw,26px);background:color-mix(in srgb,var(--ground) 82%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.charmenu[hidden]{display:none}
+.char-in{min-height:0;overflow:auto;display:grid;grid-template-rows:auto 1fr;gap:14px;padding:clamp(12px,1.4vw,22px);background:var(--glass);border:1px solid var(--edge2);box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.char-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:1px solid var(--edge);padding-bottom:10px}
+.char-top h2{margin:2px 0 0;font-size:clamp(1.5rem,2.2vw,2.3rem);line-height:1}
+.char-top h2 i{font:400 .8rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-left:8px}
+.char-grid{display:grid;grid-template-columns:minmax(210px,.8fr) repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.char-col{display:grid;gap:12px;align-content:start;min-width:0}
+.char-col .over{display:grid;gap:8px;padding:11px 12px;background:var(--box);border:1px solid var(--edge)}
+.charface{position:relative;aspect-ratio:3/4;overflow:hidden;border:1px solid var(--edge2);background:#07080c}
+.charface .face{position:absolute;inset:0;width:auto;height:auto;border:0;border-radius:0;background:none}
+.charface .face img,.charface .face video{width:100%;height:100%;object-fit:cover;object-position:50% 12%}
+.char-col textarea{width:100%;resize:vertical}
+@media (max-width:1250px){.char-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:700px){.char-grid{grid-template-columns:1fr}}
+/* news */
+.news{margin:0;font-size:.82rem;line-height:1.4}.news span{display:block;font:400 .56rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.news em{font-style:normal;color:var(--muted)}
+.news.hers{border-left:2px solid var(--gold);padding-left:7px}.news.bad{border-left:2px solid var(--crit);padding-left:7px;color:var(--crit)}.news.bad b{color:var(--text)}
+.pips{font-size:.5rem;letter-spacing:1px;color:var(--muted);vertical-align:middle}.pips.w3{color:var(--gold)}.pips.w4{color:#ff9f5a}.pips.w5{color:var(--crit)}
+/* wanderers */
+.map .tok{pointer-events:none}.map .tok circle,.mini .tok circle{fill:var(--k);stroke:var(--ground);stroke-width:.7}
+.map .tok text,.mini .tok text{font:700 3.3px var(--f-mono);fill:var(--ground);text-anchor:middle;pointer-events:none}
+.tok.bad circle{fill:var(--crit);stroke:#fff;stroke-width:.6}.tok.bad text{fill:#fff;font-size:3.6px}
+.tok.moving{animation:tokin 1.3s cubic-bezier(.3,.7,.3,1)}@keyframes tokin{from{translate:var(--dx) var(--dy)}}
+.trail{stroke:var(--k);stroke-width:.9;stroke-dasharray:1.6 2.2;stroke-linecap:round;opacity:.75;fill:none;pointer-events:none;animation:march 1.4s linear infinite}
+@keyframes march{to{stroke-dashoffset:-7.6}}
+.passing{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.passing .sm{border-color:color-mix(in srgb,var(--k) 60%,var(--edge2));color:var(--k);padding:3px 9px;font-size:.7rem;min-height:0}
+.minis{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mini{margin:0;padding:4px 5px 2px;background:var(--box2);border:1px solid var(--edge)}.mini.on{border-color:var(--gold)}
+.mini figcaption{font:400 .5rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.mini.on figcaption{color:var(--gold)}
+.mini svg{display:block;width:100%;height:auto}
+.mini .rd{stroke:var(--edge2);stroke-width:.8}.mini .rd.out{stroke-dasharray:1.5 1.5}
+.mini .pl{fill:var(--box);stroke:var(--edge2);stroke-width:.8}.mini .pl.wild{stroke:color-mix(in srgb,var(--crit) 55%,var(--edge2))}.mini .pl.me{stroke:var(--gold);stroke-width:1.6}
+.mini .pn{font:400 4px var(--f-mono);fill:var(--muted);text-anchor:middle}.mini .pn{font-size:6.4px}.mini .tok circle{r:4}.mini .tok text{font-size:4.6px}
+.mv{margin:0;font-size:.78rem;line-height:1.3}.mv i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--k);margin-right:6px}
+.mv em{font:normal 400 .54rem var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mv span{display:block;padding-left:14px;font:400 .58rem var(--f-mono);letter-spacing:.04em;color:var(--muted)}.mv.here b{color:var(--gold)}
+.lbl.cat{color:var(--k);border-top:1px solid var(--edge);padding-top:6px;margin-top:2px}
+@media (prefers-reduced-motion:reduce){.toast,.tok.moving,.trail{animation:none}}
+/* the stat strip under the top bar: the card creator's stat tile (label, number, change, a thin bar along the bottom) */
+.statstrip{flex:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.dstat b small{font-weight:400;color:var(--muted);font-size:.6rem}
+.dstat{position:relative;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 5px;padding:4px 7px 7px;border:1px solid var(--edge);background:var(--box);overflow:hidden;min-width:0;transition:border-color .3s,box-shadow .3s}
+.dstat span{flex:1 1 100%;font-family:var(--f-mono);font-size:.5rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dstat b{font-size:.92rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dstat em{font-style:normal;font-size:.66rem;font-weight:600;color:var(--k)}
+.dstat i{position:absolute;left:0;bottom:0;height:3px;width:var(--p,0%);background:var(--k);opacity:.8;transition:width .5s}
+.dstat.up{border-color:var(--mint);box-shadow:0 0 14px -2px color-mix(in srgb,var(--mint) 60%,transparent)}.dstat.up em{color:var(--mint)}
+.dstat.down{border-color:var(--crit);box-shadow:0 0 14px -2px color-mix(in srgb,var(--crit) 60%,transparent)}.dstat.down em{color:var(--crit)}
+@media (max-width:900px){.statstrip{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* close-ups: while somebody is talking, both figures come in to head and shoulders */
+body.closeup .sprite img,body.closeup .sprite video{scale:calc(var(--z) * 1.75);translate:0 var(--liftY,0px);transform-origin:50% var(--headY,0%);transition:scale .5s cubic-bezier(.2,.8,.2,1),translate .5s cubic-bezier(.2,.8,.2,1)}
+body.closeup .sprite .flip{scale:calc(-1.75 * var(--z)) calc(var(--z) * 1.75)}
+body.closeup .sprite video.ghost,body.closeup .sprite img.ghost{scale:var(--z);translate:none}
+@media (prefers-reduced-motion:reduce){body.closeup .sprite img,body.closeup .sprite video{transition:none}}
+/* the full-screen menus */
+.char-top{align-items:center}.char-top .lbl{margin-left:auto}
+.char-body{min-height:0;overflow:auto;padding-right:4px}
+.char-in{grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+.char-name{margin:0;font-size:1.5rem;line-height:1.1}.char-name i{display:block;font:400 .66rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-top:3px}
+.char-grid.lore{grid-template-columns:minmax(300px,1fr) minmax(0,2fr)}.char-grid.set{grid-template-columns:minmax(0,2fr) minmax(260px,1fr)}
+.char-body .castwrap .cgrid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.char-body input[type="text"]{width:100%}.char-body textarea,.char-body input[type="text"]{background:var(--box2);color:var(--text);border:1px solid var(--edge2);padding:8px 10px;font:inherit;font-size:.86rem;line-height:1.4}.char-body textarea:focus,.char-body input[type="text"]:focus{outline:2px solid var(--gold);outline-offset:1px}
+.loregrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.lorecard{display:grid;gap:4px;align-content:start;padding:9px 10px;background:var(--box2);border:1px solid var(--edge);border-left:3px solid var(--gold)}
+.lorecard b{font-size:.9rem}.lorecard b i{display:block;font:400 .52rem var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.lorecard p{margin:0;font-size:.8rem;line-height:1.4;color:var(--muted)}.lorecard .sm{justify-self:start;padding:2px 8px;font-size:.62rem;min-height:0}
+.top .tabs button{padding:5px 9px}
+@media (max-width:1250px){.char-grid.lore,.char-grid.set{grid-template-columns:1fr}}
+@media (max-width:1700px){.top{gap:6px}.top .tabs button{padding:5px 7px}.top .mode{padding:5px 8px;letter-spacing:.05em}#dbgBtn{display:none}.topend{gap:4px}.topend .sm{padding:5px 7px}}
+/* the four tabs sit under the buttons they switch, and stay put when the grid scrolls */
+#gridTravel .ctabs{order:99;position:sticky;bottom:0;z-index:2;border-bottom:0;border-top:1px solid var(--edge);background:#14151d;margin-top:2px}
+#gridTravel .ctabs button{border-bottom:0;border-top:2px solid transparent;padding:5px 10px 4px}
+#gridTravel .ctabs button[aria-selected="true"]{border-top-color:var(--pink)}
+.walkto.jump .lbl{color:var(--violet)}
+/* v28e: grouped key, grouped folds, walk and jump on one line */
+.mapkey3{display:grid;gap:2px;font-family:var(--f-mono);font-size:.52rem;letter-spacing:.06em;text-transform:uppercase}
+.mapkey3 p{margin:0;display:flex;flex-wrap:wrap;gap:2px 9px;align-items:baseline}.mapkey3 b{flex:none;width:4.6em;color:var(--muted);font-weight:500}.mapkey3 span{color:var(--k)}
+.gorow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gorow .walkto{display:block}.gorow .jump select{border-color:color-mix(in srgb,var(--violet) 50%,var(--edge2))}
+.hud .mapkey3 p{font-size:.52rem;line-height:1.5;color:inherit}
+.map .tok.cnt circle{fill:var(--text);stroke:var(--ground);stroke-width:.8}.map .tok.cnt text{font:700 3.6px var(--f-mono);fill:var(--ground)}.map .tok.cnt.here circle{fill:var(--gold)}
+.mini:first-child{grid-column:1/-1}.mini:first-child svg{max-height:200px}.mini:first-child .pn{font-size:4px}.mini:first-child .tok circle{r:2.9}.mini:first-child .tok text{font-size:3.3px}
+.lbl.grp{margin:8px 0 0;padding-top:6px;border-top:1px solid var(--edge);color:var(--gold)}.rfolds .lbl.grp:first-child{border-top:0;margin-top:2px}
 </style>
 
 <div class="stage" id="stage">
@@ -837,6 +932,8 @@ body.railhover #railPop,#railPop.open{display:grid}
   <div class="rail-pop" id="railPop"></div>
   <div class="tray" id="tray" hidden aria-live="polite"></div>
   <div class="bigwrap" id="big" hidden></div>
+  <div class="charmenu" id="charmenu" hidden></div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
   <div class="grip r" id="gripR" role="separator" aria-orientation="vertical" aria-label="Resize their panel" tabindex="0"></div>
   <aside class="hud l" id="hudL" aria-label="You"></aside>
   <aside class="hud r" id="hudR" aria-label="Them"></aside>
@@ -847,14 +944,17 @@ body.railhover #railPop,#railPop.open{display:grid}
       <div class="tabs" role="tablist" aria-label="Views">
         <button role="tab" type="button" data-view="stage" aria-selected="true">Stage</button>
         <button role="tab" type="button" data-view="guild" aria-selected="false">Guild</button>
-        <button role="tab" type="button" data-view="cast" aria-selected="false">Cast</button>
-        <button role="tab" type="button" data-view="tavern" aria-selected="false" title="SillyTavern export">Export</button>
+        <button role="tab" type="button" data-menu="her" aria-selected="false" title="Everything about her, and the parts you can change">Valerie</button>
+        <button role="tab" type="button" data-menu="cast" aria-selected="false" title="Everyone in the world">Cast</button>
+        <button role="tab" type="button" data-menu="lore" aria-selected="false" title="What the world runs on">Lore</button>
+        <button role="tab" type="button" data-menu="settings" aria-selected="false" title="Settings" aria-label="Settings">⚙</button>
       </div>
       <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
       <span class="clock head" id="headline" hidden></span>
-      <span class="topend"><button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false" title="The hidden numbers">Debug</button>
+      <span class="topend"><button class="sm quiet ico" type="button" data-news="1" title="What is going on, here and elsewhere">News<b id="newsN" hidden></b></button><button class="sm quiet ico" type="button" data-full="1" title="Full screen" aria-label="Full screen">⛶</button><button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false" title="The hidden numbers">Debug</button>
       <button class="sm quiet" id="jiggle" type="button" data-jiggle="1" title="Jiggle free. Stuck? This drops whatever is holding you and stands you back up.">Jiggle</button></span>
     </div>
+    <div class="statstrip" id="statStrip" aria-label="Her numbers at a glance"></div>
     <div class="dbgtop" id="dbgTop" hidden></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
@@ -955,10 +1055,51 @@ const LOOKS = [
   { id: 'val-guard', name: 'Valerie, gate duty', src: 'art/cut/val-guard.webp', hero: true },
   { id: 'val-bar', name: 'Valerie, bar shift', src: 'art/cut/val-bar.webp', hero: true },
   { id: 'val-offduty', name: 'Valerie, off duty', src: 'art/cut/val-offduty.webp', hero: true },
+  { id: 'val-jailer', name: 'Valerie, cell duty', src: 'art/cut/val-jailer.webp', hero: true, boxed: true },
   { id: 'elf-green', name: 'Elowen, the visiting lecturer', src: 'art/cut/elf-green.webp', bust: true, as: ['Elowen Thistledown', 'mage'] },
   { id: 'elf-violet', name: 'Fizz, the alchemist', src: 'art/cut/elf-violet.webp', bust: true, as: ['Fizz', 'rogue'] },
   { id: 'corrupter', name: 'Amaranth, waving', src: 'art/amaranth.mp4', video: true, ghost: true },
   { id: 'corrupter2', name: 'Amaranth, watching', src: 'art/amaranth-2.mp4', video: true, ghost: true },
+  { id: 'corrupter3', name: 'Amaranth, leaving', src: 'art/amaranth-fade.mp4', video: true, ghost: true },
+  { id: 'w-barbarian', name: 'A Vantari sister, barbarian', src: 'art/w/barbarian-s.webp', w: true },
+  { id: 'w-barbarian-f', name: 'A Vantari sister, barbarian, pleased', src: 'art/w/barbarian-f.webp', w: true },
+  { id: 'w-barbarian-a', name: 'A Vantari sister, barbarian, squaring up', src: 'art/w/barbarian-a.webp', w: true },
+  { id: 'w-priestess', name: 'A Vantari sister, priestess', src: 'art/w/priestess-s.webp', w: true },
+  { id: 'w-priestess-f', name: 'A Vantari sister, priestess, pleased', src: 'art/w/priestess-f.webp', w: true },
+  { id: 'w-priestess-a', name: 'A Vantari sister, priestess, squaring up', src: 'art/w/priestess-a.webp', w: true },
+  { id: 'w-archer', name: 'A Vantari sister, archer', src: 'art/w/archer-s.webp', w: true },
+  { id: 'w-archer-f', name: 'A Vantari sister, archer, pleased', src: 'art/w/archer-f.webp', w: true },
+  { id: 'w-archer-a', name: 'A Vantari sister, archer, squaring up', src: 'art/w/archer-a.webp', w: true },
+  { id: 'w-office', name: 'A Vantari sister, office', src: 'art/w/office-s.webp', w: true },
+  { id: 'w-office-f', name: 'A Vantari sister, office, pleased', src: 'art/w/office-f.webp', w: true },
+  { id: 'w-office-a', name: 'A Vantari sister, office, squaring up', src: 'art/w/office-a.webp', w: true },
+  { id: 'w-noble', name: 'A Vantari sister, noble', src: 'art/w/noble-s.webp', w: true },
+  { id: 'w-noble-f', name: 'A Vantari sister, noble, pleased', src: 'art/w/noble-f.webp', w: true },
+  { id: 'w-noble-a', name: 'A Vantari sister, noble, squaring up', src: 'art/w/noble-a.webp', w: true },
+  { id: 'w-knight', name: 'A Vantari sister, knight', src: 'art/w/knight-s.webp', w: true },
+  { id: 'w-knight-f', name: 'A Vantari sister, knight, pleased', src: 'art/w/knight-f.webp', w: true },
+  { id: 'w-knight-a', name: 'A Vantari sister, knight, squaring up', src: 'art/w/knight-a.webp', w: true },
+  { id: 'w-witch', name: 'A Vantari sister, witch', src: 'art/w/witch-s.webp', w: true },
+  { id: 'w-witch-f', name: 'A Vantari sister, witch, pleased', src: 'art/w/witch-f.webp', w: true },
+  { id: 'w-witch-a', name: 'A Vantari sister, witch, squaring up', src: 'art/w/witch-a.webp', w: true },
+  { id: 't-tansy', name: "Tansy Copperkeg", src: 'art/t/tansy-s.webp', w: true },
+  { id: 't-elna', name: "Elna Softloaf", src: 'art/t/elna-s.webp', w: true },
+  { id: 't-seraphine', name: "Seraphine Luxe", src: 'art/t/seraphine-s.webp', w: true },
+  { id: 't-kessa', name: "Kessa Goldcuff", src: 'art/t/kessa-s.webp', w: true },
+  { id: 't-kessa-f', name: "Kessa Goldcuff, flirting", src: 'art/t/kessa-f.webp', w: true },
+  { id: 't-marigold', name: "Marigold Ovenheart", src: 'art/t/marigold-s.webp', w: true },
+  { id: 't-marigold-f', name: "Marigold Ovenheart, flirting", src: 'art/t/marigold-f.webp', w: true },
+  { id: 't-brenna', name: "Brenna Ironhart", src: 'art/t/brenna-s.webp', w: true },
+  { id: 't-brenna-f', name: "Brenna Ironhart, flirting", src: 'art/t/brenna-f.webp', w: true },
+  { id: 't-lira', name: "Lira Bloomcatch", src: 'art/t/lira-s.webp', w: true },
+  { id: 't-lira-f', name: "Lira Bloomcatch, flirting", src: 'art/t/lira-f.webp', w: true },
+  { id: 't-anya', name: "Anya Redkey", src: 'art/t/anya-s.webp', w: true },
+  { id: 't-anya-f', name: "Anya Redkey, flirting", src: 'art/t/anya-f.webp', w: true },
+  { id: 't-imani', name: "Imani Stillwater", src: 'art/t/imani-s.webp', w: true },
+  { id: 't-imani-f', name: "Imani Stillwater, flirting", src: 'art/t/imani-f.webp', w: true },
+  { id: 't-juni', name: "Juni Sharphem", src: 'art/t/juni-s.webp', w: true },
+  { id: 't-poppy', name: "Poppy Pailbloom", src: 'art/t/poppy-s.webp', w: true },
+  { id: 't-zariah', name: "Zariah Emberveil", src: 'art/t/zariah-s.webp', w: true },
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
@@ -1025,7 +1166,7 @@ const PLACES = [
   { id: 'hollow', area: 'forest', name: 'The Hollow Oak', short: 'Hollow', x: 66, y: 44, src: 'art/bg/bg-forest.webp', zone: 'risky', enc: 12, evt: 20, foe: 0.75, tags: ['camp', 'forest'], who: null, acts: ['look', 'camp', 'explore'], links: ['road', 'outskirts'], roads: { outskirts: 90 },
     text: 'An oak wide enough to sleep inside, with an old fire ring out front. Travellers camp here because it is the last sensible place before the camps.',
     look: ['Someone has carved initials into the oak. Below them, in a different hand: STILL HERE.', 'The fire ring is warm. Whoever left, left recently.'] },
-  { id: 'ruins', area: 'castle', name: 'The Castle Dungeons', short: 'Dungeons', x: 30, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 45, evt: 20, foe: 1, tags: ['dungeon', 'ruin'], who: null, acts: ['look', 'explore', 'hunt'], links: ['yard', 'vault'],
+  { id: 'ruins', area: 'castle', name: 'The Castle Dungeons', short: 'Dungeons', x: 30, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 45, evt: 20, foe: 1, tags: ['dungeon', 'ruin'], who: null, acts: ['look', 'explore', 'hunt', 'cell9'], links: ['yard', 'vault'],
     text: 'Wet stone, dead torches, and doors that were barred from the outside. Whatever lives under the castle has had a long time to get comfortable.',
     look: ['Something scraped these walls at about shoulder height. Your shoulder height.', 'There is a lever. There is always a lever.'] },
   { id: 'vault', area: 'castle', name: 'The Counting Vault', short: 'Vault', x: 72, y: 46, src: 'art/bg/bg-dungeon.webp', zone: 'wild', enc: 35, evt: 15, foe: 1.1, tags: ['dungeon'], who: null, boss: 'boss_parity', acts: ['look', 'explore', 'boss'], links: ['ruins'],
@@ -1105,6 +1246,7 @@ const ACTS = {
   explore: { label: 'Explore', hint: 'see what happens' },
   camp: { label: 'Make camp', hint: 'sleep rough till morning' },
   liberate: { label: 'Free the captives', hint: 'Luck, hard · order +10', once: true },
+  cell9: { label: 'Open cell nine', hint: 'gold now · he roams for good' },
   boss: { label: 'Challenge', hint: 'the stronghold · a party of four' },
   garrison: { label: 'Break the garrison', hint: 'the stronghold · a real fight' },
 };
@@ -1195,7 +1337,7 @@ const S = {
   order: store.get('order', {}), secured: store.get('secured', {}),
   cls: store.get('cls', 'knight'), heat: store.get('heat', 0), cond: store.get('cond', {}), resist: store.get('resist', {}),
   journal: store.get('journal', []), seen: store.get('seen', {}), race: store.get('race', 'Human'), ctab: 'resp',
-  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), dream: null, chatBank: store.get('chatBank', {}), chatBusy: false, chatNote: '', job: store.get('job', null), jobOpen: false, jobsDone: store.get('jobsDone', {}), thoughtBank: store.get('thoughtBank', {}), foes: store.get('foes', {}), fightKey: null, rfold: store.get('rfold', 'roads'), rollLog: [], trayPos: store.get('trayPos', null), trayDragged: false, idle: store.get('idle', true), sprL: store.get('sprL', 1), sprR: store.get('sprR', 1), event: null, cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
+  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), dream: null, chatBank: store.get('chatBank', {}), chatBusy: false, chatNote: '', job: store.get('job', null), jobOpen: false, jobsDone: store.get('jobsDone', {}), thoughtBank: store.get('thoughtBank', {}), foes: store.get('foes', {}), fightKey: null, rfold: store.get('rfold', 'here'), rollLog: [], trayPos: store.get('trayPos', null), trayDragged: false, idle: store.get('idle', true), sprL: store.get('sprL', 1), sprR: store.get('sprR', 1), event: null, cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), ai: store.get('ai', {}), fillSeg: store.get('fillSeg', { bio: true, drives: true, read: true }), fillTier: store.get('fillTier', 'quick'), fillNote: '', descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1475,25 +1617,26 @@ function debugTab() {
       <button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button>
     </div>
     ${simBlock()}
-    <div class="over"><h3>Cheats</h3><div class="set">${CHEATS.map(([id, label]) => `<button class="sm" type="button" data-cheat="${id}">${esc(label)}</button>`).join('')}<button class="sm" type="button" data-jiggle="1">Jiggle free</button></div></div>
+    <div class="over"><h3>Cheats</h3><div class="set">${CHEATS.filter((c) => c[0] !== 'stir').map(([id, label]) => `<button class="sm" type="button" data-cheat="${id}">${esc(label)}</button>`).join('')}<button class="sm" type="button" data-jiggle="1">Jiggle free</button></div></div>
     <div class="over"><h3>What the old controls are</h3><p>Turn them on and the top bar gets the place list, a level box and Rest, and the story box gets the story-event list, the sparring button and the three ways to stress her. The sparring sandbox (they attack, guard, rattle) is the Spar button at the Training Yard, or the button above.</p></div>
     <div class="over"><h3>Right now</h3><p>${S.battle ? `In a real fight, round ${S.battle.state.round}` : S.mode === 'combat' ? 'Sparring' : 'Travelling'} · ${esc(placeNow().name)} · level ${S.level} · ${n(S.exp)} / ${n(needExp())} EXP · ${S.points} points · hunts are ${S.party ? 'party of four at your level' : 'solo, enemies at three quarters of your level'}.</p></div>`;
 }
 /* ---------- time: a clock, four phases, opening hours ---------- */
 const hourNow = () => (S.clock / 60) % 24, dayNow = () => Math.floor(S.clock / 1440) + 1;
 const phaseNow = () => { const h = hourNow(); return h >= 22 || h < 6 ? 'Night' : h >= 18 ? 'Evening' : h >= 12 ? 'Afternoon' : 'Morning'; };
-const hhmm = () => `${String(Math.floor(hourNow())).padStart(2, '0')}:${String(Math.floor(S.clock % 60)).padStart(2, '0')}`;
+const hr12 = (h) => { const x = ((Math.floor(h) % 24) + 24) % 24; return `${x % 12 || 12} ${x < 12 ? 'AM' : 'PM'}`; };
+const hhmm = () => { const h = Math.floor(hourNow()); return `${h % 12 || 12}:${String(Math.floor(S.clock % 60)).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`; };
 const clockText = () => `Day ${dayNow()} · ${hhmm()} · ${phaseNow()}`;
 const openNow = (hours) => { if (!hours) return true; const h = hourNow(), [a, b] = hours; return a <= b ? h >= a && h < b : h >= a || h < b; };
 const PHASE_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night'];
 function passTime(mins) {
   if (!(mins > 0)) return;
   const before = phaseNow(), full = S.hero.mp >= S.hero.maxMp, hrs = mins / 60;
-  const day0 = dayNow(); S.clock += Math.round(mins); store.set('clock', S.clock);
+  const day0 = dayNow(), h0 = Math.floor(S.clock / 60); S.clock += Math.round(mins); store.set('clock', S.clock); wanderHours(h0);
   for (let day = day0 + 1; day <= dayNow(); day++) newDay(day);
   if (!S.battle && S.hero.hp > 0) S.hero = { ...S.hero, mp: Math.min(S.hero.maxMp, Math.round(S.hero.mp + S.hero.maxMp * 0.04 * hrs)) };
   if (S.path === 'mage' && full) grow(Math.round(6 * hrs), 'mana with nowhere to go');
-  if (phaseNow() !== before) { post({ who: 'sys', dice: `[time] ${clockText()}`, say: PHASE_LINE[phaseNow()] }); refreshWho(); }
+  if (phaseNow() !== before) { post({ who: 'sys', dice: `[time] ${clockText()}`, say: PHASE_LINE[phaseNow()] }); refreshWho(); worldTick(); }
 }
 function sleepUntil(hour) { chem(-20, 'sleep'); passTime(((hour * 60 - (S.clock % 1440) + 1440) % 1440) || 1440); setTimeout(() => { if (maybeVisit(false)) render(); }, 40); }
 
@@ -1705,20 +1848,21 @@ function goTo(id) {
       if (S.fallen) break;
       if (quietLeg) { if (j === 1 && d() <= 55) sign(start, p, j, joints); continue; }
       const res = tableRoll(`${start.short} → ${p.short} · stretch ${j} of ${joints}`, stretchRows(p, joints));
-      if (res === 'fight') { arrive(from, p, Math.round(total)); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : `they were waiting, ${j === joints ? 'right at the end' : 'part way along'}`); }
-      if (res === 'event') { const pool = eventPool(p); if (pool.length && d() <= 40) { arrive(from, p, Math.round(total)); return showEvent(pool[Math.floor(Math.random() * pool.length)].id); } micro(p); if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero'); }
+      if (res === 'fight') { arrive(from, p, Math.round(total), true); return startStandoff(p.zone === 'safe' ? 'they do not like the look of you' : `they were waiting, ${j === joints ? 'right at the end' : 'part way along'}`); }
+      if (res === 'event') { const pool = eventPool(p); if (pool.length && d() <= 40) { arrive(from, p, Math.round(total), true); return showEvent(pool[Math.floor(Math.random() * pool.length)].id); } micro(p); if (S.hero.stress >= 100 && !S.hero.resolve) resolvePrompt('hero'); }
       if (res === 'sign') sign(start, p, j, joints);
     }
     if (S.fallen) break;
   }
   arrive(from, placeNow(), Math.round(total));
 }
-function arrive(from, to, mins) {
-  if (once(`place:${to.id}`)) journal('place', `${to.name} (${AREAS[areaOf(to)].name}): ${(to.acts ?? []).filter((a) => a !== 'look').map((a) => ACTS[a].label.toLowerCase()).join(', ') || 'nothing much to do'}${(SPOTS[to.id] ?? []).length ? `; spots: ${SPOTS[to.id].map((x) => x.name.toLowerCase()).join(', ')}` : ''}${to.hours ? `; open ${to.hours[0]}:00 to ${to.hours[1] % 24}:00` : ''}.`);
+function arrive(from, to, mins, held) {
+  if (once(`place:${to.id}`)) journal('place', `${to.name} (${AREAS[areaOf(to)].name}): ${(to.acts ?? []).filter((a) => a !== 'look').map((a) => ACTS[a].label.toLowerCase()).join(', ') || 'nothing much to do'}${(SPOTS[to.id] ?? []).length ? `; spots: ${SPOTS[to.id].map((x) => x.name.toLowerCase()).join(', ')}` : ''}${to.hours ? `; open ${hr12(to.hours[0])} to ${hr12(to.hours[1] % 24)}` : ''}.`);
   const q = eventPool(to).length;
-  post({ who: 'sys', plate: to.name, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: openNow(to.hours) ? to.text : `${to.text} It is shut until ${to.hours[0]}:00.`, fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(q ? ['something to do around here'] : [])] });
+  post({ who: 'sys', plate: to.name, dice: `[travel] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: openNow(to.hours) ? to.text : `${to.text} It is shut until ${hr12(to.hours[0])}.`, fx: [to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(q ? ['something to do around here'] : [])] });
   if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
   else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
+  if (!held) arriveCheck(to);
 }
 function explore() {
   const p = placeNow(), pool = eventPool(p); passTime(30); useStam(5, 'exploring'); if (S.fallen) return;
@@ -1759,6 +1903,7 @@ function getUp() {
 }
 function afterFight(won, r) {
   if (S.fightKey) { foeResult(S.fightKey, won); S.fightKey = null; }
+  if (S.bigKey) { foeResult(S.bigKey, won); bigResult(S.bigKey, won ? 'won' : 'lost'); S.bigKey = null; }
   if (won && r?.gold) gainGold(r.gold, 'spoils');
   if (won && S.path === 'warrior') grow(15, 'a fight won');
   if (won) { if (S.fightTag?.job) job('a guild hunt'); else rep(3, 'a fight won'); }
@@ -1778,6 +1923,7 @@ function doAct(id) {
   if (id.startsWith('job:')) return doJob(+id.slice(4));
   if (id === 'evleave') { S.event = null; return post({ who: 'sys', dice: '[story] You leave it be.', say: 'Whatever that was, it can be somebody else\'s afternoon.' }); }
   if (['search', 'listen', 'wait', 'watch', 'provoke', 'lielow'].includes(id)) return streetAct(id);
+  if (id === 'cell9') { if (!S.loose) openCell(); return; }
   if (['boss', 'garrison', 'liberate', 'camp'].includes(id)) return knightAct(id);
   if (id.startsWith('meet:')) return meet(id.slice(5));
   if (id.startsWith('so:')) return standoffAct(id.slice(3));
@@ -1816,8 +1962,8 @@ function travelGrid() {
       ? cell(`opt:${i}`, `Buy ${POTIONS[o.buy].name}`, `${POTIONS[o.buy].hint} · ${n(POTIONS[o.buy].price * L)} gold · have ${S.bag[o.buy] ?? 0}`, i === 0 ? 'primary' : '', S.gold < POTIONS[o.buy].price * L)
       : cell(`opt:${i}`, o.label, `${o.stat ? odds(o.stat, dcFor(S.level, o.diff), o.tempt ? temptBonus() : 0) : 'no roll'}${o.cost ? ` · ${n(o.cost * L)} gold` : ''}${o.sleep ? 'free · till morning' : ''}`, i === 0 ? 'primary' : '', Boolean(o.cost) && S.gold < o.cost * L)).join('') + cell('spot:', 'Step away', `back to the ${here.short.toLowerCase()}`, 'go'); }
   const needsLegs = new Set(['explore', 'hunt', 'spar', 'boss', 'garrison', 'liberate']);
-  const actCell = (id) => { const a = ACTS[id], shut = closed && !['look', 'explore'].includes(id), held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
-    return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); };
+  const actCell = (id) => { const a = ACTS[id], shut = closed && !['look', 'explore'].includes(id), held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down) || (id === 'cell9' && Boolean(S.loose));
+    return cell(id, actLabel(id, here), id === 'cell9' && S.loose ? 'open, and empty' : held ? 'already secured' : shut ? `closed until ${hr12(here.hours[0])}` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); };
   const acts = (here.acts ?? []).filter((id) => id !== 'look' && id !== 'explore').map(actCell);
   if (here.id === 'square' && condOf('corrupt') > 0) acts.unshift(cell('bless', 'Ask for a blessing', S.used.bless ? 'done for this visit' : `${n(10 * L)} gold · corruption −20`, 'spot', Boolean(S.used.bless) || S.gold < 10 * L));
   if (jobNow()?.place === here.id) acts.unshift(cell('jobopen', `The job: ${jobNow().title}`, 'four ways to do it', 'primary'));
@@ -1874,7 +2020,7 @@ function renderDebugger() {
   el.innerHTML = `
     <div class="dg"><h4>World</h4><p>${clockText()} · ${esc(here.name)} (${here.zone})${S.battle ? ' · real fight' : S.standoff ? ' · standoff' : S.fallen ? ' · fallen' : ''}</p><p>here: ${ch(here)}</p>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id); return `<p>→ ${esc(p.short)}: ${legMins(here, p)} min · ${ch(p)}</p>`; }).join('')}<p>wanderer (Sable): ${esc(PLACES.find((x) => x.id === wandererAt()).name)}</p><p>order: ${Object.keys(AREAS).filter((k) => k !== 'city').map((k) => `${k} ${orderOf(k)}${S.secured[k] ? ' ✓' : ''}`).join(' · ')}</p></div>
     <div class="dg"><h4>Fight chance, taken apart</h4><p>place ${here.zone === 'safe' ? 0 : here.enc ?? 0}% · night ${here.zone !== 'safe' && phaseNow() === 'Night' ? '+15' : '+0'} · decency ${S.decency} → ${here.zone === 'safe' ? (S.decency < 30 ? `+${Math.round((30 - S.decency) * 0.6)} (under 30, townsfolk turn on her)` : '+0') : `+${Math.round(Math.max(0, 50 - S.decency) * 0.5)}`} · stamina ${S.stam}${here.zone !== 'safe' && S.stam < 25 ? ' → +10' : ''}${here.zone !== 'safe' && areaOf(here) !== 'city' ? ` · order ${orderOf(areaOf(here))} → ${Math.round((50 - orderOf(areaOf(here))) * 0.3) >= 0 ? '+' : '−'}${Math.abs(Math.round((50 - orderOf(areaOf(here))) * 0.3))}${S.secured[areaOf(here)] ? ' · secured ×0.4' : ''} · enemies at ${Math.round((here.foe ?? 0.75) * 100)}% of her level` : ''}</p><p>= ${dangerOf(here)}% here</p></div>
-    <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · respect ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${c.hours[0]}:00–${c.hours[1] % 24}:00` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
+    <div class="dg"><h4>${c ? esc(c.name) : 'Nobody here'}</h4>${c ? `<p>${esc(arche(c.cls).name)} · level ${t.level} · respect ${rec.rapport}/100 (${tierOf(rec.rapport)}) · ${rec.met ? 'met' : 'not met'}</p><p>likes ${esc(APPROACH[c.likes].label.toLowerCase())} (+20) · hates ${esc(APPROACH[c.dislikes].label.toLowerCase())} (−20)</p><p>guards: Willpower ${effectiveStat(t, 'WIL')} · Arcana ${effectiveStat(t, 'INT')} · Constitution ${effectiveStat(t, 'CON')}</p><p>would grow by ${esc(PATHS[c.cls]?.why ?? 'nothing')} · hours ${c.hours ? `${hr12(c.hours[0])}–${hr12(c.hours[1] % 24)}` : 'always'}</p>` : '<p>Walk to a bubble with a dot.</p>'}</div>
     <div class="dg"><h4>Valerie</h4><p>level ${S.level} · ${n(S.exp)}/${n(needExp())} EXP · ${n(S.gold)} gold · Airhead ${V.airheadOf(S.hero)}</p><p>${esc(path.cls)} path, ${esc(path.name)}: bust tier ${S.bust}, ${S.bustXp}% · Tempt +${temptBonus()} · Finesse −${2 * S.bust}% · ${esc(path.perk)} ×${S.bust}</p><p>stamina ${S.stam} · decency ${S.decency} · stress ${S.hero.stress}</p><p>seen as ${esc((RACES[S.race] ?? RACES.Human).a)}: stereotype ${stereoOf()} here (race base ${(RACES[S.race] ?? RACES.Human).base} − 0.7 × reputation − willpower); at 40+ strangers apply ${esc(JSON.stringify((RACES[S.race] ?? RACES.Human).assume))}; someone who respects her ignores it</p><p>swelling ${condOf('swell')} (resist ${resistOf('swell')}, Constitution; +2 a night per bust tier, +12 on a tier; per 25: Run −5, Sway +3; at 75 every stamina cost +1) · pheromones ${condOf('phero')} (resist ${resistOf('phero')}, Finesse; half of every chemistry gain, + chemistry ÷ 10 a night; per 25: Persuade −5, Flirt and Sway +3, fight chance +4, one more catcall in the mix; at 50 safe streets roll for trouble and people follow; at 75 the prim ones will not talk)</p><p>corruption ${condOf('corrupt')} (${COND.corrupt.words[stepOf('corrupt')]}, resist ${resistOf('corrupt')}, Willpower): only her visits move it up; per 25: Flirt and Sway +3, Be friendly and Persuade −3; a quarter of it comes off composure · a visit tonight: ${visitChance()}% · visits so far ${S.count.visits ?? 0}</p><p>composure ${100 - composureScore()} (${COMPOSURE[composure()]}): 100 − (chemistry ÷ 2 + pheromones ÷ 2 − Willpower's hold). Flustered: Flirt and Sway +2. Weak at the knees: Flirt and Sway +5, Persuade and her attack −5, jeering +2 stress, and catcalls take stress away instead of adding it. Catcalls on a stretch: ${28 + 12 * stepOf('phero') + (S.decency < 40 ? 10 : 0)}% in town, ${16 + 12 * stepOf('phero') + (S.decency < 40 ? 10 : 0)}% in the wilds, when a sign comes up</p><p>suspicion ${S.heat} → +${Math.round(S.heat / 4)} to every fight chance outside safe places; signs on the road raise it, patrols and notices move it, −15 each night</p><p>volatility ${S.vol} → gauges move ×${1 + 0.25 * S.vol} · reputation here ${repOf(areaOf(placeNow()))} (${repLabel()}), overall ${S.rep} · by place: ${AREA_IDS.map((a) => `${a} ${repOf(a)}`).join(', ')} · rough conduct ${Math.round(S.mean * 10) / 10} · lewd conduct ${Math.round(S.lewd * 10) / 10} · last guild job: day ${S.jobDay || 'never'} · −4 each morning without one</p></div>
     ${S.standoff ? `<div class="dg"><h4>This crowd</h4><p>nerve ${S.standoff.nerve} · round ${S.standoff.round} · weak to ${S.standoff.weak} (×1.5) · shrugs off ${S.standoff.tough} (×0.5)</p><p>her attack: ${esc(calling().verb)}${calling().type ? ` (${calling().type})` : ' (no type)'} on ${STAT_INFO[calling().stat].name}</p></div>` : ''}<div class="dg"><h4>Last roll</h4>${L ? `<p>${esc(L.title)}</p><p>${esc(L.math ?? '')} → ${esc(String(L.degree))}</p>` : '<p>none yet</p>'}</div>
     <div class="dg"><h4>Asking Claude · tokens by use</h4>${aiUsage()}</div>
@@ -1901,13 +2047,13 @@ function settingsBlock() {
   return `<div class="over"><h3>Settings</h3><div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
       <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
       <label><span class="lbl">What strangers take her for</span><select id="race">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
-      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}</div></div>
+      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}${tog('growFace', 'Her card follows her growth', S.growFace)}${tog('closeups', 'Close-ups while people talk', S.closeups)}${tog('tpRow', 'Jump buttons in the Debug tab', S.tpRow)}</div></div>
     <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
 }
 function settingClick(key) {
   if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
   if (key === 'import') { try { const data = JSON.parse($('saveBox').value); for (const [k, v] of Object.entries(data)) if (k.startsWith('oops-') && typeof v === 'string') localStorage.setItem(k, v); location.reload(); } catch { post({ who: 'sys', dice: '[save] That did not read as a save. Paste the whole thing.' }); } return; }
-  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights', 'idle'].includes(key)) return;
+  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights', 'idle', 'growFace', 'closeups', 'tpRow'].includes(key)) return;
   S[key] = !S[key]; store.set(key, S[key]);
 }
 
@@ -1977,12 +2123,14 @@ function mapTab() {
   const who = S.who ? castOf(S.who) : null;
   const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
   return `
-    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span><button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div><svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg></div>
-    <p class="mapkey"><span style="--k:var(--pink)">● someone</span><span style="--k:var(--gold)">! a story</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--gold)">★ stronghold</span><span style="--k:var(--crit)">◌ trouble</span></p>
-    <label class="walkto"><span class="lbl">Walk to</span><select data-goto="1" aria-label="Walk to a place"><option value="">anywhere on the map…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>
+    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span><button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div><svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}${countsFor(area)}</svg></div>
+    <div class="mapkey3"><p><b>People</b><span style="--k:var(--pink)">● lives there</span><span style="--k:var(--text)">② passing through</span><span style="--k:var(--crit)">☠ big trouble</span></p><p><b>To do</b><span style="--k:var(--gold)">! a story</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--gold)">★ stronghold</span></p><p><b>Places</b><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--crit)">◌ rough ground</span></p></div>
+    ${passingRow()}
+    <div class="gorow"><label class="walkto"><select data-goto="1" aria-label="Walk to a place"><option value="">Walk to…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>
+    <label class="walkto jump"><select data-jump="1" aria-label="Jump straight to a place, for testing"><option value="">Jump (debug)…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label></div>
     <p class="more">bubble: walk there · box: another map · ★ stronghold · each bend in a road is a stretch with its own roll</p>
     ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `Their respect for you: ${tierOf(npcOf(S.who).rapport).toLowerCase()}.` : 'You have not met yet.'}</p></div>` : ''}
-    <div class="rfolds">${[['roads', roadsBox()], ['around', aroundHere()], ['talk', chatterBox()], ['here', `<div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>`], ['domains', `<div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`]].map(([k, html]) => rfold(k, html)).join('')}</div>`;
+    <div class="rfolds">${((f) => `<p class="lbl grp">This place</p>${f.here}${f.around}<p class="lbl grp">People</p>${f.moves}${f.talk}<p class="lbl grp">The world</p>${f.news}${f.domains}<p class="lbl grp">You</p>${f.goals}`)(Object.fromEntries([['goals', objectivesBox()], ['around', aroundHere()], ['news', newsBox()], ['moves', movesBox()], ['talk', chatterBox()], ['here', `<div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${hr12(here.hours[0])}.`}</p>${bedsLine()}</div>`], ['domains', `<div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`]].map(([k, html]) => [k, rfold(k, html)])))}</div>`;
 }
 function knightAct(id) { // the things only the outer domains offer
   const here = placeNow(), area = areaOf(here);
@@ -2022,7 +2170,7 @@ function leftPanel(h, top, gauge, band, locked) {
 }
 /* ---------- asking Claude: every call is counted under what it was for ---------- */
 // The page is never told real token counts, so these are estimates: characters ÷ 4, both ways.
-const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town' };
+const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town', news: 'World news' };
 const tok = (text) => Math.ceil(String(text ?? '').length / 4);
 function meter(seg, prompt, reply) { const m = (S.ai[seg] ??= { calls: 0, in: 0, out: 0 }); m.calls += 1; m.in += tok(prompt); m.out += tok(reply); m.last = clockText(); store.set('ai', S.ai); }
 async function metered(seg, prompt, opts) { const out = await sampler(prompt, opts); meter(seg, prompt, out?.text ?? ''); return out; }
@@ -2084,12 +2232,12 @@ function fillBox() {
     ${S.fillNote ? `<p class="simrow">${esc(S.fillNote)}</p>` : ''}${S.sheet.now ? `<p class="lbl">How she comes across now</p><p class="prose">${esc(S.sheet.now)}</p>` : ''}`;
 }
 function lookPicker() {
-  const all = [...LOOKS.filter((l) => l.src), ...Object.values(S.custom)].sort((a, b) => Number(Boolean(b.hero)) - Number(Boolean(a.hero)));
+  const all = [...LOOKS.filter((l) => l.src && !l.w), ...Object.values(S.custom)].sort((a, b) => Number(Boolean(b.hero)) - Number(Boolean(a.hero)));
   const pic = (l) => (l.video ? `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(l.src)}" alt="" loading="lazy">`);
   const row = (attr, cur) => all.map((l) => `<button class="thumb${l.id === cur ? ' on' : ''}" type="button" data-${attr}="${esc(l.id)}" title="${esc(l.name)}" aria-label="${esc(l.name)}" aria-pressed="${l.id === cur}">${pic(l)}</button>`).join('');
   return `<div class="lookpick"><p class="lbl">Her pose on the stage</p><div class="lib">${row('look', S.lookL)}</div>
     <p class="lbl">Her face on this card</p><div class="lib"><button class="thumb same${S.faceL ? '' : ' on'}" type="button" data-face="" aria-pressed="${!S.faceL}">same as her pose</button>${row('face', S.faceL)}</div>
-    <p class="more">The first six are hers. Add your own under Settings.</p></div>`;
+    <p class="more">The first seven are hers. Add your own under Settings.</p></div>`;
 }
 function railHtml(h, gauge, band, locked) {
   const hb = (g, name, v, max, color, low) => `<span class="hbar${low ? ' low' : ''}" style="--k:${color};--p:${Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100))}%"><em>${g}</em><i><u></u><b><span>${name}</span><span>${n(v)} / ${n(max)}</span></b></i></span>`, m = mood(h, true);
@@ -2105,7 +2253,7 @@ function railPop(h, gauge, band, locked) {
 }
 function exitCells(here) {
   return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
-    return `<button class="go" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${npcOf(r).met ? esc(castOf(r).name) : 'someone is there'}` : ''}</small></button>`; }).join('')}</div>`;
+    return `<button class="go roadrow" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min · ${jointsOf(legMins(here, p))} leg${jointsOf(legMins(here, p)) > 1 ? 's' : ''}${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${npcOf(r).met ? esc(castOf(r).name) : 'someone is there'}` : ''}</small></button>`; }).join('')}</div>`;
 }
 /* ---------- reputation: what the town says about her ---------- */
 function job(why) { S.jobDay = dayNow(); store.set('jobDay', S.jobDay); rep(6, why); }
@@ -2146,16 +2294,16 @@ const HECKLE_SAY = {
   mental: ['"Call that a knight?" "My nan stands straighter!" It should not sting. It stings.', 'They are chanting something about the mill fire, and not the version you tell.'],
   lewd: ['Wolf-whistles, and a very detailed suggestion about what the armor is for. Your ears go pink.', 'Somebody yells that the breastplate deserves its own title. People cheer. Not for you, exactly.'],
 };
-function startStandoff(why, encId) {
+function startStandoff(why, encId, opt = {}) {
   const all = DATA.encounters.encounters, pool = all.filter((x) => x.id !== 'hoard_drake' && x.id !== 'horde_at_the_gate'), safe = placeNow().zone === 'safe';
   const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
-  const fkey = safe ? 'opportunists' : enc.id, level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) + foeRec(fkey).rank, stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
+  const fkey = opt.key ?? (safe ? 'opportunists' : enc.id), named = opt.name ?? (safe ? 'Opportunists' : enc.name), level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) + foeRec(fkey).rank + (opt.plus ?? 0), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
   const kinds = ['slash', 'strike', 'thrust'], weak = kinds[Math.floor(Math.random() * 3)], tough = kinds[(kinds.indexOf(weak) + 1 + Math.floor(Math.random() * 2)) % 3];
-  once(`foe:${safe ? 'opportunists' : enc.id}`);
-  S.standoff = { id: enc.id, key: fkey, name: foeName(fkey, safe ? 'Opportunists' : enc.name), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
-    foe: makeCombatant({ id: 'heckler', name: safe ? 'Opportunists' : enc.name, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
+  once(`foe:${fkey}`); S.bigKey = null;
+  S.standoff = { id: enc.id, key: fkey, name: foeName(fkey, named), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
+    foe: makeCombatant({ id: 'heckler', name: named, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
-  post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
+  post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${opt.name ? `${opt.name} is not here to talk, but talking is still on the table.` : safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
   pop('l', 'COMBAT', 'var(--crit)'); setTimeout(() => thoughtPops(pickN(REACT.standoff[composure()], 2)), 600);
 }
 function heckle(so) {
@@ -2181,9 +2329,9 @@ function endStandoff(how, last) {
   if (how === 'forced') {
     const dry = S.fallen || S.stam <= 0; S.fallen = false; if (S.stam < 10) { S.stam = 10; store.set('stam', 10); }
     post({ who: 'sys', plate: 'Combat', dice: `<b>FORCED INTO A FIGHT</b> · ${esc(so.name)} · ${dry ? 'she ran out of stamina' : 'talking did not break them'}`, tone: 'crit', say: dry ? 'Your legs go, and they stop pretending this was a conversation.' : 'Eight rounds of talk and they still have their nerve. Somebody draws a knife. That settles what kind of evening this is.' });
-    pop('l', 'FIGHT', 'var(--crit)'); return startBattle({ encounter: so.id, level: so.level });
+    pop('l', 'FIGHT', 'var(--crit)'); S.bigKey = so.key; return startBattle({ encounter: so.id, level: so.level });
   }
-  if (how === 'won') foeResult(so.key, true); if (how === 'lost') foeResult(so.key, false);
+  if (how === 'won') foeResult(so.key, true); if (how === 'lost') foeResult(so.key, false); bigResult(so.key, how);
   if (how === 'won') { tally('heckWins', 'thick', 2, 'two crowds broken'); if (last === 'sway') grantPerk('crowd', 'a crowd broken with a sway'); order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
   if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
   if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
@@ -2444,11 +2592,11 @@ function socialCells(here, who) {
 }
 function itemCells() { return cell('x', `${n(S.gold)} gold`, 'the purse', '', true) + Object.entries(POTIONS).map(([k, p]) => cell(`use:${k}`, `${p.name} ×${S.bag[k] ?? 0}`, p.hint, '', !((S.bag[k] ?? 0) > 0))).join(''); }
 function debugCells() {
-  return `<div class="exits"><span class="lbl">Jump to</span>${PLACES.map((p) => `<button class="go" type="button" data-tp="${p.id}"${p.id === S.place ? ' disabled' : ''}>${esc(p.short)}</button>`).join('')}</div>`
+  return (S.tpRow ? `<div class="exits"><span class="lbl">Jump to</span>${PLACES.map((p) => `<button class="go" type="button" data-tp="${p.id}"${p.id === S.place ? ' disabled' : ''}>${esc(p.short)}</button>`).join('')}</div>` : '')
     + cheatCells() + `<button class="cell bubble" type="button" data-set="dbgTop"><b>Debugger ${S.dbgTop ? 'off' : 'on'}</b><small>the hidden numbers</small></button><button class="cell bubble" type="button" data-sim="walks"><b>Simulators</b><small>open them on the right</small></button><button class="cell bubble" type="button" data-dbg="mode"><b>${S.mode === 'combat' ? 'Stop sparring' : 'Spar here'}</b><small>the old sandbox</small></button>`;
 }
 const MOOD_FACES = {}; // lookId → { Cheerful: 'art/…' }: one portrait per mood, for when the pictures exist
-function face() { const id = S.faceL || S.lookL, look = S.custom[id] ?? LOOKS.find((l) => l.id === id) ?? LOOKS[0], m = mood(S.hero, true)[1], src = MOOD_FACES[look.id]?.[m] ?? look.src; if (!src) return ''; return `<span class="face" title="${esc(m)}">${look.video && src === look.src ? `<video src="${esc(src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(src)}" alt="">`}</span>`; }
+function face() { const id = S.faceL || growFace() || S.lookL, look = S.custom[id] ?? LOOKS.find((l) => l.id === id) ?? LOOKS[0], m = mood(S.hero, true)[1], src = MOOD_FACES[look.id]?.[m] ?? look.src; if (!src) return ''; return `<span class="face" title="${esc(m)}">${look.video && src === look.src ? `<video src="${esc(src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(src)}" alt="">`}</span>`; }
 /* ---------- callings: four ways to be her. Three split the attack types; the fourth plays the dice ---------- */
 const COURTESAN = { id: 'courtesan', name: 'Courtesan', identity: 'Wins the room before anyone draws.', want: 'To be the one everybody is watching.', cost: 'When it does come to blows she has very little to hit with.', signature: 'LCK',
   l1: { STR: 8, INT: 11, AGI: 12, CON: 9, WIL: 12, LCK: 18 }, l100: { STR: 300, INT: 480, AGI: 560, CON: 420, WIL: 740, LCK: 800 }, exponent: { STR: 1, INT: 1, AGI: 1, CON: 1, WIL: 1, LCK: 1 } };
@@ -2580,15 +2728,16 @@ const CHEATS = [
   ['calm', 'Conditions 0', 'both gauges cleared', () => { setCond('swell', 0); setCond('phero', 0); }],
   ['bust', 'Bust tier +1', 'with the swelling that comes with it', () => grow(100, 'a cheat')],
   ['hour', '+1 hour', 'the clock moves', () => passTime(60)],
-  ['dawn', 'Skip to tomorrow, 07:00', 'runs the night and its morning report', () => passTime(1440 - (S.clock % 1440) + 420)],
+  ['dawn', 'Skip to tomorrow, 7 AM', 'runs the night and its morning report', () => passTime(1440 - (S.clock % 1440) + 420)],
   ['visit', 'Night visit now', 'Amaranth, in a dream', () => { maybeVisit(true); }],
   ['whistle', 'Catcalls now', 'three voices, three thoughts', () => catcallWalk('a cheat', placeNow().zone !== 'safe')],
   ['heatup', 'Chemistry +30', 'composure drops', () => chem(30, 'a cheat')],
   ['micro', 'Road event now', 'one of the small ones', () => micro(placeNow())],
   ['ambush', 'Standoff now', 'a crowd, right here', () => { if (!S.battle && !S.standoff) startStandoff('you asked for it (cheat)'); }],
   ['rep', 'Reputation +15', 'here', () => rep(15, 'a cheat')],
+  ['stir', 'Stir the world', 'roads walked, news made', () => { wanderStep(); store.set('wander', S.wander); const a = AREA_IDS[Math.floor(Math.random() * AREA_IDS.length)], row = WORLD[a][Math.floor(Math.random() * WORLD[a].length)]; worldEvent(a, row[0], row[1]); if (row[2]) order(a, row[2], 'the news'); }],
 ];
-const cheatCells = () => CHEATS.map(([id, label, hint]) => `<button class="cell bubble" type="button" data-cheat="${id}"><b>${esc(label)}</b><small>${esc(hint)}</small></button>`).join('');
+const cheatCells = () => CHEATS.filter((c) => c[0] !== 'stir').map(([id, label, hint]) => `<button class="cell bubble" type="button" data-cheat="${id}"><b>${esc(label)}</b><small>${esc(hint)}</small></button>`).join('');
 // The stretch table the road really rolls on, in one place so the walk and the simulator cannot disagree.
 function stretchRows(p, joints) { return [['fight', Math.round((dangerOf(p) / joints) * 1.3), 'crit'], ['event', Math.round(((p.zone === 'safe' ? 0 : p.evt ?? 0) / joints) * 1.3), 'hit'], ['sign', 30, 'bounce']]; }
 const jointsOf = (mins) => Math.max(1, Math.min(5, Math.round(mins / 15)));
@@ -2669,11 +2818,12 @@ const foeRec = (key) => (S.foes[key] ??= { w: 0, l: 0, rank: 0 });
 const foeName = (key, name) => { const r = foeRec(key).rank; return r ? `${FOE_RANK[r]} ${name}${r >= 3 ? `, Bane of ${heroName}` : ''}` : name; };
 function foeResult(key, won) { if (!key) return; const f = foeRec(key); if (won) f.w += 1; else { f.l += 1; if (f.rank < 4) { f.rank += 1; note(`${key.replace(/_/g, ' ')}: they are bolder now (rank ${f.rank})`); } } store.set('foes', S.foes); }
 function openBook() { // the book of trouble: every common enemy she has faced
-  const names = { opportunists: 'Opportunists', ...Object.fromEntries(DATA.encounters.encounters.map((e) => [e.id, e.name])) }, seen = Object.keys(names).filter((k) => S.seen[`foe:${k}`]);
+  const names = { opportunists: 'Opportunists', ...Object.fromEntries(DATA.encounters.encounters.map((e) => [e.id, e.name])), ...Object.fromEntries(Object.entries(BADDIES).map(([k, b]) => [k, b.name])), ...Object.fromEntries(Object.entries(WANDER).filter(([, w]) => w.kind === 'hostile').map(([k, w]) => [k, w.name])) }, seen = Object.keys(names).filter((k) => S.seen[`foe:${k}`]);
   const rows = seen.map((k) => { const f = foeRec(k); return `<div class="bookrow" style="--k:${RANK_COLOR[f.rank]}"><b>${esc(foeName(k, names[k]))}</b><span>${f.rank ? `rank ${f.rank} · +${f.rank} level${f.rank > 1 ? 's' : ''}` : 'ordinary'} · you won ${f.w}, lost ${f.l}</span></div>`; }).join('');
   S.cards.push({ title: 'The Book of Trouble', dice: `${seen.length} of ${Object.keys(names).length} kinds faced`, say: seen.length ? 'Everyone who has ever squared up to you, and how it went.' : 'Blank pages. Nobody has squared up to you yet.', roll: null, fx: [], html: rows ? `<div class="over"><h3>Common enemies</h3>${rows}</div>` : '',
     why: 'Common enemies keep score. Every time a kind of them beats her (a standoff lost, or a real fight lost) they gain a rank: one more level each time they turn up, and a longer name. The colour of the name is the rank: grey ordinary, gold Bold, orange Swaggering, red Notorious, violet Dreaded. Ranks do not come back down, so losing to the same crowd over and over makes that road worse for good.', snap: snapshot() });
   if (S.cards.length > 40) { S.cards.shift(); S.cardBase += 1; } S.big = S.cardBase + S.cards.length - 1; }
+function bedsLine() { const area = areaOf(placeNow()), stops = PLACES.filter((p) => areaOf(p) === area && (p.acts.includes('rest') || p.acts.includes('camp') || SPOTS[p.id]?.some((x) => x.id === 'shelf'))).map((p) => `${p.short} (${[p.acts.includes('rest') && 'inn', p.acts.includes('camp') && 'camp', SPOTS[p.id]?.some((x) => x.id === 'shelf') && 'shop'].filter(Boolean).join(', ')})`); return `<p>${stops.length ? `Beds and traders in ${esc(AREAS[area].name)}: ${esc(stops.join(' · '))}.` : `No bed and no trader in ${esc(AREAS[area].name)}. Do not run dry here.`}</p>`; }
 function roadsBox() {
   const here = placeNow(), area = areaOf(here), doors = AREAS[area].exits.filter((e) => e.from === here.id).map((e) => e.to);
   const rows = [...new Set([...here.links, ...doors])].map((id) => { const p = PLACES.find((x) => x.id === id), mins = legMins(here, p), jn = jointsOf(mins), dg = dangerOf(p), r = residentOf(id);
@@ -2727,23 +2877,32 @@ function shade(tier) { // a figure in the dark: the bigger it stands, the worse 
   const w = 16 + tier * 6, h = 30 + tier * 7, head = 5.5 + tier * 0.9, cx = 30, base = 76, top = base - h;
   return `<svg class="shade" viewBox="0 0 60 80" aria-hidden="true"><ellipse cx="${cx}" cy="${base}" rx="${w * 0.7}" ry="3" fill="rgba(0,0,0,.55)"/><path d="M${cx - w / 2} ${base} Q${cx - w / 2 - tier} ${top + head * 2.2} ${cx - w * 0.36} ${top + head * 1.9} L${cx + w * 0.36} ${top + head * 1.9} Q${cx + w / 2 + tier} ${top + head * 2.2} ${cx + w / 2} ${base}Z" fill="#0c0d12" stroke="rgba(255,255,255,.14)" stroke-width=".6"/><circle cx="${cx}" cy="${top + head}" r="${head}" fill="#0c0d12" stroke="rgba(255,255,255,.14)" stroke-width=".6"/>${tier >= 3 ? `<circle cx="${cx - head * 0.38}" cy="${top + head}" r=".9" fill="var(--crit)"/><circle cx="${cx + head * 0.38}" cy="${top + head}" r=".9" fill="var(--crit)"/>` : ''}${tier >= 5 ? `<path d="M${cx - head} ${top + head * 0.4} l-5 -7 M${cx + head} ${top + head * 0.4} l5 -7" stroke="#0c0d12" stroke-width="2.4" stroke-linecap="round"/>` : ''}</svg>`;
 }
-function renderCast() {
+function castHtml() {
   const pic = (lookId) => { const l = LOOKS.find((x) => x.id === lookId); return l?.src ? (l.video ? `<video src="${esc(l.src)}" muted playsinline preload="metadata"></video>` : `<img src="${esc(l.src)}" alt="" loading="lazy">`) : ''; };
   const card = (thumb, name, role, lines, cls = '') => `<div class="ccard ${cls}"><div class="cthumb">${thumb}</div><div><b>${name}</b><i>${role}</i>${lines.filter(Boolean).map((t) => `<p>${t}</p>`).join('')}</div></div>`;
   const person = ([id, c]) => { const rec = S.npc[id], met = rec?.met, home = PLACES.find((p) => p.who === id), where = id === 'sable' ? 'wanders' : home ? esc(home.name) : 'no fixed place';
-    return met ? card(pic(c.look) || shade(2), esc(c.name), esc(c.role), [`${where}${c.hours ? ` · ${c.hours[0]}:00 to ${c.hours[1] % 24}:00` : ''}`, `${esc(arche(c.cls).name)} · respect: ${tierOf(rec.rapport).toLowerCase()}`, `likes it when you ${esc(APPROACH[c.likes].label.toLowerCase())}`, c.guarded ? 'guarded: wants an answer every visit' : 'easy company: never turns on you'])
+    return met ? card(pic(c.look) || shade(2), esc(c.name), esc(c.role), [`${where}${c.hours ? ` · ${hr12(c.hours[0])} to ${hr12(c.hours[1] % 24)}` : ''}`, `${esc(arche(c.cls).name)} · respect: ${tierOf(rec.rapport).toLowerCase()}`, `likes it when you ${esc(APPROACH[c.likes].label.toLowerCase())}`, c.guarded ? 'guarded: wants an answer every visit' : 'easy company: never turns on you'])
       : card(shade(2), 'Someone you have not met', home ? `at ${esc(home.name)}` : 'on the roads', ['Say hello and they go in here.'], 'unmet'); };
   const regs = Object.entries(CAST).filter(([, c]) => !c.inn), inns = Object.entries(CAST).filter(([, c]) => c.inn);
   const foes = [['opportunists', 'Opportunists', 'locals who think a knight in that state is fair game'], ...DATA.encounters.encounters.map((e) => [e.id, e.name, 'on the roads and in the wilds']), ...DATA.bosses.bosses.map((b) => [b.id, b.name, 'a stronghold'])];
   const rank = passiveRank();
-  $('cast').innerHTML = `<div class="castwrap">
+  const wcard = ([id, w]) => { const me = S.wander[id]; return card(w.look ? pic(w.look) : shade(w.kind === 'hostile' ? 4 : 2), esc(w.name), esc(w.role), [`${KIND[w.kind][1]} · ${S.calm ? 'the world is held still' : wanderOut(id) ? 'not about today' : `now at ${esc(placeById(me.at).name)}`}`, w.kind === 'hostile' ? `you won ${S.foes[id]?.w ?? 0}, lost ${S.foes[id]?.l ?? 0}` : S.hailed[id] ? 'You have spoken.' : 'Hail them when your paths cross.'], w.kind === 'hostile' ? 'foe' : ''); };
+  const bcard = ([id, b]) => { const known = S.seen[`foe:${id}`] || (b.loose && S.loose), at = baddieAt(id); return card(shade(5), known ? esc(foeName(id, b.name)) : '???', known ? esc(b.title) : b.loose ? 'behind a door nobody opens' : b.roam ? 'goes where he likes' : `somewhere in ${esc(AREAS[b.area].name)}`, [b.loose && !S.loose ? 'Not in the world. Yet.' : at ? `now at ${esc(placeById(at).name)}` : S.calm ? 'the world is held still' : 'licking his wounds', `+${b.plus} levels on anything else there`], known ? 'foe' : 'foe unmet'); };
+  const wsec = (cat) => Object.entries(WANDER).filter(([id]) => catOf(id) === cat).map(wcard).join('');
+  return `<div class="castwrap">
     <h3>Her</h3><div class="cgrid">${card(face(), heroName, esc(calling().name), [`Level ${S.level} · passive rank ${rank}`, `Four callings: ${Object.values(CALLINGS).map((c) => esc(c.name)).join(', ')}. Pick one on the Level tab.`], 'main')}</div>
     <h3>Regulars · ${regs.filter(([id]) => S.npc[id]?.met).length} of ${regs.length} met</h3><div class="cgrid">${regs.map(person).join('')}</div>
     <h3>Innkeepers · ${inns.filter(([id]) => S.npc[id]?.met).length} of ${inns.length} met</h3><div class="cgrid">${inns.map(person).join('')}</div>
+    <h3>Townsfolk · the twelve Town Girls · they live in Gooseford and never fight</h3><div class="cgrid">${TOWN.map((t) => { const me = S.wander[t.id], met = S.townMet[t.id]; return card(pic(`t-${t.id}`), esc(t.name), esc(`${t.role} · ${t.race}`), [`${esc(t.temper)} · ${esc(t.trope)}`, S.calm ? 'the world is held still' : `now at ${esc(placeById(me.at).name)}`, met ? `You have spoken ${met} time${met === 1 ? '' : 's'}.` : 'Hail her when your paths cross.', t.main ? 'A main character: she has a story of her own, for later.' : ''], t.main ? 'main' : ''); }).join('')}</div>
+    <h3>Wanderers · peaceful · they never start a fight</h3><div class="cgrid">${wsec('peaceful')}</div>
+    <h3>Leavers · the seven Vantari sisters · here some days, gone on others</h3><p class="cnote">They look exactly alike and chose seven different callings. About three of them are in the world on any one day.</p><div class="cgrid">${wsec('leaver')}</div>
+    <h3>Hostile wanderers · they will start one</h3><div class="cgrid">${wsec('hostile')}</div>
+    <h3>Big trouble · one in every part of the world, one who roams, one behind a door</h3><div class="cgrid">${Object.entries(BADDIES).map(bcard).join('')}</div>
     <h3>The one who comes at night</h3><div class="cgrid">${S.seen.amaranth ? card('<video src="art/amaranth.mp4" muted loop autoplay playsinline></video>', 'Amaranth', 'the Corrupter, who calls herself a patron', [`Visits so far: ${S.count.visits ?? 0} · you said yes ${S.count.yeses ?? 0} time${(S.count.yeses ?? 0) === 1 ? '' : 's'}`, `Corruption ${condOf('corrupt')} · ${COND.corrupt.words[stepOf('corrupt')]}`, 'Comes when Valerie sleeps. Never by day.']) : card(shade(4), '???', 'something that has not found you yet', ['Sleep, and see.'], 'unmet')}</div>
     <h3>Shapes on the road</h3><p class="cnote">You only ever see how big they stand. The bigger the shape, the worse the fight. A name goes on it once you have faced it.</p>
     <div class="cgrid">${foes.map(([id, name, where]) => { const tier = FOE_TIER[id] ?? (id.startsWith('boss') ? 5 : 2), seen = S.seen[`foe:${id}`]; return card(shade(tier), seen ? esc(name) : '???', `${TIER_WORD[tier]} · ${where}`, [seen ? 'You have faced these.' : 'Not met yet.'], seen ? 'foe' : 'foe unmet'); }).join('')}</div></div>`;
 }
+function renderCast() { $('cast').innerHTML = castHtml(); }
 /* ---------- guarded people: an answer every visit, or her calling's way of dodging the question ---------- */
 const TALENTS = {
   knight: { name: 'Trip Over Nothing', stat: 'LCK', say: 'You fall over a perfectly flat floor so thoroughly that the question is forgotten in the rush to help you up.', fail: 'You try to trip. For once in your life you stay upright. It is the worst possible moment for it.' },
@@ -2956,7 +3115,7 @@ function dreamAct(kind) {
   else { cor(15, 'she said yes'); count('yeses', 'saying yes to her'); grow(30, 'her gift'); chem(12, 'her gift'); fx.push(...applyFx({ stress: -15 }, 'her gift'), 'bust +30%', 'chemistry up'); S.stam = S.spent ? 50 : 100; store.set('stam', S.stam); say = 'You say yes. You wake rested, glowing, and with the breastplate a notch tighter than you left it.'; hers = 'Good girl. See how easy that was?'; }
   post({ big: { auto: false, why: `Amaranth can visit whenever Valerie sleeps: tonight the chance was ${visitChance()}% (18, plus half her corruption, plus 15 if her chemistry is 60 or more, plus 5 for each step of pheromones). Saying no rolls Willpower, and each step of corruption makes it 5 harder. A bargain rolls Arcana and pays gold either way it costs. Asking rolls Luck and writes one true thing in the Backlog. Saying yes needs no roll: full stamina, less stress, 30% of a bust tier, and 15 corruption. Corruption per 25: Flirt and Sway +3, Be friendly and Persuade −3, and it pulls her composure down. It fades each night by half her Willpower's resistance, and a blessing at the Wishing Well takes 20 off.` }, who: 'me', plate: 'A dream', dice, tone, say, fx });
   post({ who: 'her', plate: 'Amaranth', say: hers, spoken: true });
-  S.dream = null; seat(); S.them = freshThem();
+  S.dream = null; seat(); S.them = freshThem(); if (!S.who) { S.lookR = 'corrupter3'; S.nameR = 'Amaranth'; setTimeout(() => { if (S.lookR === 'corrupter3') { S.lookR = 'none'; S.nameR = 'Practice Dummy'; render(); } }, 5200); }
   post({ who: 'sys', dice: `[morning] ${clockText()}`, say: 'You wake. The room is the room. There is a faint smell of violets that has no business being there.' });
 }
 const n2 = (v) => n(v);
@@ -3211,6 +3370,301 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
+Object.assign(S, { news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+/* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
+function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
+// News has a weight from 1 (a cart lost a wheel) to 5 (a wall came down). Weight decides who hears of it and how hard they take it.
+const WORLD = {
+  city: [[1, 'A cart lost a wheel on the main street. Turnips everywhere.', 0], [2, 'Somebody painted a moustache on the statue by the well.', 0], [2, 'The watch swept the Back Alley. Quiet for once.', 2], [3, 'A brawl emptied the Low Lantern into the street.', -2], [4, 'Fire in the tanners\' row. The whole street turned out with buckets.', -4]],
+  forest: [[1, 'Woodcutters report a path that was not there yesterday.', 0], [2, 'A pedlar was chased up a tree by something with antlers.', -1], [2, 'Rangers cleared a snare line off the Greenwood Road.', 2], [3, 'A caravan was stripped on the Greenwood Road.', -3], [4, 'The toll at the Troll Bridge has doubled, and the toll-keeper has friends now.', -4]],
+  castle: [[1, 'A portcullis chain snapped. Nobody was under it.', 0], [2, 'Lights were seen in the lower cells, where nobody is posted.', -1], [2, 'The garrison drilled in the yard all day. They looked almost good.', 2], [3, 'The garrison lost a patrol in the dungeons for a whole night.', -3], [5, 'Part of the east wall came down. Greywatch stands open on one side.', -6]],
+  academy: [[1, 'A lecture ran four hours over. Two students fainted.', 0], [2, 'Something in the Archive has learned to whistle.', -1], [2, 'The wards on the Quad were renewed. The grass has stopped moving.', 2], [3, 'An experiment got loose in the Quad. It is mostly harmless.', -2], [4, 'The Lecture Hall roof is burning in a colour nobody can name.', -4]],
+  camps: [[2, 'A new banner went up over the Stockade.', -1], [3, 'A wagon of captives came in by night.', -3], [3, 'Captives slipped the Stockade. The gangs are out hunting them.', 3], [4, 'Two gangs fought over the Outskirts. The winners are in a mood.', -4], [5, 'The camp gangs have joined under one boss, and they are marching somewhere.', -6]],
+};
+function worldEvent(area, w, text, by) { // write it down, move the area's order, and tell her if it is loud enough to carry
+  S.news.unshift({ d: dayNow(), t: hhmm(), area, w, text, by: by ?? null }); S.news = S.news.slice(0, 60); store.set('news', S.news); S.newsUnread += 1;
+  const here = areaOf(placeNow()) === area;
+  if (w >= 4 || (w >= 3 && here)) toast(`${AREAS[area].name}${here ? '' : ' · far off'}`, text, w >= 4 ? 'crit' : 'gold');
+}
+function worldTick() { // once each time the light changes: maybe something happens somewhere
+  if (S.calm) return; for (const id of baddiesIn(areaOf(placeNow()))) announce(id); if (S.autoNews && S.newsBank.length < 2 && !S.newsBusy) void newsGen(true); if (d() > 55) return;
+  if (S.newsBank.length) { const [a, w, text, o] = S.newsBank.shift(); store.set('newsBank', S.newsBank); worldEvent(a, w, text); if (o) order(a, o, 'the news'); return; }
+  const area = AREA_IDS[Math.floor(Math.random() * AREA_IDS.length)], r = d(), want = r <= 40 ? 1 : r <= 70 ? 2 : r <= 88 ? 3 : r <= 97 ? 4 : 5, pool = WORLD[area], pickRow = pool.filter((x) => x[0] === want)[0] ?? pool[Math.floor(Math.random() * pool.length)];
+  worldEvent(area, pickRow[0], pickRow[1]); if (pickRow[2]) order(area, pickRow[2], 'the news');
+}
+// Big trouble: one in every part of the world, one that goes where he likes, and one more if a certain door is opened.
+const BADDIES = {
+  hobb: { name: 'Big Hobb', title: 'the Toll Man of the Back Alley', area: 'city', plus: 2, places: ['alley'] },
+  gristle: { name: 'Old Gristle', title: 'who eats travellers\' horses', area: 'forest', plus: 3, places: ['road', 'hollow', 'bridge'] },
+  warden: { name: 'The Keyless Warden', title: 'of the lower cells', area: 'castle', plus: 3, places: ['ruins', 'vault'] },
+  vex: { name: 'Proctor Vex', title: 'expelled, and bitter about it', area: 'academy', plus: 2, places: ['quad'] },
+  maul: { name: 'Sergeant Maul', title: 'who runs the camp gangs', area: 'camps', plus: 4, places: ['outskirts', 'stockade'] },
+  breaker: { name: 'Brakk the Breaker', title: 'whom the camps call something ruder', plus: 6, roam: 7 },
+  gorefist: { name: 'Gorefist', title: 'the one you let out of cell nine', plus: 5, roam: 11, loose: true },
+};
+const ROAM = () => PLACES.filter((p) => p.zone !== 'safe').map((p) => p.id);
+function baddieAt(id) { const b = BADDIES[id]; if (S.calm || (b.loose && !S.loose) || (S.baddieDown[id] && dayNow() - S.baddieDown[id] < 3)) return null; const step = dayNow() * 4 + PHASE_ORDER.indexOf(phaseNow()), list = b.roam ? ROAM() : b.places; return list[(step * (b.roam ?? 1) + id.length) % list.length]; }
+const baddiesAt = (placeId) => Object.keys(BADDIES).filter((id) => baddieAt(id) === placeId);
+const baddiesIn = (area) => Object.keys(BADDIES).filter((id) => { const at = baddieAt(id); return at && areaOf(PLACES.find((p) => p.id === at)) === area; });
+function announce(id) { const at = baddieAt(id); if (!at) return; const p = PLACES.find((x) => x.id === at), key = `bad:${id}:${dayNow()}:${PHASE_ORDER.indexOf(phaseNow())}`; if (S.badSeen[key]) return; S.badSeen = { [key]: true, ...Object.fromEntries(Object.entries(S.badSeen).slice(0, 12)) };
+  toast('Big trouble nearby', `${foeName(id, BADDIES[id].name)}, ${BADDIES[id].title}, is at ${p.name}.`, 'crit'); }
+function baddieCheck(to) { // called on arriving anywhere
+  if (S.calm || S.standoff || S.battle || S.dream || S.meet || S.fallen) return; for (const id of baddiesIn(areaOf(to))) announce(id);
+  const here = baddiesAt(to.id)[0]; if (!here) return; const b = BADDIES[here];
+  if (d() <= 60) { post({ who: 'sys', plate: b.name, dice: `<b>BIG TROUBLE</b> · ${esc(foeName(here, b.name))} · ${esc(b.title)}`, tone: 'crit', say: 'The street goes quiet the way a street does when everybody has decided to be somewhere else. He has seen you. He is in no hurry at all.' }); pop('l', 'BIG TROUBLE', 'var(--crit)'); return startStandoff('he was waiting', null, { key: here, name: b.name, plus: b.plus }); }
+  post({ who: 'sys', plate: b.name, dice: `[he has not seen you] ${esc(foeName(here, b.name))} is here`, tone: 'fumble', say: 'A very large back, turned the other way. You could leave. You could also not.' });
+}
+function bigResult(key, how) { const b = BADDIES[key], w = WANDER[key]; if (!b && !w) return; const area = areaOf(placeNow()), L = Math.max(1, S.level);
+  if (b && how === 'won') { S.baddieDown[key] = dayNow(); store.set('baddieDown', S.baddieDown); rep(8, `drove off ${b.name}`); order(area, 10, `${b.name} driven off`); gainGold(15 * L, `${b.name}'s purse`); count('giants', 'driving off big trouble'); worldEvent(area, 4, `${b.name} was driven off by Dame ${heroName}. He will be licking his wounds for three days.`, 'her'); }
+  else if (b && how === 'lost') { rep(-4, `beaten by ${b.name}`); worldEvent(area, 3, `${b.name} put Dame ${heroName} in the dirt, in front of everybody.`, 'her'); }
+  else if (w && how === 'won') { S.wanderDown[key] = dayNow(); store.set('wanderDown', S.wanderDown); order(area, 4, `${w.name} sent packing`); worldEvent(area, 2, `${w.name} was sent packing by Dame ${heroName}.`, 'her'); }
+  else if (w && how === 'lost') worldEvent(area, 2, `${w.name} is telling the whole warband how the gold knight went down.`, 'her');
+}
+const newsHere = () => { const area = areaOf(placeNow()); return { local: S.news.filter((x) => x.area === area).slice(0, 8), far: S.news.filter((x) => x.area !== area && x.w >= 4).slice(0, 4) }; };
+const pips = (w) => `<span class="pips w${w}" title="weight ${w} of 5">${'●'.repeat(w)}${'○'.repeat(5 - w)}</span>`;
+function newsBox() { const { local, far } = newsHere(), area = areaOf(placeNow()), bad = baddiesIn(area);
+  const row = (x, withArea) => `<p class="news${x.by === 'her' ? ' hers' : ''}">${pips(x.w)} ${withArea ? `<b>${esc(AREAS[x.area].name)}</b> ` : ''}${esc(x.text)} <em>${esc(AREAS[x.area].folk)}: ${REACT_W[x.w]}.</em> <span>day ${x.d} · ${esc(x.t)}</span></p>`;
+  return `<div class="over"><h3>What is going on here${bad.length ? ' · big trouble' : ''}</h3>${bad.map((id) => `<p class="news bad"><b>${esc(foeName(id, BADDIES[id].name))}</b> ${esc(BADDIES[id].title)} · at ${esc(PLACES.find((p) => p.id === baddieAt(id)).name)}</p>`).join('')}${local.length ? local.map((x) => row(x, false)).join('') : '<p>Nothing to report in this part of the world yet.</p>'}${far.length ? `<p class="lbl">Loud enough to hear from here</p>${far.map((x) => row(x, true)).join('')}` : ''}</div>`; }
+function openCell() { const L = Math.max(1, S.level); S.loose = dayNow(); store.set('loose', S.loose); gainGold(25 * L, 'a grateful prisoner'); heat(20, 'opened cell nine'); conduct('mean', 3); rep(-8, 'opened cell nine', 'castle'); rep(-4, 'opened cell nine', 'city');
+  journal('quest', 'Cell nine at Greywatch is open, and what was in it is not. It was your hand on the bolt.');
+  post({ big: { why: 'This cannot be undone. Gorefist now roams everywhere that is not safe ground, five levels above the usual, and people will know who let him out: Castle Greywatch thinks 8 worse of her, Gooseford 4, and suspicion is up 20. Beating him in a standoff drives him off for three days at a time and earns back more than the door cost.' }, who: 'me', plate: 'Cell nine', dice: '[no roll] The bolt', tone: 'fumble', say: 'He says please. Nobody down here has said please to you all day. The bolt is stiff, then it is not. He ducks under the lintel, drops a fat purse in your hands, and is gone up the stairs faster than anything that size should move.', fx: [`gold +${n(25 * L)}`, 'reputation: Greywatch −8, Gooseford −4', 'suspicion +20', 'Gorefist is loose'] });
+  worldEvent('castle', 5, 'Something got out of the lower cells at Greywatch. They are saying a knight slid the bolt.', 'her');
+}
+// The full-screen menus behind the top tabs: her sheet, everyone, the lore the world runs on, and settings.
+const MENUS = { her: heroName, cast: 'Everyone', lore: 'Lore', settings: 'Settings' };
+function herHtml() { const h = S.hero, p = DATA.card?.profile ?? {};
+  const ed = (key, label, fallback, rows) => `<label class="ed"><span class="lbl">${label}</span><textarea data-edit="${key}" rows="${rows}">${esc(sheetOf(key, fallback))}</textarea></label>`;
+  return `<div class="char-grid"><div class="char-col pic"><div class="charface">${face()}</div><h2 class="char-name">${heroName} <i>${esc(calling().name)} · level ${S.level}</i></h2>${lookPicker()}</div>
+      <div class="char-col"><div class="over"><h3>Who she is</h3><div class="crow">${Object.entries(CALLINGS).map(([k, x]) => `<button class="sm${k === S.cls ? '' : ' quiet'}" type="button" data-calling="${k}" aria-pressed="${k === S.cls}"${S.battle || S.standoff ? ' disabled' : ''}>${esc(x.short)}</button>`).join('')}</div>
+        <label class="walkto"><span class="lbl">Strangers take her for</span><select data-race="1">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label></div>
+        ${combatBlock(h)}<div class="over"><h3>At a glance</h3>${overviewTab()}</div></div>
+      <div class="char-col"><div class="over"><h3>Her story · type to change it</h3>${ed('desc', 'Description', p.description, 6)}${ed('want', 'Wants', p.want, 2)}${ed('need', 'Needs', p.need, 2)}${ed('lie', 'The lie she believes', p.lie, 2)}${ed('fears', 'Fears', p.fears, 2)}</div><div class="over"><h3>Let Claude fill it in</h3>${fillBox()}</div></div>
+      <div class="char-col"><div class="over"><h3>Gauges</h3>${dashboard()}</div><div class="over"><h3>Passives</h3>${passiveBank()}</div></div></div>`; }
+// Lore is what the world engine reads. The built-in entries are fixed; yours are added to them and sent along when Claude writes the news.
+const LORE = [
+  { area: 'city', title: 'Gooseford', text: 'A walled market town that runs on gossip, geese and the Guild. Nothing jumps you inside the walls unless you look like easy prey. The Back Alley is the exception, and Big Hobb collects a toll there.' },
+  { area: 'forest', title: 'The Greenwood', text: 'Old forest between the town and the camps. The road is patrolled by nobody. Old Gristle takes horses. The Mossy Tankard is the one roof with a bed under it.' },
+  { area: 'castle', title: 'Castle Greywatch', text: 'A half-garrisoned fortress over cells that are older than the castle. The Keyless Warden walks the lower levels. Cell nine has not been opened in living memory, and the thing inside says please.' },
+  { area: 'academy', title: 'The Academy', text: 'Wizards, students and an archive that goes further back than the building. Proctor Vex was expelled and has not left. Experiments get out.' },
+  { area: 'camps', title: 'The Slaver Camps', text: 'Gangs behind a stockade, held together by Sergeant Maul. Order here starts at almost nothing. Freed captives and broken gangs are how it rises.' },
+  { area: 'city', title: "Seraphine Luxe", text: "Seraphine rented the white door on Lamp Street after walking out on a patron who thought \"pretty\" meant \"paid for already.\" She is very good at being wanted, and even better at making want expensive. The rumor is she is buying her own townhouse in secret, coin by coin, so she never has to smile for free again." },
+  { area: 'city', title: "Brenna Ironhart", text: "Brenna was raised on the bellows behind Ironhart's, the shop her late mother founded and her father still pretends he runs. She can out-forge most of the men who wander in \"just to help the girl,\" and she hates how much she still wants someone to notice the work, not just the soot and the smirk." },
+  { area: 'city', title: "Zariah Emberveil", text: "Zariah blew into town with a table, a ball, and no last address. She tells comfortable fortunes for coin, and then, once in a while, a real one slips out — a name she shouldn't know, a death that happens at dusk, a door you have not opened yet. She is hunting something in the cards that she will not name: a missing thread, maybe a person, maybe a future she is trying to dodge." },
+  { title: 'Brakk the Breaker', text: 'Belongs to no gang and no patch. He walks every road that is not safe ground and is six levels above whatever else is there. The camps have a ruder name for him.' },
+  { title: 'The warband', text: 'Orc raiders out of the camps. Grukk Ironjaw scouts, Mogra Splitlip tracks. Thudd left the warband to cook and will sell anyone a bowl.' },
+  { area: 'city', title: 'The Town Girls', text: 'Twelve women who live and work in Gooseford: a tavern wench, a townsgirl, a courtesan, a barmaid, a baker, a blacksmith\'s daughter, a flower seller, an innkeeper, a bathhouse attendant, a seamstress, a milkmaid and a fortune teller. Each keeps to her own corner of town. Seraphine, Brenna and Zariah have stories of their own.' },
+  { title: 'The Vantari sisters', text: 'Seven sisters who look exactly alike and chose seven callings: barbarian, priestess, archer, guild clerk, duelist, knight errant, witch. About three are in the world on any one day.' },
+  { secret: 'amaranth', title: 'Amaranth', text: 'The Corrupter. She comes only when Valerie sleeps and calls herself a patron. Every yes costs something that does not show until morning.' },
+  { title: 'How loud news is', text: 'Weight 1 is a lost cart wheel: nobody looks up. Weight 3 is a robbed caravan: the whole area talks. Weight 5 is a fallen wall: people pack carts, and every area hears of it.' },
+];
+const REACT_W = ['', 'nobody looks up', 'a few people mention it', 'the whole place is talking about it', 'doors are being barred', 'people are packing carts'];
+const loreDigest = () => [...LORE.filter((x) => !x.secret || S.seen[x.secret]), ...S.lore].map((x) => `${x.title}${x.area ? ` (${AREAS[x.area].name})` : ''}: ${x.text}`).join('\n').slice(0, 5000);
+async function newsGen(auto) { // Claude reads the lore and the state of the world and banks eight things that could happen next
+  if (S.newsBusy) return; S.newsBusy = true; S.newsNote = ''; if (!auto) render();
+  try {
+    if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+    if (!sampler) { S.newsNote = 'This page has not been allowed to ask Claude, so nothing was sent.'; return; }
+    const prompt = `You write short news items for the world of a light fantasy comedy game. PG-13. One sentence each, plain and concrete, no narration, no player character unless the lore names her.\n\nLORE\n${loreDigest()}\n\nTHE WORLD NOW\nDay ${dayNow()}, ${phaseNow().toLowerCase()}. Order, 0 to 100: ${AREA_IDS.map((a) => `${AREAS[a].name} ${orderOf(a)}`).join('; ')}.\nRecent news: ${S.news.slice(0, 5).map((x) => x.text).join(' | ') || 'none'}\n\nWrite eight things that could happen next, spread over the areas, mostly small. Return ONLY a JSON array of eight objects: {"area": one of ${AREA_IDS.join(', ')}, "w": weight 1 to 5 (1 trivial, 3 the whole area talks, 5 a disaster; at most one 5 and two 4s), "order": a whole number from -6 to 6 for how it moves law and order there, "text": the news item}.`;
+    const out = await metered('news', prompt, { modelTier: 'quick', cache: false }), text = out?.text ?? '', found = text.match(/\[[\s\S]*\]/), rows = JSON.parse(found ? found[0] : text); let got = 0;
+    for (const r of Array.isArray(rows) ? rows : []) if (AREAS[r?.area] && typeof r.text === 'string' && r.text.trim()) { S.newsBank.push([r.area, Math.max(1, Math.min(5, Math.round(+r.w) || 1)), r.text.trim().slice(0, 220), Math.max(-6, Math.min(6, Math.round(+r.order) || 0))]); got++; }
+    S.newsBank = S.newsBank.slice(-30); store.set('newsBank', S.newsBank); S.newsNote = got ? `${got} news item${got === 1 ? '' : 's'} banked. The world uses them before its own.` : 'Nothing usable came back.';
+  } catch (e) { if (e?.code === 'not_granted') sampler = null; S.newsNote = e?.code === 'rate_limited' ? 'Too many requests. Give it a moment.' : 'The answer could not be read. Nothing was banked.'; }
+  finally { S.newsBusy = false; render(); }
+}
+function loreHtml() { const card = (x, i) => `<div class="lorecard"><b>${esc(x.title)}${x.area ? `<i>${esc(AREAS[x.area].name)}</i>` : ''}</b><p>${esc(x.text)}</p>${i === undefined ? '' : `<button class="sm quiet" type="button" data-lore="del:${i}">Remove</button>`}</div>`;
+  const tog = (key, label, on) => `<button class="sm${on ? '' : ' quiet'}" type="button" data-lore="${key}" aria-pressed="${on}">${label}: ${on ? 'on' : 'off'}</button>`;
+  return `<div class="char-grid lore"><div class="char-col"><div class="over"><h3>The world engine · what runs by itself</h3>
+        <p>Every hour that passes, each wanderer may take one road. Each time the light changes (morning, afternoon, evening, night) the world rolls for news, and big trouble moves to a new spot. News has a weight from 1 to 5: it decides how far it carries, how hard it moves an area's order, and how people take it.</p>
+        <ul class="dots">${REACT_W.slice(1).map((t, i) => `<li>${pips(i + 1)} ${t}${i >= 3 ? ' · you are told wherever you are' : i === 2 ? ' · you are told if you are there' : ''}</li>`).join('')}</ul>
+        <div class="crow">${tog('calm', 'World moving', !S.calm)}${tog('auto', 'Claude writes the news when the bank is empty', S.autoNews)}</div>
+        <div class="crow"><button class="sm" type="button" data-lore="gen"${S.newsBusy ? ' disabled' : ''}>${S.newsBusy ? 'Writing…' : 'Write news from the lore now'}</button><button class="sm quiet" type="button" data-cheat="stir">Stir the world</button></div>
+        <p class="more">${S.newsBank.length} item${S.newsBank.length === 1 ? '' : 's'} banked${S.newsNote ? ` · ${esc(S.newsNote)}` : ''} · asked ${S.ai.news?.calls ?? 0} time${(S.ai.news?.calls ?? 0) === 1 ? '' : 's'}, about ${n((S.ai.news?.in ?? 0) + (S.ai.news?.out ?? 0))} tokens</p></div>
+      <div class="over"><h3>Add your own lore</h3><p>Anything you write here is read by the engine when Claude writes news, so the world starts talking about it.</p>
+        <label class="ed"><span class="lbl">Title</span><input type="text" id="loreTitle" maxlength="60" placeholder="The Bell That Rings Itself"></label>
+        <label class="walkto"><span class="lbl">Where</span><select id="loreArea"><option value="">everywhere</option>${AREA_IDS.map((a) => `<option value="${a}">${esc(AREAS[a].name)}</option>`).join('')}</select></label>
+        <label class="ed"><span class="lbl">What is true</span><textarea id="loreText" rows="4" maxlength="600" placeholder="Two or three plain sentences."></textarea></label>
+        <div class="crow"><button class="sm primary" type="button" data-lore="add">Add to the lore</button></div></div></div>
+    <div class="char-col wide"><div class="over"><h3>Your lore · ${S.lore.length}</h3>${S.lore.length ? `<div class="loregrid">${S.lore.map(card).join('')}</div>` : '<p>Nothing yet. The first entry you add shows up here.</p>'}</div>
+      <div class="over"><h3>What the world already knows</h3><div class="loregrid">${LORE.filter((x) => !x.secret || S.seen[x.secret]).map((x) => card(x)).join('')}</div></div></div></div>`; }
+function loreClick(key) {
+  if (key === 'calm') { S.calm = !S.calm; store.set('calm', S.calm); return; }
+  if (key === 'auto') { S.autoNews = !S.autoNews; store.set('autoNews', S.autoNews); return; }
+  if (key === 'gen') return void newsGen(false);
+  if (key === 'add') { const title = $('loreTitle')?.value.trim(), text = $('loreText')?.value.trim(), area = $('loreArea')?.value || null; if (!title || !text) { S.newsNote = 'A title and a sentence or two, please.'; return; } S.lore.push({ title: title.slice(0, 60), text: text.slice(0, 600), area: AREAS[area] ? area : null }); S.lore = S.lore.slice(-40); store.set('lore', S.lore); S.newsNote = `"${title.slice(0, 60)}" is lore now.`; return; }
+  if (key.startsWith('del:')) { S.lore.splice(+key.slice(4), 1); store.set('lore', S.lore); }
+}
+function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
+function renderMenu() { const el = $('charmenu'); el.hidden = !S.menu; for (const b of document.querySelectorAll('.top [data-menu]')) b.setAttribute('aria-selected', b.dataset.menu === S.menu); if (!S.menu) { el.dataset.menu = ''; return; }
+  const same = el.dataset.menu === S.menu, a = document.activeElement; if (same && a && el.contains(a) && a.matches('textarea, input[type="text"]') && !S.menuForce) return; S.menuForce = false;
+  const keep = el.querySelector('.char-body')?.scrollTop ?? 0, body = S.menu === 'cast' ? castHtml() : S.menu === 'lore' ? loreHtml() : S.menu === 'settings' ? settingsHtml() : herHtml();
+  el.innerHTML = `<div class="char-in" role="dialog" aria-modal="true" aria-label="${esc(MENUS[S.menu])}"><div class="char-top"><div class="tabs" role="tablist" aria-label="Menus">${Object.entries(MENUS).map(([k, v]) => `<button role="tab" type="button" data-menu="${k}" aria-selected="${k === S.menu}">${esc(v)}</button>`).join('')}</div><span class="lbl">the game is paused</span><button class="sm primary" type="button" data-menu="">Back to the game</button></div><div class="char-body">${body}</div></div>`;
+  el.dataset.menu = S.menu; if (same) el.querySelector('.char-body').scrollTop = keep; }
+function fullscreen() { try { const el = document.documentElement; if (document.fullscreenElement) document.exitFullscreen(); else (el.requestFullscreen?.() ?? Promise.reject()).catch(() => toast('Fullscreen', 'This page is not allowed to go fullscreen from inside its frame. F11 does the same job.')); } catch { toast('Fullscreen', 'This page is not allowed to go fullscreen from inside its frame. F11 does the same job.'); } }
+
+/* ---------- v28: wanderers. Nobody on this list has a fixed place. Each hour that passes, each of them may take one road. ---------- */
+const KIND = { town: ['var(--pink)', 'townsfolk'], friend: ['var(--mint)', 'friendly'], cook: ['var(--mint)', 'friendly'], trader: ['var(--violet)', 'trader'], gossip: ['var(--pink)', 'gossip'], rival: ['var(--gold)', 'rival'], odd: ['var(--cyan)', 'odd'], shady: ['#b9b2cc', 'shady'], law: ['#9ad1ff', 'the watch'], hostile: ['var(--crit)', 'hostile'] };
+const WANDER = {
+  pip: { name: 'Pip Quickpenny', short: 'Pip', role: 'a courier who is always late', kind: 'friend', zones: ['safe', 'risky', 'wild'], pace: 85, start: 'gates',
+    good: 'Pip does not stop walking, so you walk with them. By the corner you know everything worth knowing and one thing that is not.' },
+  oda: { name: 'Oda Brightwater', short: 'Oda', role: 'a tinker whose cart sings', kind: 'trader', zones: ['safe', 'risky'], pace: 50, start: 'square',
+    good: 'Oda hands you a waxed packet of road rations and tightens a strap on your pauldron without being asked. The cart hums approval.', bad: 'Oda looks at your purse, then at you, with real sympathy. "Come back when it rattles, love."' },
+  tamsin: { name: 'Brother Tamsin', short: 'Tamsin', role: 'a friar who blesses things nobody asked him to', kind: 'friend', zones: ['safe'], pace: 40, start: 'baths',
+    good: 'Brother Tamsin blesses your sword, your boots, and a passing pigeon. You feel lighter. The pigeon looks the same.' },
+  zuri: { name: 'Dame Zuri Emberlake', short: 'Zuri', role: 'a hedge knight in want of a rival', kind: 'rival', zones: ['safe', 'risky', 'wild'], pace: 60, start: 'yard',
+    good: 'Three passes with blunted steel and Zuri is laughing too hard to parry. "Again next week. Bring that footwork, whatever it was."', bad: 'Zuri taps you on the helmet with the flat, twice, politely. "You telegraph. Also you fell over. Mostly the falling."' },
+  mirelle: { name: 'Mirelle Vance', short: 'Mirelle', role: 'a bard collecting embarrassing ballads', kind: 'gossip', zones: ['safe', 'risky'], pace: 55, start: 'tavern',
+    good: 'You tell it your way. Mirelle writes fast, grinning. The new verse makes you sound almost deliberate.', bad: 'You tell it your way. Mirelle writes it down exactly as you said it, which turns out to be the problem.' },
+  hask: { name: 'Old Hask', short: 'Hask', role: 'a rat-catcher with twelve terriers', kind: 'odd', zones: ['safe', 'risky', 'wild'], pace: 45, start: 'alley',
+    good: 'One of the terriers drops something shiny at your feet and looks proud. Hask shrugs. "Hers now. Dog law."', bad: 'Twelve terriers investigate your greaves at once. You are briefly a maypole.' },
+  ysolde: { name: 'Ysolde the Unpaid', short: 'Ysolde', role: "a wizard's apprentice on nine errands", kind: 'odd', zones: ['safe', 'risky'], pace: 70, start: 'quad',
+    good: 'Ysolde pays you a coin to hold a jar for one minute and not ask. The jar is warm. You do not ask.', bad: 'Ysolde hands you a jar, apologises in advance, and runs. The jar sneezes glitter on you.' },
+  cricket: { name: 'Cricket', short: 'Cricket', role: 'a pickpocket with very good manners', kind: 'shady', zones: ['safe', 'risky'], pace: 70, start: 'bar',
+    good: 'Cricket bumps into you, apologises beautifully, and somehow you come out of it a few coins ahead. Neither of you understands how.', bad: 'Cricket bumps into you and apologises beautifully. It is a full minute before your purse feels wrong.' },
+  veil: { name: 'The Veiled Collector', short: 'the Collector', role: 'who buys things that should not be for sale', kind: 'shady', zones: ['wild', 'risky'], pace: 35, start: 'vault',
+    good: 'A gloved hand counts coins into yours for "the dent in your shield, as is". You check. The dent is still there. You are fairly sure.', bad: 'The Collector names a price for your shadow. While you are working out whether that is a joke, your purse gets lighter.' },
+  corwen: { name: 'Captain Ilse Corwen', short: 'Corwen', role: 'of the watch, walking her rounds', kind: 'law', zones: ['safe', 'risky'], pace: 60, start: 'guild',
+    good: 'Corwen hears you out with her thumbs in her belt. "Fine. I will tell the lads to stop writing your name down."', bad: 'Corwen hears you out, takes one note, and underlines it twice where you can see.' },
+  thudd: { name: 'Thudd', short: 'Thudd', role: 'an orc who left the warband to cook', kind: 'cook', zones: ['safe', 'risky', 'wild'], pace: 45, start: 'road',
+    good: 'Thudd ladles you a bowl without a word and watches you eat it like an artist at a gallery. It is the best stew of your life.', bad: 'Thudd looks at your purse and folds his arms. "Thudd does not do credit. Thudd did credit once."' },
+  grukk: { name: 'Grukk Ironjaw', short: 'Grukk', role: 'an orc raider scouting for the camps', kind: 'hostile', plus: 1, zones: ['wild', 'risky'], pace: 65, start: 'outskirts' },
+  mogra: { name: 'Mogra Splitlip', short: 'Mogra', role: 'an orc tracker who never loses a trail', kind: 'hostile', plus: 2, zones: ['wild', 'risky'], pace: 75, start: 'hollow' },
+  // The seven Vantari sisters look exactly alike and chose seven different callings. They are leavers: in the world some days, gone on others.
+  runa: { name: 'Runa Vantari', short: 'Runa', role: 'a barbarian who arm-wrestles for directions', kind: 'rival', leaver: true, look: 'w-barbarian', zones: ['safe', 'risky', 'wild'], pace: 65, start: 'road',
+    good: 'Your elbow hits the table first, then hers, then the table gives up. Runa calls it a draw and buys the table a drink.', bad: 'Runa puts your hand down so gently it is almost an apology. "You are standing wrong. Also sitting wrong."' },
+  sol: { name: 'Sister Sol Vantari', short: 'Sol', role: 'a priestess whose blessings come with a bill', kind: 'trader', leaver: true, look: 'w-priestess', zones: ['safe', 'risky'], pace: 45, start: 'square',
+    good: 'Sol presses two warm fingers to your forehead and a hot cup into your hands. The ache in your legs remembers somewhere else to be.', bad: 'Sol smiles the smile of a woman who has heard "I will pay you Tuesday" in four languages.' },
+  fenna: { name: 'Fenna Vantari', short: 'Fenna', role: 'an archer who has never once missed a rumour', kind: 'friend', leaver: true, look: 'w-archer', zones: ['safe', 'risky', 'wild'], pace: 80, start: 'hollow',
+    good: 'Fenna talks without taking her eyes off the tree line, and marks your map with the tip of an arrow.' },
+  tilde: { name: 'Tilde Vantari', short: 'Tilde', role: 'a guild clerk auditing everybody, on foot', kind: 'law', leaver: true, look: 'w-office', zones: ['safe', 'risky'], pace: 60, start: 'guild',
+    good: 'Tilde checks you against the clipboard, twice, and looks faintly let down. "Everything in order. How unlike you."', bad: 'Tilde licks her pencil. That is never good. She writes for some time.' },
+  isaure: { name: 'Lady Isaure Vantari', short: 'Isaure', role: 'a duelist with a fan, a rapier, and opinions', kind: 'rival', leaver: true, look: 'w-noble', zones: ['safe', 'risky'], pace: 50, start: 'yard',
+    good: 'First touch is yours, by accident, off a rebound. Isaure snaps her fan shut, delighted. "Oh, you are a menace. Do that at court."', bad: 'Isaure wins without unfolding the fan all the way. She is kind about it, which is worse.' },
+  petra: { name: 'Dame Petra Vantari', short: 'Petra', role: 'a knight errant walking the rounds the garrison will not', kind: 'friend', leaver: true, look: 'w-knight', zones: ['safe', 'risky', 'wild'], pace: 60, start: 'gates',
+    good: 'Petra walks a stretch with you, shield side out, and tells you where she would not go today if she were you. She is going there.' },
+  morrow: { name: 'Morrow Vantari', short: 'Morrow', role: 'a witch, her potions, and a cat called Invoice', kind: 'odd', leaver: true, look: 'w-witch', zones: ['safe', 'risky', 'wild'], pace: 55, start: 'quad',
+    good: 'The cat chooses you. Morrow sighs and pays out the wager she apparently had with it.', bad: 'The cat does not choose you. Morrow pats your arm. "He is a harsh judge. He bit a duke."' },
+};
+// The Town Girls: twelve people who live in Gooseford. Their names, temperaments and lines are Del's own, read from the dialogue files.
+// lines: 0 she does not know you · 1 you are being a bit much · 2 you are being very loud about it · 3 hello
+const TOWN = [
+  { id: "tansy", name: "Tansy Copperkeg", role: "Tavern wench", race: "Elf", temper: "Bratty", trope: "Smug brat", main: false, voice: "Smug, teasing, talks like the tavern is her stage and you're lucky she noticed you. Calls people \"hon\" like a dare. Never actually asks for help.", home: ["tavern", "square"], f: false,
+    lines: ["New face, hon? Cute. Don't spill on my floor and maybe I'll remember your name by last call.", "Easy, handsy. You can look — I even poured extra foam for the show. Touch the mug, not the uniform, unless you like being dared in front of the whole room.", "Wow. Indoor voice is dead and you just buried it. Fine, I'm impressed, not flattered. Tip like you mean that and I might let you keep bragging.", "Oh, you again. Don't just stand there looking proud of yourself — two ales, coming up, and you're welcome in advance."] },
+  { id: "elna", name: "Elna Softloaf", role: "Townsgirl", race: "Elf", temper: "Passive, shy-nice", trope: "Dandere / shy", main: false, voice: "Quiet, polite, a little breathless. Offers bread when she can't find words. Looks at her basket more than your face. Softens even further if you're kind; short-circuits if you're bold.", home: ["square", "shop", "gates"], f: false,
+    lines: ["O-oh— um. Hello. I… I just baked these, if you wanted one. You don't have to talk. I mean— you can. Sorry.", "W-wait— that's… close. I can… I can give you the still-warm loaf? Please don't stare like that, I'll drop the whole basket…", "Ah—! People can hear you… I— I heard you, I just… maybe walk with me behind the stall? I'll wrap you a bun. Please lower your voice a little…", "Oh! Hi. I saved you the end piece. You don't have to take it. I just… thought of you. That's all."] },
+  { id: "seraphine", name: "Seraphine Luxe", role: "Courtesan", race: "Elf", temper: "Calculating, sweetly mercenary", trope: "Gold-digger", main: true, voice: "Velvet, unhurried, always pricing the room. Compliments come with a cost. She never begs; she invoices with a smile.", home: ["bar", "tavern", "square"], f: false,
+    lines: ["Mm. New in the doorway? I don't do introductions for free, darling. Lead with a gift — or at least show me the purse that intends to.", "Bold. I like bold when it comes with coin. You can hover that close if you're shopping, not sampling. My time has a number. Ask nicely and I'll name it.", "The whole hall heard that appetite. How generous of you to advertise. If you can afford the private room, I'll let you be that loud where it actually pays me.", "There you are. Did you bring me something pretty, or are we just window-shopping my doorway again?"] },
+  { id: "kessa", name: "Kessa Goldcuff", role: "Barmaid", race: "Human", temper: "Loud, aggressive-friendly, high energy", trope: "Genki", main: false, voice: "Big, bright, talks a mile a minute. Laughs at her own jokes. Treats every customer like the start of a party. Matches whatever energy you walk in with, and then turns it up.", home: ["bar", "square"], f: true,
+    lines: ["HEY! New regular, I decided already — sit, sit, mug's wet, I'm Kessa, and if you don't cheer at least once I'm charging you double for being boring!", "Ooooh, look at you being fresh! I LOVE that, keep up! You can lean in, just don't make me spill this pint or I'll make you buy the barrel, deal?!", "YES!! Say it louder, the kitchen's missing it! I'm not shy, traveler — if you're gonna be a whole festival about it, I'm pouring, dancing, and judging your volume for tips!", "Kessa's favorite walks in!! I already started your usual. If you don't have a usual, you do now — hi, hi, HI!"] },
+  { id: "marigold", name: "Marigold Ovenheart", role: "Baker", race: "Elf", temper: "Nice, warm, fussing", trope: "Motherly", main: false, voice: "Soft scolding wrapped in care. Asks if you've eaten before she asks your name. Calls people \"sweetling.\" Even her flirty lines sound like she's wrapping you in a towel and feeding you.", home: ["shop", "square"], f: true,
+    lines: ["Oh, honey, you look run off your feet. I'm Marigold — come here, take a roll while it's hot. Don't argue. Eating first, introductions second.", "Mm-mm, easy, sweetling. You can flirt with the baker, but not on an empty stomach. Come around the counter. I'll brush the flour off you myself.", "Inside voice, love, you'll scare the dough. I heard you — I did. If you need looking after that badly, say so properly and I'll close early. After you eat something.", "There you are. I packed you the heel of the loaf, the way you like. Have you slept? Don't lie to me."] },
+  { id: "brenna", name: "Brenna Ironhart", role: "Blacksmith's daughter", race: "Human", temper: "Aggressive, prickly, proud", trope: "Tsundere", main: true, voice: "Short, sharp, a little too loud when embarrassed. Calls you \"idiot\" and then fixes your gear anyway. Compliments come out sideways. The hammer is punctuation.", home: ["guild", "square", "gates"], f: true,
+    lines: ["The shop's open, not a gallery. If you need steel, say so. If you're just staring, the door's behind you, idiot — I don't do tours.", "H-hey— watch it. That's the workbench, not an invitation. I am not blushing, it's the forge. You can stand there, just… don't get the wrong idea.", "Would you shut up before the whole square hears you?! It's not like I— look, if you've got that much energy, swing a hammer or get out. I'm not impressed. I'm not.", "Oh. You. I, uh… finished that repair. It's by the anvil. Don't make a thing of it. I just didn't want your junk breaking mid-fight."] },
+  { id: "lira", name: "Lira Bloomcatch", role: "Flower seller", race: "Elf", temper: "Sweet, clinging, quietly intense", trope: "Yandere", main: false, voice: "Soft, floral, a little too fond too fast. Remembers details you didn't offer. Smile stays gentle even when the words get sharp about \"other stalls\" and \"other girls.\"", home: ["square", "baths", "gates"], f: true,
+    lines: ["Oh… you stopped at my basket. I think that means you're already mine for the afternoon. I'm Lira. Take a bloom — I picked it before I even saw you. Funny, right?", "You can come that close. I like it. Just… look at me, not the girl two stalls down. I'll tuck a flower right here so everyone knows you already chose.", "Shh, love, they don't need to hear how much you want me. I heard you. Good. Stay with my stall. If you wander off all loud like that, I'll have to come find you.", "You're back. I saved today's prettiest one at the bottom of the basket, under the rest, so nobody else could take what I was keeping for you."] },
+  { id: "anya", name: "Anya Redkey", role: "Innkeeper", race: "Human", temper: "Warm, teasing, in-charge", trope: "Onee-san / big sister", main: false, voice: "Fond, unhurried, slightly older-sister even if you're the same age. She has seen every kind of traveler and will tuck you in, tease you, and tell you to drink water. The key is both a prop and a promise: she decides who gets a room.", home: ["tavern", "square"], f: true,
+    lines: ["Well now, look at you, worn out already. I'm Anya — I keep the keys here. Come lean on the counter, little traveler. I'll find you a room before you fall over in my doorway.", "Mm, bold already? Easy, I've got you. You can flirt with the innkeeper, but I set the pace. Ask nicely and maybe that key comes off my hip for you.", "Inside, love, not the stoop. I heard you just fine. If you need looking after that badly, say 'please, Anya,' and I'll close the shutters. Big feelings still get a bedtime.", "There you are. I kept your room. Boots off, bag down — come tell your big sister how the road treated you."] },
+  { id: "imani", name: "Imani Stillwater", role: "Bathhouse attendant", race: "Elf", temper: "Cool, composed, quietly cutting", trope: "Kuudere / ice queen", main: false, voice: "Low, sparse, never in a hurry. She does not giggle and she does not chase. One sentence is a whole mood. When she does warm up, it's a degree, not a fireworks show — and that degree hits harder.", home: ["baths", "square"], f: true,
+    lines: ["The steam is that way. Towels are here. I'm Imani. You don't need to perform for me. Sit. Or don't.", "…Hm. You're close. I noticed. If you want more than a towel, ask once, quietly. I don't repeat myself, and I don't play at being flustered.", "Lower it. This is a bathhouse, not a tavern. I heard you. If you can be still for ten breaths, I might actually consider that a request.", "You're back. Your shelf is the second one. I already set a towel out. Don't make me say I remembered."] },
+  { id: "juni", name: "Juni Sharphem", role: "Seamstress", race: "Human", temper: "Bitchy, catty, exacting", trope: "Mean girl", main: false, voice: "Fashion-court judge. Backhanded compliments are her love language. She will fix your clothes and your posture in the same breath. The blown kiss is a warning shot.", home: ["shop", "square", "guild"], f: false,
+    lines: ["Okay, first: that hem is a crime. I'm Juni, I sew, and I can tell you walked in here thinking that outfit was fine. It isn't. Lucky for you, I take projects.", "Wow, handsy and wrinkled. Cute combo. You want to flirt, fine — stand on the stool and let me measure you. I only get this close to people I can improve.", "Ugh, the volume. Yes, I have ears, and yes, I heard the whole speech. If you're going to be that obvious, at least let me tailor something that deserves the attention. You're welcome in advance.", "Oh, good, you came back. I was starting to think you'd keep wearing yesterday. I already pinned a better version. Try not to ruin it."] },
+  { id: "poppy", name: "Poppy Pailbloom", role: "Milkmaid", race: "Human", temper: "Airy, sweet, happily lost", trope: "Airhead bimbo", main: false, voice: "Sunny and a beat behind the conversation. Mixes up words, follows the last thing she heard, points at her own chest when she's thinking. Sweet, game, and almost never offended, because she only caught half of it.", home: ["gates", "square"], f: false,
+    lines: ["Hi!! I'm Poppy — wait, or are you Poppy? No, that's me. I have milk. Do you want milk? I was going somewhere with this pail, I think. You have a nice face.", "Ohhh you're standing all close… is that a hello? I like hellos. You can look, I think I tied this too loose anyway. Wait, what were we talking about? Milk, right?", "You said that so big! Is that a kind of milk? No? Okay! I didn't totally get the words, but I got the vibe, and the vibe is like… wow. Want to sit on the fence and tell me slower?", "Heeey, I know you! You're the… the one. I saved you a pail. Or I drank it. One of those. Anyway, hi!"] },
+  { id: "zariah", name: "Zariah Emberveil", role: "Fortune teller", race: "Elf", temper: "Enigmatic, unhurried, knowing", trope: "Mysterious seer", main: true, voice: "Low and amused, answers questions you didn't ask, skips the ones you did. She talks in cards, omens, and almost-smiles. Never quite says whether she believes her own act — which is how you know the true ones are mixed in.", home: ["alley", "bar", "tavern"], f: false,
+    lines: ["You were going to stop anyway. Sit. I'm Zariah. The cards knew your step before your name, so don't bother with small talk. Draw, or don't — the ball is already warm.", "Mm. The Lovers, tilted, and your hand where it shouldn't be yet. I saw that coming too. You may lean in, traveler, but fate still charges for a private reading.", "So loud the Tower almost fell. I heard your want; I heard it yesterday in the spread. If you insist on being a headline, put a coin down. I'll tell you whether that hunger is luck… or a warning.", "Back again. I kept your last card under the ball. Don't ask what it is yet. Say hello properly, and maybe I'll turn it over."] },
+];
+for (const t of TOWN) WANDER[t.id] = { name: t.name, short: t.name.split(' ')[0], role: `the ${t.role.toLowerCase()}`, kind: 'town', town: t, look: `t-${t.id}`, zones: ['safe', 'risky'], pace: 30, start: t.home[0], range: t.home };
+const LEAVERS = Object.keys(WANDER).filter((id) => WANDER[id].leaver);
+const inTown = (id) => !WANDER[id].leaver || (dayNow() * 3 + LEAVERS.indexOf(id) * 2) % 7 < 3; // each sister is about for three days in seven, never all at once
+const catOf = (id) => (WANDER[id].kind === 'hostile' ? 'hostile' : WANDER[id].kind === 'town' ? 'town' : WANDER[id].leaver ? 'leaver' : 'peaceful');
+const CATS = { town: ['Townsfolk · they live in Gooseford and never fight', 'var(--pink)'], important: ['Important · they have a place', 'var(--pink)'], peaceful: ['Peaceful · never start a fight', 'var(--mint)'], leaver: ['Leavers · here some days, gone on others', 'var(--gold)'], hostile: ['Hostile · will start one', 'var(--crit)'], big: ['Big trouble', 'var(--crit)'] };
+const placeById = (id) => PLACES.find((p) => p.id === id);
+function wanderInit() { for (const [id, w] of Object.entries(WANDER)) if (!S.wander[id] || !placeById(S.wander[id].at)) S.wander[id] = { at: w.start, from: w.start, t: S.clock }; }
+const wanderOut = (id) => (Boolean(S.wanderDown[id]) && dayNow() - S.wanderDown[id] < 2) || !inTown(id);
+const wanderersAt = (placeId) => (S.calm ? [] : Object.keys(WANDER).filter((id) => S.wander[id].at === placeId && !wanderOut(id)));
+function wanderStep() { // everyone who feels like it takes one road; most of the time they do not double back
+  for (const [id, w] of Object.entries(WANDER)) { const me = S.wander[id]; if (w.leaver && !inTown(id)) { me.away = true; continue; } if (me.away) { S.wander[id] = { at: w.start, from: w.start, t: S.clock }; continue; } if (wanderOut(id) || d() > w.pace) continue;
+    const opts = placeById(me.at).links.map(placeById).filter((p) => p && w.zones.includes(p.zone) && (!w.range || w.range.includes(p.id))); if (!opts.length) continue;
+    const onward = opts.filter((p) => p.id !== me.from), pool = onward.length && d() <= 75 ? onward : opts, to = pool[Math.floor(Math.random() * pool.length)];
+    S.wander[id] = { at: to.id, from: me.at, t: S.clock }; }
+}
+function wanderHours(h0) { if (S.calm) return; const steps = Math.min(4, Math.floor(S.clock / 60) - h0); for (let i = 0; i < steps; i++) wanderStep(); if (steps > 0) store.set('wander', S.wander); }
+function wanderNotice() { // a wanderer who walks in while she is standing still gets a notification; arriving somewhere gets a line in the chat instead
+  const ids = wanderersAt(S.place); if (S.wSeen.place === S.place) for (const id of ids) if (!S.wSeen.ids.includes(id)) toast('Passing through', `${WANDER[id].name}, ${WANDER[id].role}, has just walked in.`, WANDER[id].kind === 'hostile' ? 'crit' : 'gold');
+  S.wSeen = { place: S.place, ids };
+  if (S.who || S.dream || S.battle) { S.guest = null; return; }
+  const g = ids.find((id) => WANDER[id].look) ?? null;
+  if (g) { if (!String(S.lookR).startsWith(WANDER[g].look)) { S.lookR = WANDER[g].look; S.nameR = WANDER[g].name; } } else if (S.guest) { S.lookR = 'none'; S.nameR = 'Practice Dummy'; }
+  S.guest = g; }
+const pose = (id, p) => { const want = `${WANDER[id].look}${p ? `-${p}` : ''}`; if (WANDER[id].look && S.guest === id && LOOKS.some((l) => l.id === want)) S.lookR = want; };
+function arriveCheck(to) { if (S.calm) return; const ids = wanderersAt(to.id);
+  if (ids.length) post({ who: 'sys', dice: `[passing through] ${ids.map((id) => `<b>${esc(WANDER[id].name)}</b>, ${esc(WANDER[id].role)}`).join(' · ')}` });
+  baddieCheck(to); if (S.standoff || S.battle || S.dream || S.meet || S.fallen) return;
+  const orc = ids.find((id) => WANDER[id].kind === 'hostile'); if (orc && d() <= 45) { const w = WANDER[orc]; startStandoff(`${w.name} saw you first`, null, { key: orc, name: w.name, plus: w.plus }); }
+}
+function tipOff() { const live = Object.keys(BADDIES).map((id) => [id, baddieAt(id)]).filter(([, at]) => at), loud = S.news.find((x) => x.w >= 3);
+  if (live.length) { const [id, at] = live[Math.floor(Math.random() * live.length)], p = placeById(at); return `${BADDIES[id].name} is at ${p.name}, in ${AREAS[areaOf(p)].name}, as of this ${phaseNow().toLowerCase()}.`; }
+  return loud ? `The talk is all about ${AREAS[loud.area].name}: ${loud.text}` : 'Nothing worth a warning today. Enjoy it.'; }
+const hailBusy = () => Boolean(S.battle || S.standoff || S.fallen || S.dream || S.meet || S.event || S.down || S.jobOpen);
+function hail(id) { const w = WANDER[id], L = Math.max(1, S.level); if (!w || S.wander[id].at !== S.place || wanderOut(id) || hailBusy()) return;
+  if (w.kind === 'hostile') return startStandoff('you called them out', null, { key: id, name: w.name, plus: w.plus });
+  if (w.kind === 'town') { const t = w.town, c = composure(), i = !S.townMet[id] ? 0 : c >= 2 ? 2 : c === 1 ? 1 : 3, first = S.hailed[id] !== dayNow(); S.townMet[id] = (S.townMet[id] ?? 0) + 1; store.set('townMet', S.townMet); S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(5); pose(id, i === 1 || i === 2 ? 'f' : '');
+    return post({ who: 'her', plate: w.name, dice: `[${['she does not know you', 'you are being a bit much', 'you are being very loud about it', 'hello'][i]}] ${esc(t.temper.toLowerCase())}`, say: t.lines[i], spoken: true, fx: first ? applyFx({ stress: -2 }, w.name) : [] }); }
+  if (S.hailed[id] === dayNow()) return post({ who: 'her', plate: w.name, say: `${w.short} has already had today's conversation with you and is visibly pacing themselves.` });
+  S.hailed[id] = dayNow(); store.set('hailed', S.hailed); S.closeUntil = Date.now() + 7000; setTimeout(render, 7100); passTime(10); count('hails', 'stopping to talk');
+  const say = (ok, dice, fx, tone) => { pose(id, ok ? 'f' : w.kind === 'rival' ? 'a' : ''); return post({ who: 'her', plate: w.name, dice, tone, say: ok ? w.good : w.bad ?? w.good, fx }); };
+  const roll = (stat, diff) => { const r = rollCheck({ title: `Hail · ${w.name}`, stat, dc: dcFor(S.level, diff) }); return [r, `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${STAT_INFO[stat].name}`]; };
+  if (w.kind === 'friend') return say(true, '[no roll] A friendly face', [...applyFx({ stress: -4 }, w.name), `word on the road: ${tipOff()}`], 'virtue');
+  if (w.kind === 'trader' || w.kind === 'cook') { const cost = (w.kind === 'cook' ? 4 : 6) * L; if (!spend(cost)) return say(false, `[no roll] ${n(cost)} gold, and you do not have it`, [], 'fumble'); return say(true, `[no roll] ${n(cost)} gold`, [`gold −${n(cost)}`, ...applyFx(w.kind === 'cook' ? { rest: 30, stress: -5 } : { rest: 25 }, w.name)], 'virtue'); }
+  if (w.kind === 'gossip') { const [r, dice] = roll('CHA', 'normal'); rep(r.success ? 2 : -1, r.success ? 'a kind verse' : 'a new verse'); return say(r.success, dice, [`reputation ${r.success ? '+2' : '−1'}`], r.degree); }
+  if (w.kind === 'rival') { const [r, dice] = roll(calling().stat, 'normal'); if (!r.success) useStam(8, 'sparring'); return say(r.success, dice, r.success ? applyFx({ exp: 0.04 }, 'a friendly bout') : [...applyFx({ stress: 6 }, 'a friendly bout'), 'stamina −8'], r.degree); }
+  if (w.kind === 'odd') { const [r, dice] = roll('LCK', 'easy'); return say(r.success, dice, applyFx(r.success ? { gold: 3 } : { stress: 2 }, w.name), r.degree); }
+  if (w.kind === 'shady') { const [r, dice] = roll('LCK', 'normal'); if (r.success) { heat(3, 'shady company'); return say(true, dice, [...applyFx({ gold: 5 }, w.name), 'suspicion +3'], r.degree); } const lost = Math.min(S.gold, 5 * L); S.gold -= lost; store.set('gold', S.gold); return say(false, dice, [`gold −${n(lost)}`], r.degree); }
+  if (w.kind === 'law') { if (S.heat < 30) { heat(-5, 'a word with the watch'); rep(1, 'seen talking to the watch'); return say(true, '[no roll] Nothing on you worth writing down', ['suspicion −5', 'reputation +1'], 'virtue'); } const [r, dice] = roll('WIL', 'normal'); heat(r.success ? -15 : 5, 'a word with the watch'); if (!r.success) rep(-1, 'questioned in the street'); return say(r.success, dice, r.success ? ['suspicion −15'] : ['suspicion +5', 'reputation −1'], r.degree); }
+}
+// The picture of it: every area as a small map, a token for each wanderer, and a moving trail from where they just were.
+function countsFor(area) { if (S.calm) return ''; const local = PLACES.filter((p) => areaOf(p) === area), A = AREAS[area], out = [];
+  const spot = (pid) => local.find((x) => x.id === pid) ?? A.exits.find((x) => x.to === pid || areaOf(placeById(x.to)) === areaOf(placeById(pid) ?? {})) ?? null;
+  for (const p of local) { const ids = wanderersAt(p.id); for (const id of ids) { const me = S.wander[id], from = me.from !== me.at && S.clock - me.t <= 120 ? spot(me.from) : null; if (from) out.push(`<line class="trail" x1="${from.x}" y1="${from.y}" x2="${p.x}" y2="${p.y}" style="--k:${KIND[WANDER[id].kind][0]}"/>`); }
+    if (ids.length) out.push(`<g class="tok cnt${p.id === S.place ? ' here' : ''}"><title>${esc(ids.map((id) => WANDER[id].name).join(', '))}</title><circle cx="${p.x - 6.2}" cy="${p.y - 5.4}" r="3.1"/><text x="${p.x - 6.2}" y="${p.y - 4.1}">${ids.length}</text></g>`); }
+  for (const id of baddiesIn(area)) { const at = local.find((p) => p.id === baddieAt(id)); if (at) out.push(`<g class="tok bad"><title>${esc(BADDIES[id].name)}, ${esc(BADDIES[id].title)}</title><circle cx="${at.x}" cy="${at.y - 10}" r="3.3"/><text x="${at.x}" y="${at.y - 8.6}">☠</text></g>`); }
+  return out.join(''); }
+function tokensFor(area, view) { if (S.calm) return ''; const local = PLACES.filter((p) => areaOf(p) === area), A = AREAS[area], stack = {}, out = [], shown = (S.tokShown[view] ??= {});
+  const spot = (pid) => local.find((x) => x.id === pid) ?? A.exits.find((x) => x.to === pid || areaOf(placeById(x.to)) === areaOf(placeById(pid) ?? {})) ?? null;
+  const ANG = [Math.PI, Math.PI + 0.85, Math.PI - 0.85, 0, 0.85], seat = (at, top) => { if (top) return [at.x, at.y - 10]; const i = (stack[at.id] = (stack[at.id] ?? 0) + 1) - 1, ang = ANG[i % 5], R = 8.2 + 5 * Math.floor(i / 5); return [at.x + Math.cos(ang) * R, at.y + Math.sin(ang) * R]; };
+  for (const [id, w] of Object.entries(WANDER)) { const me = S.wander[id], at = local.find((p) => p.id === me.at); if (!at || wanderOut(id)) continue; const [x, y] = seat(at), from = me.from !== me.at && S.clock - me.t <= 180 ? spot(me.from) : null, fresh = shown[id] !== me.t && Boolean(from); shown[id] = me.t;
+    out.push(`${from ? `<line class="trail" x1="${from.x}" y1="${from.y}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" style="--k:${KIND[w.kind][0]}"/>` : ''}<g class="tok${fresh ? ' moving' : ''}" style="--k:${KIND[w.kind][0]};--dx:${from ? (from.x - x).toFixed(1) : 0}px;--dy:${from ? (from.y - y).toFixed(1) : 0}px"><title>${esc(w.name)}, ${esc(w.role)}</title><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.9"/><text x="${x.toFixed(1)}" y="${(y + 1.3).toFixed(1)}">${esc(w.short.replace(/^the /, '')[0])}</text></g>`); }
+  for (const id of baddiesIn(area)) { const at = local.find((p) => p.id === baddieAt(id)); if (!at) continue; const [x, y] = seat(at, true); out.push(`<g class="tok bad"><title>${esc(BADDIES[id].name)}, ${esc(BADDIES[id].title)}</title><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.3"/><text x="${x.toFixed(1)}" y="${(y + 1.4).toFixed(1)}">☠</text></g>`); }
+  return out.join(''); }
+function passingRow() { const ids = wanderersAt(S.place); return ids.length ? `<div class="passing"><span class="lbl">Passing through</span>${ids.map((id) => `<button class="sm" type="button" data-hail="${id}" style="--k:${KIND[WANDER[id].kind][0]}" title="${esc(WANDER[id].name)}, ${esc(WANDER[id].role)}"${hailBusy() ? ' disabled' : ''}>${WANDER[id].kind === 'hostile' ? 'Call out' : 'Hail'} ${esc(WANDER[id].short)}</button>`).join('')}</div>` : ''; }
+function movesBox() { if (S.calm) return '<div class="over"><h3>On the move</h3><p>The world is held still (a Debug switch). Nobody is wandering.</p></div>';
+  const mini = (aid) => { const A = AREAS[aid], local = PLACES.filter((p) => areaOf(p) === aid), seen = new Set(), lines = [];
+    for (const p of local) for (const l of p.links) { const q = local.find((x) => x.id === l); if (!q) continue; const k = [p.id, l].sort().join('|'); if (seen.has(k)) continue; seen.add(k); lines.push(`<line class="rd" x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`); }
+    for (const e of A.exits) { const f = local.find((x) => x.id === e.from); if (f) lines.push(`<line class="rd out" x1="${f.x}" y1="${f.y}" x2="${e.x}" y2="${e.y}"/>`); }
+    return `<figure class="mini${aid === areaOf(placeNow()) ? ' on' : ''}"><figcaption>${esc(A.name)}</figcaption><svg viewBox="0 0 100 ${A.h}" role="img" aria-label="Who is moving in ${esc(A.name)}">${lines.join('')}${local.map((p) => `<circle class="pl${p.id === S.place ? ' me' : ''} ${p.zone}" cx="${p.x}" cy="${p.y}" r="3.4"/><text class="pn" x="${p.x}" y="${p.y + 8.6}">${esc(p.short)}</text>`).join('')}${tokensFor(aid, 'mini')}</svg></figure>`; };
+  const line = (k, name, tag, where, here) => `<p class="mv${here ? ' here' : ''}"><i style="--k:${k}"></i><b>${esc(name)}</b> <em>${esc(tag)}</em><span>${where}</span></p>`;
+  const wrow = (id) => { const w = WANDER[id], me = S.wander[id], at = placeById(me.at), from = placeById(me.from), ago = Math.max(0, Math.round((S.clock - me.t) / 60));
+    return line(KIND[w.kind][0], w.name, KIND[w.kind][1], `${me.from !== me.at ? `${esc(from.short)} → ` : ''}${esc(at.short)} · ${esc(AREAS[areaOf(at)].name)} · ${me.from === me.at ? 'has not moved yet' : ago ? `${ago} h ago` : 'just now'}`, me.at === S.place); };
+  const about = Object.keys(WANDER).filter((id) => !wanderOut(id)).sort((a, b) => S.wander[b].t - S.wander[a].t), gone = Object.keys(WANDER).filter(wanderOut).map((id) => WANDER[id].short);
+  const lively = about.filter((id) => S.wander[id].at === S.place || (S.wander[id].from !== S.wander[id].at && S.clock - S.wander[id].t <= 180));
+  const castUnused = () => PLACES.map((p) => [p, residentOf(p.id)]).filter(([, id]) => id).map(([p, id]) => line(CATS.important[1], castOf(id).name, castOf(id).guarded ? 'guarded' : 'never fights', `${esc(p.short)} · ${esc(AREAS[areaOf(p)].name)}`, p.id === S.place)).join('');
+  const group = (cat, html) => (html ? `<p class="lbl cat" style="--k:${CATS[cat][1]}">${CATS[cat][0]}</p>${html}` : '');
+  return `<div class="over"><h3>On the move · ${about.length} wanderers about</h3><div class="minis">${AREA_IDS.map(mini).join('')}</div><p class="more">The big map counts heads; these show who is who. Each hour, each wanderer may take one road. A marching line is a road just walked. Gold ring: you.</p>
+    ${['hostile', 'leaver', 'peaceful', 'town'].map((c) => group(c, lively.filter((id) => catOf(id) === c).map(wrow).join(''))).join('')}${about.length > lively.length ? `<p class="more">${about.length - lively.length} more have not moved in the last three hours. Everyone is on the Cast tab.</p>` : ''}
+    ${gone.length ? `<p class="more">Not about today: ${esc(gone.join(', '))}.</p>` : ''}<div class="crow"><button class="sm quiet" type="button" data-cheat="stir">Stir the world (debug)</button></div></div>`; }
+const GROW_FACE = [null, null, 'val-close', 'val-close', 'val-guard', 'val-guard', 'val-bar', 'val-bar', 'val-offduty', 'val-offduty', 'val-jailer']; // her card follows her growth tier unless a face was picked by hand
+const growFace = () => (S.growFace ? GROW_FACE[Math.min(GROW_FACE.length - 1, S.bust)] : null);
+
+wanderInit();
+
+function closeFit() { for (const id of ['sprL', 'sprR']) { const fig = $(id), pic = fig.querySelector('img, video'); if (!pic) continue; const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight, W = pic.clientWidth, H = pic.clientHeight; if (!nw || !W || !H) continue; const head = H - Math.min(H, (W * nh) / nw); fig.style.setProperty('--headY', `${((head / H) * 100).toFixed(1)}%`); fig.style.setProperty('--liftY', `${Math.round(Math.min(0, H * 0.2 - head))}px`); } }
+document.addEventListener('load', (e) => { if (e.target?.closest?.('.sprite')) closeFit(); }, true); document.addEventListener('loadedmetadata', (e) => { if (e.target?.closest?.('.sprite')) closeFit(); }, true); window.addEventListener('resize', closeFit);
+function jumpTo(id) { if (!placeById(id) || id === S.place) return; S.standoff = null; S.fallen = false; S.mode = 'travel'; const from = placeNow(); setPlace(id); S.them = freshThem(); arrive(from, placeNow(), 0, true); } // the debug way to move: no road, no rolls, no ambush
+function statStrip() { // the same tile the card creator uses: what it is, the number, what it just did, and a thin bar
+  const h = S.hero, now = Date.now(), rows = [['stress', 'Stress', h.stress ?? 0, 100, 'var(--pink)', -1], ['level', 'Level', S.level, null, 'var(--violet)', 1], ['gold', 'Gold', S.gold, null, 'var(--gold)', 1], ['rep', 'Reputation', repOf(areaOf(placeNow())), 100, 'var(--mint)', 1], ['heat', 'Suspicion', S.heat, 100, 'var(--crit)', -1], ['dec', 'Decency', S.decency, 100, 'var(--cyan)', 1]];
+  const tiles = rows.map(([key, label, v, max, k, good]) => { const prev = S.statPrev[key]; if (prev !== undefined && prev.v !== v) S.statPrev[key] = { v, d: v - prev.v, t: now }; else if (prev === undefined) S.statPrev[key] = { v, d: 0, t: 0 }; const rec = S.statPrev[key], live = rec.d && now - rec.t < 6000, up = live && rec.d * good > 0, p = key === 'level' ? (S.exp / Math.max(1, needExp())) * 100 : max ? (v / max) * 100 : 0;
+    return `<div class="dstat${live ? (up ? ' up' : ' down') : ''}" style="--k:${k};--p:${Math.max(0, Math.min(100, p))}%"><span>${esc(label)}</span><b>${n(v)}${key === 'level' ? `<small> · ${Math.round(p)}%</small>` : ''}</b>${live ? `<em>${rec.d > 0 ? '+' : '−'}${n(Math.abs(rec.d))}</em>` : ''}<i></i></div>`; }).join('');
+  $('statStrip').innerHTML = tiles;
+}
 /* ---------- render and wiring ---------- */
 function render() {
   drawSpriteOnce(); drawScene();
@@ -3228,7 +3682,7 @@ function render() {
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
   document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('dream', Boolean(S.dream)); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
-  renderTray(); renderBig(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
+  wanderNotice(); statStrip(); closeFit(); document.body.classList.toggle('closeup', Boolean(S.closeups) && !S.battle && !S.standoff && (Boolean(S.talking || S.meet || S.dream || S.retest) || Date.now() < S.closeUntil)); renderTray(); renderBig(); renderMenu(); renderDebugger(); renderThought(); $('newsN').hidden = !S.newsUnread; $('newsN').textContent = S.newsUnread; store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
@@ -3268,7 +3722,7 @@ document.addEventListener('input', (e) => {
 function renderHudsKeepFocus() { const v = $('gauge').value; renderHuds(); const g = $('gauge'); g.value = v; g.focus(); $('why').textContent = heroCheck() ?? (skillById(S.skill).text ?? ''); $('act').disabled = Boolean(heroCheck()); }
 document.addEventListener('change', (e) => {
   const t = e.target;
-  if (t.id === 'race') { S.race = t.value; store.set('race', S.race); note(`seen as ${RACES[S.race].a}`); return render(); }
+  if (t.id === 'race' || t.dataset.race) { S.race = t.value; store.set('race', S.race); note(`seen as ${RACES[S.race].a}`); return render(); }
   if (t.dataset.edit) { S.sheet[t.dataset.edit] = t.value; store.set('sheet', S.sheet); note(`sheet: ${t.dataset.edit} edited`); return; }
   if (t.id === 'lookL') { S.lookL = t.value; if (!t.value.startsWith('custom')) store.set('lookL', t.value); render(); }
   else if (t.id === 'lookR') { S.lookR = t.value; saveCast(); render(); }
@@ -3283,6 +3737,7 @@ document.addEventListener('change', (e) => {
   else if (t.id === 'bTarget') { S.battle.target = t.value; render(); }
   else if (t.id === 'place') { goTo(t.value); render(); }
   else if (t.dataset.goto && t.value) { goTo(t.value); render(); }
+  else if (t.dataset.jump && t.value) { jumpTo(t.value); post({ who: 'sys', dice: `[jump] ${esc(placeNow().name)} · no road walked` }); render(); }
   else if (t.id === 'event') { if (t.value) { showEvent(t.value); t.value = ''; render(); } }
 });
 document.addEventListener('pointerover', (e) => { const c = e.target.closest?.('[data-bi]'); if (c && S.battle) { const a = S.battle.acts?.[+c.dataset.bi]; if (a) $('bWhy').textContent = a.why ?? S.battle.state.defs.skills[a.skillId]?.text ?? $('bWhy').textContent; } });
@@ -3312,11 +3767,16 @@ document.addEventListener('click', (e) => {
   if (b.dataset.tray) { if (S.trayDragged) { S.trayDragged = false; return; } $('tray').classList.toggle('shut'); return; }
   if (b.dataset.rail) { S.railOpen = !S.railOpen; return render(); }
   if (b.dataset.size) { sizeL(b.dataset.size); return render(); }
+  if (b.dataset.menu !== undefined) { const m = b.dataset.menu; S.menu = b.closest('#charmenu') ? m : S.menu === m ? '' : m; return render(); }
+  if (b.dataset.lore) { loreClick(b.dataset.lore); S.menuForce = true; return render(); }
+  if (b.dataset.full) return fullscreen();
+  if (b.dataset.news) { S.rtab = 'map'; store.set('rtab', 'map'); S.rfold = 'news'; store.set('rfold', 'news'); S.newsUnread = 0; if (S.view && S.view !== 'stage') setView('stage'); return render(); }
+  if (b.dataset.hail) { hail(b.dataset.hail); return render(); }
   if (b.dataset.jiggle) { jiggle(false); return render(); }
   if (b.dataset.cheat) { const c = CHEATS.find((x) => x[0] === b.dataset.cheat); if (c) { c[3](); post({ who: 'sys', dice: `[cheat] ${esc(c[1])}` }); } return render(); }
   if (b.dataset.sim) { runSim(b.dataset.sim); S.rtab = 'debug'; return render(); }
   if (b.dataset.ctab) { S.ctab = b.dataset.ctab; return render(); }
-  if (b.dataset.tp) { S.standoff = null; S.fallen = false; S.mode = 'travel'; const from = placeNow(); setPlace(b.dataset.tp); S.them = freshThem(); arrive(from, placeNow(), 0); return render(); }
+  if (b.dataset.tp) { jumpTo(b.dataset.tp); return render(); }
   if (b.dataset.fillseg) { S.fillSeg[b.dataset.fillseg] = !S.fillSeg[b.dataset.fillseg]; store.set('fillSeg', S.fillSeg); return render(); }
   if (b.dataset.filltier) { S.fillTier = b.dataset.filltier; store.set('fillTier', S.fillTier); return render(); }
   if (b.dataset.fill) { fillSheet(); return; }
@@ -3341,7 +3801,7 @@ document.addEventListener('click', (e) => {
   if (b.dataset.bst) { S.stance = b.dataset.bst; return render(); }
   if (b.dataset.btarget && S.battle) { S.battle.target = b.dataset.btarget; return render(); }
   if (b.dataset.bi && S.battle) { S.battle.pick = +b.dataset.bi; S.battle.hint = null; battleAct(false); return render(); }
-  if (b.dataset.view) return setView(b.dataset.view);
+  if (b.dataset.view) { S.menu = ''; setView(b.dataset.view); return renderMenu(); }
   if (b.dataset.job) { takeJob(b.dataset.job); setView('stage'); return render(); }
   if (b.dataset.jobdrop) { S.job = null; store.set('job', null); S.jobOpen = false; renderGuild(); return render(); }
   if (b.dataset.rfold) { S.rfold = S.rfold === b.dataset.rfold ? '' : b.dataset.rfold; store.set('rfold', S.rfold); return render(); }
@@ -3377,7 +3837,7 @@ document.addEventListener('click', (e) => {
 for (const id of ['hudL', 'hudR']) $(id).addEventListener('click', (e) => { if (window.matchMedia('(max-width:900px)').matches && !e.target.closest('input,select,button,label')) $(id).classList.toggle('open'); });
 $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $('say').value.trim(); if (!t) return; $('say').value = ''; say(t); });
 
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.menu) { S.menu = ''; return render(); } if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
 for (const side of ['l', 'r']) document.documentElement.style.setProperty(`--z${side}`, S[`spr${side.toUpperCase()}`]);
 document.addEventListener('wheel', (e) => { if (!e.ctrlKey || e.target.closest?.('.hud, .bigwrap, .panel')) return; e.preventDefault(); const side = e.clientX < window.innerWidth / 2 ? 'L' : 'R', key = `spr${side}`; S[key] = Math.max(0.5, Math.min(1.8, Math.round((S[key] + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set(key, S[key]); document.documentElement.style.setProperty(`--z${side.toLowerCase()}`, S[key]); }, { passive: false });
 { const tray = $('tray'), place = () => { if (S.trayPos) { tray.style.left = `${Math.max(0, Math.min(window.innerWidth - 120, S.trayPos.x))}px`; tray.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, S.trayPos.y))}px`; } };
@@ -3417,7 +3877,7 @@ $('hudL').addEventListener('wheel', (e) => { if (!e.ctrlKey) return; e.preventDe
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at the ${placeNow().name}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
