@@ -538,6 +538,80 @@ body.alone{--col:700px}
 .line .info{margin-top:5px;padding:2px 10px;font-size:.66rem}
 .hud.r .halfcard{position:relative;height:230px}
 .shadeface{display:grid;place-items:center;background:#07080c}.shadeface svg{width:100%;height:100%}
+#tray{position:absolute;z-index:11;left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--hudL) + 12px);top:96px;width:clamp(210px,calc(50vw - var(--col)/2 - var(--hudMin) - 34px),320px);margin:0;border:1px solid color-mix(in srgb,var(--gold) 48%,var(--edge2));border-radius:12px;animation:none;box-shadow:0 18px 40px -16px #000,inset 0 0 0 3px rgba(8,9,13,.55)}
+#tray .tray-h{border-radius:12px;cursor:grab;touch-action:none}
+#tray.drag{opacity:.9}#tray.drag .tray-h{cursor:grabbing}
+#tray .tray-h::before{content:"⠿";color:var(--faint);font-size:.7rem;margin-right:-3px}
+.rlog{display:grid;gap:1px;padding:0 0 9px;border-top:1px solid var(--edge);padding-top:6px}
+.rlog p{margin:0;font-family:var(--f-mono);font-size:.56rem;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rlog b{color:var(--muted);font-weight:500}
+.top{flex-wrap:nowrap;gap:8px}
+.mode{white-space:nowrap;flex:none}
+.top .tabs{flex:none}
+.top .title{flex:0 1 auto;min-width:0}
+.top .title b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.topend{margin-left:auto;display:flex;gap:6px;flex:none}
+.walkto{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:8px}
+.walkto select{min-width:0;width:100%}
+@media (max-width:1180px){.top{flex-wrap:wrap}}
+.rfolds{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+.rfold{border-top:1px solid var(--edge)}
+.rfold>.fold{width:100%;justify-content:flex-start;padding:8px 0;text-align:left;white-space:normal}
+.rfold.open>.fold{color:var(--text)}
+.rfold>.over{border-top:0;padding-top:0;padding-bottom:10px}
+.mapwrap{display:grid;gap:5px}
+.maptop{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bookbtn{padding:3px 9px;font-size:.66rem;background:var(--box2);border-color:color-mix(in srgb,var(--gold) 45%,var(--edge2));color:var(--gold);min-height:0}
+.map .mk{font-size:4.4px;text-anchor:middle;stroke:var(--ground);stroke-width:.9px;paint-order:stroke;pointer-events:none}
+.map .mk.job{fill:var(--mint);font-size:5px}.map .mk.bed{fill:var(--cyan)}.map .mk.shop{fill:var(--violet)}
+.mapkey{display:flex;flex-wrap:wrap;gap:3px 10px;margin:0;font-family:var(--f-mono);font-size:.52rem;letter-spacing:.06em;text-transform:uppercase}
+.mapkey span{color:var(--k)}
+.bookrow{display:grid;gap:0;padding:6px 0;border-bottom:1px solid var(--edge)}
+.bookrow b{color:var(--k);font-family:var(--f-head);font-weight:600;font-size:.9rem}
+.bookrow span{font-size:.76rem;color:var(--muted)}
+/* chat: sharp-cornered plates, one colour and one side per speaker; the Game Master's narration has no box at all */
+.line{border-radius:5px;border-width:1px 1px 1px 4px;border-color:color-mix(in srgb,var(--c) 26%,var(--edge));border-left-color:var(--c);background:color-mix(in srgb,var(--box2) 88%,transparent);padding:15px 14px 10px}
+.line.me{border-radius:5px;margin-right:9%;--c:var(--lc)}
+.line.her{border-radius:5px;margin-left:9%;border-width:1px 4px 1px 1px;border-left-color:color-mix(in srgb,var(--c) 26%,var(--edge));border-right-color:var(--c);--c:var(--rc)}
+.line.her.has-face{border-radius:5px;margin-left:0;margin-right:9%;border-width:1px 1px 1px 4px;border-left-color:var(--crit);border-right-color:color-mix(in srgb,var(--c) 26%,var(--edge))}
+.line .plate{border-radius:3px;top:-10px;left:10px;letter-spacing:.01em}
+.line.her .plate{right:10px}
+.line.sys:not(.cap){align-self:stretch;max-width:100%;background:none;border:0;border-top:1px solid color-mix(in srgb,var(--gold) 38%,transparent);border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;padding:14px 4px 4px;text-align:left}
+.line.sys:not(.cap) .plate{left:0;top:-9px;background:var(--ground);color:var(--gold);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);font-family:var(--f-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px}
+.line.sys:not(.cap) .say{font-style:italic;color:color-mix(in srgb,var(--text) 86%,var(--gold));text-shadow:0 1px 8px rgba(0,0,0,.85)}
+.line.sys:not(.cap) .dice{text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.line.cap{border-left-width:2px;text-shadow:0 1px 6px rgba(0,0,0,.9)}
+.log{background:linear-gradient(180deg,transparent,rgba(6,7,10,.34) 30%,rgba(6,7,10,.46));border-radius:10px;padding-left:8px;padding-right:8px}
+.goal{margin:0;font-size:.82rem;color:var(--muted)}.goal b{color:var(--faint);margin-right:4px}.goal.ok{color:var(--text)}.goal.ok b{color:var(--mint)}.goal span{font-size:.7rem;color:var(--faint);margin-left:4px}
+/* the four sizes: a thin strip under her bars */
+.rail .sizes{position:static;opacity:1;display:flex;gap:1px;margin-top:6px;padding:1px;border-radius:6px;background:var(--glass);border:1px solid var(--edge)}
+.rail .sizes button{flex:1;padding:1px 2px;font-size:.44rem;border-radius:4px}
+#gridTravel,#rowsBattle,#rowsCombat{zoom:1}
+.composer{border-radius:8px;padding:9px 10px;gap:6px}
+.cell,.cell.bubble{border-radius:4px;padding:5px 9px 5px 11px;min-height:38px;border-left-width:3px;border-left-color:var(--edge2)}
+.cell b{font-size:.8rem}.cell small{font-size:.64rem;line-height:1.25}
+.cell.bubble.primary{border-left-color:var(--pink-ink)}
+.cell.spot{border-left-color:var(--cyan)}.cell.go{border-left-color:var(--edge)}
+.cell.empty{min-height:38px}
+.pgrid,.grid{gap:4px}
+.exits button{border-radius:4px;padding:3px 9px;font-size:.72rem}
+.composer .say,#say{border-radius:4px}
+.foe{border-radius:6px}
+#tray.docked{position:static;width:auto;left:auto;top:auto;box-shadow:none;margin:0 0 2px}
+#tray.docked .tray-h{cursor:grab}
+.trayhome{position:absolute;right:26px;top:6px;padding:1px 7px;font-size:.5rem;min-height:0;text-transform:uppercase;letter-spacing:.08em}
+#thought{position:absolute;z-index:4;left:calc(var(--hudMin) + 22px);top:38%;width:clamp(170px,calc(50vw - var(--col)/2 - var(--hudMin) - 30px),300px);margin:0;padding:8px 12px 9px;border-left:0;border-radius:12px 12px 12px 2px;background:color-mix(in srgb,var(--box2) 94%,transparent);border:1px solid color-mix(in srgb,var(--lc) 42%,var(--edge2));box-shadow:0 10px 26px -14px #000;transition:top .25s}
+#thought::after{content:"";position:absolute;left:18px;bottom:-7px;width:12px;height:12px;rotate:45deg;background:inherit;border-right:1px solid color-mix(in srgb,var(--lc) 42%,var(--edge2));border-bottom:1px solid color-mix(in srgb,var(--lc) 42%,var(--edge2))}
+#thought i{font-size:.92rem;line-height:1.3;display:block}
+body.walking #thought{opacity:0}
+.chat-l{margin:0;font-size:.82rem;color:var(--muted);line-height:1.4}
+.chat-l b{color:var(--text);font-weight:600}
+.chat-l i{font-family:var(--f-mono);font-style:normal;font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+body.slim .hud.l .folds,body.slim .hud.l .foldbox,body.slim .hud.l .sheet-body,body.slim .hud.l .lookpick{display:none}
+@keyframes idleShift{0%,100%{transform:translateY(0) scaleY(1) rotate(0deg)}30%{transform:translateY(-.5%) scaleY(1.014) scaleX(1.005) rotate(.25deg)}65%{transform:translateY(.1%) scaleY(1.004) rotate(-.2deg)}}
+body.sway .sprite>*{animation:idleShift 5.2s ease-in-out infinite}
+body.sway .sprite.r>*{animation-duration:6.1s;animation-delay:-2s}
+body.walking .sprite>*{animation:none}
 /* the catalogue */
 .castwrap{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .castwrap h3{margin:8px 0 0;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:500}
@@ -575,12 +649,6 @@ body.sheetL .cell.empty,body.half .cell.empty{display:none}
 .roadrow span{grid-column:1;font-size:.64rem;color:var(--muted);font-weight:400}
 .roadrow em{grid-row:1/3;grid-column:2;font-style:normal;font-family:var(--f-mono);font-size:.54rem;letter-spacing:.08em;text-transform:uppercase;color:var(--mint)}
 .roadrow em.mid{color:var(--gold)}.roadrow em.bad{color:var(--crit)}
-@media (min-width:901px){
-  body.half{--lane:clamp(0px,calc(100vw - var(--hudL) - var(--hudR) - 546px),230px)}
-  body.half .dialog{margin-left:calc(var(--hudL) + 64px + var(--lane));width:min(var(--col),calc(100% - var(--hudL) - 64px - var(--lane) - var(--hudR) - 30px))}
-  body.half .sprite.l{right:auto;width:calc(var(--lane) + 150px)}
-  body.half .sprite.r{left:auto;right:calc(var(--hudR) - 30px);width:300px}
-}
 /* the world plate at the top of the right-hand panel: time and season, place, danger, standing */
 .world{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;padding-bottom:10px;border-bottom:1px solid var(--edge)}
 .w-time{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
@@ -616,7 +684,6 @@ body[data-phase="Night"] .clockplate .g,body[data-phase="Evening"] .clockplate .
 /* HP, mana and stamina stand beside her panel; come near and they open up into her mood */
 .rail{position:absolute;z-index:6;top:14px;left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--hudL) + 10px);transition:left .5s cubic-bezier(.2,.8,.2,1)}
 body.dragging .rail{transition:none}
-body.noSprL .sprite.l{opacity:0;pointer-events:none}
 body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
 .rail::after{content:"";position:absolute;left:100%;top:0;width:10px;height:100%}
 .rail-t{display:grid;justify-items:center;gap:6px;padding:7px 6px 6px;border-radius:12px;background:var(--box2);border:1px solid color-mix(in srgb,var(--gold) 38%,var(--edge2));box-shadow:inset 0 0 0 2px rgba(8,9,13,.55);cursor:pointer}
@@ -639,7 +706,6 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
 .rail-pop .pin{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);text-align:center}
 /* her panel, laid out like the character card: the portrait, a row of folds under it, then the sheet */
 .pcol{display:contents}
-.halfcard{position:sticky;top:0;z-index:4}
 .halfcard .lv{border-radius:9px;width:auto;min-width:34px;height:34px;padding:0 7px;grid-auto-flow:column;gap:3px;box-shadow:0 0 0 2px var(--gold)}
 .halfcard .lv small{font-family:var(--f-mono);font-size:.46rem;letter-spacing:.08em;font-weight:500;opacity:.7}
 .halfcard .purse{position:absolute;right:10px;bottom:11px;z-index:1;font-family:var(--f-mono);font-size:.66rem;color:var(--gold);font-variant-numeric:tabular-nums;text-shadow:0 1px 6px #000}
@@ -662,11 +728,6 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
 .vrow span{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .vrow b{font-weight:600;font-size:.88rem;line-height:1.25;overflow-wrap:anywhere}
 .vrow small{font-size:.7rem;color:var(--muted);line-height:1.3}
-@container (min-width:490px){
-  .sheet{grid-template-columns:minmax(210px,42%) minmax(0,1fr);gap:14px;align-items:start}
-  .pcol{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;align-content:start;position:sticky;top:0;max-height:calc(100vh - 60px);overflow:auto;scrollbar-width:none}
-  .pcol .halfcard{position:relative;height:min(62vh,600px)}
-}
 @media (max-width:900px){
   .rail{position:static;grid-column:1/-1}
   .rail-t{display:flex;justify-content:center;gap:14px}
@@ -676,8 +737,65 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
   .hud:not(.open) .vrows,.hud:not(.open) .folds,.hud:not(.open) .foldbox{display:none}
 }
 @media (prefers-reduced-motion:reduce){.tray,.tray.roll .die,.tube.low u{animation:none}.tray-b,.rail,.tube u,.halfcard .xp::after{transition:none}}
+/* ---------- v24: the chat stays dead centre; both figures keep their lanes; her panel slides over the stage ---------- */
+html{font-size:clamp(16px,calc(.5vw + 8.8px),21px)}
+body{font-size:.94rem}
+:root{--col:clamp(560px,38vw,900px);--hudMin:clamp(224px,15.5vw,340px);--hudL:var(--hudMin);--hudR:clamp(300px,20vw,430px)}
+body.alone{--col:clamp(560px,38vw,900px)}
+/* her paintings already carry the hour, so they are shown as painted */
+.scene img.painted{opacity:.82;filter:none!important}
+@media (min-width:901px){
+  .dialog{margin:0 auto;width:min(var(--col),calc(100% - var(--hudMin) - var(--hudR) - 120px))}
+  .sprite.l{left:calc(var(--hudMin) + 6px);right:calc(50% + var(--col)/2 - 104px);width:auto}
+  .sprite.r{left:calc(50% + var(--col)/2 - 104px);right:calc(var(--hudR) + 6px);width:auto}
+  body.half .hud.l,body.sheetL .hud.l{z-index:9;background:var(--box2)}
+  .grip.l{z-index:10}
+  /* road rolls stand to the left of the chat while she walks */
+  body:not(.half):not(.sheetL) .tray.side{position:absolute;right:calc(100% + 2px);bottom:150px;width:clamp(190px,calc(50vw - var(--col)/2 - var(--hudMin) - 26px),250px);margin:0;border-bottom:1px solid color-mix(in srgb,var(--gold) 42%,var(--edge2));border-radius:12px;animation:none}
+  body:not(.half):not(.sheetL) .tray.side .tray-h{border-radius:12px}
+}
+/* a figure fills its lane, feet on the floor; Ctrl + wheel scales the picture itself so a keyed clip stays keyed */
+.sprite.l{--z:var(--zl,1)}.sprite.r{--z:var(--zr,1)}
+.sprite img,.sprite video{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;object-position:50% 100%;scale:var(--z);transform-origin:50% 100%;transition:scale .15s}
+.sprite .flip{scale:calc(-1 * var(--z)) var(--z)}
+.sprite.keyedfig{mix-blend-mode:screen}
+.scene::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;transition:opacity .5s;background:linear-gradient(90deg,transparent 50%,rgba(5,6,9,.9) 70%)}
+body.keyR .scene::before{opacity:1}
+body.keyL .scene::before{opacity:1;background:linear-gradient(270deg,transparent 50%,rgba(5,6,9,.9) 70%)}
+body.keyL.keyR .scene::before{background:linear-gradient(90deg,rgba(5,6,9,.9) 30%,transparent 46%,transparent 54%,rgba(5,6,9,.9) 70%)}
+.sprite.keyedfig video.keyed{mix-blend-mode:normal}
+.sprite.l,.sprite.r{transition:left .5s cubic-bezier(.2,.8,.2,1),right .5s cubic-bezier(.2,.8,.2,1),filter .4s,transform .4s,opacity .3s}
+body.walking .sprite{opacity:0}
+/* her bars: thick, numbered, pinned to the top of her panel; hover or click for the rest */
+.hud .rail{position:sticky;top:-14px;left:auto;z-index:6;margin:-14px -13px 0;padding:12px 13px 8px;background:var(--box2);border-bottom:1px solid var(--edge);transition:none}
+.hud .rail::after{display:none}
+.hud .rail-t{display:grid;grid-template-columns:minmax(0,1fr);justify-items:stretch;gap:5px;width:100%;padding:0;border:0;border-radius:0;background:none;box-shadow:none;text-align:left;cursor:pointer}
+.hbar{display:grid;grid-template-columns:14px minmax(0,1fr);align-items:center;gap:6px}
+.hbar em{font-style:normal;font-size:.72rem;line-height:1;color:var(--k);text-align:center}
+.hbar i{position:relative;display:block;height:17px;border-radius:5px;background:var(--glass2);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.hbar u{position:absolute;inset:0 auto 0 0;width:var(--p);background:color-mix(in srgb,var(--k) 72%,#101216);box-shadow:0 0 10px -2px var(--k);transition:width .4s}
+.hbar b{position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 7px;font-family:var(--f-mono);font-size:.6rem;font-weight:500;letter-spacing:.04em;color:#fff;text-shadow:0 1px 2px #000,0 0 6px rgba(0,0,0,.6);font-variant-numeric:tabular-nums;text-transform:uppercase}
+.hbar.low u{animation:lowPulse 1s ease-in-out infinite alternate}
+.mline{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.mline .mg{font-size:.9rem;color:var(--lc)}
+.mline small{margin-left:auto;font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+#railPop{left:calc(max(12px,env(safe-area-inset-left,0px)) + var(--hudL) + 12px);top:14px;z-index:12;width:min(300px,80vw)}
+body.railhover #railPop,#railPop.open{display:grid}
+.halfcard{position:relative}
+/* combat at a glance, under her portrait */
+.cblock{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding-bottom:9px;border-bottom:1px solid var(--edge)}
+.sblock{display:grid;gap:3px}
+.srow{display:grid;grid-template-columns:86px minmax(0,1fr) 34px;align-items:center;gap:7px;font-size:.74rem;color:var(--muted)}
+.srow i{display:block;height:6px;border-radius:3px;background:var(--glass2);overflow:hidden}
+.srow u{display:block;height:100%;border-radius:3px;background:var(--faint)}
+.srow b{text-align:right;font-family:var(--f-head);font-weight:600;font-size:.8rem;color:var(--text);font-variant-numeric:tabular-nums}
+.srow.main{color:var(--text)}.srow.main u{background:var(--gold)}
+.qrowb{display:flex;flex-wrap:wrap;gap:4px}
+.qrowb button{padding:3px 9px;font-size:.68rem}
+@container (min-width:290px){.srow{grid-template-columns:110px minmax(0,1fr) 40px}}
 @media (max-width:1180px){
-  :root{--hudL:196px;--hudR:196px;--col:440px}
+  :root{--hudL:196px;--hudR:196px;--col:440px;--hudMin:196px}
+  body.alone{--col:440px}
 }
 @media (max-width:900px){
   body{overflow:auto}
@@ -700,38 +818,34 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
   <figure class="sprite r" id="sprR" aria-hidden="true"></figure>
 
   <div class="grip l" id="gripL" role="separator" aria-orientation="vertical" aria-label="Resize your panel" tabindex="0"></div>
+  <div class="thought" id="thought" hidden></div>
+  <div class="rail-pop" id="railPop"></div>
+  <div class="tray" id="tray" hidden aria-live="polite"></div>
   <div class="bigwrap" id="big" hidden></div>
-  <div class="rail" id="rail" aria-label="Health, mana, stamina and mood"></div>
   <div class="grip r" id="gripR" role="separator" aria-orientation="vertical" aria-label="Resize their panel" tabindex="0"></div>
   <aside class="hud l" id="hudL" aria-label="You"></aside>
   <aside class="hud r" id="hudR" aria-label="Them"></aside>
 
   <main class="dialog">
     <div class="top">
-      <div class="title"><b>Oops, I'm the Hero?!</b><span>playtest stage · the real rules engine</span></div>
+      <div class="title" hidden><b>Oops, I'm the Hero?!</b><span>playtest stage · the real rules engine</span></div>
       <div class="tabs" role="tablist" aria-label="Views">
         <button role="tab" type="button" data-view="stage" aria-selected="true">Stage</button>
         <button role="tab" type="button" data-view="guild" aria-selected="false">Guild</button>
         <button role="tab" type="button" data-view="cast" aria-selected="false">Cast</button>
-        <button role="tab" type="button" data-view="tavern" aria-selected="false">SillyTavern</button>
+        <button role="tab" type="button" data-view="tavern" aria-selected="false" title="SillyTavern export">Export</button>
       </div>
       <button class="mode" id="mode" type="button" data-mode="travel" title="Click to switch by hand (debug)">Travelling</button>
-      <span class="clock head" id="headline"></span>
-      <button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false">Debugger</button>
-      <button class="sm quiet" id="jiggle" type="button" data-jiggle="1" title="Stuck? This drops whatever is holding you and stands you back up.">Jiggle free</button>
-      <select class="dbg" id="place" aria-label="Place"></select>
-      <label class="lbl dbg" for="level">Level</label>
-      <input class="dbg" type="number" id="level" min="1" max="100" step="1" style="width:4.6em">
-      <button class="sm quiet dbg" id="rest" type="button">Rest</button>
+      <span class="clock head" id="headline" hidden></span>
+      <span class="topend"><button class="sm quiet" id="dbgBtn" type="button" aria-pressed="false" title="The hidden numbers">Debug</button>
+      <button class="sm quiet" id="jiggle" type="button" data-jiggle="1" title="Jiggle free. Stuck? This drops whatever is holding you and stands you back up.">Jiggle</button></span>
     </div>
     <div class="dbgtop" id="dbgTop" hidden></div>
-    <div class="thought" id="thought" hidden></div>
     <div class="log" id="log" aria-live="polite"></div>
     <section class="panel" id="guild" hidden aria-label="Guild hall"></section>
     <section class="panel" id="cast" hidden aria-label="Everyone she knows, and the shapes she does not"></section>
     <section class="panel" id="tavern" hidden aria-label="SillyTavern guide"></section>
     <div class="foe" id="foe" hidden></div>
-    <div class="tray" id="tray" hidden aria-live="polite"></div>
     <div class="composer" id="composer">
       <div id="rowsCombat" hidden>
         <div class="crow">
@@ -760,6 +874,12 @@ body.dragging{user-select:none;-webkit-user-select:none;cursor:ew-resize}
       </div>
       <div class="grid" id="gridTravel"></div>
       <div id="rowsTravel" class="dbg">
+        <div class="crow">
+          <select id="place" class="grow" aria-label="Place"></select>
+          <label class="lbl" for="level">Level</label>
+          <input type="number" id="level" min="1" max="100" step="1" style="width:4.6em">
+          <button class="sm quiet" id="rest" type="button">Rest</button>
+        </div>
         <div class="crow">
           <button class="primary" id="explore" type="button">Explore here</button>
           <select id="event" class="grow" aria-label="Story event"></select>
@@ -816,18 +936,19 @@ const LOOKS = [
   { id: 'ranger', name: 'Dune ranger', src: 'art/ranger.webp' },
   { id: 'succubus', name: 'Velvet, idle clip', src: 'art/succubus-idle.mp4', video: true, keyed: true },
   { id: 'librarian', name: 'Nyx, archive clip', src: 'art/librarian-idle.mp4', video: true, boxed: true },
-  { id: 'val-close', name: 'Valerie, close-up', src: 'art/cut/val-close.webp', hero: true },
+  { id: 'val-close', name: 'Valerie, close-up', src: 'art/cut/val-close.webp', hero: true, bust: true },
   { id: 'val-guard', name: 'Valerie, gate duty', src: 'art/cut/val-guard.webp', hero: true },
   { id: 'val-bar', name: 'Valerie, bar shift', src: 'art/cut/val-bar.webp', hero: true },
   { id: 'val-offduty', name: 'Valerie, off duty', src: 'art/cut/val-offduty.webp', hero: true },
-  { id: 'elf-green', name: 'Elowen, the visiting lecturer', src: 'art/cut/elf-green.webp', as: ['Elowen Thistledown', 'mage'] },
-  { id: 'elf-violet', name: 'Fizz, the alchemist', src: 'art/cut/elf-violet.webp', as: ['Fizz', 'rogue'] },
+  { id: 'elf-green', name: 'Elowen, the visiting lecturer', src: 'art/cut/elf-green.webp', bust: true, as: ['Elowen Thistledown', 'mage'] },
+  { id: 'elf-violet', name: 'Fizz, the alchemist', src: 'art/cut/elf-violet.webp', bust: true, as: ['Fizz', 'rogue'] },
   { id: 'none', name: 'Nobody', src: '' },
 ];
 // Nine city places have a painted backdrop for day, dusk and night. The clock picks which one is on screen.
-const TOWN_SCENES = { tankard: 'tavern', bunks: 'bar', lodge: 'guild', gates: 'gate', square: 'well', guild: 'guild', tavern: 'tavern', archive: 'archive', baths: 'baths', bar: 'bar', alley: 'alley', yard: 'yard' };
-const sceneOf = (place) => (TOWN_SCENES[place.id] ? `art/bg/town/${TOWN_SCENES[place.id]}-${{ Morning: 1, Afternoon: 1, Evening: 2, Night: 3 }[phaseNow()]}.webp` : place.src);
-function drawScene() { const place = placeNow(), src = sceneOf(place); if (S.sceneSrc === src) return; S.sceneSrc = src; $('scene').innerHTML = src ? `<img src="${esc(src)}" alt="">` : ''; }
+const TOWN_SCENES = { gates: 'gate', square: 'well', guild: 'guild', tavern: 'tavern', archive: 'archive', baths: 'baths', bar: 'bar', alley: 'alley', yard: 'yard', shop: 'alley',
+  tankard: 'tavern', bunks: 'bar', lodge: 'guild', leanto: 'alley:3', road: 'gate', bridge: 'gate', hollow: 'yard', ruins: 'bar:3', vault: 'archive:3', quad: 'well', lecture: 'archive', outskirts: 'yard', stockade: 'yard', tent: 'guild:3' };
+const sceneOf = (place) => { const v = TOWN_SCENES[place.id]; if (!v) return place.src; const [name, fixed] = v.split(':'); return `art/bg/town/${name}-${fixed ?? { Morning: 1, Afternoon: 1, Evening: 2, Night: 3 }[phaseNow()]}.webp`; };
+function drawScene() { const place = placeNow(), src = sceneOf(place); if (S.sceneSrc === src) return; S.sceneSrc = src; $('scene').innerHTML = src ? `<img src="${esc(src)}" class="${TOWN_SCENES[place.id] ? 'painted' : ''}" alt="">` : ''; }
 // Four months, one per season, twenty-eight days each.
 const MONTHS = [['Bloomtide', 'spring', '❀'], ['Highsun', 'summer', '✹'], ['Leaffall', 'autumn', '❦'], ['Deepfrost', 'winter', '❄']];
 // The city of Gooseford and the four domains around it: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps.
@@ -1018,17 +1139,18 @@ const SPOTS = {
       { label: 'Feed the pigeons', mins: 20, win: { say: 'They like you. They like you a lot. There are a great many of them now.', stress: -6, rest: 5 } },
       { label: 'Sleep on the bench', sleep: 'bench', win: { say: 'It is free, it is lumpy, and somebody tucks a pamphlet about the guild under your arm in the night.', stress: 5 } }] },
   ],
-  tankard: [{ id: 'shelf', name: 'Tinker\'s cart', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
-  bunks: [{ id: 'shelf', name: 'Quartermaster\'s hatch', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
-  lodge: [{ id: 'shelf', name: 'Reagent counter', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
-  leanto: [{ id: 'shelf', name: 'The fence\'s crate', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] }],
+  tankard: [{ id: 'shelf', name: 'Tinker\'s cart', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }, { buy: 'bloom' }] }],
+  bunks: [{ id: 'shelf', name: 'Quartermaster\'s hatch', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }, { buy: 'bloom' }] }],
+  lodge: [{ id: 'shelf', name: 'Reagent counter', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }, { buy: 'bloom' }] }],
+  leanto: [{ id: 'shelf', name: 'The fence\'s crate', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }, { buy: 'bloom' }] }],
   shop: [
-    { id: 'shelf', name: 'Potion shelf', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }] },
+    { id: 'shelf', name: 'Potion shelf', opts: [{ buy: 'heal' }, { buy: 'mana' }, { buy: 'tea' }, { buy: 'bloom' }] },
   ],
 };
 const POTIONS = {
   heal: { name: 'Healing Draught', price: 12, hint: 'HP +35%', use: (c) => ({ ...c, hp: Math.min(c.maxHp, Math.round(Math.max(0, c.hp) + c.maxHp * 0.35)) }) },
   mana: { name: 'Mana Tonic', price: 15, hint: 'Mana +50%', use: (c) => ({ ...c, mp: Math.min(c.maxMp, Math.round(c.mp + c.maxMp * 0.5)) }) },
+  bloom: { name: 'Bloom Draught', price: 20, hint: 'bust +40%, swelling +8', use: (c) => c },
   tea: { name: 'Calming Tea', price: 10, hint: 'stress −25', use: (c) => { const r = ST.relieveStress(c, 25, { from: 'self' }); return r.combatant ?? r; } },
 };
 // Why the bust stat grows depends on the path. Every tier: Tempt +2, Finesse −2%, plus the path's own perk.
@@ -1056,7 +1178,7 @@ const S = {
   order: store.get('order', {}), secured: store.get('secured', {}),
   cls: store.get('cls', 'knight'), heat: store.get('heat', 0), cond: store.get('cond', {}), resist: store.get('resist', {}),
   journal: store.get('journal', []), seen: store.get('seen', {}), race: store.get('race', 'Human'), ctab: 'resp',
-  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
+  perks: store.get('perks', {}), count: store.get('count', {}), zoomL: store.get('zoomL', 1.08), chatBank: store.get('chatBank', {}), chatBusy: false, chatNote: '', job: store.get('job', null), jobOpen: false, jobsDone: store.get('jobsDone', {}), thoughtBank: store.get('thoughtBank', {}), foes: store.get('foes', {}), fightKey: null, rfold: store.get('rfold', 'roads'), rollLog: [], trayPos: store.get('trayPos', null), trayDragged: false, idle: store.get('idle', true), sprL: store.get('sprL', 1), sprR: store.get('sprR', 1), event: null, cards: [], cardBase: 0, big: null, bigAuto: store.get('bigAuto', true), passed: null, retest: false, autoThem: null, faceL: store.get('faceL', ''), spent: store.get('spent', false), waiting: false, pickL: false, sizeL: store.get('sizeL', null), railOpen: false, talking: false,
   repBy: store.get('repBy', {}), vol: store.get('vol', 0), sheet: store.get('sheet', {}), ai: store.get('ai', {}), fillSeg: store.get('fillSeg', { bio: true, drives: true, read: true }), fillTier: store.get('fillTier', 'quick'), fillNote: '', descLen: store.get('descLen', 'm'),
   rep: store.get('rep', 40), mean: store.get('mean', 0), lewd: store.get('lewd', 0), jobDay: store.get('jobDay', 0), ltab2: null, realFights: store.get('realFights', false),
   changes: [], lastRoll: null, spot: null, meet: null, standoff: null, fallen: store.get('fallen', false), prev: null,
@@ -1229,7 +1351,7 @@ function battleAdvance() { // the rest of the party plays itself until it is you
 }
 function startBattle(spec) {
   if (!BT || S.battle) return;
-  once(`foe:${spec.boss ?? spec.encounter}`);
+  once(`foe:${spec.boss ?? spec.encounter}`); S.fightKey = spec.boss ? null : spec.encounter;
   const def = spec.boss ? DATA.bosses.bosses.find((x) => x.id === spec.boss) : DATA.encounters.encounters.find((x) => x.id === spec.encounter);
   if (!def) return post({ who: 'sys', dice: `No such fight: ${esc(spec.boss ?? spec.encounter)}` });
   const solo = !spec.boss && !S.party, level = spec.boss ? def.level : S.level, foeLevel = spec.level ?? (solo ? Math.max(1, Math.round(level * (placeNow().foe ?? 0.75))) : level);
@@ -1290,7 +1412,7 @@ function rightPanel() {
   if (withThem && S.autoThem !== S.who) { S.autoThem = S.who; S.rtab = 'here'; } if (!withThem) S.autoThem = null;
   const tab = S.battle ? S.rtab : S.rtab === 'fight' || (S.rtab === 'here' && !withThem) ? 'map' : S.rtab;
   const tabs = [...(S.battle ? [['fight', 'Fight']] : []), ['map', 'Map'], ...(withThem ? [['here', 'Them']] : []), ['level', 'Level'], ['debug', 'Debug']];
-  return `${worldPlate()}<div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
+  return `${worldPlate()}<div id="trayDock"></div><div class="rtabs" role="tablist" aria-label="Right panel">${tabs.map(([id, name]) => `<button type="button" role="tab" data-rtab="${id}" aria-selected="${id === tab}">${name}${id === 'level' && canLevel() ? ' ●' : ''}</button>`).join('')}</div>${
     tab === 'fight' ? battlePanel() : tab === 'here' ? hereTab() : tab === 'level' ? levelTab() : tab === 'debug' ? debugTab() : mapTab()}`;
 }
 function themFace() { const look = S.custom[S.lookR] ?? LOOKS.find((l) => l.id === S.lookR); return look?.src ? `<span class="face">${look.video ? `<video src="${esc(look.src)}" muted loop autoplay playsinline></video>` : `<img src="${esc(look.src)}" alt="">`}</span>` : `<span class="face shadeface">${shade(2)}</span>`; }
@@ -1440,19 +1562,20 @@ function tableRoll(title, rows) { // one d100 against a table of [label, chance,
   const roll = d(), segs = []; let at = 0, hit = null;
   for (const [label, chance, cls] of rows) { if (!(chance > 0) || at >= 100) continue; const lo = at + 1, hi = Math.min(100, at + chance); segs.push({ key: label, cls, label, lo, hi }); if (!hit && roll >= lo && roll <= hi) hit = label; at = hi; }
   if (at < 100) segs.push({ key: 'quiet', cls: 'miss', label: 'quiet', lo: at + 1, hi: 100 });
-  S.lastRoll = { title, roll, degree: hit ?? 'quiet', segs, math: `${rows.filter((r) => r[1] > 0).map(([l, c]) => `${l} ${c}%`).join(' · ') || 'nothing can happen here'} · rolled ${roll}` };
+  S.lastRoll = { road: /stretch \d of \d/.test(title), title, roll, degree: hit ?? 'quiet', segs, math: `${rows.filter((r) => r[1] > 0).map(([l, c]) => `${l} ${c}%`).join(' · ') || 'nothing can happen here'} · rolled ${roll}` };
   S.trayFresh = true; note(`d100 ${roll}: ${hit ?? 'quiet'} · ${title}`);
   return hit ?? 'quiet';
 }
 function renderTray() {
   const el = $('tray'), L = S.lastRoll; el.hidden = !L; if (!L) return;
+  if (S.trayFresh) { S.rollLog.unshift({ t: L.title, d: String(L.degree), r: L.roll }); S.rollLog = S.rollLog.slice(0, 5); }
   const open = !L.hidden || S.dbgTop;
   const segs = L.segs ?? (open ? segments((r) => { const o = readRoll(r, L.bands ?? { pct: L.pct, critPct: Math.max(1, Math.floor(L.pct / 10)), fumbleFrom: 96 }); return { key: o, cls: o, label: NAMES[o] }; }) : [{ key: 'h', cls: 'miss', label: 'hidden', lo: 1, hi: 100 }]);
   const tone = { crit: 'crit', hit: 'hit', miss: 'miss', fumble: 'fumble', bounce: 'bounce', fight: 'crit', event: 'hit', sign: 'bounce', quiet: 'miss' }[L.degree] ?? 'hit';
-  el.innerHTML = `<button class="tray-h" type="button" data-tray="1" title="Fold or unfold the dice"><span class="die o-${tone}">${L.roll}</span><span class="lbl">${esc(L.title)}</span><b class="deg o-${tone}">${esc(String(L.degree).toUpperCase())}</b></button><div class="tray-b"><div class="tray-in">${stripHtml(segs, L.roll)}<p class="tray-m">${open ? esc(L.math ?? '') : `Rolled ${L.roll}. Their numbers are hidden: get to know them, or open the Debugger.`}</p></div></div>`;
+  el.innerHTML = `<button class="tray-h" type="button" data-tray="1" title="Fold or unfold the dice"><span class="die o-${tone}">${L.roll}</span><span class="lbl">${esc(L.title)}</span><b class="deg o-${tone}">${esc(String(L.degree).toUpperCase())}</b></button>${S.trayPos ? '<button class="sm quiet trayhome" type="button" data-trayhome="1" title="Put the dice back in the right-hand panel">dock</button>' : ''}<div class="tray-b"><div class="tray-in">${stripHtml(segs, L.roll)}<p class="tray-m">${open ? esc(L.math ?? '') : `Rolled ${L.roll}. Their numbers are hidden: get to know them, or open the Debugger.`}</p>${L.road && roadDebuffs().length ? `<div class="chips" style="padding-bottom:9px">${roadDebuffs().map((x) => `<span style="--k:var(--crit)">${esc(x)}</span>`).join('')}</div>` : ''}${S.rollLog.length > 1 ? `<div class="rlog"><span class="lbl">Before that</span>${S.rollLog.slice(1).map((x) => `<p><b>${x.r}</b> ${esc(x.d)} · ${esc(x.t)}</p>`).join('')}</div>` : ''}</div></div>`;
   if (!S.trayFresh) return;
   S.trayFresh = false; el.classList.remove('land', 'shut', 'roll'); const m = el.querySelector('.mark'); void el.offsetWidth; el.classList.add('roll');
-  clearTimeout(S.trayT); S.trayT = setTimeout(() => { if (!(S.meet || S.talking || S.standoff)) el.classList.add('shut'); }, 7000);
+  clearTimeout(S.trayT);
   if (m) { const to = m.style.left; m.style.transition = 'none'; m.style.left = '0%'; void m.offsetWidth; m.style.transition = 'left .8s cubic-bezier(.2,.8,.2,1)'; m.style.left = to; }
   setTimeout(() => el.classList.add('land'), 820);
 }
@@ -1535,6 +1658,7 @@ function drink(kind) {
   S.bag[kind] -= 1; store.set('bag', S.bag); S.hero = p.use(S.hero); S.down = S.hero.hp <= 0; note(`${p.name}: ${p.hint}`);
   post({ who: 'me', plate: 'Satchel', dice: `[drink] ${esc(p.name)} · ${esc(p.hint)}`, say: 'It tastes like a colour. A good one.' });
   if (kind === 'tea') { vol(-2, 'a Calming Tea'); cond('phero', -20, 'a Calming Tea'); }
+  if (kind === 'bloom') { grow(40, 'a Bloom Draught'); cond('swell', 8, 'a Bloom Draught'); count('blooms', 'drinking Bloom Draughts'); }
   if (full && S.path === 'mage') grow(20, 'more mana than she can hold');
 }
 
@@ -1552,13 +1676,14 @@ function goTo(id) {
   if (S.battle || S.standoff) return post({ who: 'sys', plate: 'Combat', dice: '<b>COMBAT</b> · you cannot walk away', tone: 'crit', say: 'Fight, talk them down, tempt them, or run. Those are the ways out.' });
   if (S.fallen) return post({ who: 'sys', dice: 'You are on the ground. Get up first.' });
   if (S.mode === 'combat') S.mode = 'travel';
+  S.event = null; walkFx();
   S.prev = S.place; let at = from, total = 0;
   for (const step of pathTo(id)) {
     const p = PLACES.find((x) => x.id === step), mins = legMins(at, p), wild = p.zone === 'wild' || at.zone === 'wild';
     const joints = jointsOf(mins), start = at, quietLeg = p.zone === 'safe' && at.zone === 'safe' && !dangerOf(p);
     setPlace(step); S.them = freshThem(); at = p;
     for (let j = 1; j <= joints; j++) {
-      total += mins / joints; passTime(mins / joints); useStam(Math.max(1, Math.round(mins / joints / 9.6)), `walking to ${p.short}`); S.down = S.hero.hp <= 0;
+      total += mins / joints; passTime(mins / joints); count('stretches', 'walking'); useStam(Math.max(1, Math.round(mins / joints / 9.6) - (hasPerk('roadworn') ? 1 : 0)), `walking to ${p.short}`); S.down = S.hero.hp <= 0;
       if (S.fallen) break;
       if (quietLeg) { if (j === 1 && d() <= 35) sign(start, p, j, joints); continue; }
       const res = tableRoll(`${start.short} → ${p.short} · stretch ${j} of ${joints}`, stretchRows(p, joints));
@@ -1615,6 +1740,7 @@ function getUp() {
   if (danger && d() <= danger) { S.fallen = false; S.stam = 10; store.set('stam', S.stam); startStandoff('they found you on the ground'); }
 }
 function afterFight(won, r) {
+  if (S.fightKey) { foeResult(S.fightKey, won); S.fightKey = null; }
   if (won && r?.gold) gainGold(r.gold, 'spoils');
   if (won && S.path === 'warrior') grow(15, 'a fight won');
   if (won) { if (S.fightTag?.job) job('a guild hunt'); else rep(3, 'a fight won'); }
@@ -1627,6 +1753,10 @@ function afterFight(won, r) {
 function doAct(id) {
   const who = S.who ? castOf(S.who) : null, here = placeNow();
   if (id === 'getup') return getUp();
+  if (id === 'jobopen') { S.jobOpen = true; return; }
+  if (id === 'jobback') { S.jobOpen = false; return; }
+  if (id.startsWith('job:')) return doJob(+id.slice(4));
+  if (id === 'evleave') { S.event = null; return post({ who: 'sys', dice: '[story] You leave it be.', say: 'Whatever that was, it can be somebody else\'s afternoon.' }); }
   if (['search', 'listen', 'wait', 'watch', 'provoke', 'lielow'].includes(id)) return streetAct(id);
   if (['boss', 'garrison', 'liberate', 'camp'].includes(id)) return knightAct(id);
   if (id.startsWith('meet:')) return meet(id.slice(5));
@@ -1656,6 +1786,8 @@ function travelGrid() {
   if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy'), hasPerk('surefoot') ? 10 : 0), 'primary');
   if (S.standoff?.pinned) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total, left = 3 - S.standoff.pinRounds; return cell('so:struggle', 'Struggle up', `${odds('STR', dc, rb('strike') + (hasPerk('ragdoll') ? 10 : 0))} · back on your feet`, 'primary') + cell('so:wriggle', 'Wriggle free', `${odds('AGI', dc, rb('run') + (hasPerk('eel') ? 10 : 0))} · out and away`) + cell('so:plead', 'Talk from the ground', `${odds('WIL', dc, rb('persuade') - 10)} · nerve −30`) + cell('so:endure', 'Curl up', 'no roll · halve the next one') + `<span class="pinnote">Pinned · ${left} round${left === 1 ? '' : 's'} before they win</span>`; }
   if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; const cl = calling(), so = S.standoff, tell = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : ''; return cell('so:strike', cl.verb, `${odds(cl.stat, dc, rb('strike'))} · nerve −25${tell}`, 'primary') + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
+  if (S.event) return eventCells();
+  if (S.jobOpen && jobNow()?.place === S.place) return jobCells();
   if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
   const closed = !openNow(here.hours);
   if (S.spot) { const spot = (SPOTS[here.id] ?? []).find((s) => s.id === S.spot);
@@ -1666,6 +1798,7 @@ function travelGrid() {
   const actCell = (id) => { const a = ACTS[id], shut = closed && !['look', 'explore'].includes(id), held = (id === 'boss' || id === 'garrison') && S.secured[areaOf(here)], off = shut || held || (a.once && S.used[id]) || (needsLegs.has(id) && S.down);
     return cell(id, actLabel(id, here), held ? 'already secured' : shut ? `closed until ${here.hours[0]}:00` : a.once && S.used[id] ? 'done for this visit' : needsLegs.has(id) && S.down ? 'rest first' : id === 'rest' ? `${n(8 * L)} gold · sleep till morning` : id === 'hunt' ? (S.party ? 'a real fight, party of four' : 'a real fight, alone') : id === 'explore' && (here.zone !== 'safe' || dangerOf(here)) ? `fight ${dangerOf(here)}% · event ${here.zone === 'safe' ? 0 : here.evt ?? 0}%` : a.hint, id === 'look' ? 'look' : '', off); };
   const acts = (here.acts ?? []).filter((id) => id !== 'look' && id !== 'explore').map(actCell);
+  if (jobNow()?.place === here.id) acts.unshift(cell('jobopen', `The job: ${jobNow().title}`, 'four ways to do it', 'primary'));
   const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
   const ctab = ['resp', 'social', 'items', 'debug'].includes(S.ctab) ? S.ctab : 'resp';
   return composerTabs(ctab) + (ctab === 'social' ? socialCells(here, who) : ctab === 'items' ? itemCells() : ctab === 'debug' ? debugCells() : placeGrid(HERE_ROW.map((id) => (id === 'look' ? actCell(id) : streetCell(id, here))), TROUBLE_ROW.map((id) => (id === 'explore' ? actCell(id) : streetCell(id, here))), [...acts, ...spots])) + (ctab === 'debug' ? '' : exitCells(here));
@@ -1746,13 +1879,13 @@ function settingsBlock() {
   return `<div class="over"><h3>Settings</h3><div class="set"><label><span class="lbl">Your look</span>${lookSelect('lookL', S.lookL)}</label><button class="sm quiet" type="button" data-flip="l">Flip image</button>
       <label><span class="lbl">Use my own picture</span><input type="file" id="fileL" accept="image/*,video/mp4,video/webm"></label>
       <label><span class="lbl">What strangers take her for</span><select id="race">${Object.keys(RACES).map((k) => `<option${k === S.race ? ' selected' : ''}>${k}</option>`).join('')}</select></label>
-      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}</div></div>
+      ${tog('dbgTop', 'Debugger', S.dbgTop)}${tog('debug', 'Old controls', S.debug)}${tog('party', 'Party hunts', S.party)}${tog('realFights', 'Offer a real fight in ambushes', S.realFights)}${tog('aiThoughts', 'Claude writes her thoughts', S.aiThoughts)}${tog('idle', 'Figures breathe and shift', S.idle)}</div></div>
     <div class="over"><h3>Save</h3><p>The game saves in this browser as you play.</p><div class="set"><button class="sm" type="button" data-set="export">Copy my save</button><textarea id="saveBox" rows="2" placeholder="Your save appears here. Or paste one and press Load." aria-label="Save data">${esc(S.saveText ?? '')}</textarea><button class="sm" type="button" data-set="import">Load the pasted save</button><button class="sm quiet" type="button" data-dbg="wipe">${S.wipeArmed ? 'Click again to wipe' : 'Reset my save'}</button></div></div>`;
 }
 function settingClick(key) {
   if (key === 'export') { const out = {}; try { for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) out[k] = localStorage.getItem(k); } catch {} S.saveText = JSON.stringify(out); navigator.clipboard?.writeText(S.saveText).catch(() => {}); return post({ who: 'sys', dice: '[save] Copied. It is also in the box under Save.' }); }
   if (key === 'import') { try { const data = JSON.parse($('saveBox').value); for (const [k, v] of Object.entries(data)) if (k.startsWith('oops-') && typeof v === 'string') localStorage.setItem(k, v); location.reload(); } catch { post({ who: 'sys', dice: '[save] That did not read as a save. Paste the whole thing.' }); } return; }
-  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights'].includes(key)) return;
+  if (!['dbgTop', 'debug', 'party', 'aiThoughts', 'realFights', 'idle'].includes(key)) return;
   S[key] = !S[key]; store.set(key, S[key]);
 }
 
@@ -1770,7 +1903,7 @@ const THOUGHTS = {
 function pickThought() {
   const band = V.airheadBand(V.airheadOf(S.hero));
   const key = S.fallen ? 'fallen' : S.battle || S.standoff ? 'combat' : S.meet ? 'meet' : S.stam < 25 ? 'tired' : S.decency < 35 ? 'rough' : band;
-  const list = THOUGHTS[key]; S.thoughtN = (S.thoughtN ?? 0) + 1;
+  const list = [...THOUGHTS[key], ...(S.thoughtBank[key] ?? [])]; S.thoughtN = (S.thoughtN ?? 0) + 1;
   const marks = Object.keys(PERKS).filter((id) => hasPerk(id) && PERKS[id].quote);
   S.thought = marks.length && S.thoughtN % 3 === 0 ? { text: PERKS[marks[Math.floor(S.thoughtN / 3) % marks.length]].quote, voice: 'her' } : { text: list[S.thoughtN % list.length], voice: band === 'lucid' ? 'you' : 'her' };
   if (S.aiThoughts) thinkAloud(key, band);
@@ -1782,11 +1915,16 @@ async function thinkAloud(key, band) {
     if (!sampler) return;
     const last = (S.lines[S.lines.length - 1] ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 300);
     const out = await metered('thoughts', `Write ONE short inner thought (under 18 words, no quotes) for Dame Valerie Bellweather, a kind, clumsy, absurdly lucky knight in a light fantasy comedy. ${band === 'lucid' ? 'Right now the ordinary modern person inside her body is thinking: dry, a bit overwhelmed, practical.' : 'Right now Valerie herself is thinking: sunny, earnest, a beat behind, never sarcastic.'} PG-13. What drives her: ${drivesText()} Situation: ${key}; she is at ${placeNow().name}; Airhead ${V.airheadOf(S.hero)}/100; stamina ${S.stam}; just happened: ${last}`, { modelTier: 'quick', cache: false });
-    const t = (out?.text ?? '').trim().replace(/^["']|["']$/g, ''); if (t) { S.thought = { text: t.slice(0, 160), voice: band === 'lucid' ? 'you' : 'her' }; renderThought(); }
+    const t = (out?.text ?? '').trim().replace(/^["']|["']$/g, ''); if (t) { S.thought = { text: t.slice(0, 160), voice: band === 'lucid' ? 'you' : 'her' }; const bank = (S.thoughtBank[key] ??= []); bank.unshift(t.slice(0, 160)); if (bank.length > 15) bank.pop(); store.set('thoughtBank', S.thoughtBank); renderThought(); }
   } catch (e) { if (e?.code === 'not_granted') { S.aiThoughts = false; store.set('aiThoughts', false); } }
   finally { S.thinking = false; }
 }
-function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; }
+function renderThought() { const el = $('thought'); if (!S.thought) { el.hidden = true; return; } el.hidden = false; el.innerHTML = `<span class="lbl">${S.thought.voice === 'you' ? 'you, inside her head' : 'her, out loud in her head'}</span><i>${esc(S.thought.text)}</i>`; placeThought(); setTimeout(placeThought, 450); }
+function placeThought() { // just above the top of her picture, wherever that is for this pose and size
+  const el = $('thought'); if (el.hidden) return; const fig = $('sprL'), pic = fig.firstElementChild, st = $('stage').getBoundingClientRect(), fb = fig.getBoundingClientRect(); let top = fb.top + fb.height * 0.4;
+  if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * (S.sprL ?? 1); }
+  el.style.top = `${Math.max(54, Math.round(top - st.top - el.offsetHeight - 4))}px`;
+}
 /* ---------- the four domains: a knight keeps order ---------- */
 const areaOf = (p) => p.area ?? 'city';
 const orderOf = (area) => S.order[area] ?? AREAS[area]?.start ?? 50;
@@ -1813,17 +1951,16 @@ function mapTab() {
   const doors = A.exits.map((e) => { const from = local.find((x) => x.id === e.from), to = PLACES.find((x) => x.id === e.to);
     return `${roadPath(from, { ...to, x: e.x, y: e.y }, from.id === here.id ? 'on' : '')}<g class="node door${from.id === here.id ? ' near' : ''}" data-go="${e.to}" role="button" tabindex="0" aria-label="The way to ${esc(AREAS[areaOf(to)].name)}, ${legMins(from, to)} minutes from ${esc(from.name)}"><rect x="${e.x - 6}" y="${e.y - 4}" width="12" height="8" rx="2.4"/><text x="${e.x}" y="${e.y + 1.6}">${esc(e.label)}</text></g>`; }).join('');
   const nodes = local.map((p) => { const q = eventPool(p).length, who = residentOf(p.id), shut = !openNow(p.hours);
-    return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${p.boss || p.acts.includes('garrison') ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">★</text>` : q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">!</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
+    return `<g class="node ${p.zone}${p.id === here.id ? ' here' : near.has(p.id) ? ' near' : ''}${shut ? ' shut' : ''}" data-go="${p.id}" role="button" tabindex="0" aria-label="${esc(p.name)}${p.id === here.id ? ', you are here' : ''}${who ? `, ${esc(castOf(who).name)} is there` : ''}${shut ? ', closed' : ''}${dangerOf(p) ? `, fight chance ${dangerOf(p)} percent` : ''}"><circle cx="${p.x}" cy="${p.y}" r="5.6"/>${who ? `<circle class="res${who === 'sable' && roam === p.id ? ' roam' : ''}" cx="${p.x + 4.8}" cy="${p.y - 4.8}" r="1.8"/>` : ''}${jobNow()?.place === p.id ? `<text class="mk job" x="${p.x - 6.2}" y="${p.y - 3.4}">✦</text>` : ''}${p.acts.includes('rest') || p.acts.includes('camp') ? `<text class="mk bed" x="${p.x - 6.4}" y="${p.y + 5.6}">⌂</text>` : ''}${SPOTS[p.id]?.some((x) => x.id === 'shelf') ? `<text class="mk shop" x="${p.x + 6.4}" y="${p.y + 5.6}">◈</text>` : ''}${p.boss || p.acts.includes('garrison') ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">★</text>` : q ? `<text class="q" x="${p.x}" y="${p.y + 1.7}">!</text>` : ''}<text x="${p.x}" y="${p.y + 10.6}">${esc(p.short)}</text></g>`; }).join('');
   const who = S.who ? castOf(S.who) : null;
   const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
   return `
-    ${aroundHere()}
-    <svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg>
+    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span><button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div><svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}</svg></div>
+    <p class="mapkey"><span style="--k:var(--pink)">● someone</span><span style="--k:var(--gold)">! a story</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--gold)">★ stronghold</span><span style="--k:var(--crit)">◌ trouble</span></p>
+    <label class="walkto"><span class="lbl">Walk to</span><select data-goto="1" aria-label="Walk to a place"><option value="">anywhere on the map…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>
     <p class="more">bubble: walk there · box: another map · ★ stronghold · each bend in a road is a stretch with its own roll</p>
-    ${roadsBox()}
-    <div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>
-    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `Their respect for you: ${tierOf(npcOf(S.who).rapport).toLowerCase()}.` : 'You have not met yet.'}</p>${emo(S.them, false)}</div>` : ''}
-    <div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`;
+    ${who ? `<div class="over"><h3>${esc(who.name)}</h3><p>${esc(who.role.replace(/^./, (c) => c.toUpperCase()))}. ${npcOf(S.who).met ? `Their respect for you: ${tierOf(npcOf(S.who).rapport).toLowerCase()}.` : 'You have not met yet.'}</p></div>` : ''}
+    <div class="rfolds">${[['roads', roadsBox()], ['around', aroundHere()], ['talk', chatterBox()], ['here', `<div class="over"><h3>Here · ${here.zone}${dangerOf(here) ? ` · fight ${dangerOf(here)}%` : ''}</h3><p>${esc(here.text)}${openNow(here.hours) ? '' : ` Closed until ${here.hours[0]}:00.`}</p></div>`], ['domains', `<div class="over"><h3>The four domains · order</h3><div class="roster">${world}</div><p>A knight keeps order. Win fights and patrols in a domain to raise it; lose and it slips. Higher order means fewer fights there. Break a domain's stronghold (★) to secure it.</p></div>`]].map(([k, html]) => rfold(k, html)).join('')}</div>`;
 }
 function knightAct(id) { // the things only the outer domains offer
   const here = placeNow(), area = areaOf(here);
@@ -1854,16 +1991,16 @@ function leftPanel(h, top, gauge, band, locked) {
   const tabs = [['over', 'Overview'], ['stats', 'Status'], ['rpg', 'RPG'], ['kit', 'Kit'], ['spicy', 'Spicy'], ['set', 'Settings']], tab = tabs.some((t) => t[0] === S.ltab) ? S.ltab : 'over';
   const body = tab === 'over' ? overviewTab() : tab === 'kit' ? kitTab() : tab === 'rpg' ? rpgTab(h) : tab === 'bio' ? bioTab() : tab === 'spicy' ? spicyTab() : tab === 'moments' ? momentsTab() : tab === 'set' ? settingsBlock()
     : `<div class="bars">${bar('HP', h.hp, h.maxHp, 'var(--mint)')}${bar('Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>${stateChips(h)}${dashboard()}`;
-  const size = ['min', 'half', 'full'].includes(S.sizeL) ? S.sizeL : 'min';
-  return `<div class="sheet"><div class="pcol"><div class="halfcard">${face()}<button class="hc-pick" type="button" data-pick="1" aria-expanded="${Boolean(S.pickL)}" aria-label="Change her picture" title="Click her picture to change her pose or her face"></button><div class="sizes" role="group" aria-label="Panel size">${[['min', 'Min'], ['half', 'Half'], ['full', 'Full']].map(([k, name]) => `<button type="button" data-size="${k}" aria-pressed="${k === size}">${name}</button>`).join('')}</div><div class="hc-name"><h2>${heroName}</h2><p class="role">${esc(calling().name)}</p></div><span class="lv" title="Level ${h.level}"><small>LV</small>${h.level}</span><span class="purse" title="Gold">◈ ${n(S.gold)}</span><i class="xp" title="${n(S.exp)} / ${n(needExp())} EXP" style="--p:${Math.max(0, Math.min(100, (S.exp / Math.max(1, needExp())) * 100))}%"></i></div>
+  const size = ['slim', 'min', 'half', 'full'].includes(S.sizeL) ? S.sizeL : 'min';
+  return `<div class="sheet"><div class="rail${S.railOpen ? ' open' : ''}" id="rail">${railHtml(h, gauge, band, locked)}<div class="sizes" role="group" aria-label="Panel size">${[['slim', 'Bar'], ['min', 'Min'], ['half', 'Half'], ['full', 'Full']].map(([k, name]) => `<button type="button" data-size="${k}" aria-pressed="${k === size}">${name}</button>`).join('')}</div></div><div class="pcol"><div class="halfcard">${face()}<button class="hc-pick" type="button" data-pick="1" aria-expanded="${Boolean(S.pickL)}" aria-label="Change her picture" title="Click her picture to change her pose or her face"></button><div class="hc-name"><h2>${heroName}</h2><p class="role">${esc(calling().name)}</p></div><span class="lv" title="Level ${h.level}"><small>LV</small>${h.level}</span><span class="purse" title="Gold">◈ ${n(S.gold)}</span><i class="xp" title="${n(S.exp)} / ${n(needExp())} EXP" style="--p:${Math.max(0, Math.min(100, (S.exp / Math.max(1, needExp())) * 100))}%"></i></div>
     ${S.pickL ? lookPicker() : ''}${underTabs()}</div>
-    <div class="sheet-body"><div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
+    <div class="sheet-body">${combatBlock(h)}<div class="rtabs" role="tablist" aria-label="Her sheet">${tabs.map(([id, name]) => `<button type="button" role="tab" data-ltab="${id}" aria-selected="${id === tab}">${name}</button>`).join('')}</div>
     ${body}
     ${document.body.classList.contains('sheetL') ? moreSections() : ''}</div></div>`;
 }
 /* ---------- asking Claude: every call is counted under what it was for ---------- */
 // The page is never told real token counts, so these are estimates: characters ÷ 4, both ways.
-const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill' };
+const AI_SEGS = { thoughts: 'Inner voice', chat: 'Replies in chat', bio: 'Bio writer', fill: 'Sheet fill', chatter: 'Talk of the town' };
 const tok = (text) => Math.ceil(String(text ?? '').length / 4);
 function meter(seg, prompt, reply) { const m = (S.ai[seg] ??= { calls: 0, in: 0, out: 0 }); m.calls += 1; m.in += tok(prompt); m.out += tok(reply); m.last = clockText(); store.set('ai', S.ai); }
 async function metered(seg, prompt, opts) { const out = await sampler(prompt, opts); meter(seg, prompt, out?.text ?? ''); return out; }
@@ -1933,14 +2070,16 @@ function lookPicker() {
     <p class="more">The first six are hers. Add your own under Settings.</p></div>`;
 }
 function railHtml(h, gauge, band, locked) {
-  const tube = (g, name, v, max, color) => `<span class="tube${v / max < 0.25 || (name === 'Stamina' && S.spent) ? ' low' : ''}" style="--k:${color}" title="${name} ${n(v)} / ${n(max)}"><em>${g}</em><i><u style="height:${Math.max(0, Math.min(100, (v / max) * 100))}%"></u></i></span>`, m = mood(h, true);
-  return `<button class="rail-t" type="button" data-rail="1" aria-expanded="${Boolean(S.railOpen)}" aria-label="HP ${n(h.hp)} of ${n(h.maxHp)}, mana ${n(h.mp)} of ${n(h.maxMp)}, stamina ${S.stam} of 100, ${esc(m[1])}. Show her mood."><span class="tubes">${tube('♥', 'HP', h.hp, h.maxHp, 'var(--mint)')}${tube('✦', 'Mana', h.mp, Math.max(1, h.maxMp), 'var(--cyan)')}${tube('⚡', 'Stamina', S.stam, 100, 'var(--gold)')}</span><span class="mg" title="${esc(m[1])}">${m[0]}</span></button>
-    <div class="rail-pop">${emo(h, true)}
+  const hb = (g, name, v, max, color, low) => `<span class="hbar${low ? ' low' : ''}" style="--k:${color};--p:${Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100))}%"><em>${g}</em><i><u></u><b><span>${name}</span><span>${n(v)} / ${n(max)}</span></b></i></span>`, m = mood(h, true);
+  return `<button class="rail-t" type="button" data-rail="1" aria-expanded="${Boolean(S.railOpen)}" aria-label="HP ${n(h.hp)} of ${n(h.maxHp)}, mana ${n(h.mp)} of ${n(h.maxMp)}, stamina ${S.stam} of 100, ${esc(m[1])}. Show her mood and the rest.">${hb('♥', 'HP', h.hp, h.maxHp, 'var(--mint)', h.hp / h.maxHp < 0.25)}${hb('✦', 'Mana', h.mp, h.maxMp, 'var(--cyan)', false)}${hb('⚡', 'Stamina', S.stam, 100, 'var(--gold)', S.stam < 25 || S.spent)}<span class="mline"><span class="mg">${m[0]}</span>${esc(m[1])}${S.spent ? ' · Exhausted' : ''}<small>${S.railOpen ? 'pinned ▴' : 'more ▾'}</small></span></button>`;
+}
+function railPop(h, gauge, band, locked) {
+  return `${emo(h, true)}
       <div class="range"><div class="t"><span>Lucid</span><b>${gauge}</b><span>Total Airhead</span></div>
         <input type="range" id="gauge" min="0" max="100" value="${gauge}" aria-label="Airhead gauge, ${esc(band.name)}"${locked || S.battle ? ' disabled' : ''}${S.battle ? ' title="The gauge moves by your stance during a real fight"' : ''}>
         <p class="settled"><i>${esc(band.name)}</i> ${gauge}<span>settled in ${esc(band.name)} · ${gauge <= 33 ? `${34 - gauge} to Ditzy` : gauge <= 66 ? `${67 - gauge} to Total Airhead` : `${gauge - 66} back to Ditzy`}</span></p></div>
       <div class="bars">${bar('♥ HP', h.hp, h.maxHp, 'var(--mint)')}${bar('✦ Mana', h.mp, h.maxMp, 'var(--cyan)')}${bar('⚡ Stamina', S.stam, 100, 'var(--gold)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
-      ${S.spent ? '<div class="chips"><span style="--k:var(--crit)">Exhausted · every roll −10 · stamina stops at 50 · fights find her · cure: a bed</span></div>' : ''}${stateChips(h)}<p class="pin">${S.railOpen ? 'pinned open · click the bars to let go' : 'click the bars to pin this open'}</p></div>`;
+      ${S.spent ? '<div class="chips"><span style="--k:var(--crit)">Exhausted · every roll −10 · stamina stops at 50 · fights find her · cure: a bed</span></div>' : ''}${stateChips(h)}<p class="pin">${S.railOpen ? 'pinned open · click the bars to let go' : 'click the bars to pin this open'}</p>`;
 }
 function exitCells(here) {
   return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
@@ -1985,10 +2124,10 @@ const HECKLE_SAY = {
 function startStandoff(why, encId) {
   const all = DATA.encounters.encounters, pool = all.filter((x) => x.id !== 'hoard_drake' && x.id !== 'horde_at_the_gate'), safe = placeNow().zone === 'safe';
   const enc = (encId && all.find((x) => x.id === encId)) || (safe ? all.find((x) => x.id === 'bandit_archers') : null) || pool[Math.floor(Math.random() * pool.length)];
-  const level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
+  const fkey = safe ? 'opportunists' : enc.id, level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) + foeRec(fkey).rank, stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
   const kinds = ['slash', 'strike', 'thrust'], weak = kinds[Math.floor(Math.random() * 3)], tough = kinds[(kinds.indexOf(weak) + 1 + Math.floor(Math.random() * 2)) % 3];
   once(`foe:${safe ? 'opportunists' : enc.id}`);
-  S.standoff = { id: enc.id, name: safe ? 'Opportunists' : enc.name, level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
+  S.standoff = { id: enc.id, key: fkey, name: foeName(fkey, safe ? 'Opportunists' : enc.name), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
     foe: makeCombatant({ id: 'heckler', name: safe ? 'Opportunists' : enc.name, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
   post({ who: 'sys', plate: 'Combat', dice: `<b>COMBAT</b> · ${esc(S.standoff.name)} · ${esc(why)}`, tone: 'crit', say: `${safe ? 'A few locals have decided a knight in that state is fair game.' : 'They have seen you, and they have opinions.'} You cannot walk on. Break their nerve: strike, sway, talk them down, brace, or run. They will jeer, shove and throw things while you do.` });
@@ -2019,6 +2158,7 @@ function endStandoff(how, last) {
     post({ who: 'sys', plate: 'Combat', dice: `<b>FORCED INTO A FIGHT</b> · ${esc(so.name)} · ${dry ? 'she ran out of stamina' : 'talking did not break them'}`, tone: 'crit', say: dry ? 'Your legs go, and they stop pretending this was a conversation.' : 'Eight rounds of talk and they still have their nerve. Somebody draws a knife. That settles what kind of evening this is.' });
     pop('l', 'FIGHT', 'var(--crit)'); return startBattle({ encounter: so.id, level: so.level });
   }
+  if (how === 'won') foeResult(so.key, true); if (how === 'lost') foeResult(so.key, false);
   if (how === 'won') { tally('heckWins', 'thick', 2, 'two crowds broken'); if (last === 'sway') grantPerk('crowd', 'a crowd broken with a sway'); order(area, 6, 'hecklers scattered'); rep(2, 'stood her ground'); const fx = applyFx({ exp: 0.05, gold: 4, grow: 10, growPath: 'warrior' }, 'hecklers scattered'); return post({ who: 'sys', plate: 'Combat over', dice: `<b>THEIR NERVE BROKE</b> · ${esc(so.name)} · ${so.round} rounds`, tone: 'virtue', say: 'They scatter in six directions, one of them into a hedge. You are back to travelling.', fx }); }
   if (how === 'ran') { applyFx({ stress: 2 }, 'ran'); if (S.prev && S.prev !== S.place) { setPlace(S.prev); S.them = freshThem(); } return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · you got away · ${esc(placeNow().name)}`, tone: 'virtue' }); }
   if (how === 'bored') return post({ who: 'sys', plate: 'Combat over', dice: `<b>TRAVELLING</b> · they got bored · ${esc(so.name)}`, tone: 'virtue', say: 'Eight rounds in, somebody mentions supper. The crowd thins, then leaves. Nobody won that.' });
@@ -2191,6 +2331,11 @@ Object.assign(PERKS, {
   attention: { name: 'Likes the Attention', quote: 'I did the sway on purpose that time. Since when do I do that?', does: 'Sway +5. Every decency loss is 1 bigger.', from: 'Sway at a crowd three times', need: ['sways', 3] },
   shameless: { name: 'Shameless', quote: 'Whistle all you like. I have a sword and a very good breastplate.', does: 'Catcalls no longer cost decency. The gossip grows twice as fast.', from: 'Get whistled at six times', need: ['catcalls', 6] },
   bruiser: { name: 'Short Fuse', quote: 'I hit first now. That is new, and I am not sure I love it.', does: 'Strike +5. Rough conduct counts double.', from: 'Strike at a crowd four times', need: ['strikes', 4] },
+  reliable: { name: 'Reliable', quote: 'People keep handing me notices. I think I have become someone you hand notices to.', does: 'Guild jobs: every way +5, and the pay is a fifth bigger.', from: 'Finish three guild jobs', need: ['jobs', 3] },
+  magpie: { name: 'Magpie Eyes', quote: 'Shiny. Under the bench. I do not know how I knew.', does: 'Search +10.', from: 'Search four places', need: ['searches', 4] },
+  sentry: { name: 'Good at Standing', quote: 'I am very good at standing somewhere on purpose.', does: 'Stand watch +10.', from: 'Stand watch three times', need: ['watches', 3] },
+  roadworn: { name: 'Road Legs', quote: 'My feet know the way. I just follow them.', does: 'Each stretch of road costs 1 less stamina.', from: 'Walk thirty stretches', need: ['stretches', 30] },
+  bloomed: { name: 'In Bloom', quote: 'The armorer has stopped asking and started measuring.', does: 'Tempt +2. Swelling rises 2 faster each night.', from: 'Drink three Bloom Draughts', need: ['blooms', 3] },
   ragdoll: { name: 'Knows the View', quote: 'I know this view. It is mostly boots.', does: 'Struggle up +10.', from: 'Get pinned twice', need: ['pinned', 2] },
   eel: { name: 'Hard to Hold', quote: 'There is always a gap. You just have to be willing to lose a cloak.', does: 'Wriggle free +10.', from: 'Wriggle out of a pin twice', need: ['wriggles', 2] },
   floor: { name: 'Friend of the Floor', quote: 'The ground and I have an understanding. It is always there for me.', does: 'Falling over no longer costs decency.', from: 'Fall down three times', need: ['falls', 3] },
@@ -2258,7 +2403,7 @@ function renderGuild() {
   const finished = done.map((e) => `<div class="quest done"><b>${esc(e.title)}</b><small>${esc(e.t)}</small><div class="meta"><span class="ok">done</span></div><button class="sm quiet" type="button" data-quest="${esc(e.id)}"${busy ? ' disabled' : ''}>Again</button></div>`).join('');
   const hunts = (DATA.encounters?.encounters ?? []).map((x, i) => `<div class="quest"><b>Hunt notice ${i + 1}</b><small>"Something needs dealing with." The clerk will not say what, or how many.</small><div class="meta"><span>numbers unknown</span><span>strength unknown</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-enc="${esc(x.id)}"${live && !busy ? '' : ' disabled'}>Take it</button></div>`).join('');
   const bosses = (DATA.bosses?.bosses ?? []).map((b) => `<div class="quest"><b>${esc(b.name)}${b.title ? `, ${esc(b.title)}` : ''}</b><small>${esc(b.want)}</small><div class="meta"><span>strength unknown</span><span>${esc(b.arena ? b.arena.split(':')[0] : 'whereabouts unknown')}</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-boss="${esc(b.id)}"${live && !busy ? '' : ' disabled'}>Challenge</button></div>`).join('');
-  $('guild').innerHTML = `<h2>The Guild Hall</h2><p>The notice board. A notice does not say what it is until you take it, and nobody will tell you how many of them there are out there.</p>${notices || '<p>The board is bare.</p>'}
+  $('guild').innerHTML = `${jobBoard()}<h2>The Guild Hall</h2><p>The notice board. A notice does not say what it is until you take it, and nobody will tell you how many of them there are out there.</p>${notices || '<p>The board is bare.</p>'}
     ${finished ? `<h2>Done</h2>${finished}` : ''}
     <h2>Hunts</h2><p>Fights for coin. You find out what you are hunting when you find it.</p>${hunts}
     <h2>Bounties</h2><p>Everybody knows the names. Nobody who knows how strong they are is saying.</p>${bosses}`;
@@ -2363,7 +2508,7 @@ function cond(k, delta, why) { if (!delta) return; const was = condOf(k); S.cond
 function nightConditions(day) { // each morning: up by what her body did, down by her resistance, and living with it toughens her
   const rows = [];
   for (const k of Object.keys(COND)) {
-    const before = condOf(k), up = k === 'swell' ? 2 * S.bust : Math.round(S.chem / 10), down = Math.round(resistOf(k) / 2);
+    const before = condOf(k), up = k === 'swell' ? 2 * S.bust + (hasPerk('bloomed') ? 2 : 0) : Math.round(S.chem / 10), down = Math.round(resistOf(k) / 2);
     S.cond[k] = Math.max(0, Math.min(100, before + up - down));
     const trained = before >= 25 && (S.resist[k] ?? 0) < 20; if (trained) S.resist[k] = (S.resist[k] ?? 0) + 1;
     rows.push(`${COND[k].name} ${before} → ${S.cond[k]} (+${up} overnight, −${down} resisted${trained ? ', resistance +1' : ''})`);
@@ -2377,7 +2522,7 @@ const FOLLOW = ['Two lads have found a reason to walk the same way you are walki
 // Jiggle free: the one button that always works. It drops whatever is holding her and puts her back on her feet where she stands.
 function jiggle(auto) {
   const was = S.battle ? 'a fight' : S.standoff ? 'a standoff' : S.fallen || S.down ? 'the floor' : S.meet ? 'a first meeting' : S.spot ? 'a corner of the room' : S.talking ? 'a conversation' : S.mode === 'combat' ? 'the sparring ring' : 'nothing you could point at';
-  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
+  S.battle = null; S.standoff = null; S.meet = null; S.spot = null; S.talking = false; S.fallen = false; S.waiting = false; S.retest = false; S.big = null; S.event = null; S.jobOpen = false; S.down = false; S.mode = 'travel'; S.wipeArmed = false; S.ctab = 'resp';
   if (S.rtab === 'fight') S.rtab = 'map';
   S.hero = { ...S.hero, hp: Math.max(S.hero.hp, Math.round(S.hero.maxHp * 0.25)), stress: Math.min(S.hero.stress, 90) };
   if (S.stam < 20) { S.stam = 20; store.set('stam', S.stam); }
@@ -2450,8 +2595,8 @@ const HERE_ROW = ['look', 'search', 'listen', 'wait'], TROUBLE_ROW = ['explore',
 const RUMOURS = ['Two carters agree on one thing: the price of turnips is a scandal.', 'Somebody\'s cousin saw a dragon. Somebody\'s cousin sees a lot of things.', 'The talk is all about a goose that got into the guild ledger. Nobody will say what it wrote.'];
 function streetAct(id) {
   const here = placeNow(), area = areaOf(here), L = Math.max(1, S.level), open = here.zone !== 'safe';
-  if (id === 'search') { S.used.search = true; passTime(20); useStam(2, 'searching'); if (S.fallen) return;
-    const r = rollCheck({ title: `Search · ${here.short}`, stat: 'LCK', dc: dcFor(S.level, 'normal') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Search`;
+  if (id === 'search') { S.used.search = true; count('searches', 'searching'); passTime(20); useStam(2, 'searching'); if (S.fallen) return;
+    const r = rollCheck({ title: `Search · ${here.short}`, stat: 'LCK', dc: dcFor(S.level, 'normal'), bonus: hasPerk('magpie') ? 10 : 0, parts: hasPerk('magpie') ? ['+10 magpie eyes'] : [] }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Search`;
     if (r.degree === 'crit') { S.bag.heal = (S.bag.heal ?? 0) + 1; store.set('bag', S.bag); const fx = applyFx({ gold: 3 * L }, 'a search'); return post({ who: 'me', dice, tone: 'crit', say: 'Behind a loose stone: a purse, and a corked bottle somebody meant to come back for.', fx: [...fx, 'Healing Draught +1'] }); }
     if (r.success) { const fx = applyFx({ gold: 2 * L, exp: 0.01 }, 'a search'); return post({ who: 'me', dice, tone: 'hit', say: 'You turn over the obvious things and one of them has coins under it.', fx }); }
     const fx = applyFx(r.degree === 'fumble' ? { stress: 4, decency: -4 } : { stress: 1 }, 'a search'); return post({ who: 'me', dice, tone: r.degree, say: r.degree === 'fumble' ? 'You search a hedge. The hedge searches you back. You come out with leaves in places leaves should not be.' : 'You look under everything. Everything was exactly what it looked like.', fx }); }
@@ -2463,8 +2608,8 @@ function streetAct(id) {
   if (id === 'wait') { passTime(60); useStam(open ? -3 : -6, 'a rest on your feet');
     if (open && d() <= Math.round(dangerOf(here) / 2)) return startStandoff('you sat still too long');
     return post({ who: 'me', plate: 'Wait', dice: `[no roll] An hour goes by · ${hhmm()}`, say: open ? 'You sit on a milestone with your back to something solid and watch the road do nothing. It is not restful, but it is rest.' : 'You find a wall to lean on and let an hour go past. The light moves. So does the laundry.', fx: [`stamina +${open ? 3 : 6}`] }); }
-  if (id === 'watch') { S.used.watch = true; passTime(45); useStam(6, 'standing watch'); if (S.fallen) return;
-    const c = calling(), r = rollCheck({ title: `Stand watch · ${here.short}`, stat: c.stat, dc: dcFor(S.level, 'normal') }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Stand watch`;
+  if (id === 'watch') { S.used.watch = true; count('watches', 'standing watch'); passTime(45); useStam(6, 'standing watch'); if (S.fallen) return;
+    const c = calling(), r = rollCheck({ title: `Stand watch · ${here.short}`, stat: c.stat, dc: dcFor(S.level, 'normal'), bonus: hasPerk('sentry') ? 10 : 0, parts: hasPerk('sentry') ? ['+10 good at standing'] : [] }), dice = `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] Stand watch`;
     if (r.success) { order(area, 3, 'she stood watch'); if (area === 'city') rep(2, 'she stood watch'); heat(-5, 'seen doing her job'); const fx = applyFx({ exp: 0.02 }, 'standing watch'); return post({ who: 'me', dice, tone: r.degree, say: 'You stand where a knight is supposed to stand, looking the way a knight is supposed to look. It works better than it has any right to.', fx: [...fx, area === 'city' ? 'reputation up' : 'order +3', 'suspicion −5'] }); }
     heat(4, 'a watch that went wrong'); const fx = applyFx({ stress: 3 }, 'standing watch'); return post({ who: 'me', dice, tone: r.degree, say: 'You challenge a suspicious figure. It is a scarecrow. Several people saw.', fx: [...fx, 'suspicion +4'] }); }
   if (id === 'provoke') { conduct('mean', 1); if (!open) rep(-2, 'she started it'); return startStandoff('you went looking for it'); }
@@ -2475,20 +2620,40 @@ function streetAct(id) {
 }
 function streetCell(id, here) {
   const danger = dangerOf(here), open = here.zone !== 'safe';
-  const T = { search: ['Search', S.used.search ? 'done for this visit' : `${STAT_INFO.LCK.name} · ${oddsOf('LCK', dcFor(S.level, 'normal'))}% · 20 min`, S.used.search], listen: ['Listen', S.used.listen ? 'done for this visit' : `${STAT_INFO.WIL.name} · ${oddsOf('WIL', dcFor(S.level, 'easy'))}% · a rumour`, S.used.listen], wait: ['Wait an hour', open ? `stamina +3 · fight ${Math.round(danger / 2)}%` : 'stamina +6', false],
-    watch: ['Stand watch', S.used.watch ? 'done for this visit' : S.down ? 'rest first' : `${STAT_INFO[calling().stat].name} · ${oddsOf(calling().stat, dcFor(S.level, 'normal'))}% · ${areaOf(here) === 'city' ? 'reputation' : 'order +3'}`, S.used.watch || S.down], provoke: ['Pick a fight', S.down ? 'rest first' : open ? 'a standoff, right now' : 'a standoff · reputation −2', S.down], lielow: ['Lie low', `${STAT_INFO.AGI.name} · ${oddsOf('AGI', dcFor(S.level, 'normal'))}% · suspicion ${S.heat}`, false] }[id];
+  const T = { search: ['Search', S.used.search ? 'done for this visit' : `${STAT_INFO.LCK.name} · ${oddsOf('LCK', dcFor(S.level, 'normal'), hasPerk('magpie') ? 10 : 0)}% · 20 min`, S.used.search], listen: ['Listen', S.used.listen ? 'done for this visit' : `${STAT_INFO.WIL.name} · ${oddsOf('WIL', dcFor(S.level, 'easy'))}% · a rumour`, S.used.listen], wait: ['Wait an hour', open ? `stamina +3 · fight ${Math.round(danger / 2)}%` : 'stamina +6', false],
+    watch: ['Stand watch', S.used.watch ? 'done for this visit' : S.down ? 'rest first' : `${STAT_INFO[calling().stat].name} · ${oddsOf(calling().stat, dcFor(S.level, 'normal'), hasPerk('sentry') ? 10 : 0)}% · ${areaOf(here) === 'city' ? 'reputation' : 'order +3'}`, S.used.watch || S.down], provoke: ['Pick a fight', S.down ? 'rest first' : open ? 'a standoff, right now' : 'a standoff · reputation −2', S.down], lielow: ['Lie low', `${STAT_INFO.AGI.name} · ${oddsOf('AGI', dcFor(S.level, 'normal'))}% · suspicion ${S.heat}`, false] }[id];
   return cell(id, T[0], T[1], '', Boolean(T[2]));
 }
 const blank = '<span class="cell bubble empty" aria-hidden="true"></span>';
 const placeGrid = (rowHere, rowTrouble, rowOnly) => `<div class="pgrid"><span class="prow">Here</span>${rowHere.join('')}<span class="prow">Trouble</span>${rowTrouble.join('')}<span class="prow">Only at this place</span>${[...rowOnly, ...Array(Math.max(0, (4 - (rowOnly.length % 4)) % 4 || (rowOnly.length ? 0 : 4))).fill(blank)].join('')}</div>`;
 // The roads out of here, for the right-hand panel: how long, how many stretches, how bad.
+// A section of the right panel as a fold: its own heading becomes the button. One open at a time keeps the panel short.
+function rfold(key, html) {
+  return html.split(/(?=<div class="over"><h3>)/).filter((x) => x.trim()).map((part, i) => { const m = part.match(/<h3>([\s\S]*?)<\/h3>/), k = `${key}${i || ''}`, open = S.rfold === k;
+    return `<div class="rfold${open ? ' open' : ''}"><button class="fold" type="button" data-rfold="${k}" aria-expanded="${open}"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>${m ? m[1] : key}</button>${open ? part.replace(/<h3>[\s\S]*?<\/h3>/, '') : ''}</div>`; }).join('');
+}
+const FOE_RANK = ['', 'Bold', 'Swaggering', 'Notorious', 'Dreaded'], RANK_COLOR = ['var(--muted)', 'var(--gold)', '#ff9f5a', 'var(--crit)', 'var(--violet)'];
+const foeRec = (key) => (S.foes[key] ??= { w: 0, l: 0, rank: 0 });
+const foeName = (key, name) => { const r = foeRec(key).rank; return r ? `${FOE_RANK[r]} ${name}${r >= 3 ? `, Bane of ${heroName}` : ''}` : name; };
+function foeResult(key, won) { if (!key) return; const f = foeRec(key); if (won) f.w += 1; else { f.l += 1; if (f.rank < 4) { f.rank += 1; note(`${key.replace(/_/g, ' ')}: they are bolder now (rank ${f.rank})`); } } store.set('foes', S.foes); }
+function openBook() { // the book of trouble: every common enemy she has faced
+  const names = { opportunists: 'Opportunists', ...Object.fromEntries(DATA.encounters.encounters.map((e) => [e.id, e.name])) }, seen = Object.keys(names).filter((k) => S.seen[`foe:${k}`]);
+  const rows = seen.map((k) => { const f = foeRec(k); return `<div class="bookrow" style="--k:${RANK_COLOR[f.rank]}"><b>${esc(foeName(k, names[k]))}</b><span>${f.rank ? `rank ${f.rank} · +${f.rank} level${f.rank > 1 ? 's' : ''}` : 'ordinary'} · you won ${f.w}, lost ${f.l}</span></div>`; }).join('');
+  S.cards.push({ title: 'The Book of Trouble', dice: `${seen.length} of ${Object.keys(names).length} kinds faced`, say: seen.length ? 'Everyone who has ever squared up to you, and how it went.' : 'Blank pages. Nobody has squared up to you yet.', roll: null, fx: [], html: rows ? `<div class="over"><h3>Common enemies</h3>${rows}</div>` : '',
+    why: 'Common enemies keep score. Every time a kind of them beats her (a standoff lost, or a real fight lost) they gain a rank: one more level each time they turn up, and a longer name. The colour of the name is the rank: grey ordinary, gold Bold, orange Swaggering, red Notorious, violet Dreaded. Ranks do not come back down, so losing to the same crowd over and over makes that road worse for good.', snap: snapshot() });
+  if (S.cards.length > 40) { S.cards.shift(); S.cardBase += 1; } S.big = S.cardBase + S.cards.length - 1; }
 function roadsBox() {
   const here = placeNow(), area = areaOf(here), doors = AREAS[area].exits.filter((e) => e.from === here.id).map((e) => e.to);
   const rows = [...new Set([...here.links, ...doors])].map((id) => { const p = PLACES.find((x) => x.id === id), mins = legMins(here, p), jn = jointsOf(mins), dg = dangerOf(p), r = residentOf(id);
     return `<button class="roadrow" type="button" data-go="${id}"><b>${esc(p.name)}${areaOf(p) !== area ? ` <i>${esc(AREAS[areaOf(p)].name)}</i>` : ''}</b><span>${mins} min · ${jn} stretch${jn > 1 ? 'es' : ''}${r ? ' · someone is there' : ''}${p.acts.includes('rest') ? ' · inn' : ''}${SPOTS[p.id]?.some((s) => s.id === 'shelf') ? ' · shop' : ''}</span><em class="${dg >= 35 ? 'bad' : dg ? 'mid' : ''}">${dg ? `fight ${dg}%` : 'safe'}</em></button>`; }).join('');
   const stops = PLACES.filter((p) => areaOf(p) === area && (p.acts.includes('rest') || p.acts.includes('camp') || SPOTS[p.id]?.some((s) => s.id === 'shelf'))).map((p) => `${p.short} (${[p.acts.includes('rest') && 'inn', p.acts.includes('camp') && 'camp', SPOTS[p.id]?.some((s) => s.id === 'shelf') && 'shop'].filter(Boolean).join(', ')})`);
   return `<div class="over"><h3>Roads from here</h3><div class="roads">${rows}</div><p>${stops.length ? `Beds and traders in ${esc(AREAS[area].name)}: ${esc(stops.join(' · '))}.` : `No bed and no trader in ${esc(AREAS[area].name)}. Do not run dry here.`}</p></div>
-    <div class="over"><h3>Today</h3><p>${S.jobDay === dayNow() ? 'Guild work is done for today.' : 'No guild work yet today: tomorrow morning the town will have noticed.'} ${S.spent ? 'She is Exhausted and needs a bed.' : S.stam < 25 ? 'She is running on fumes.' : ''} ${condOf('phero') >= 50 || condOf('swell') >= 50 ? `Her body is making the day harder (${[condOf('swell') >= 50 && `swelling ${COND.swell.words[stepOf('swell')]}`, condOf('phero') >= 50 && `pheromones ${COND.phero.words[stepOf('phero')]}`].filter(Boolean).join(', ')}).` : ''} ${S.heat >= 40 ? 'People are watching her.' : ''}</p></div>`;
+    ${objectivesBox()}`;
+}
+// Today as objectives: a bar and four ticks, in place of a paragraph.
+function objectivesBox() {
+  const j = jobNow(), goals = [[S.jobDay === dayNow(), 'Do guild work today', 'a job, a guild hunt or a quest'], [Boolean(j) || S.jobDay === dayNow(), j ? `Finish the job in hand: ${j.title}` : 'Take a notice from the board', j ? `at ${PLACES.find((p) => p.id === j.place).name}` : 'Guild tab, top of the page'], [S.heat < 40, 'Keep suspicion under 40', `now ${S.heat}`], [!S.spent && S.stam >= 25, 'Stay on your feet', S.spent ? 'Exhausted: find a bed' : `stamina ${S.stam}`]], done = goals.filter((g) => g[0]).length;
+  return `<div class="over"><h3>Objectives · ${done} of ${goals.length}</h3><div class="track"><i style="--k:var(--mint);width:${(done / goals.length) * 100}%"></i></div>${goals.map(([ok, name, hint]) => `<p class="goal${ok ? ' ok' : ''}"><b>${ok ? '✓' : '○'}</b> ${esc(name)} <span>${esc(hint)}</span></p>`).join('')}</div>`;
 }
 // A road on the map bends once for every stretch it will take to walk.
 function roadPath(a, b, cls) {
@@ -2575,21 +2740,140 @@ function renderBig() {
   el.innerHTML = `<div class="big-in" role="dialog" aria-modal="true" aria-label="${esc(c.title)}"><p class="lbl">What happened, in full</p><h2>${esc(c.title)}</h2>${c.dice ? `<p class="big-dice">${esc(c.dice)}</p>` : ''}${c.say ? `<p class="prose">${esc(c.say)}</p>` : ''}
     ${c.roll ? `<div class="over"><h3>The roll</h3><p><b>${esc(c.roll.title)}</b> → ${esc(c.roll.degree)}</p><p class="simrow">${esc(c.roll.math)}</p></div>` : ''}
     ${c.fx.length ? `<div class="over"><h3>What it changed</h3><div class="fx">${c.fx.map((x) => `<span>${esc(x)}</span>`).join('')}</div></div>` : ''}
-    ${c.why ? `<div class="over"><h3>What it means</h3><p>${esc(c.why)}</p></div>` : ''}
+    ${c.html ?? ''}${c.why ? `<div class="over"><h3>What it means</h3><p>${esc(c.why)}</p></div>` : ''}
     <div class="over"><h3>Her, right after</h3><div class="vrows">${c.snap.map(([k, v]) => `<div class="vrow"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div></div>
     <div class="set"><button class="sm primary" type="button" data-big="close">Close</button><button class="sm quiet" type="button" data-big="auto" aria-pressed="${S.bigAuto}">Open these by themselves: ${S.bigAuto ? 'on' : 'off'}</button></div></div>`;
 }
 const WHY_COLLAPSE = 'She ran out of stamina away from safe ground. She is Exhausted until she sleeps in a bed: every social and standoff roll is 10 lower, stamina stops at 50, and fights find her more easily. One d100 decided who reached her first: a crowd on 1 to 40, thieves on 41 to 70, a kind stranger on 71 to 82, nobody above that. The Roads list on the right marks which places have an inn.';
 const WHY_PIN = 'She ran out of stamina in the middle of a standoff, so she is on her back with the crowd round her. Struggle up puts her on her feet with 15 stamina. Wriggle free ends it and she gets away. Talking from the ground still takes 30 off their nerve, at 10 worse odds. Curl up halves the next thing that lands. Every failed try makes their next one hit half again as hard, and three rounds spent pinned mean they win.';
 const WHY_MORNING = 'Each night both conditions move: up by what her body did (2 per bust tier for swelling, a tenth of her chemistry for pheromones) and down by half her resistance. Resistance is ten times her attribute over the benchmark for her level, plus one for every night she started at 25 or more. A bed takes 10 off swelling; a soak takes 15 off pheromones and a Calming Tea 20.';
+/* ---------- v24: bars, combat at a glance, walking, story choices in the grid ---------- */
+function combatBlock(h) {
+  const cl = calling(), topv = Math.max(1, ...STAT_KEYS.map((k) => effectiveStat(h, k))), here = placeNow();
+  return `<div class="cblock"><p class="lbl">Combat · ${esc(cl.verb)}${cl.type ? ` (${cl.type})` : ''} on ${STAT_INFO[cl.stat].name} · fight here ${dangerOf(here)}%</p>
+    <div class="sblock">${STAT_KEYS.map((k) => { const v = effectiveStat(h, k); return `<div class="srow${k === cl.stat ? ' main' : ''}"><span>${STAT_INFO[k].name}</span><i><u style="width:${Math.round((v / topv) * 100)}%"></u></i><b>${n(v)}</b></div>`; }).join('')}</div>
+    <div class="qrowb">${Object.entries(POTIONS).map(([k, x]) => `<button class="sm" type="button" data-act="use:${k}" title="${esc(x.hint)}"${(S.bag[k] ?? 0) > 0 && !S.battle ? '' : ' disabled'}>${esc(x.name.split(' ')[0])} ×${S.bag[k] ?? 0}</button>`).join('')}<button class="sm quiet" type="button" data-ltab="stats">All gauges</button><button class="sm" type="button" data-growth="1">Growth · tier ${S.bust} · ${S.bustXp}%</button></div></div>`;
+}
+const roadDebuffs = () => [S.spent && 'Exhausted · rolls −10', phaseNow() === 'Night' && 'night · fights +15', S.stam < 25 && 'worn out · fights +10', S.decency < 50 && 'a state · the wilds notice', S.heat >= 20 && `watched · fights +${Math.round(S.heat / 4)}`, condOf('swell') >= 75 && 'swelling · every step costs more', condOf('phero') >= 50 && 'pheromones · followed'].filter(Boolean);
+function walkFx() { document.body.classList.add('walking'); clearTimeout(S.walkT); S.walkT = setTimeout(() => document.body.classList.remove('walking'), 1500); }
+function eventCells() {
+  const ev = events.find((e) => e.id === S.event); if (!ev) { S.event = null; return ''; }
+  return `<div class="pgrid"><span class="prow">${esc(ev.title)} · pick one</span>${ev.choices.map((c, i) => { const pct = EV.choicePct(c, S.hero);
+    return `<button class="cell bubble${i === 0 ? ' primary' : ''}" type="button" data-ev="${esc(ev.id)}" data-choice="${esc(c.id)}"><b>${esc(c.label)}</b><small>${c.mode === 'wing' ? 'Wing it' : c.mode === 'think' ? 'Think it through' : 'Either way'} · ${pct === null ? 'no roll' : `${pct}%`}</small></button>`; }).join('')}${cell('evleave', 'Walk away', 'leave it be', 'go')}</div>`;
+}
+/* ---------- v25: talk of the town, growth, guild jobs ---------- */
+// What people say as she passes. A tag is switched on by her gauges; the bank can be topped up by Claude and is kept.
+const CHATTER = {
+  default: [['A carter', 'Morning, Dame. Mind the turnips.'], ['Two washerwomen', 'That is her. No, the tall one. With the sword. Yes, that sword.'], ['A boy on a wall', 'Does the armor come off, or does she sleep like a kettle?']],
+  rep_high: [['A baker', 'That is the knight who broke the crowd at the gate. On the house, Dame, on the house.'], ['A guard', 'Evening, Dame Valerie. Quiet tonight. Thanks to you, mostly.'], ['An old man', 'I told them she was a proper knight. Nobody listens to me until I am right.']],
+  rep_low: [['A shopkeeper', 'Count the spoons. She was in here last week.'], ['A guard', 'Keep walking, Dame. We both know why.'], ['A mother', 'Do not stare, pet. And do not grow up like that.']],
+  phero: [['A stable lad', 'I forgot what I was carrying. I am still carrying it. What is it?'], ['Two apprentices', 'After you. No, after you. No, I insist, I will just stand here.'], ['A matron', 'Somebody open a window in this street.']],
+  swell: [['A tailor', 'I could let that breastplate out, Dame. I would need a blacksmith and a second opinion.'], ['A child', 'Mam, her armor is too small. Mam. MAM.'], ['A sculptor', 'Do not move. No, do, but slowly.']],
+  messy: [['A fishwife', 'Fell in something, did we, love?'], ['A guard', 'There is a pump round the back, Dame. I would use it.'], ['A dandy', 'Is that hay, or is it fashion now? Tell me it is not fashion.']],
+  spent: [['A porter', 'She is asleep on her feet. Somebody point her at a bed.'], ['An innkeeper\'s girl', 'You look like a week of Mondays, Dame.'], ['A carter', 'I have seen livelier scarecrows. Kinder ones, too.']],
+  watched: [['A hooded man', '...'], ['A stallholder', 'There was a fellow asking after you. Did not buy anything. I do not trust a man who does not buy anything.'], ['A beggar', 'Two behind you, one ahead. A copper says I never told you.']],
+  night: [['The night watch', 'Late for a knight. Early for trouble. Which are you?'], ['A drunk', 'I see two knights. Both of them are very shiny.'], ['A lamplighter', 'Mind the third cobble. It bites.']],
+};
+function chatterTags() { const area = areaOf(placeNow()), r = repOf(area), lab = repLabel(area); return [(lab === 'Villain' || lab === 'Town scandal') && 'rep_low', r >= 60 && 'rep_high', condOf('phero') >= 50 && 'phero', condOf('swell') >= 50 && 'swell', S.decency < 40 && 'messy', S.spent && 'spent', S.heat >= 40 && 'watched', phaseNow() === 'Night' && 'night'].filter(Boolean); }
+function chatterNow() { const tags = chatterTags(), seed = Math.floor(S.clock / 30) + PLACES.findIndex((p) => p.id === S.place), pool = (t) => [...CHATTER[t], ...(S.chatBank[t] ?? [])];
+  const use = [...tags.slice(0, 2), 'default'].slice(0, 3); while (use.length < 3) use.push('default');
+  return use.map((t, i) => { const list = pool(t), row = list[(seed + i * 7) % list.length]; return { tag: t, who: row[0], line: row[1], ai: (seed + i * 7) % list.length >= CHATTER[t].length }; }); }
+const chatterBox = () => `<div class="over"><h3>Talk as you pass${chatterTags().length ? ` · ${esc(chatterTags().map((t) => t.replace('_', ' ')).join(', '))}` : ''}</h3>${chatterNow().map((c) => `<p class="chat-l"><b>${esc(c.who)}</b> “${esc(c.line)}”${c.ai ? ' <i>banked</i>' : ''}</p>`).join('')}
+  <div class="set"><button class="sm quiet" type="button" data-chatgen="1"${S.chatBusy ? ' disabled' : ''}>${S.chatBusy ? 'Listening…' : 'Ask Claude for fresh talk'}</button><span class="lbl">${Object.values(S.chatBank).reduce((s, l) => s + l.length, 0)} banked</span></div>${S.chatNote ? `<p class="simrow">${esc(S.chatNote)}</p>` : ''}</div>`;
+async function chatGen() { // six new lines, each tied to one gauge tag, banked for good
+  if (S.chatBusy) return; S.chatBusy = true; S.chatNote = ''; render();
+  try {
+    if (sampler === undefined) { try { sampler = (await window.claude?.use?.('sample')) ?? null; } catch { sampler = null; } }
+    if (!sampler) { S.chatNote = 'This page has not been allowed to ask Claude, so nothing was sent.'; return; }
+    const tags = Object.keys(CHATTER), prompt = `Write six short things townsfolk say out loud as a knight walks past, for a light fantasy comedy. PG-13, one sentence each, no narration.\n\nTHE KNIGHT RIGHT NOW\n${gaugeDigest()}\n\nEach line belongs to one tag, which says when it is used: ${tags.join(', ')} (rep_high: she is well thought of; rep_low: she has a bad name; phero: people are oddly drawn to her; swell: her armor no longer fits; messy: she looks a state; spent: she is exhausted; watched: someone is following her; night: after dark; default: any time). Favour the tags that fit her now.\n\nReturn ONLY a JSON array of six objects: {"tag": one of the tags, "who": who says it in two or three words, "line": what they say}.`;
+    const out = await metered('chatter', prompt, { modelTier: 'quick', cache: false }), text = out?.text ?? '', found = text.match(/\[[\s\S]*\]/), rows = JSON.parse(found ? found[0] : text); let got = 0;
+    for (const r of Array.isArray(rows) ? rows : []) if (CHATTER[r?.tag] && typeof r.who === 'string' && typeof r.line === 'string' && r.line.trim()) { const list = (S.chatBank[r.tag] ??= []); list.unshift([r.who.trim().slice(0, 40), r.line.trim().slice(0, 200)]); if (list.length > 12) list.pop(); got++; }
+    store.set('chatBank', S.chatBank); S.chatNote = got ? `${got} new line${got === 1 ? '' : 's'} banked. They turn up when their gauge does.` : 'Nothing usable came back.';
+  } catch (e) { if (e?.code === 'not_granted') sampler = null; S.chatNote = e?.code === 'rate_limited' ? 'Too many requests. Give it a moment.' : 'The answer could not be read. Nothing was banked.'; }
+  finally { S.chatBusy = false; render(); }
+}
+// Growth: the whole of the bust mechanic in one window.
+function openGrowth() { const p = PATHS[S.path], sw = condOf('swell');
+  S.cards.push({ title: `Growth · tier ${S.bust} of 10`, dice: `${S.bustXp}% of the way to tier ${Math.min(10, S.bust + 1)} · path: ${p.name} (${p.cls})`, say: `Why it grows on this path: ${p.why}.`, roll: null,
+    fx: [`Tempt +${temptBonus()}`, `Finesse −${2 * S.bust}%`, `${p.perk} ×${S.bust}`, `swelling ${sw} · ${COND.swell.words[stepOf('swell')]}`],
+    why: `Each tier is Tempt +2, Finesse −2% and one step of her path's perk. Progress comes from what her path feeds on: winning over people and crowds for a warrior, study and spare mana for a mage, gold and gambles for a rogue. A Bloom Draught from any trader adds 40% at once. Every tier gained adds 12 swelling, and each night adds 2 per tier, less her Constitution's resistance. Swelling makes Run harder and Sway easier, and at 75 every stamina cost goes up by one. A night in a real bed takes 10 off.`, snap: snapshot() });
+  if (S.cards.length > 40) { S.cards.shift(); S.cardBase += 1; } S.big = S.cardBase + S.cards.length - 1; }
+/* ---------- guild jobs: a sealed notice, a place to go, four ways to do it ---------- */
+const JOB_KIND = { social: 'a social job', mystery: 'a mystery', combat: 'rough work' };
+const JOBS = [
+  { id: 'goose', title: 'Short-Staffed at the Goose', kind: 'social', place: 'tavern', pay: 9, brief: 'The Gilded Goose is one barmaid down on its busiest night. The spare uniform is two sizes too small and there are forty tankards to carry.',
+    opts: [{ label: 'Carry six at once', stat: 'STR', win: 'Six tankards, one trip, not a drop lost. The room cheers. The uniform holds, just.', lose: 'Six tankards, one trip, one doorframe. The front row is now wearing the ale.' },
+      { label: 'Work the room for tips', stat: 'LCK', tempt: true, win: 'You smile, you lean, you forget whose order is whose, and somehow every table tips double.', lose: 'You wink at a table. It is the temperance society. They leave a pamphlet.' },
+      { label: 'Invent a system', stat: 'INT', win: 'You number the tables in chalk and for one evening the Goose runs like a clock.', lose: 'Your system has a table seven and a table seven-ish. They get each other\'s dinner.' },
+      { label: 'Just keep moving', stat: 'AGI', win: 'You never stop, you never spill, and you only knock over one man, who deserved it.', lose: 'You turn too fast and the apron stays where it was. So does everyone\'s attention.' }] },
+  { id: 'towels', title: 'The Towel Thief', kind: 'mystery', place: 'baths', pay: 8, brief: 'Somebody is stealing towels from the Lagoon Baths, always at the worst possible moment. The attendant wants a name.',
+    opts: [{ label: 'Stake out the linen room', stat: 'WIL', win: 'Two hours behind a laundry basket and you have her: the attendant\'s own cat, with a nest the size of a bed.', lose: 'You fall asleep in the basket and are delivered, folded, to the wrong changing room.' },
+      { label: 'Follow the wet footprints', stat: 'INT', win: 'Small prints, four toes, heading for the boiler. Not a thief. A very comfortable cat.', lose: 'You follow the footprints in a full circle. They are yours.' },
+      { label: 'Be the bait', stat: 'LCK', tempt: true, win: 'You hang your towel on the hook and wait. A paw comes round the door. Case closed, dignity mostly intact.', lose: 'The towel goes. You did not see where. You do see everyone else, and they see you.' },
+      { label: 'Chase whatever runs', stat: 'AGI', win: 'Something bolts, you bolt after it, and you come up out of the cold plunge holding a furious cat and a towel.', lose: 'You chase a bather who was only late. She has a good arm and a wet sponge.' }] },
+  { id: 'pim', title: 'Collect from Mr Pim', kind: 'combat', place: 'alley', pay: 12, then: 'standoff', brief: 'Mr Pim owes the guild eleven gold and has friends in the Back Alley who think he should not pay it.',
+    opts: [{ label: 'Loom', stat: 'STR', win: 'You stand in his doorway until the doorway feels small. The purse comes out on its own.', lose: 'You loom. A flowerpot looms back, from two floors up.' },
+      { label: 'Ask very nicely', stat: 'WIL', win: 'You explain what the guild does to people who are less polite than you. He pays, and thanks you.', lose: 'You say "please". His friends find this very funny for quite a long time.' },
+      { label: 'Read him the small print', stat: 'INT', win: 'Clause nine. Interest. His face does the sums and his hand finds the money.', lose: 'You read the contract upside down. He lets you finish.' },
+      { label: 'Pick his pocket instead', stat: 'AGI', win: 'Eleven gold exactly, and you leave him a receipt. He will find it tomorrow.', lose: 'Your hand is in his pocket. So is his hand. You both look at them.' }] },
+  { id: 'statue', title: 'The Statue Needs a Model', kind: 'social', place: 'square', pay: 10, brief: 'The town wants a statue of Heroism by the well. The sculptor wants a knight who can stand still for an hour in rather less armor than usual.',
+    opts: [{ label: 'Hold the heroic pose', stat: 'CON', win: 'One hour, sword raised, not a wobble. The sculptor weeps. So does your shoulder.', lose: 'Forty minutes in, your arm gives out and Heroism brains a pigeon.' },
+      { label: 'Give them a better pose', stat: 'LCK', tempt: true, win: 'You try a hand on the hip and a look over the shoulder. The sculptor orders more marble.', lose: 'You try a look over the shoulder and walk off the plinth.' },
+      { label: 'Negotiate the drapery', stat: 'INT', win: 'You talk him up from "a ribbon" to "a tasteful sheet" and get a share of the postcards.', lose: 'You talk him down from a sheet to a ribbon. You are not sure how that happened.' },
+      { label: 'Think of something noble', stat: 'WIL', win: 'You think very hard about justice. It shows. He calls it the finest face he has ever carved.', lose: 'You think about lunch. It shows. The statue will be called Hunger.' }] },
+  { id: 'recruits', title: 'Recruit Day', kind: 'combat', place: 'yard', pay: 9, then: 'spar', brief: 'The garrison wants a real knight to show forty recruits how it is done. They have been promised a demonstration.',
+    opts: [{ label: 'Show them a proper swing', stat: 'STR', win: 'The practice post comes off at the ground and lands in the next yard. Forty jaws drop.', lose: 'The swing is perfect. The sword keeps going. So do you.' },
+      { label: 'Show them footwork', stat: 'AGI', win: 'Step, turn, step. For once your feet agree with each other, and forty recruits copy every move.', lose: 'Forty recruits now know a move that ends flat on the back. They practise it all afternoon.' },
+      { label: 'Give the speech', stat: 'WIL', win: 'You say what a knight is for, and you mean it. Somebody at the back salutes and then pretends he did not.', lose: 'You lose your place and tell them about your breakfast. They take notes.' },
+      { label: 'Let them all come at once', stat: 'LCK', win: 'Forty recruits, one knight, and a chain of accidents so lucky the sergeant asks for it in writing.', lose: 'Forty recruits. You count nine before the pile closes over you.' }] },
+  { id: 'chapter', title: 'The Missing Chapter', kind: 'mystery', place: 'lecture', pay: 10, brief: 'Chapter nine has gone from the only copy of a book the Academy would rather not discuss. It left a smell of lavender and a singed bookmark.',
+    opts: [{ label: 'Read the other chapters', stat: 'INT', win: 'Chapter eight ends mid-spell. Somebody finished reading it aloud. You find the chapter, and a first-year, on the ceiling.', lose: 'You read chapter eight aloud to get the feel of it. You find the chapter. From the ceiling.' },
+      { label: 'Follow the lavender', stat: 'LCK', win: 'Your nose leads you to the laundry, a pillowcase, and nine guilty pages hidden inside it.', lose: 'Your nose leads you to the dean\'s bath. The dean is in it.' },
+      { label: 'Question the students', stat: 'WIL', win: 'You look at them the way your mother looked at you. One of them cracks before you have said a word.', lose: 'They question you instead. You admit to three things you did not do.' },
+      { label: 'Search the shelves by hand', stat: 'AGI', win: 'Up the ladder, along the top shelf, and there it is, filed under Cookery.', lose: 'Up the ladder, along the top shelf, and down, with the shelf.' }] },
+  { id: 'wine', title: 'Escort the Wine Cart', kind: 'combat', place: 'road', pay: 12, then: 'standoff', brief: 'A cart of good red has to reach the gates, and everyone on the Greenwood Road knows what a wine cart sounds like.',
+    opts: [{ label: 'Walk in front, sword out', stat: 'STR', win: 'Nothing with eyes wants to find out what the sword is for. The cart rolls in untouched.', lose: 'You walk in front. They come from behind. A barrel is lighter by the time you turn round.' },
+      { label: 'Ride on the barrels', stat: 'LCK', tempt: true, win: 'You sit on top looking like a figurehead. The bandits are so busy staring that the cart is past them.', lose: 'You sit on top. The bung under you gives way. You arrive pink to the waist.' },
+      { label: 'Take the back lanes', stat: 'INT', win: 'A drover\'s track nobody has used since your grandmother. Slow, quiet, and not a soul on it.', lose: 'The back lane is a stream. It was not a stream on the map.' },
+      { label: 'Keep the driver talking', stat: 'WIL', win: 'He is so busy telling you about his sister\'s wedding that he forgets to be afraid, and the horse sets a record.', lose: 'He tells you about his sister\'s wedding. All of it. The bandits fall asleep; so do you.' }] },
+  { id: 'lights', title: 'Lights in the Oak', kind: 'mystery', place: 'hollow', pay: 11, brief: 'There are lights in the Hollow Oak at night, and singing. The woodcutters would like to know whether to be worried or invited.',
+    opts: [{ label: 'Go in and say hello', stat: 'WIL', win: 'It is the midwives\' guild, on their one night off. You are given a cup of something and told nothing leaves the tree.', lose: 'You say hello. Thirty women stop singing and look at you. You say goodbye.' },
+      { label: 'Watch from the brambles', stat: 'AGI', win: 'You see enough to tell the woodcutters: not witches, not bandits, and very good at harmony.', lose: 'The brambles keep your cloak, one boot and most of your stealth.' },
+      { label: 'Work out the pattern', stat: 'INT', win: 'Every full moon, never in the rain, always with a pie. A society, not a haunting. You are right.', lose: 'You conclude it is ghosts. You tell everyone. It is not ghosts.' },
+      { label: 'Join in the singing', stat: 'LCK', win: 'You know one verse, very loudly. They make you an honorary member on the spot.', lose: 'You know one verse of a different song. The lights go out, pointedly.' }] },
+];
+const jobNow = () => JOBS.find((j) => j.id === S.job) ?? null;
+const jobFree = (j) => !(S.jobsDone[j.id] && dayNow() - S.jobsDone[j.id] < 3);
+function takeJob(id) { const j = JOBS.find((x) => x.id === id); if (!j || S.job) return; S.job = id; store.set('job', id); const at = PLACES.find((p) => p.id === j.place);
+  journal('quest', `Job taken: ${j.title}. Go to ${at.name} (${AREAS[areaOf(at)].name}).`);
+  post({ who: 'sys', plate: j.title, dice: `[guild job] at <b>${esc(at.name)}</b> · ${esc(AREAS[areaOf(at)].name)}`, tone: 'virtue', say: j.brief, fx: ['one job at a time', `go to ${at.short}: it is under "Only at this place"`] }); }
+function jobCells() { const j = jobNow(), dc = dcFor(S.level, 'normal');
+  return `<div class="pgrid"><span class="prow">${esc(j.title)} · four ways to do it</span>${j.opts.map((o, i) => cell(`job:${i}`, o.label, `${STAT_INFO[o.stat].name} · ${oddsOf(o.stat, dc, (o.tempt ? temptBonus() : 0) + (hasPerk('reliable') ? 5 : 0))}%`, i === 0 ? 'primary' : '')).join('')}${cell('jobback', 'Not yet', 'step back and think', 'go')}</div>`; }
+function doJob(i) { const j = jobNow(), o = j.opts[i], L = Math.max(1, S.level); S.jobOpen = false; passTime(90); useStam(8, 'a guild job'); if (S.fallen) return;
+  const r = rollCheck({ title: `${j.title} · ${o.label}`, stat: o.stat, dc: dcFor(S.level, 'normal'), bonus: (o.tempt ? temptBonus() : 0) + (hasPerk('reliable') ? 5 : 0), parts: [o.tempt && temptBonus() && `+${temptBonus()} bust`, hasPerk('reliable') && '+5 reliable'].filter(Boolean) });
+  const pay = Math.round(j.pay * L * (r.degree === 'crit' ? 1.5 : r.success ? 1 : 0.35) * (hasPerk('reliable') ? 1.2 : 1));
+  if (o.tempt) conduct('lewd', 1);
+  const fx = applyFx(r.success ? { exp: 0.08 } : { stress: 5, decency: r.degree === 'fumble' ? -8 : -3 }, j.title); gainGold(pay, 'guild pay'); fx.push(`gold +${n(pay)}`);
+  if (r.success) { job(`finished ${j.title}`); fx.push('reputation up', 'guild work done today'); if (o.tempt) grow(12, j.title); } else { rep(-1, `made a mess of ${j.title}`); fx.push('reputation −1'); }
+  count('jobs', 'guild jobs'); S.jobsDone[j.id] = dayNow(); store.set('jobsDone', S.jobsDone); S.job = null; store.set('job', null);
+  journal('quest', `${j.title}: ${o.label.toLowerCase()} ${r.success ? 'worked' : 'did not work'}. It turned out to be ${JOB_KIND[j.kind]}. Paid ${n(pay)} gold.`);
+  post({ big: { auto: !r.success, why: `This was ${JOB_KIND[j.kind]}. Each of the four ways rolls a different attribute against a normal target for her level; a flirtatious way adds her Tempt bonus. A success pays in full (half again on a crit), counts as guild work for today and raises her standing; a failure pays about a third and costs a point of it. The notice comes back on the board in three days.` }, who: 'me', plate: j.title, dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(o.label)} · ${STAT_INFO[o.stat].name}`, tone: r.degree, say: r.success ? o.win : o.lose, fx });
+  if (j.then === 'standoff' && !r.success && !S.fallen) startStandoff(`${j.title} went sideways`);
+}
+const jobBoard = () => { const busy = Boolean(S.battle) || Boolean(S.standoff), cur = jobNow(), pins = ['in green ink', 'on the back of a menu', 'with a thumbprint in jam', 'folded very small', 'nailed up with a fork', 'in capitals', 'smelling of lavender', 'signed with an X'];
+  return `<h2>Jobs</h2><p>Work for coin and a good name. A notice says where, never what: you find out what kind of job it was when it is over. One at a time.</p>${cur ? `<div class="quest"><b>${esc(cur.title)}</b><small>In hand. Go to ${esc(PLACES.find((p) => p.id === cur.place).name)}.</small><div class="meta"><span class="ok">taken</span></div><button class="sm quiet" type="button" data-jobdrop="1">Hand it back</button></div>` : ''}
+    ${JOBS.filter((j) => j.id !== S.job).map((j, i) => { const at = PLACES.find((p) => p.id === j.place), free = jobFree(j); return `<div class="quest${free ? '' : ' done'}"><b>A notice ${pins[i % pins.length]}</b><small>${free ? `Somebody wants a knight at ${esc(at.name)}.` : `Done. It will be back on the board in ${3 - (dayNow() - S.jobsDone[j.id])} day${3 - (dayNow() - S.jobsDone[j.id]) === 1 ? '' : 's'}.`}</small><div class="meta"><span>pay unknown</span><span>kind unknown</span></div><button class="sm primary" type="button" data-job="${j.id}"${free && !cur && !busy ? '' : ' disabled'}>Take it</button></div>`; }).join('')}`; };
+function dockTray() { const t = $('tray'), dock = $('trayDock'); if (!S.trayPos && dock) { if (t.parentElement !== dock) dock.appendChild(t); t.classList.add('docked'); } else { if (t.parentElement !== $('stage')) $('stage').appendChild(t); t.classList.remove('docked'); } }
 function renderHuds() {
+  if ($('tray').parentElement !== $('stage')) $('stage').appendChild($('tray'));
   const h = S.hero, t = S.them;
   const top = Math.max(...STAT_KEYS.map((k) => Math.max(h.stats[k], t.stats[k])));
   const gauge = V.airheadOf(h), band = DATA.valerie.gauge.bands.find((b) => b.id === V.airheadBand(gauge)), locked = V.airheadLock(h) !== null;
   const stressBand = t.stress >= 100 ? 'Cracking' : t.stress >= 50 ? 'Tense' : 'Steady';
   $('hudL').innerHTML = leftPanel(h, top, gauge, band, locked);
-  $('rail').innerHTML = railHtml(h, gauge, band, locked); $('rail').classList.toggle('open', Boolean(S.railOpen));
+  $('railPop').innerHTML = railPop(h, gauge, band, locked); $('railPop').classList.toggle('open', Boolean(S.railOpen));
   $('hudR').innerHTML = rightPanel();
+  dockTray();
 }
 
 /* ---------- the log ---------- */
@@ -2747,10 +3031,11 @@ const doneQuests = new Set(store.get('quests', []));
 function showEvent(id) {
   const ev = events.find((e) => e.id === id); if (!ev) return;
   const fits = (x) => (x.tags ?? []).some((t) => (ev.where ?? []).includes(t)), spot = fits(placeNow()) ? null : PLACES.find(fits); if (spot) { setPlace(spot.id); S.them = freshThem(); }
-  post({ who: 'sys', plate: ev.title, say: ev.scene, extra: `<div class="choices">${ev.choices.map((c) => { const pct = EV.choicePct(c, S.hero);
-    return `<button class="choice" type="button" data-ev="${esc(ev.id)}" data-choice="${esc(c.id)}"><small>${c.mode === 'wing' ? 'Wing it' : c.mode === 'think' ? 'Think it through' : 'Either way'}</small>${esc(c.label)}<em>${pct === null ? 'no roll' : `${pct}%`}</em></button>`; }).join('')}</div>` });
+  S.event = ev.id; S.ctab = 'resp';
+  post({ who: 'sys', plate: ev.title, say: ev.scene, fx: ['your answers are under the story'] });
 }
 function chooseEvent(evId, choiceId) {
+  S.event = null;
   const ev = events.find((e) => e.id === evId), choice = ev.choices.find((c) => c.id === choiceId);
   const pct = EV.choicePct(choice, S.hero), roll = d(), r = EV.resolveChoice(ev, choiceId, S.hero, fixedRolls([roll]));
   const fx = []; let hero = S.hero;
@@ -2843,18 +3128,18 @@ function render() {
   $('rattle').textContent = `Rattle ${S.nameR}`;
   const combat = S.mode === 'combat';
   document.body.classList.toggle('combat', combat);
-  const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = !engaged || Boolean(S.standoff) || (Boolean(S.battle) && !S.battle.state.combatants.companion); document.body.classList.toggle('alone', !engaged);
+  const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = Boolean(S.standoff) || (Boolean(S.battle) && !S.battle.state.combatants.companion); document.body.classList.toggle('keyR', $('sprR').classList.contains('keyedfig') && !$('sprR').hidden); document.body.classList.toggle('keyL', $('sprL').classList.contains('keyedfig')); document.body.classList.toggle('alone', !engaged);
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
-  document.body.classList.toggle('debug', S.debug); document.body.dataset.phase = phaseNow();
+  document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
   renderTray(); renderBig(); renderDebugger(); renderThought(); store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
-  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : `Travelling · ${placeNow().short}`;
+  $('mode').dataset.mode = S.mode; $('mode').textContent = S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : 'Travelling';
   if (S.battle) renderBattleRow();
-  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>${so.pinned ? 'you are pinned' : `their nerve · round ${Math.min(8, so.round)} of 8`} · ${crowdSize(so)} of them</small><b>${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
+  else if (S.standoff) { const so = S.standoff, foe = $('foe'); foe.hidden = false; foe.innerHTML = `<div class="foe-h">${tokenFor(so.name)}<div><small>${so.pinned ? 'you are pinned' : `their nerve · round ${Math.min(8, so.round)} of 8`} · ${crowdSize(so)} of them</small><b style="color:${RANK_COLOR[foeRec(so.key ?? 'opportunists').rank] === 'var(--muted)' ? 'inherit' : RANK_COLOR[foeRec(so.key ?? 'opportunists').rank]}">${esc(so.name)}</b></div></div>${miniBar(so.nerve, 100, 'var(--crit)')}`; }
   else $('foe').hidden = true;
   $('level').disabled = Boolean(S.battle); $('rest').disabled = Boolean(S.battle); $('place').disabled = Boolean(S.battle);
   $('explore').disabled = S.down; $('startFight').disabled = S.down; $('startFight').textContent = `Spar with ${S.nameR}`;
@@ -2866,8 +3151,9 @@ function render() {
 }
 let drawn = {};
 function drawSpriteOnce() {
-  if (drawn.l !== S.lookL) { drawSprite($('sprL'), S.lookL); drawn.l = S.lookL; }
-  if (drawn.r !== S.lookR) { drawSprite($('sprR'), S.lookR); drawn.r = S.lookR; }
+  const bust = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.bust), keyed = (id) => Boolean((S.custom[id] ?? LOOKS.find((l) => l.id === id))?.keyed);
+  if (drawn.l !== S.lookL) { drawSprite($('sprL'), S.lookL); drawn.l = S.lookL; $('sprL').classList.toggle('bust', bust(S.lookL)); $('sprL').classList.toggle('keyedfig', keyed(S.lookL)); }
+  if (drawn.r !== S.lookR) { drawSprite($('sprR'), S.lookR); drawn.r = S.lookR; $('sprR').classList.toggle('bust', bust(S.lookR)); $('sprR').classList.toggle('keyedfig', keyed(S.lookR)); }
 }
 function reset(keepGauge) {
   S.hero = freshHero(keepGauge ? S.hero : null); S.them = freshThem(); S.down = false;
@@ -2900,6 +3186,7 @@ document.addEventListener('change', (e) => {
   else if (t.id === 'bAct') { S.battle.pick = +t.value; render(); }
   else if (t.id === 'bTarget') { S.battle.target = t.value; render(); }
   else if (t.id === 'place') { goTo(t.value); render(); }
+  else if (t.dataset.goto && t.value) { goTo(t.value); render(); }
   else if (t.id === 'event') { if (t.value) { showEvent(t.value); t.value = ''; render(); } }
 });
 document.addEventListener('pointerover', (e) => { const c = e.target.closest?.('[data-bi]'); if (c && S.battle) { const a = S.battle.acts?.[+c.dataset.bi]; if (a) $('bWhy').textContent = a.why ?? S.battle.state.defs.skills[a.skillId]?.text ?? $('bWhy').textContent; } });
@@ -2925,7 +3212,8 @@ document.addEventListener('click', (e) => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.card) { S.big = +b.dataset.card; return render(); }
   if (b.dataset.big) { if (b.dataset.big === 'auto') { S.bigAuto = !S.bigAuto; store.set('bigAuto', S.bigAuto); } else S.big = null; return render(); }
-  if (b.dataset.tray) { $('tray').classList.toggle('shut'); clearTimeout(S.trayT); return; }
+  if (b.dataset.trayhome) { S.trayPos = null; store.set('trayPos', null); $('tray').style.left = ''; $('tray').style.top = ''; return render(); }
+  if (b.dataset.tray) { if (S.trayDragged) { S.trayDragged = false; return; } $('tray').classList.toggle('shut'); return; }
   if (b.dataset.rail) { S.railOpen = !S.railOpen; return render(); }
   if (b.dataset.size) { sizeL(b.dataset.size); return render(); }
   if (b.dataset.jiggle) { jiggle(false); return render(); }
@@ -2958,6 +3246,12 @@ document.addEventListener('click', (e) => {
   if (b.dataset.btarget && S.battle) { S.battle.target = b.dataset.btarget; return render(); }
   if (b.dataset.bi && S.battle) { S.battle.pick = +b.dataset.bi; S.battle.hint = null; battleAct(false); return render(); }
   if (b.dataset.view) return setView(b.dataset.view);
+  if (b.dataset.job) { takeJob(b.dataset.job); setView('stage'); return render(); }
+  if (b.dataset.jobdrop) { S.job = null; store.set('job', null); S.jobOpen = false; renderGuild(); return render(); }
+  if (b.dataset.rfold) { S.rfold = S.rfold === b.dataset.rfold ? '' : b.dataset.rfold; store.set('rfold', S.rfold); return render(); }
+  if (b.dataset.chatgen) { chatGen(); return; }
+  if (b.dataset.growth) { openGrowth(); return render(); }
+  if (b.dataset.book) { openBook(); return render(); }
   if (b.dataset.quest) { showEvent(b.dataset.quest); setView('stage'); return render(); }
   if (b.id === 'copyPersona') { const t = $('personaText'); (navigator.clipboard?.writeText(t.textContent) ?? Promise.reject()).then(() => { b.textContent = 'Copied'; }).catch(() => { const r = document.createRange(); r.selectNodeContents(t); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected: press copy'; }); return; }
   if (b.dataset.go) goTo(b.dataset.go);
@@ -2988,24 +3282,34 @@ for (const id of ['hudL', 'hudR']) $(id).addEventListener('click', (e) => { if (
 $('sayForm').addEventListener('submit', (e) => { e.preventDefault(); const t = $('say').value.trim(); if (!t) return; $('say').value = ''; say(t); });
 
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.big !== null) { S.big = null; render(); } });
+for (const side of ['l', 'r']) document.documentElement.style.setProperty(`--z${side}`, S[`spr${side.toUpperCase()}`]);
+document.addEventListener('wheel', (e) => { if (!e.ctrlKey || e.target.closest?.('.hud, .bigwrap, .panel')) return; e.preventDefault(); const side = e.clientX < window.innerWidth / 2 ? 'L' : 'R', key = `spr${side}`; S[key] = Math.max(0.5, Math.min(1.8, Math.round((S[key] + (e.deltaY < 0 ? 0.05 : -0.05)) * 100) / 100)); store.set(key, S[key]); document.documentElement.style.setProperty(`--z${side.toLowerCase()}`, S[key]); }, { passive: false });
+{ const tray = $('tray'), place = () => { if (S.trayPos) { tray.style.left = `${Math.max(0, Math.min(window.innerWidth - 120, S.trayPos.x))}px`; tray.style.top = `${Math.max(0, Math.min(window.innerHeight - 40, S.trayPos.y))}px`; } };
+  place(); window.addEventListener('resize', place);
+  tray.addEventListener('pointerdown', (e) => { if (!e.target.closest('.tray-h')) return; const box = tray.getBoundingClientRect(), host = $('stage').getBoundingClientRect(), dx = e.clientX - box.left, dy = e.clientY - box.top, x0 = e.clientX, y0 = e.clientY; let moved = false;
+    const move = (m) => { if (!moved && Math.hypot(m.clientX - x0, m.clientY - y0) < 5) return; moved = true; if (tray.classList.contains('docked')) { $('stage').appendChild(tray); tray.classList.remove('docked'); } tray.classList.add('drag'); S.trayPos = { x: Math.round(m.clientX - host.left - dx), y: Math.round(m.clientY - host.top - dy) }; place(); };
+    const up = () => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); tray.classList.remove('drag'); if (moved) { S.trayDragged = true; store.set('trayPos', S.trayPos); setTimeout(() => { S.trayDragged = false; }, 60); } };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); }); }
+let railT; document.addEventListener('pointerover', (e) => { const on = e.target.closest?.('#rail, #railPop'); clearTimeout(railT); if (on) document.body.classList.add('railhover'); else railT = setTimeout(() => document.body.classList.remove('railhover'), 220); });
 document.addEventListener('dragstart', (e) => { if (document.body.classList.contains('dragging') || e.target.closest?.('.sprite, .halfcard, .scene')) e.preventDefault(); });
-const SIZES = { min: () => (window.innerWidth <= 1180 ? 196 : 224), half: () => Math.round(Math.max(340, Math.min(460, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
+const SIZES = { slim: () => (window.innerWidth <= 1180 ? 150 : Math.round(Math.max(160, Math.min(230, window.innerWidth * 0.105)))), min: () => (window.innerWidth <= 1180 ? 196 : Math.round(Math.max(224, Math.min(340, window.innerWidth * 0.155)))), half: () => Math.round(Math.max(360, Math.min(640, window.innerWidth * 0.3))), full: () => Math.round(window.innerWidth * 0.46) };
+const sizeNear = (v) => Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - v) - Math.abs(SIZES[b]() - v))[0];
 const applyHud = {};
 function sizeL(name) { S.sizeL = name; store.set('sizeL', name); applyHud.L?.(SIZES[name]()); }
 function snapL() { const now = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hudL'), 10) || 224; sizeL(Object.keys(SIZES).sort((a, b) => Math.abs(SIZES[a]() - now) - Math.abs(SIZES[b]() - now))[0]); renderHuds(); }
 for (const side of ['L', 'R']) {
   const grip = $(`grip${side}`), key = `--hud${side}`, root = document.documentElement;
-  const apply = (w) => { const v = Math.max(190, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') { const was = document.body.classList.contains('sheetL'); document.body.classList.toggle('sheetL', v >= 520); document.body.classList.toggle('noSprL', v >= 520); document.body.classList.toggle('half', v >= 330 && v < 520); if (was !== (v >= 520)) renderHuds(); } };
+  const apply = (w) => { const v = Math.max(140, Math.min(Math.round(window.innerWidth * 0.5), Math.round(w))); root.style.setProperty(key, `${v}px`); store.set(`hud${side}`, v); if (side === 'L') { const was = document.body.classList.contains('sheetL'); const near = sizeNear(v); document.body.classList.toggle('sheetL', near === 'full'); document.body.classList.toggle('half', near === 'half'); document.body.classList.toggle('slim', near === 'slim'); if (was !== (near === 'full')) renderHuds(); } };
   applyHud[side] = apply;
-  const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') { document.body.classList.toggle('sheetL', saved >= 520); document.body.classList.toggle('noSprL', saved >= 520); document.body.classList.toggle('half', saved >= 330 && saved < 520); } }
+  const saved = store.get(`hud${side}`, null); if (saved) { root.style.setProperty(key, `${saved}px`); if (side === 'L') { document.body.classList.toggle('sheetL', sizeNear(saved) === 'full'); document.body.classList.toggle('half', sizeNear(saved) === 'half'); document.body.classList.toggle('slim', sizeNear(saved) === 'slim'); } }
   grip.addEventListener('pointerdown', (e) => { e.preventDefault(); grip.setPointerCapture(e.pointerId); grip.classList.add('on'); document.body.classList.add('dragging');
     const move = (m) => apply(side === 'L' ? m.clientX - 12 : window.innerWidth - m.clientX - 12);
     const up = () => { grip.classList.remove('on'); document.body.classList.remove('dragging'); grip.removeEventListener('pointermove', move); grip.removeEventListener('pointerup', up); grip.removeEventListener('pointercancel', up); if (side === 'L') snapL(); };
     grip.addEventListener('pointermove', move); grip.addEventListener('pointerup', up); grip.addEventListener('pointercancel', up); });
   grip.addEventListener('keydown', (e) => { const now = parseInt(getComputedStyle(root).getPropertyValue(key), 10) || 224; const step = (e.key === 'ArrowLeft' ? -16 : e.key === 'ArrowRight' ? 16 : 0) * (side === 'L' ? 1 : -1); if (step) { e.preventDefault(); apply(now + step); } });
 }
-if (S.sizeL) applyHud.L(SIZES[S.sizeL]());
-window.addEventListener('resize', () => { if (S.sizeL) applyHud.L(SIZES[S.sizeL]()); });
+S.sizeL = S.sizeL ?? 'min'; applyHud.L(SIZES[S.sizeL]());
+window.addEventListener('resize', () => applyHud.L(SIZES[S.sizeL]()));
 $('level').value = String(S.level);
 $('place').innerHTML = PLACES.map((x) => `<option value="${x.id}">${esc(x.name)}</option>`).join('');
 setPlace(PLACES.some((x) => x.id === store.get('place', '')) ? store.get('place', 'gates') : 'gates');
