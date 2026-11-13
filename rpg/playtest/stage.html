@@ -1021,6 +1021,30 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v49: the Guild's front desk, and jobs with a voice */
+.gscene{position:relative;display:grid;grid-template-columns:clamp(110px,26%,190px) minmax(0,1fr);gap:14px;align-items:end;min-height:212px;padding:12px 14px 12px 0;border:1px solid var(--edge2);border-radius:16px;background-size:cover;background-position:center;overflow:hidden}
+.gscene.nobody{grid-template-columns:minmax(0,1fr);min-height:150px;padding-left:14px}
+.gkeeper{align-self:end;justify-self:center;display:block;width:auto;max-width:none;height:258px;margin-bottom:-62px;filter:drop-shadow(0 6px 18px rgba(0,0,0,.6))}
+.gscene.away .gkeeper{opacity:.35;filter:grayscale(.7)}
+.gsay{display:grid;gap:6px;align-content:end;justify-items:start;min-width:0}
+.gsay .lbl{margin:0}
+.gname{display:grid;font:500 1.15rem var(--f-head)}
+.gname i{font:400 .58rem var(--f-mono);font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.gline{margin:0;font:400 1.02rem/1.35 var(--f-serif);font-style:italic;color:var(--text)}
+.desks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.desk{display:flex;align-items:center;justify-content:flex-start;gap:11px;min-width:0;padding:9px 12px 9px 9px;border-radius:14px;border:1px solid var(--edge2);background:var(--box);color:var(--text);text-align:left;cursor:pointer}
+.desk:hover{border-color:var(--gold)}
+.desk .face{width:52px;height:52px;border-radius:12px}
+.desk .face.away img{opacity:.4;filter:grayscale(.7)}
+.desk .face.board{display:grid;place-items:center;font-size:1.3rem;color:var(--gold);background:var(--glass)}
+.desk-t{display:grid;gap:2px;min-width:0}
+.desk-t b{font-size:.92rem}
+.desk-t small{font-size:.72rem;line-height:1.3;color:var(--muted)}
+.quest.job b{font:400 .98rem/1.3 var(--f-serif);font-style:italic}
+.quest.locked{opacity:.72}
+.quest .meta span.lv{color:var(--mint);border-color:color-mix(in srgb,var(--mint) 50%,transparent)}
+.quest .meta span.lv.no{color:var(--crit);border-color:color-mix(in srgb,var(--crit) 55%,transparent)}
+@media (max-width:640px){.desks{grid-template-columns:minmax(0,1fr)}.gkeeper{height:210px}}
 /* v48: the tell (who has stopped her and how to get out), and the Social group */
 .tell{grid-column:1/-1;display:grid;gap:5px;padding:8px 11px;border:1px solid color-mix(in srgb,var(--crit) 55%,var(--edge2));border-left-width:4px;border-radius:10px;background:color-mix(in srgb,var(--crit) 9%,transparent)}
 .tell.yours{border-color:color-mix(in srgb,var(--gold) 55%,var(--edge2));background:color-mix(in srgb,var(--gold) 8%,transparent)}
@@ -3045,18 +3069,57 @@ function aroundHere() {
 }
 
 /* ---------- the guild board: notices do not say what they are ---------- */
+/* ---------- v49: the Guild Hall has a front desk. A sister asks who she is here to see, and each answer is its own scene. ---------- */
+const JOB_CARD = { // what the notice says in the poster's own words, who pinned it, and the level the Guild wants before it hands the job over
+  goose: { lvl: 1, by: "the Goose's cook", note: 'One girl short, forty thirsty, and the spare uniform is what it is. Come before sundown.' },
+  towels: { lvl: 1, by: 'the bath attendants', note: 'Somebody is taking the towels. Not some of the towels. We would like it looked into, quietly.' },
+  statue: { lvl: 1, by: 'a sculptor, in a hurry', note: 'The town paid for a hero in marble and my model has run off. You have the right sort of shoulders. Hold still for an afternoon.' },
+  pim: { lvl: 2, by: "a lender's clerk", note: 'Mr Pim owes. Mr Pim knows he owes. Go and stand near Mr Pim until he remembers.' },
+  recruits: { lvl: 2, by: 'the drill sergeant', note: 'New recruits. They think the sword goes in the other hand. Come and be an example, or a warning.' },
+  chapter: { lvl: 3, by: 'an archivist', note: 'A chapter has gone out of a book that was never lent. Nobody is accusing anybody. Yet.' },
+  wine: { lvl: 3, by: 'a vintner', note: 'Twelve barrels, one cart, one very old horse, and a road that has grown teeth. Walk beside it and look large.' },
+  lights: { lvl: 4, by: 'a woodcutter', note: 'There are lights in the old oak again. I am not going back to look. That is what you are for.' },
+};
+const jobCard = (j) => JOB_CARD[j.id] ?? { lvl: 1, by: 'somebody', note: 'Somebody wants a knight.' };
+const jobLocked = (j) => S.level < jobCard(j).lvl;
+const DESKS = { // who sits where. The sisters look exactly alike, which the Guild finds efficient.
+  front: { who: 'tilde', look: 'w-office', bg: 'art/bg/town/guild-1.webp', title: 'The front desk' },
+  jobs: { who: 'tilde', look: 'w-office-f', bg: 'art/bg/town/guild-2.webp', title: 'Jobs', ask: 'You, about work', sub: 'coin and a good name' },
+  hunts: { who: 'fenna', look: 'w-archer', bg: 'art/bg/bg-forest.webp', title: 'Hunts', ask: 'Fenna, about a hunt', sub: 'fights for coin' },
+  bounties: { who: 'petra', look: 'w-knight', bg: 'art/bg/bg-arena.webp', title: 'Bounties', ask: 'Dame Petra, about a bounty', sub: 'the names everybody knows' },
+  notices: { who: null, bg: 'art/bg/town/guild-3.webp', title: 'The notice board', ask: 'Nobody. The notice board', sub: 'notices that say where, never what' },
+};
+const FRONT_SAY = ['Guild Hall, front desk. Sign in. You have signed in, I watched you do it. Who are you here to see?', 'You again. Good. The ledger likes a regular. Who is it today?', 'Boots. Mat. Thank you. Now: who are you here to see?', 'I can give you work, a hunt, a bounty, or a look at the board. I cannot give you directions to the pie shop. Who is it?'];
+function deskAway(id) { // a sister who is out walking the world today has left her book open on the desk
+  if (!id || id === 'tilde' || !S.wander?.[id] || S.calm) return null; if (wanderOut(id) || S.wander[id].at === 'guild') return null; return placeById(S.wander[id].at) ?? null; }
+function deskSay(k) { const cur = jobNow(), away = deskAway(DESKS[k].who), w = DESKS[k].who ? WANDER[DESKS[k].who] : null;
+  if (away) return `${w.short} is out at ${away.name} today. Her book is open on the desk, and the Guild does not mind you reading it.`;
+  if (k === 'front') return cur ? `You have “${cur.title}” out on your name. I have it written down. Twice. Who are you here to see?` : FRONT_SAY[dayNow() % FRONT_SAY.length];
+  if (k === 'jobs') return cur ? 'One job at a time. Finish it or hand it back, and then we can talk about the next one.' : 'Me? Good choice. Each notice says who wants you and where. It does not say what for. That keeps the paperwork short.';
+  if (k === 'hunts') return 'Yes, we look alike. No, I am not Tilde; Tilde is the one who sighs. Something out there needs dealing with. I know what it is, and the Guild says I may not tell you.';
+  if (k === 'bounties') return 'Everybody knows these names. I have walked past all three doors. Pick one when you are ready, and not a day before.';
+  return 'Nobody minds the board. Notices go up overnight and nobody admits to pinning them.'; }
+function deskHead(k) { const dk = DESKS[k], w = dk.who ? WANDER[dk.who] : null, look = dk.look ? LOOKS.find((l) => l.id === dk.look) : null, away = deskAway(dk.who);
+  return `<div class="gscene${away ? ' away' : ''}${w ? '' : ' nobody'}" style="background-image:linear-gradient(90deg,rgba(10,11,16,.25),rgba(10,11,16,.82) 58%),url('${esc(dk.bg)}')">${look?.src ? `<img class="gkeeper" src="${esc(look.src)}" alt="">` : ''}
+    <div class="gsay"><p class="lbl">${esc(dk.title)}${k === 'front' ? '' : ' · the Guild Hall'}</p><b class="gname">${w ? `${esc(w.name)}<i>${esc(w.role.replace(/,? on foot$/, ''))}</i>` : 'Nobody is here'}</b><p class="gline">${esc(deskSay(k))}</p>${k === 'front' ? '' : '<button class="sm quiet" type="button" data-desk="front">← Back to the front desk</button>'}</div></div>`; }
+function jobsDesk() { const busy = Boolean(S.battle) || Boolean(S.standoff), cur = jobNow();
+  return `${cur ? `<div class="quest"><b>${esc(cur.title)}</b><small>In hand. Go to ${esc(PLACES.find((p) => p.id === cur.place).name)}.</small><div class="meta"><span class="ok">taken</span></div><button class="sm quiet" type="button" data-jobdrop="1">Hand it back</button></div>` : ''}
+    ${JOBS.filter((j) => j.id !== S.job).sort((a, b) => jobCard(a).lvl - jobCard(b).lvl).map((j) => { const at = PLACES.find((p) => p.id === j.place), free = jobFree(j), c = jobCard(j), locked = jobLocked(j), back = 3 - (dayNow() - (S.jobsDone[j.id] ?? 0));
+      return `<div class="quest job${free ? '' : ' done'}${locked ? ' locked' : ''}"><b>“${esc(c.note)}”</b><small>${free ? `Pinned by ${esc(c.by)}, at ${esc(at.name)}.` : `Done. It will be back on the board in ${back} day${back === 1 ? '' : 's'}.`}</small><div class="meta"><span class="lv${locked ? ' no' : ''}">level ${c.lvl}${locked ? ' needed' : ''}</span><span>pay unknown</span><span>kind unknown</span></div><button class="sm primary" type="button" data-job="${j.id}"${free && !cur && !busy && !locked ? '' : ' disabled'}>${locked ? `Level ${c.lvl}` : 'Take it'}</button></div>`; }).join('')}`; }
 function renderGuild() {
-  const live = Boolean(BT), busy = Boolean(S.battle) || Boolean(S.standoff), pins = ['pinned crooked', 'in a hurried hand', 'with a wax seal', 'torn at one corner', 'smelling faintly of onions'];
+  const live = Boolean(BT), busy = Boolean(S.battle) || Boolean(S.standoff), pins = ['pinned crooked', 'in a hurried hand', 'with a wax seal', 'torn at one corner', 'smelling faintly of onions'], k = DESKS[S.gdesk] ? S.gdesk : 'front';
   const hint = (e) => { const p = PLACES.find((x) => (x.tags ?? []).some((t) => (e.where ?? []).includes(t))); return p ? `somewhere around ${AREAS[areaOf(p)].name}` : 'no place given'; };
-  const open = events.filter((e) => !doneQuests.has(e.id)), done = events.filter((e) => doneQuests.has(e.id));
-  const notices = open.map((e, i) => `<div class="quest"><b>A notice, ${pins[i % pins.length]}</b><small>The details are for whoever takes it. It says ${esc(hint(e))}.</small><div class="meta"><span>reward unknown</span><span>danger unknown</span></div><button class="sm primary" type="button" data-quest="${esc(e.id)}"${busy ? ' disabled' : ''}>Take it</button></div>`).join('');
-  const finished = done.map((e) => `<div class="quest done"><b>${esc(e.title)}</b><small>${esc(e.t)}</small><div class="meta"><span class="ok">done</span></div><button class="sm quiet" type="button" data-quest="${esc(e.id)}"${busy ? ' disabled' : ''}>Again</button></div>`).join('');
-  const hunts = (DATA.encounters?.encounters ?? []).map((x, i) => `<div class="quest"><b>Hunt notice ${i + 1}</b><small>"Something needs dealing with." The clerk will not say what, or how many.</small><div class="meta"><span>numbers unknown</span><span>strength unknown</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-enc="${esc(x.id)}"${live && !busy ? '' : ' disabled'}>Take it</button></div>`).join('');
-  const bosses = (DATA.bosses?.bosses ?? []).map((b) => `<div class="quest"><b>${esc(b.name)}${b.title ? `, ${esc(b.title)}` : ''}</b><small>${esc(b.want)}</small><div class="meta"><span>strength unknown</span><span>${esc(b.arena ? b.arena.split(':')[0] : 'whereabouts unknown')}</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-boss="${esc(b.id)}"${live && !busy ? '' : ' disabled'}>Challenge</button></div>`).join('');
-  $('guild').innerHTML = `${jobBoard()}<h2>The Guild Hall</h2><p>The notice board. A notice does not say what it is until you take it, and nobody will tell you how many of them there are out there.</p>${notices || '<p>The board is bare.</p>'}
-    ${finished ? `<h2>Done</h2>${finished}` : ''}
-    <h2>Hunts</h2><p>Fights for coin. You find out what you are hunting when you find it.</p>${hunts}
-    <h2>Bounties</h2><p>Everybody knows the names. Nobody who knows how strong they are is saying.</p>${bosses}`;
+  const open = events.filter((e) => !doneQuests.has(e.id)), done = events.filter((e) => doneQuests.has(e.id)), hunts = DATA.encounters?.encounters ?? [], bosses = DATA.bosses?.bosses ?? [];
+  const lists = {
+    front: () => { const freeJobs = JOBS.filter((j) => j.id !== S.job && jobFree(j)), mine = freeJobs.filter((j) => !jobLocked(j)).length, counts = { jobs: `${mine} you can take${freeJobs.length - mine ? ` · ${freeJobs.length - mine} above your level` : ''}`, hunts: `${hunts.length} notice${hunts.length === 1 ? '' : 's'}`, bounties: `${bosses.length} name${bosses.length === 1 ? '' : 's'}`, notices: `${open.length} up${done.length ? ` · ${done.length} done` : ''}` };
+      return `<div class="desks" role="group" aria-label="Who she is here to see">${['jobs', 'hunts', 'bounties', 'notices'].map((d) => { const dk = DESKS[d], look = dk.look ? LOOKS.find((l) => l.id === dk.look) : null, away = deskAway(dk.who);
+        return `<button class="desk" type="button" data-desk="${d}">${look?.src ? `<span class="face${away ? ' away' : ''}"><img src="${esc(look.src)}" alt=""></span>` : '<span class="face board" aria-hidden="true">▤</span>'}<span class="desk-t"><b>${esc(dk.ask)}</b><small>${esc(dk.sub)} · ${esc(counts[d])}${away ? ' · she is out, the book is open' : ''}</small></span></button>`; }).join('')}</div>`; },
+    jobs: () => `<p>Work for coin and a good name. One at a time. The level on a notice is the level the Guild wants before it hands it over.</p>${jobsDesk()}`,
+    notices: () => `<p>A notice does not say what it is until you take it, and nobody will tell you how many of them there are out there.</p>${open.map((e, i) => `<div class="quest"><b>A notice, ${pins[i % pins.length]}</b><small>The details are for whoever takes it. It says ${esc(hint(e))}.</small><div class="meta"><span>reward unknown</span><span>danger unknown</span></div><button class="sm primary" type="button" data-quest="${esc(e.id)}"${busy ? ' disabled' : ''}>Take it</button></div>`).join('') || '<p>The board is bare.</p>'}${done.length ? `<h2>Done</h2>${done.map((e) => `<div class="quest done"><b>${esc(e.title)}</b><small>${esc(e.t)}</small><div class="meta"><span class="ok">done</span></div><button class="sm quiet" type="button" data-quest="${esc(e.id)}"${busy ? ' disabled' : ''}>Again</button></div>`).join('')}` : ''}`,
+    hunts: () => `<p>Fights for coin. You find out what you are hunting when you find it.</p>${hunts.map((x, i) => `<div class="quest"><b>Hunt notice ${i + 1}</b><small>"Something needs dealing with." She will not say what, or how many.</small><div class="meta"><span>numbers unknown</span><span>strength unknown</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-enc="${esc(x.id)}"${live && !busy ? '' : ' disabled'}>Take it</button></div>`).join('')}`,
+    bounties: () => `<p>Everybody knows the names. Nobody who knows how strong they are is saying.</p>${bosses.map((b) => `<div class="quest"><b>${esc(b.name)}${b.title ? `, ${esc(b.title)}` : ''}</b><small>${esc(b.want)}</small><div class="meta"><span>strength unknown</span><span>${esc(b.arena ? b.arena.split(':')[0] : 'whereabouts unknown')}</span></div><button class="sm ${live ? 'primary' : 'quiet'}" type="button" data-boss="${esc(b.id)}"${live && !busy ? '' : ' disabled'}>Challenge</button></div>`).join('')}`,
+  };
+  $('guild').dataset.desk = k; $('guild').innerHTML = deskHead(k) + lists[k]();
 }
 
 /* ---------- under the story: Responses, Social, Items, Debug ---------- */
@@ -3523,7 +3586,7 @@ const JOBS = [
 ];
 const jobNow = () => JOBS.find((j) => j.id === S.job) ?? null;
 const jobFree = (j) => !(S.jobsDone[j.id] && dayNow() - S.jobsDone[j.id] < 3);
-function takeJob(id) { const j = JOBS.find((x) => x.id === id); if (!j || S.job) return; S.job = id; store.set('job', id); const at = PLACES.find((p) => p.id === j.place);
+function takeJob(id) { const j = JOBS.find((x) => x.id === id); if (!j || S.job || jobLocked(j)) return; S.job = id; store.set('job', id); const at = PLACES.find((p) => p.id === j.place);
   journal('quest', `Job taken: ${j.title}. Go to ${at.name} (${AREAS[areaOf(at)].name}).`);
   post({ who: 'sys', plate: j.title, dice: `[guild job] at <b>${esc(at.name)}</b> · ${esc(AREAS[areaOf(at)].name)}`, tone: 'virtue', say: j.brief, fx: ['one job at a time', `go to ${at.short}: it is under "Only at this place"`] }); }
 function jobCells() { const j = jobNow(), dc = dcFor(S.level, 'normal');
@@ -3539,9 +3602,6 @@ function doJob(i) { const j = jobNow(), o = j.opts[i], L = Math.max(1, S.level);
   post({ big: { auto: !r.success, why: `This was ${JOB_KIND[j.kind]}. Each of the four ways rolls a different attribute against a normal target for her level; a flirtatious way adds her Tempt bonus. A success pays in full (half again on a crit), counts as guild work for today and raises her standing; a failure pays about a third and costs a point of it. The notice comes back on the board in three days.` }, who: 'me', plate: j.title, dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${esc(o.label)} · ${STAT_INFO[o.stat].name}`, tone: r.degree, say: r.success ? o.win : o.lose, fx });
   if (j.then === 'standoff' && !r.success && !S.fallen) startStandoff(`${j.title} went sideways`);
 }
-const jobBoard = () => { const busy = Boolean(S.battle) || Boolean(S.standoff), cur = jobNow(), pins = ['in green ink', 'on the back of a menu', 'with a thumbprint in jam', 'folded very small', 'nailed up with a fork', 'in capitals', 'smelling of lavender', 'signed with an X'];
-  return `<h2>Jobs</h2><p>Work for coin and a good name. A notice says where, never what: you find out what kind of job it was when it is over. One at a time.</p>${cur ? `<div class="quest"><b>${esc(cur.title)}</b><small>In hand. Go to ${esc(PLACES.find((p) => p.id === cur.place).name)}.</small><div class="meta"><span class="ok">taken</span></div><button class="sm quiet" type="button" data-jobdrop="1">Hand it back</button></div>` : ''}
-    ${JOBS.filter((j) => j.id !== S.job).map((j, i) => { const at = PLACES.find((p) => p.id === j.place), free = jobFree(j); return `<div class="quest${free ? '' : ' done'}"><b>A notice ${pins[i % pins.length]}</b><small>${free ? `Somebody wants a knight at ${esc(at.name)}.` : `Done. It will be back on the board in ${3 - (dayNow() - S.jobsDone[j.id])} day${3 - (dayNow() - S.jobsDone[j.id]) === 1 ? '' : 's'}.`}</small><div class="meta"><span>pay unknown</span><span>kind unknown</span></div><button class="sm primary" type="button" data-job="${j.id}"${free && !cur && !busy ? '' : ' disabled'}>Take it</button></div>`; }).join('')}`; };
 function dockTray() { const t = $('tray'), dock = $('trayDock'); if (!S.trayPos && dock) { if (t.parentElement !== dock) dock.appendChild(t); t.classList.add('docked'); } else { if (t.parentElement !== $('stage')) $('stage').appendChild(t); t.classList.remove('docked'); } }
 /* ---------- v26: composure, catcalls on the road, and thoughts that pop up round her ---------- */
 // Composure is how well she is holding herself together around people: chemistry and pheromones push it down, Willpower holds it up.
@@ -3824,10 +3884,10 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v48', NEW_UI = [
+const NEW_VER = 'v49', NEW_UI = [
+  ['[data-view="guild"]', 'The Guild has a front desk. Tilde asks who you are here to see: work, a hunt, a bounty, or the notice board. Each one is its own scene, and every job says who pinned it and the level it needs.'],
   ['.pfold[data-fold="g-social"]', 'Social is its own group: talk to whoever lives here, hail whoever is passing, ask Valerie, call Meme.'],
-  ['#tell', 'When someone stops you, this says who started it, that you cannot walk away, how their nerve is, and your best line out.'],
-  ['.pfold', 'Each group folds away: click its name. Folded ones wait in one line at the bottom.'],
+  ['#tell', 'When someone stops you, this says who started it, that you cannot walk away, and your best line out.'],
   ['#ways', 'Where she can walk from here is under her: the three nearest, with the minutes.'],
 ];
 function hideNew() { clearTimeout(S.newT); const el = $('newLayer'); if (el) { el.remove(); S.hidAt = Date.now(); } }
@@ -4111,14 +4171,14 @@ function renderTavern() {
     <p>The files are in the Ai-RPG repository under <code>rpg/sillytavern/out/</code>. What is not built yet: an extension that tracks HP, stress and the gauge in code. Until then the model does the arithmetic from the lorebook's tables.</p>`;
 }
 function setView(view) {
-  S.view = view; for (const id of ['tray', 'foe']) $(id).classList.toggle('offview', view !== 'stage');
+  S.view = view; for (const id of ['tray', 'foe', 'thought', 'bark']) $(id)?.classList.toggle('offview', view !== 'stage'); // a thought bubble belongs to the story screen, not on top of the Guild
   for (const b of document.querySelectorAll('[data-view]')) b.setAttribute('aria-selected', b.dataset.view === view);
   $('log').hidden = view !== 'stage'; $('composer').hidden = view !== 'stage'; $('guild').hidden = view !== 'guild'; $('tavern').hidden = view !== 'tavern'; $('cast').hidden = view !== 'cast';
-  if (view === 'guild') renderGuild(); if (view === 'tavern') renderTavern(); if (view === 'cast') renderCast();
+  if (view === 'guild') { S.gdesk = 'front'; renderGuild(); } if (view === 'tavern') renderTavern(); if (view === 'cast') renderCast();
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { seethru: store.get('seethru', true) !== false, peek: false, mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { gdesk: 'front', seethru: store.get('seethru', true) !== false, peek: false, mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -4864,6 +4924,7 @@ document.addEventListener('click', (e) => {
   if (b.dataset.bi && S.battle) { S.battle.pick = +b.dataset.bi; S.battle.hint = null; battleAct(false); return render(); }
   if (b.dataset.view) { S.menu = ''; setView(b.dataset.view); return renderMenu(); }
   if (b.dataset.job) { takeJob(b.dataset.job); setView('stage'); return render(); }
+  if (b.dataset.desk) { S.gdesk = b.dataset.desk; renderGuild(); $('guild').scrollTop = 0; return render(); }
   if (b.dataset.jobdrop) { S.job = null; store.set('job', null); S.jobOpen = false; renderGuild(); return render(); }
   if (b.dataset.rfold) { S.rfold = S.rfold === b.dataset.rfold ? '' : b.dataset.rfold; store.set('rfold', S.rfold); return render(); }
   if (b.dataset.chatgen) { chatGen(); return; }
@@ -4939,7 +5000,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { startStandoff, rivalFight, endStandoff, socialRow, freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { JOB_CARD, DESKS, startStandoff, rivalFight, endStandoff, socialRow, freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
