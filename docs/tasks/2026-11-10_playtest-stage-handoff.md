@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| Social group, and the tell | `socialRow` (used by `placeGrid`, fold key `g-social`); `standoffTell`, `standoffCells` (replaces the inline standoff buttons in `travelGrid`), `meetTell`; `S.standoff.why` and `S.standoff.by` (set in `startStandoff`); `.tell`, `.cell.warn` |
 | Folding action groups, ways out under her | `placeGrid` (groups, `pfold` buttons, the `prow shut` line; uses `S.folds` with keys `g-here`, `g-trouble`, `g-only`, `g-moves`); `freeToWalk`, `waysSpot`, `waysShown`, `waysHtml`, `renderWays`, `#ways`, `.ways.inmap` in `mapTab`, `S.waysAll`; `exitCells` is the fallback row; `stuckNow` counts the chips |
 | See-through side panels, click her to hide them | CSS under `body.seethru` (inside one `@media (hover:hover) and (min-width:1000px)` block) and `body.peek`; `S.seethru`, `S.peek`, `hudWake(side, ms)`, `peekClick`, `S.hidAt` (set in `hideNew`), the `closing` flag at the top of the click handler, `data-seethru` in Settings |
 | Tile map and sandbox (an experiment) | `TW`, `TH`, `TILE_LOOK`, `TILE_GLYPH`, `TILE_COST`, `TILE_RISK`, `tileMap(area)` (made once per area from `PLACES`, their `links` and `AREAS[area].exits`, with a seeded pattern for the ground), `tileSync`, `tileStep`, `tilePath`, `tileGo`, `tileKeyStep`, `tileSvg`, `tileKey`, `mapSwitch`, `S.mapStyle`, `S.tpos`, `S.sandbox` (read in `eventPool`), the `data-tile` click and the arrow-key listener |
@@ -376,6 +377,22 @@ Also here: a thought bubble could cover the chat's "Another answer" button and s
 Choices Del has not seen yet: nearest first, three shown, short names taken from the map's door labels (Forest, Castle, Academy), and `m` for minutes on the chips.
 
 Tests changed: `drive24` clicks the chip instead of the old row.
+
+### A Social group, and a tell when she is held (v48, artifact version 41)
+
+Del: "add social responses etc, and if it is a npc you can sway but is keeping you or initiating would like a better tell for it". Read as two asks: more social things to do among the actions, and a clearer sign when someone has stopped her or started on her, especially one she can win over.
+
+Built: the Social group, the standoff tell with a best line, and a small tell on a first meeting. See the README for the rules.
+
+Notes for whoever changes it:
+
+- `by` is `you` only for the three ways she starts a standoff herself (Pick a fight, the cheat, calling someone out). It is read from the `why` text in `startStandoff`. A new way for her to start one needs adding to that pattern.
+- The best line is a rough guide: chance times the nerve a plain success takes off (Sway and Persuade 30, the strike 25, with the weak-spot or shrug-off factor once it is known). It ignores crits, the reputation swings and what a failure costs.
+- The bar above the chat already shows their nerve and the round, so the tell does not repeat them. A first version did.
+- The Social group repeats the Hail buttons that the right panel has under Passing through. That is on purpose: the right panel fades when it is not pointed at.
+- No new rules were added. Every button in the group already existed somewhere.
+
+Not done: a tell on the figure itself (a mark over her head), and tells for people who are only passing and have not noticed her yet beyond the Call out button.
 
 ## What Del asked for that is not built, in suggested order
 
