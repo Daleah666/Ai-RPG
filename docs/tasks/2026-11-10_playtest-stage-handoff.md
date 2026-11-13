@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| The Guild's front desk, jobs with a voice and a level | `DESKS`, `FRONT_SAY`, `deskAway`, `deskSay`, `deskHead`, `jobsDesk`, `renderGuild`, `S.gdesk` (set to `front` in `setView`), `data-desk`; `JOB_CARD`, `jobCard`, `jobLocked` (also checked in `takeJob`); `.gscene`, `.desks`, `.quest.job` |
 | Social group, and the tell | `socialRow` (used by `placeGrid`, fold key `g-social`); `standoffTell`, `standoffCells` (replaces the inline standoff buttons in `travelGrid`), `meetTell`; `S.standoff.why` and `S.standoff.by` (set in `startStandoff`); `.tell`, `.cell.warn` |
 | Folding action groups, ways out under her | `placeGrid` (groups, `pfold` buttons, the `prow shut` line; uses `S.folds` with keys `g-here`, `g-trouble`, `g-only`, `g-moves`); `freeToWalk`, `waysSpot`, `waysShown`, `waysHtml`, `renderWays`, `#ways`, `.ways.inmap` in `mapTab`, `S.waysAll`; `exitCells` is the fallback row; `stuckNow` counts the chips |
 | See-through side panels, click her to hide them | CSS under `body.seethru` (inside one `@media (hover:hover) and (min-width:1000px)` block) and `body.peek`; `S.seethru`, `S.peek`, `hudWake(side, ms)`, `peekClick`, `S.hidAt` (set in `hideNew`), the `closing` flag at the top of the click handler, `data-seethru` in Settings |
@@ -393,6 +394,24 @@ Notes for whoever changes it:
 - No new rules were added. Every button in the group already existed somewhere.
 
 Not done: a tell on the figure itself (a mark over her head), and tells for people who are only passing and have not noticed her yet beyond the Call out button.
+
+### The Guild's front desk, and jobs with a voice (v49, artifact version 42)
+
+Del: "Have the jobs have a little bit more character to them, and say what level you need to be. When you click Guild, maybe it'll show a character who looks like an innkeeper, a one-on-one chat: who do you want to see? I click on it and it comes up with a different scene."
+
+Built as asked. See the README for how it behaves.
+
+Choices Del has not seen yet:
+
+- **Who is at the desk.** Del said "looks like an innkeeper". The front desk is Tilde Vantari, because she is already the guild clerk in the cast and starts at the Guild. Anya Redkey, the actual innkeeper, keeps her inn. To put Anya's picture there instead, change `look` on `DESKS.front` to `t-anya`.
+- **The other desks are her sisters**: Fenna (archer) for hunts and Dame Petra (knight) for bounties. They look exactly alike, which is the joke. The notice board has nobody.
+- **The level on a job is a hard gate.** Before this, every job could be taken at level 1. Now three can. The levels are a first guess (town jobs low, jobs outside the walls higher) and nothing is balanced.
+- **The job lines are new writing**, drawn from each job's existing title and brief. The poster is named by trade, not by name, so none of them contradicts a resident.
+- Hunts and bounties still hide what they are and how strong; only the wording moved to the sister at the desk.
+
+Also here: a thought bubble no longer shows on top of the Guild screen.
+
+Tests changed: `drive25` opens the jobs desk before reading the board. `drive22`'s own reset helper now clears a story event too; it was failing at random when a walk ended in one.
 
 ## What Del asked for that is not built, in suggested order
 
