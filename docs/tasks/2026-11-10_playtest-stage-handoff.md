@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| See-through side panels, click her to hide them | CSS under `body.seethru` (inside one `@media (hover:hover) and (min-width:1000px)` block) and `body.peek`; `S.seethru`, `S.peek`, `hudWake(side, ms)`, `peekClick`, `S.hidAt` (set in `hideNew`), the `closing` flag at the top of the click handler, `data-seethru` in Settings |
 | Tile map and sandbox (an experiment) | `TW`, `TH`, `TILE_LOOK`, `TILE_GLYPH`, `TILE_COST`, `TILE_RISK`, `tileMap(area)` (made once per area from `PLACES`, their `links` and `AREAS[area].exits`, with a seeded pattern for the ground), `tileSync`, `tileStep`, `tilePath`, `tileGo`, `tileKeyStep`, `tileSvg`, `tileKey`, `mapSwitch`, `S.mapStyle`, `S.tpos`, `S.sandbox` (read in `eventPool`), the `data-tile` click and the arrow-key listener |
 | Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
 | Fast travel | `fastTo`, `fastSelect`, `S.walked` (set in `goTo`), the `'fast'` value of `held` in `arrive` |
@@ -343,6 +344,20 @@ Choices made here that Del has not seen yet:
 - Roaming is gentler than the bubble map's roads per tile, so a walk across open country is not a fight every few steps. A road leg by tiles is a little quicker and safer than the same leg by bubbles. Nothing here is balanced.
 - The ground pattern is the same every time (seeded by the area's name). Change the seed text in `tileMap` to get another.
 - The map sits in the right panel, so tiles are about 16 px at 1440 px wide and 22 px at 2000 px. A large view in the middle of the screen is the obvious next step if Del likes this.
+
+### Side panels that step back (v46, artifact version 39)
+
+Del: "the bars on the side, be more transparent, so you get to see the characters a little bit more, until I start moving it... the scrolling bar will just disappear and reappear. Or if I click her, I don't know. What's a good idea?"
+
+Picked and built both halves: the panels fade when they are not pointed at (no clicking needed, and nothing in use is ever hidden), and a click on her hides them outright for a clear look. See the README for the rules.
+
+How it is done, for whoever changes it:
+
+- It is all CSS state: `:hover`, `:has(:focus-visible)` and an `awake` class. A browser without `:has()` drops the fading rule and keeps the panels solid.
+- The left panel's portrait card and folds sit inside `.pcol`, which draws no box of its own, so they are named directly in the rules. A new wrapper like that would need the same.
+- `render()` puts the `awake` class back from `S.awakeL` and `S.awakeR`, because the panels are redrawn often.
+
+Choices Del has not seen yet: the amount of fade (a third), the one-second pause before fading, which parts stay solid, and that it is on by default. The chat column in the middle is left alone.
 
 ## What Del asked for that is not built, in suggested order
 

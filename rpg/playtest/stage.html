@@ -1021,6 +1021,18 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v46: side panels that step back when they are not in use (pointer devices on a wide window), and a click on her that hides them */
+@media (hover:hover) and (min-width:1000px){
+body.seethru .hud{transition:background-color .45s ease 1s,border-color .45s ease 1s,box-shadow .45s ease 1s,backdrop-filter .45s ease 1s,-webkit-backdrop-filter .45s ease 1s,left .5s cubic-bezier(.2,.8,.2,1),width .5s cubic-bezier(.2,.8,.2,1)}
+body.seethru .hud.r>*,body.seethru .hud.l>.sheet>*,body.seethru .hud.l>.sheet>.pcol>*{transition:opacity .45s ease 1s,background-color .45s ease 1s}
+body.seethru .hud:is(:hover,.awake,:has(:focus-visible)){transition:background-color .14s,border-color .14s,box-shadow .14s,backdrop-filter .14s,-webkit-backdrop-filter .14s,left .5s cubic-bezier(.2,.8,.2,1),width .5s cubic-bezier(.2,.8,.2,1)}
+body.seethru .hud.r:is(:hover,.awake,:has(:focus-visible))>*,body.seethru .hud.l:is(:hover,.awake,:has(:focus-visible))>.sheet>*,body.seethru .hud.l:is(:hover,.awake,:has(:focus-visible))>.sheet>.pcol>*{transition:opacity .14s,background-color .14s}
+body.seethru .hud:not(:hover):not(.awake):not(:has(:focus-visible)){background:rgba(12,13,19,.1);border-color:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;scrollbar-color:transparent transparent}
+body.seethru .hud.r:not(:hover):not(.awake):not(:has(:focus-visible))>*:not(#whoFoot),body.seethru .hud.l:not(:hover):not(.awake):not(:has(:focus-visible))>.sheet>*:not(.rail),body.seethru .hud.l:not(:hover):not(.awake):not(:has(:focus-visible))>.sheet>.pcol>*{opacity:.32}
+body.seethru .hud.r:not(:hover):not(.awake):not(:has(:focus-visible))>.rtabs{background:transparent}
+body.seethru .hud.l:not(:hover):not(.awake):not(:has(:focus-visible))>.sheet>.rail{background:transparent;border-color:transparent}
+}
+body.peek .hud,body.peek .grip{opacity:0;pointer-events:none;transition:opacity .25s}
 /* v45: the tile map (an experiment) and the sandbox switch */
 .maptop{flex-wrap:wrap;gap:6px}
 .mapseg{margin-left:auto}
@@ -2491,7 +2503,7 @@ function tileGo(tx, ty) { // click a tile: walk there, and stop early if somethi
   if (M.g[ty]?.[tx] === 'block') return toast('No way through', `That is ${L.block[1]}. She walks round it.`);
   const path = tilePath(M, t.x, t.y, tx, ty); if (!path) return toast('No way through', 'There is no way there from here on foot.');
   walkFx(); for (const [x, y] of path) if (!tileStep(x, y)) break; }
-function tileKeyStep(dx, dy) { const held = tileHeld(); if (held) return post({ who: 'sys', dice: esc(held) }); tileSync(); const t = S.tpos; if (tileMap(t.area).g[t.y + dy]?.[t.x + dx] === 'block') return; walkFx(); tileStep(t.x + dx, t.y + dy); }
+function tileKeyStep(dx, dy) { hudWake('R'); const held = tileHeld(); if (held) return post({ who: 'sys', dice: esc(held) }); tileSync(); const t = S.tpos; if (tileMap(t.area).g[t.y + dy]?.[t.x + dx] === 'block') return; walkFx(); tileStep(t.x + dx, t.y + dy); }
 function mapSwitch() { return `<div class="seg mapseg" role="group" aria-label="How the map is drawn"><button type="button" data-mapstyle="bubbles" aria-pressed="${S.mapStyle !== 'tiles'}">Bubbles</button><button type="button" data-mapstyle="tiles" aria-pressed="${S.mapStyle === 'tiles'}" title="An experiment: the same world as a grid you walk on">Tiles</button></div><button class="bookbtn sandbtn" type="button" data-sandbox="1" aria-pressed="${Boolean(S.sandbox)}" title="Sandbox: the story waits. No chapters start. Fights, finds and people still happen.">Sandbox${S.sandbox ? ' · on' : ''}</button>`; }
 function tileSvg() { const M = tileSync(), here = placeNow(), area = M.area, L = TILE_LOOK[area] ?? TILE_LOOK.city, t = S.tpos; let cells = '', edges = '', marks = '';
   for (let y = 0; y < TH; y++) for (let x = 0; x < TW; x++) { const k = M.g[y][x], base = k === 'place' || k === 'door' ? 'road' : k, gl = TILE_GLYPH[k]?.[area] ?? TILE_GLYPH[k]?.city;
@@ -3740,14 +3752,13 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v45', NEW_UI = [
-  ['.mapseg', 'An experiment: Tiles draws the same world as a grid. Arrow keys or W A S D walk one tile, a click walks there, and rough ground is slow, risky and worth searching.'],
-  ['.sandbtn', 'Sandbox: the story waits and no chapters start, so you can wander.'],
+const NEW_VER = 'v46', NEW_UI = [
+  ['#whoFoot', 'The side panels fade when you are not pointing at them, so you can see her. Point at one and it comes straight back. Settings has the switch.'],
+  ['#sprL img, #sprL video', 'Click her and both side panels hide. Click the scene again, or press Esc, to bring them back. Right-click is still her card.'],
+  ['.mapseg', 'Still new: Tiles draws the same world as a grid you walk with the arrow keys or W A S D. Sandbox makes the story wait.'],
   ['.top [data-menu="her"]', 'Her page has tabs: Sheet, Story, Gauges, Passives, Pictures.'],
-  ['#bWho', 'In a fight, everyone has a face above the buttons. The gold ring is whose turn it is, and you click an enemy to aim at it.'],
-  ['[data-fold]', 'Anything with an arrow folds away, and stays how you left it.'],
 ];
-function hideNew() { clearTimeout(S.newT); $('newLayer')?.remove(); }
+function hideNew() { clearTimeout(S.newT); const el = $('newLayer'); if (el) { el.remove(); S.hidAt = Date.now(); } }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
   for (const [sel, text] of NEW_UI) { const el = [...document.querySelectorAll(sel)].find((x) => x.getClientRects().length); if (!el) continue; const r = el.getBoundingClientRect(), k = notes.push(text);
     layer.insertAdjacentHTML('beforeend', `<i class="newring" style="left:${Math.round(r.left - 5)}px;top:${Math.round(r.top - 5)}px;width:${Math.round(r.width + 10)}px;height:${Math.round(r.height + 10)}px"><b>${k}</b></i>`); }
@@ -3901,7 +3912,7 @@ const OPENING = () => [
   { who: 'sys', dice: '[prologue] Walk to a place once and she knows the road. After that she can fast travel there.' },
 ];
 function startOver() { const keep = {}; // a new game: the save goes, the lead and the layout stay, and the page loads again so the opening plays
-  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen', 'mapStyle']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
+  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen', 'mapStyle', 'seethru']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
     for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k);
     for (const [k, v] of Object.entries(keep)) localStorage.setItem(`oops-${k}`, v); } catch { /* storage is off: loading the page again starts fresh anyway */ }
   location.reload(); }
@@ -4035,7 +4046,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { seethru: store.get('seethru', true) !== false, peek: false, mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -4102,6 +4113,16 @@ function openCell() { const L = Math.max(1, S.level); S.loose = dayNow(); store.
 // The full-screen menus behind the top tabs: her sheet, everyone, the lore the world runs on, and settings.
 const MENUS = { her: heroName, cast: 'Everyone', lore: 'Lore', api: 'API', settings: 'Settings' };
 /* ---------- v44: sections that fold away, tabs on her page, and faces above the fight buttons ---------- */
+/* ---------- v46: the side panels step back when they are not in use, and a plain click on her hides them ---------- */
+function hudWake(side, ms = 4000) { // keep a panel solid for a moment when something in it is being used without the pointer (walking the tiles by keyboard, a fresh roll)
+  const el = $(side === 'L' ? 'hudL' : 'hudR'); if (!el) return; S[`awake${side}`] = Date.now() + ms; el.classList.add('awake'); clearTimeout(S[`awakeT${side}`]); S[`awakeT${side}`] = setTimeout(() => el.classList.remove('awake'), ms + 30); }
+function peekClick(e) { // any plain click on the scene brings the panels back; a plain click on a figure hides them
+  if (e.target.closest?.('.hud, .dialog, .top, .grip, .thought, .rail-pop, #charmenu, #ctx, #pcPop, #tray, #big, #cine, #toasts, #newLayer, #crashNote, form, a, input, textarea, select, label, [role="button"], [data-cv], [data-tile], g[data-go]')) return;
+  if (S.peek) { S.peek = false; return render(); }
+  if (S.menu || S.cine) return;
+  for (const id of ['sprL', 'sprR']) { const fig = $(id), pic = fig.querySelector('img, video'); if (!pic || fig.hidden) continue; const r = pic.getBoundingClientRect();
+    if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) { S.peek = true; if (once('peekTip')) toast('Just her', 'The side panels are hidden. Click the scene again, or press Esc, to bring them back.'); return render(); } } }
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.peek) { S.peek = false; render(); } });
 function fold(key, title, body, open = true, count = '') { const on = S.folds?.[key] ?? open;
   return `<div class="fbox${on ? ' on' : ''}"><button class="fhead" type="button" data-fold="${esc(key)}" aria-expanded="${on}"><svg viewBox="0 0 12 12" width="11" height="11" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><b>${title}</b>${count === '' ? '' : `<i>${count}</i>`}</button><div class="fbody"${on ? '' : ' hidden'}>${body}</div></div>`; }
 function passiveBank() {
@@ -4197,7 +4218,7 @@ function loreClick(key) {
   if (key === 'add') { const title = $('loreTitle')?.value.trim(), text = $('loreText')?.value.trim(), area = $('loreArea')?.value || null; if (!title || !text) { S.newsNote = 'A title and a sentence or two, please.'; return; } S.lore.push({ title: title.slice(0, 60), text: text.slice(0, 600), area: AREAS[area] ? area : null }); S.lore = S.lore.slice(-40); store.set('lore', S.lore); S.newsNote = `"${title.slice(0, 60)}" is lore now.`; return; }
   if (key.startsWith('del:')) { S.lore.splice(+key.slice(4), 1); store.set('lore', S.lore); }
 }
-function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Screen</h3><div class="crow"><button class="sm" type="button" data-full="1">Full screen</button></div></div><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
+function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Screen</h3><div class="crow"><button class="sm" type="button" data-full="1">Full screen</button><button class="sm${S.seethru ? '' : ' quiet'}" type="button" data-seethru="1" aria-pressed="${S.seethru}">See-through side panels: ${S.seethru ? 'on' : 'off'}</button></div><p class="more">On: a side panel you are not pointing at fades so the figures show through, and comes back when you point at it. A click on a figure hides both panels; click the scene again or press Esc to bring them back.</p></div><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
 function renderMenu() { const el = $('charmenu'); el.hidden = !S.menu; for (const b of document.querySelectorAll('.top [data-menu]')) b.setAttribute('aria-selected', b.dataset.menu === S.menu); if (!S.menu) { el.dataset.menu = ''; return; }
   const mkey = `${S.menu}:${S.menu === 'cast' ? S.viewing ?? '' : S.menu === 'her' ? S.htab : ''}`, same = el.dataset.menu === mkey, a = document.activeElement; if (same && a && el.contains(a) && a.matches('textarea, input[type="text"]') && !S.menuForce) return; S.menuForce = false;
   const keep = el.querySelector('.char-body')?.scrollTop ?? 0, body = S.menu === 'cast' ? (S.viewing ? viewerHtml() : castHtml()) : S.menu === 'lore' ? loreHtml() : S.menu === 'api' ? apiHtml() : S.menu === 'settings' ? settingsHtml() : herHtml();
@@ -4624,7 +4645,7 @@ function render() {
   document.body.classList.toggle('combat', combat);
   const engaged = Boolean(S.meet || S.standoff || S.battle || S.talking || S.mode === 'combat'); $('sprR').hidden = (Boolean(S.standoff) && !S.standoff.look) || (Boolean(S.battle) && !S.battle.state.combatants.companion); document.body.classList.toggle('keyR', $('sprR').classList.contains('keyedfig') && !$('sprR').hidden); document.body.classList.toggle('keyL', $('sprL').classList.contains('keyedfig')); document.body.classList.toggle('alone', !engaged);
   $('headline').textContent = `Level ${S.level} · ${mood(S.hero, true)[1]}`;
-  document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('dream', Boolean(S.dream)); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.dataset.phase = phaseNow();
+  document.body.classList.toggle('debug', S.debug); document.body.classList.toggle('dream', Boolean(S.dream)); document.body.classList.toggle('sway', Boolean(S.idle)); document.body.classList.toggle('seethru', S.seethru); document.body.classList.toggle('peek', Boolean(S.peek)); $('hudL').classList.toggle('awake', Date.now() < (S.awakeL ?? 0)); $('hudR').classList.toggle('awake', Date.now() < (S.awakeR ?? 0)); if (S.trayFresh) hudWake('R', 3500); document.body.dataset.phase = phaseNow();
   if (S.lines.length !== S.thoughtAt) { S.thoughtAt = S.lines.length; pickThought(); }
   wanderNotice(); closeFit(); document.body.classList.toggle('closeup', Boolean(S.closeups) && !S.battle && !S.standoff && (Boolean(S.talking || S.meet || S.dream || S.retest) || Date.now() < S.closeUntil)); renderTray(); renderBig(); renderMenu(); renderDebugger(); renderThought(); $('newsN').hidden = !S.newsUnread; $('newsN').textContent = S.newsUnread; store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
@@ -4699,18 +4720,20 @@ function debugClick(what) {
   if (what !== 'wipe') S.wipeArmed = false;
 }
 document.addEventListener('click', (e) => {
+  const closing = Boolean(S.pcPop || S.ctx) || Date.now() - (S.hidAt ?? 0) < 350;
   if (S.pcPop && !e.target.closest?.('#pcPop, [data-pcpop]')) pcPop(false);
   if (S.ctx && !e.target.closest?.('#ctx')) ctxClose();
   const node = e.target.closest('g[data-go], button[data-go]'); if (node) { goTo(node.dataset.go); return render(); }
   if (e.target.id === 'big') { S.big = null; return render(); }
   const tl = e.target.closest?.('[data-tile]'); if (tl) { const [tx, ty] = tl.dataset.tile.split(',').map(Number); tileGo(tx, ty); return render(); }
-  const b = e.target.closest('button'); if (!b) return;
+  const b = e.target.closest('button'); if (!b) { if (!closing) peekClick(e); return; }
   if (b.dataset.pcpop) return void pcPop();
   if (b.dataset.ctx) return void ctxAct(b.dataset.ctx);
   if (b.dataset.cine) return void cineClick(b.dataset.cine);
   if (b.dataset.cinestart) return void cineStart(b.dataset.cinestart);
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
   if (b.dataset.shownew) return void showNew(60000);
+  if (b.dataset.seethru) { S.seethru = !S.seethru; store.set('seethru', S.seethru); S.menuForce = true; return render(); }
   if (b.dataset.mapstyle) { S.mapStyle = b.dataset.mapstyle === 'tiles' ? 'tiles' : 'bubbles'; store.set('mapStyle', S.mapStyle); return render(); }
   if (b.dataset.sandbox) { S.sandbox = !S.sandbox; store.set('sandbox', S.sandbox); post({ who: 'sys', plate: 'Sandbox', dice: S.sandbox ? '[sandbox] on' : '[sandbox] off', say: S.sandbox ? 'The story waits. No chapters start while this is on. Fights, finds, jobs and people carry on as usual.' : 'The story picks up where it was.' }); return render(); }
   if (b.dataset.htab) { S.htab = b.dataset.htab; store.set('htab', S.htab); S.menuForce = true; return render(); }
@@ -4842,7 +4865,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
