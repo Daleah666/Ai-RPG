@@ -1021,6 +1021,19 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v48: the tell (who has stopped her and how to get out), and the Social group */
+.tell{grid-column:1/-1;display:grid;gap:5px;padding:8px 11px;border:1px solid color-mix(in srgb,var(--crit) 55%,var(--edge2));border-left-width:4px;border-radius:10px;background:color-mix(in srgb,var(--crit) 9%,transparent)}
+.tell.yours{border-color:color-mix(in srgb,var(--gold) 55%,var(--edge2));background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.tell.soft{border-color:color-mix(in srgb,var(--pink) 45%,var(--edge2));background:color-mix(in srgb,var(--pink) 7%,transparent)}
+.tell-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 10px}
+.tell-h i{font:600 .54rem var(--f-mono);font-style:normal;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--crit);color:#17090b}
+.tell.yours .tell-h i{background:var(--gold);color:#16130a}
+.tell.soft .tell-h i{background:var(--pink);color:#1a0a14}
+.tell-h b{font-size:.88rem}
+.tell-h span{font:400 .58rem var(--f-mono);letter-spacing:.05em;color:var(--muted)}
+.tell p{margin:0;font-size:.76rem;line-height:1.35;color:var(--muted)}
+.tell p b{color:var(--text)}
+.cell.warn{border-color:color-mix(in srgb,var(--crit) 55%,var(--edge))}
 /* v47: the action groups fold away, and the ways out sit under her */
 .pfold{display:inline-flex;align-items:center;gap:5px;min-height:0;padding:4px 8px 4px 0;border:0;border-radius:0;background:none;color:inherit;font:inherit;font-size:.56rem;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
 .pfold:hover{color:var(--text)}
@@ -2284,13 +2297,13 @@ function travelGrid() {
   const odds = (stat, dc, bonus = 0) => `${STAT_INFO[stat].name} · ${oddsOf(stat, dc, bonus)}%`, own = cell('x', 'Say your own thing', 'the Game Master reads it · later', '', true);
   if (S.fallen) return cell('getup', 'Get up', odds('WIL', dcFor(S.level, 'easy'), hasPerk('surefoot') ? 10 : 0), 'primary');
   if (S.standoff?.pinned) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total, left = 3 - S.standoff.pinRounds; return cell('so:struggle', 'Struggle up', `${odds('STR', dc, rb('strike') + (hasPerk('ragdoll') ? 10 : 0))} · back on your feet`, 'primary') + cell('so:wriggle', 'Wriggle free', `${odds('AGI', dc, rb('run') + (hasPerk('eel') ? 10 : 0))} · out and away`) + cell('so:plead', 'Talk from the ground', `${odds('WIL', dc, rb('persuade') - 10)} · nerve −30`) + cell('so:endure', 'Curl up', 'no roll · halve the next one') + `<span class="pinnote">Pinned · ${left} round${left === 1 ? '' : 's'} before they win</span>`; }
-  if (S.standoff) { const dc = dcFor(S.standoff.level), rb = (k) => repBonus(k).total; const cl = calling(), so = S.standoff, tell = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : ''; return cell('so:strike', cl.verb, `${odds(cl.stat, dc, rb('strike'))} · nerve −25${tell}`, 'primary') + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + cell('so:sway', 'Sway', `${odds('LCK', dc, temptBonus() + rb('sway'))} · nerve −30`) + cell('so:persuade', 'Persuade', `${odds('WIL', dc, rb('persuade'))} · nerve −30`) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', odds('AGI', dc)) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : '') + own; }
+  if (S.standoff) return standoffCells(own);
   if (S.dream) return dreamCells();
   if (S.event) return eventCells();
   if (S.convo && S.wander[S.convo.id]?.at !== S.place) S.convo = null;
   if (S.convo) return convoCells();
   if (S.jobOpen && jobNow()?.place === S.place) return jobCells();
-  if (S.meet) return Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
+  if (S.meet) return meetTell() + Object.entries(APPROACH).map(([k, a], i) => cell(`meet:${k}`, a.label, `${odds(a.stat, effectiveStat(S.them, a.vs), meetBonus(k).total)}${S.cls === 'courtesan' ? (castOf(S.meet).likes === k ? ' · they like this' : castOf(S.meet).dislikes === k ? ' · they hate this' : '') : ''}`, i === 0 ? 'primary' : '')).join('') + (S.retest ? cell('meet:talent', talentOf().name, S.used.talent ? 'used up for this visit' : `${odds(talentOf().stat, effectiveStat(S.them, 'WIL'), 10)} · skips the question`, 'spot', Boolean(S.used.talent)) : '') + own + exitCells(here);
   const closed = !openNow(here.hours);
   if (S.spot) { const spot = (SPOTS[here.id] ?? []).find((s) => s.id === S.spot);
     return spot.opts.map((o, i) => o.buy
@@ -2684,6 +2697,28 @@ function railPop(h, gauge, band, locked) {
       <div class="bars">${bar(`Composure · ${COMPOSURE[composure()]}`, 100 - composureScore(), 100, composure() === 2 ? 'var(--crit)' : composure() ? 'var(--gold)' : 'var(--mint)')}${bar('♥ HP', h.hp, h.maxHp, 'var(--hp)')}${bar('✦ Mana', h.mp, h.maxMp, 'var(--mp)')}${bar('⚡ Stamina', S.stam, 100, 'var(--sta)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
       ${S.spent ? '<div class="chips"><span style="--k:var(--crit)">Exhausted · every roll −10 · stamina stops at 50 · fights find her · cure: a bed</span></div>' : ''}${stateChips(h)}<p class="pin">${S.railOpen ? 'pinned open · click the bars to let go' : 'click the bars to pin this open'}</p>`;
 }
+/* ---------- v48: a tell when someone has stopped her, and a Social group among the actions ---------- */
+function standoffTell(so, pct, best) { // who started it, that she cannot leave, how their nerve is, and her best line out
+  const w = WANDER[so.key], rival = w?.kind === 'nemesis', yours = so.by === 'you', wavering = so.nerve <= 40, name = esc(so.name);
+  return `<div class="tell${yours ? ' yours' : ''}" id="tell" role="status"><div class="tell-h"><i>${yours ? 'you started it' : 'holding you'}</i><b>${yours ? `You called this on with ${name}` : `${name} ${w ? 'has' : 'have'} stopped you`}</b><span>you cannot walk away</span></div>
+    <p>${rival ? '<b>A rival you can win over.</b> Break their nerve and they come round to your side. ' : ''}Your best line is <b>${esc(best.label)}</b> at ${pct[best.k]}%. ${wavering ? 'They are wavering: last to round 8 and they give up and leave.' : 'Get their nerve to 40 or under by round 8, or it comes to blows.'}</p></div>`; }
+function standoffCells(own) { const so = S.standoff, dc = dcFor(so.level), rb = (k) => repBonus(k).total, cl = calling(), nm = (stat) => STAT_INFO[stat].name;
+  const pct = { strike: oddsOf(cl.stat, dc, rb('strike')), sway: oddsOf('LCK', dc, temptBonus() + rb('sway')), persuade: oddsOf('WIL', dc, rb('persuade')), run: oddsOf('AGI', dc) };
+  const typed = so.known && cl.type ? (cl.type === so.weak ? 1.5 : cl.type === so.tough ? 0.5 : 1) : 1, worth = { sway: pct.sway * 30, persuade: pct.persuade * 30, strike: pct.strike * 25 * typed }; // the chance times the nerve a plain success takes off
+  const bk = Object.keys(worth).sort((a, b) => worth[b] - worth[a])[0], best = { k: bk, label: { strike: cl.verb, sway: 'Sway', persuade: 'Persuade' }[bk] };
+  const weak = so.known && cl.type ? (cl.type === so.weak ? ' · their weak spot' : cl.type === so.tough ? ' · they shrug it off' : '') : '', mark = (k) => (k === bk ? ' · best line' : ''), cls = (k) => (k === bk ? 'primary' : '');
+  return standoffTell(so, pct, best)
+    + `<span class="prow">Social</span>` + cell('so:sway', 'Sway', `${nm('LCK')} · ${pct.sway}% · nerve −30${mark('sway')}`, cls('sway')) + cell('so:persuade', 'Persuade', `${nm('WIL')} · ${pct.persuade}% · nerve −30${mark('persuade')}`, cls('persuade')) + (S.cls === 'courtesan' ? cell('so:push', `Push her luck: ${so.push ? 'on' : 'off'}`, 'next Sway or Persuade: triple crit, fumble from 86', so.push ? 'spot' : '') : '') + own
+    + `<span class="prow">Fight back</span>` + cell('so:strike', cl.verb, `${nm(cl.stat)} · ${pct.strike}% · nerve −25${weak}${mark('strike')}`, cls('strike')) + cell('so:brace', 'Brace', 'no roll · halve the next one') + cell('so:run', 'Run', `${nm('AGI')} · ${pct.run}%`) + (S.realFights ? cell('so:fight', 'Real fight', 'the full turn-based battle') : ''); }
+function meetTell() { const c = castOf(S.meet);
+  return `<div class="tell soft" id="tell" role="status"><div class="tell-h"><i>waiting on you</i><b>${esc(c.name)}</b><span>${esc(c.role)} · a first hello · you can still walk away</span></div><p>How you say hello moves ${esc(c.name)}'s respect for you, up or down.${S.cls === 'courtesan' ? ' You can read what they like: it is on the buttons.' : ''}</p></div>`; }
+function socialRow() { // who she can talk to right here: whoever lives here, whoever is passing, her assistant, the cat
+  const who = S.who && !S.meet ? castOf(S.who) : null, out = [];
+  if (who) out.push(cell('talk', `Talk to ${who.name.length <= 12 ? who.name : who.name.split(' ')[0]}`, `respect: ${tierOf(npcOf(S.who).rapport).toLowerCase()}`));
+  for (const id of wanderersAt(S.place).slice(0, 3)) { const w = WANDER[id], bad = HOSTILE.has(w.kind);
+    out.push(`<button class="cell bubble${bad ? ' warn' : ''}" type="button" data-hail="${id}"${hailBusy() ? ' disabled' : ''} title="${esc(w.name)}, ${esc(w.role)}"><b>${bad ? 'Call out' : 'Hail'} ${esc(w.short)}</b><small>${esc(bad ? (w.kind === 'nemesis' ? 'a rival · starts a standoff · win and they join you' : 'hostile · starts a standoff') : `${KIND[w.kind][1]} · passing through`)}</small></button>`); }
+  if (!who && ASSIST && !S.guest) out.push(cell('asst:tip', 'Ask Valerie what to do', 'she keeps the notes'), cell('asst:cheer', 'Let Valerie cheer you up', S.asstDay === dayNow() ? 'done today, but she will anyway' : 'stress −5 · once a day'));
+  const m = memeCell(); if (m) out.push(m); return out; }
 /* ---------- v47: where she can walk from here sits under her, not in the action grid ---------- */
 function freeToWalk() { // the same conditions under which the action grid shows the place itself
   return !(S.mode === 'combat' || S.battle || S.fallen || S.standoff || S.dream || S.event || (S.convo && S.wander[S.convo.id]?.at === S.place) || (S.jobOpen && jobNow()?.place === S.place) || S.meet || S.spot); }
@@ -2744,7 +2779,7 @@ function startStandoff(why, encId, opt = {}) {
   const fkey = opt.key ?? (safe ? 'opportunists' : enc.id), named = opt.name ?? (safe ? 'Opportunists' : enc.name), level = Math.max(1, Math.round(S.level * (placeNow().foe ?? 0.6))) + foeRec(fkey).rank + (opt.plus ?? 0), stats = statsAt(arche('warrior'), level), hp = maxHp(level, stats.CON);
   const kinds = ['slash', 'strike', 'thrust'], weak = kinds[Math.floor(Math.random() * 3)], tough = kinds[(kinds.indexOf(weak) + 1 + Math.floor(Math.random() * 2)) % 3];
   once(`foe:${fkey}`); S.bigKey = null; S.convo = null;
-  S.standoff = { id: enc.id, key: fkey, name: foeName(fkey, named), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
+  S.standoff = { why, by: /^you (went looking|asked for it|called)/.test(why) ? 'you' : 'them', id: enc.id, key: fkey, name: foeName(fkey, named), level, rank: passiveRank(), pinned: false, pinRounds: 0, nerve: 100, round: 1, brace: false, exposed: false, weak, tough, known: false, push: false, glanced: false,
     foe: makeCombatant({ id: 'heckler', name: named, level, archetype: 'warrior', stats, hp, maxHp: hp, mp: 0, maxMp: 0 }) };
   S.mode = 'combat'; S.spot = null;
   if (opt.look && LOOKS.some((l) => l.id === opt.look)) { S.standoff.look = true; S.lookR = opt.look; S.nameR = named; }
@@ -3250,7 +3285,7 @@ function streetCell(id, here) {
 }
 const blank = '<span class="cell bubble empty" aria-hidden="true"></span>';
 const placeGrid = (rowHere, rowTrouble, rowOnly) => { const pad = (row) => (S.lay === 1 ? row : [...row, ...Array((4 - (row.length % 4)) % 4).fill(blank)]), mv = moveCells();
-  const groups = [['g-here', 'Here', rowHere], ['g-trouble', 'Trouble', rowTrouble], ...(rowOnly.length ? [['g-only', 'Only at this place', pad(rowOnly)]] : []), ...(mv.length ? [['g-moves', 'Your moves', mv, helpBtn('moves'), helpBox('moves')]] : [])];
+  const soc = socialRow(), groups = [['g-here', 'Here', rowHere], ['g-trouble', 'Trouble', rowTrouble], ...(soc.length ? [['g-social', 'Social', pad(soc)]] : []), ...(rowOnly.length ? [['g-only', 'Only at this place', pad(rowOnly)]] : []), ...(mv.length ? [['g-moves', 'Your moves', mv, helpBtn('moves'), helpBox('moves')]] : [])];
   const head = (k, title, count, on) => `<button class="pfold" type="button" data-fold="${k}" aria-expanded="${on}" title="${on ? 'Fold this away' : 'Open this again'}"><svg viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>${title}${on ? '' : `<i>${count}</i>`}</button>`;
   const open = groups.filter(([k]) => S.folds[k] !== false), shut = groups.filter(([k]) => S.folds[k] === false);
   return `<div class="pgrid">${open.map(([k, title, cells, extra = '', box = '']) => `<span class="prow">${head(k, title, 0, true)}${extra}</span>${box}${cells.join('')}`).join('')}${shut.length ? `<span class="prow shut">${shut.map(([k, title, cells]) => head(k, title, cells.filter((c) => c !== blank).length, false)).join('')}</span>` : ''}</div>`; };
@@ -3789,11 +3824,11 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v47', NEW_UI = [
-  ['.pfold', 'Here, Trouble and Your moves each fold away: click the name. Folded ones wait in one line at the bottom.'],
-  ['#ways', 'Where she can walk from here is under her now: the three nearest, with the minutes. The map on the right still works too.'],
-  ['#whoFoot', 'The side panels fade when you are not pointing at them. Click her to hide them; click the scene to bring them back.'],
-  ['.mapseg', 'Tiles draws the same world as a grid you walk with the arrow keys or W A S D.'],
+const NEW_VER = 'v48', NEW_UI = [
+  ['.pfold[data-fold="g-social"]', 'Social is its own group: talk to whoever lives here, hail whoever is passing, ask Valerie, call Meme.'],
+  ['#tell', 'When someone stops you, this says who started it, that you cannot walk away, how their nerve is, and your best line out.'],
+  ['.pfold', 'Each group folds away: click its name. Folded ones wait in one line at the bottom.'],
+  ['#ways', 'Where she can walk from here is under her: the three nearest, with the minutes.'],
 ];
 function hideNew() { clearTimeout(S.newT); const el = $('newLayer'); if (el) { el.remove(); S.hidAt = Date.now(); } }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -4904,7 +4939,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { startStandoff, rivalFight, endStandoff, socialRow, freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
