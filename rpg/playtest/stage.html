@@ -1021,6 +1021,28 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v47: the action groups fold away, and the ways out sit under her */
+.pfold{display:inline-flex;align-items:center;gap:5px;min-height:0;padding:4px 8px 4px 0;border:0;border-radius:0;background:none;color:inherit;font:inherit;font-size:.56rem;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.pfold:hover{color:var(--text)}
+.pfold svg{flex:none;transition:rotate .2s}
+.pfold[aria-expanded="false"] svg{rotate:-90deg}
+.pfold i{font-style:normal;color:var(--gold)}
+.prow .helpbtn,.prow [data-help]{vertical-align:middle}
+.prow.shut{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:4px;padding-top:4px;border-top:1px solid var(--edge)}
+.prow.shut .pfold{color:var(--muted)}
+.ways{position:absolute;z-index:3;left:calc(var(--hudL) + 26px);right:calc(50% + var(--col)/2 + 10px);bottom:12px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;pointer-events:none}
+.ways .lbl{pointer-events:none;text-shadow:0 1px 4px #000,0 0 2px #000}
+.way{pointer-events:auto;display:inline-flex;align-items:baseline;gap:7px;max-width:100%;min-height:0;padding:4px 11px;border-radius:999px;border:1px solid var(--edge2);background:rgba(12,13,19,.74);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:var(--text);font:600 .76rem var(--f-body);white-space:nowrap;cursor:pointer}
+.way b{font-weight:600;overflow:hidden;text-overflow:ellipsis}
+.way small{flex:none;font:400 .58rem var(--f-mono);color:var(--muted)}
+.way.risky{border-color:color-mix(in srgb,var(--crit) 55%,var(--edge2))}
+.way:hover{border-color:var(--gold);background:rgba(12,13,19,.92)}
+.way.rest{font-weight:500;font-size:.68rem;color:var(--muted);border-style:dashed}
+.ways.inmap{position:static;flex-direction:row;flex-wrap:wrap;align-items:center;gap:5px;margin-top:6px;pointer-events:auto}
+.ways.inmap .lbl{text-shadow:none}
+.ways.off,body.cine .ways{visibility:hidden}
+/* a thought or a bark is only read: a click goes through it to whatever it covers (it can sit over the edge of the chat) */
+#thought,#bark{pointer-events:none}
 /* v46: side panels that step back when they are not in use (pointer devices on a wide window), and a click on her that hides them */
 @media (hover:hover) and (min-width:1000px){
 body.seethru .hud{transition:background-color .45s ease 1s,border-color .45s ease 1s,box-shadow .45s ease 1s,backdrop-filter .45s ease 1s,-webkit-backdrop-filter .45s ease 1s,left .5s cubic-bezier(.2,.8,.2,1),width .5s cubic-bezier(.2,.8,.2,1)}
@@ -1132,6 +1154,7 @@ body.dragging .rail .sizes button{height:6px}
   <div class="scene" id="scene" aria-hidden="true"></div>
   <figure class="sprite l" id="sprL" aria-hidden="true"></figure>
   <figure class="sprite r" id="sprR" aria-hidden="true"></figure>
+  <div class="ways off" id="ways" aria-label="Where she can walk from here"></div>
 
   <div class="grip l" id="gripL" role="separator" aria-orientation="vertical" aria-label="Resize your panel" tabindex="0"></div>
   <div class="thought" id="thought" hidden></div>
@@ -2281,7 +2304,7 @@ function travelGrid() {
   if (jobNow()?.place === here.id) acts.unshift(cell('jobopen', `The job: ${jobNow().title}`, 'four ways to do it', 'primary'));
   const spots = closed ? [] : (SPOTS[here.id] ?? []).map((s) => cell(`spot:${s.id}`, s.name, `${s.opts.length} things to do`, 'spot'));
   const ctab = ['resp', 'social', 'items', 'debug'].includes(S.ctab) ? S.ctab : 'resp';
-  return composerTabs(ctab) + (ctab === 'social' ? socialCells(here, who) : ctab === 'items' ? itemCells() : ctab === 'debug' ? debugCells() : placeGrid(HERE_ROW.map((id) => (id === 'look' ? actCell(id) : streetCell(id, here))), TROUBLE_ROW.map((id) => (id === 'explore' ? actCell(id) : streetCell(id, here))), [...acts, ...spots])) + (ctab === 'debug' ? '' : exitCells(here));
+  return composerTabs(ctab) + (ctab === 'social' ? socialCells(here, who) : ctab === 'items' ? itemCells() : ctab === 'debug' ? debugCells() : placeGrid(HERE_ROW.map((id) => (id === 'look' ? actCell(id) : streetCell(id, here))), TROUBLE_ROW.map((id) => (id === 'explore' ? actCell(id) : streetCell(id, here))), [...acts, ...spots])) + (ctab === 'debug' || waysShown() ? '' : exitCells(here));
 }
 function dashboard() {
   const p = PATHS[S.path], v = dangerOf(placeNow());
@@ -2532,7 +2555,7 @@ function mapTab() {
   const who = S.who ? castOf(S.who) : null;
   const world = Object.entries(AREAS).filter(([id]) => id !== 'city').map(([id, x]) => `<div class="dom${id === area ? ' on' : ''}"><div class="h"><b>${esc(x.name)}</b><span>${S.secured[id] ? 'secured' : orderOf(id) >= 60 ? 'held' : orderOf(id) >= 30 ? 'contested' : 'lawless'}${id === area ? ' · you are here' : ''}</span></div><div class="track"><i style="--k:${S.secured[id] ? 'var(--mint)' : 'var(--gold)'};width:${orderOf(id)}%"></i></div></div>`).join('');
   return `
-    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span>${mapSwitch()}<button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div>${S.mapStyle === 'tiles' ? tileSvg() : `<svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}${countsFor(area)}</svg>`}</div>
+    <div class="mapwrap"><div class="maptop"><span class="lbl">${esc(A.name)}</span>${mapSwitch()}<button class="bookbtn" type="button" data-book="1" title="The Book of Trouble: common enemies and how they are doing against you">▤ Book</button></div>${S.mapStyle === 'tiles' ? tileSvg() : `<svg class="map" viewBox="0 0 100 ${A.h}" role="group" aria-label="Map of ${esc(A.name)}">${lines.join('')}${doors}${nodes}${countsFor(area)}</svg>`}${freeToWalk() && waysSpot() === 'map' ? `<div class="ways inmap">${waysHtml(here)}</div>` : ''}</div>
     ${S.mapStyle === 'tiles' ? tileKey() : `<div class="mapkey3"><p><b>People</b><span style="--k:var(--pink)">● lives there</span><span style="--k:var(--text)">② passing through</span><span style="--k:var(--crit)">☠ big trouble</span></p><p><b>To do</b><span style="--k:var(--gold)">! a chapter</span><span style="--k:var(--mint)">✦ your job</span><span style="--k:var(--gold)">★ stronghold</span></p><p><b>Places</b><span style="--k:var(--cyan)">⌂ a bed</span><span style="--k:var(--violet)">◈ a trader</span><span style="--k:var(--crit)">◌ rough ground</span></p></div>`}
     ${passingRow()}
     <div class="gorow"><label class="walkto"><select data-goto="1" aria-label="Walk to a place"><option value="">Walk to…</option>${Object.entries(AREAS).map(([aid, A2]) => `<optgroup label="${esc(A2.name)}">${PLACES.filter((p) => areaOf(p) === aid).map((p) => `<option value="${p.id}"${p.id === here.id ? ' disabled' : ''}>${esc(p.name)}${p.id === here.id ? ' · here' : ''}</option>`).join('')}</optgroup>`).join('')}</select></label>${fastSelect(here)}
@@ -2661,6 +2684,17 @@ function railPop(h, gauge, band, locked) {
       <div class="bars">${bar(`Composure · ${COMPOSURE[composure()]}`, 100 - composureScore(), 100, composure() === 2 ? 'var(--crit)' : composure() ? 'var(--gold)' : 'var(--mint)')}${bar('♥ HP', h.hp, h.maxHp, 'var(--hp)')}${bar('✦ Mana', h.mp, h.maxMp, 'var(--mp)')}${bar('⚡ Stamina', S.stam, 100, 'var(--sta)')}${bar('Stress', h.stress, 200, 'var(--violet)', 50)}${bar('Main Character Energy', h.limit, 100, 'var(--gold)')}</div>
       ${S.spent ? '<div class="chips"><span style="--k:var(--crit)">Exhausted · every roll −10 · stamina stops at 50 · fights find her · cure: a bed</span></div>' : ''}${stateChips(h)}<p class="pin">${S.railOpen ? 'pinned open · click the bars to let go' : 'click the bars to pin this open'}</p>`;
 }
+/* ---------- v47: where she can walk from here sits under her, not in the action grid ---------- */
+function freeToWalk() { // the same conditions under which the action grid shows the place itself
+  return !(S.mode === 'combat' || S.battle || S.fallen || S.standoff || S.dream || S.event || (S.convo && S.wander[S.convo.id]?.at === S.place) || (S.jobOpen && jobNow()?.place === S.place) || S.meet || S.spot); }
+function waysSpot() { // under her when there is room beside the left panel; otherwise under the map; a narrow window keeps the old row
+  if (innerWidth < 1000) return 'grid'; if ($('sprL').hidden) return 'map'; return $('ways').getBoundingClientRect().width >= 112 ? 'her' : 'map'; }
+function waysShown() { // are the ways out on screen somewhere other than the action grid? If not, the grid keeps its own row, so there is always a way to walk
+  if (innerWidth < 1000) return false; const spot = waysSpot(); return spot === 'her' || (spot === 'map' && !S.peek && Boolean(document.querySelector('#hudR .ways.inmap')?.getClientRects().length)); }
+function waysHtml(here, max = 3) { const all = here.links.map((id) => { const p = placeById(id); return { id, p, mins: legMins(here, p), danger: dangerOf(p), r: residentOf(id) }; }).sort((x, y) => x.mins - y.mins), show = S.waysAll ? all : all.slice(0, max);
+  return `<span class="lbl">Go</span>${show.map(({ id, p, mins, danger, r }) => { const name = areaOf(p) === areaOf(here) ? p.short : (AREAS[areaOf(here)].exits ?? []).find((x) => x.to === id)?.label ?? AREAS[areaOf(p)].name, legs = jointsOf(mins), who = r ? (npcOf(r).met ? castOf(r).name : 'someone') : '';
+    return `<button class="way${danger ? ' risky' : ''}" type="button" data-go="${id}" title="${esc(p.name)}: ${mins} minutes, ${legs} leg${legs > 1 ? 's' : ''}${danger ? `, fight chance ${danger}%` : ''}${who ? `, ${esc(who)} is there` : ''}"><b>→ ${esc(name)}</b><small>${mins}m${danger ? ` · fight ${danger}%` : ''}${who ? ' · ●' : ''}</small></button>`; }).join('')}${all.length > max ? `<button class="way rest" type="button" data-waysall="1" aria-expanded="${Boolean(S.waysAll)}">${S.waysAll ? 'fewer' : `+${all.length - max} more`}</button>` : ''}`; }
+function renderWays() { const el = $('ways'); if (!el) return; const on = freeToWalk() && waysSpot() === 'her'; el.classList.toggle('off', !on); el.innerHTML = on ? waysHtml(placeNow()) : ''; }
 function exitCells(here) {
   return `<div class="exits"><span class="lbl">Go</span>${here.links.map((id) => { const p = PLACES.find((x) => x.id === id), r = residentOf(id), danger = dangerOf(p);
     return `<button class="go roadrow" type="button" data-go="${id}">→ ${esc(areaOf(p) === areaOf(here) ? p.short : AREAS[areaOf(p)].name)}<small>${legMins(here, p)} min · ${jointsOf(legMins(here, p))} leg${jointsOf(legMins(here, p)) > 1 ? 's' : ''}${danger ? ` · fight ${danger}%` : ''}${r ? ` · ${npcOf(r).met ? esc(castOf(r).name) : 'someone is there'}` : ''}</small></button>`; }).join('')}</div>`;
@@ -3119,7 +3153,7 @@ function jiggle(auto) {
 }
 function stuckNow() { // true when the stage shows nothing the player can press to move the game on
   if (S.view && S.view !== 'stage') return false;
-  return ![...document.querySelectorAll('#gridTravel button:not(.ctabs button), #rowsBattle button, #rowsCombat button')].some((b) => !b.disabled && b.offsetParent !== null && b.id !== 'bFlee');
+  return ![...document.querySelectorAll('#gridTravel button:not(.ctabs button), #rowsBattle button, #rowsCombat button, .ways:not(.off) button')].some((b) => !b.disabled && b.offsetParent !== null && b.id !== 'bFlee');
 }
 const setCond = (k, v) => { S.cond[k] = Math.max(0, Math.min(100, v)); store.set('cond', S.cond); };
 const CHEATS = [
@@ -3216,7 +3250,10 @@ function streetCell(id, here) {
 }
 const blank = '<span class="cell bubble empty" aria-hidden="true"></span>';
 const placeGrid = (rowHere, rowTrouble, rowOnly) => { const pad = (row) => (S.lay === 1 ? row : [...row, ...Array((4 - (row.length % 4)) % 4).fill(blank)]), mv = moveCells();
-  return `<div class="pgrid"><span class="prow">Here</span>${rowHere.join('')}<span class="prow">Trouble</span>${rowTrouble.join('')}${rowOnly.length ? `<span class="prow">Only at this place</span>${pad(rowOnly).join('')}` : ''}${mv.length ? `<span class="prow">Your moves ${helpBtn('moves')}</span>${helpBox('moves')}${mv.join('')}` : ''}</div>`; };
+  const groups = [['g-here', 'Here', rowHere], ['g-trouble', 'Trouble', rowTrouble], ...(rowOnly.length ? [['g-only', 'Only at this place', pad(rowOnly)]] : []), ...(mv.length ? [['g-moves', 'Your moves', mv, helpBtn('moves'), helpBox('moves')]] : [])];
+  const head = (k, title, count, on) => `<button class="pfold" type="button" data-fold="${k}" aria-expanded="${on}" title="${on ? 'Fold this away' : 'Open this again'}"><svg viewBox="0 0 12 12" width="9" height="9" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>${title}${on ? '' : `<i>${count}</i>`}</button>`;
+  const open = groups.filter(([k]) => S.folds[k] !== false), shut = groups.filter(([k]) => S.folds[k] === false);
+  return `<div class="pgrid">${open.map(([k, title, cells, extra = '', box = '']) => `<span class="prow">${head(k, title, 0, true)}${extra}</span>${box}${cells.join('')}`).join('')}${shut.length ? `<span class="prow shut">${shut.map(([k, title, cells]) => head(k, title, cells.filter((c) => c !== blank).length, false)).join('')}</span>` : ''}</div>`; };
 // The roads out of here, for the right-hand panel: how long, how many stretches, how bad.
 // A section of the right panel as a fold: its own heading becomes the button. One open at a time keeps the panel short.
 function rfold(key, html) {
@@ -3752,11 +3789,11 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v46', NEW_UI = [
-  ['#whoFoot', 'The side panels fade when you are not pointing at them, so you can see her. Point at one and it comes straight back. Settings has the switch.'],
-  ['#sprL img, #sprL video', 'Click her and both side panels hide. Click the scene again, or press Esc, to bring them back. Right-click is still her card.'],
-  ['.mapseg', 'Still new: Tiles draws the same world as a grid you walk with the arrow keys or W A S D. Sandbox makes the story wait.'],
-  ['.top [data-menu="her"]', 'Her page has tabs: Sheet, Story, Gauges, Passives, Pictures.'],
+const NEW_VER = 'v47', NEW_UI = [
+  ['.pfold', 'Here, Trouble and Your moves each fold away: click the name. Folded ones wait in one line at the bottom.'],
+  ['#ways', 'Where she can walk from here is under her now: the three nearest, with the minutes. The map on the right still works too.'],
+  ['#whoFoot', 'The side panels fade when you are not pointing at them. Click her to hide them; click the scene to bring them back.'],
+  ['.mapseg', 'Tiles draws the same world as a grid you walk with the arrow keys or W A S D.'],
 ];
 function hideNew() { clearTimeout(S.newT); const el = $('newLayer'); if (el) { el.remove(); S.hidAt = Date.now(); } }
 function showNew(ms = 16000) { hideNew(); const layer = document.createElement('div'), notes = []; layer.id = 'newLayer';
@@ -4650,6 +4687,7 @@ function render() {
   wanderNotice(); closeFit(); document.body.classList.toggle('closeup', Boolean(S.closeups) && !S.battle && !S.standoff && (Boolean(S.talking || S.meet || S.dream || S.retest) || Date.now() < S.closeUntil)); renderTray(); renderBig(); renderMenu(); renderDebugger(); renderThought(); $('newsN').hidden = !S.newsUnread; $('newsN').textContent = S.newsUnread; store.set('fallen', S.fallen);
   $('rowsBattle').hidden = !S.battle; $('rowsCombat').hidden = !combat || Boolean(S.battle) || Boolean(S.standoff); $('rowsTravel').hidden = combat; $('gridTravel').hidden = combat && !S.standoff;
   if (!combat || S.standoff) $('gridTravel').innerHTML = travelGrid();
+  renderWays();
   $('sprR').classList.toggle('dim', Boolean(S.battle) && !S.battle.state.combatants.companion);
   if (document.activeElement !== $('level')) $('level').value = String(S.level);
   $('mode').dataset.mode = S.mode; $('mode').textContent = S.dream ? 'Dreaming' : S.battle ? `In combat · round ${S.battle.state.round}` : S.standoff ? 'Combat · standoff' : combat ? 'Sparring' : S.fallen ? 'Down' : hhmm(); $('mode').title = S.battle || S.standoff || combat ? 'Click to leave (debug)' : `${phaseNow()}, day ${dayNow()} · travelling · click to switch by hand (debug)`;
@@ -4733,6 +4771,7 @@ document.addEventListener('click', (e) => {
   if (b.dataset.cinestart) return void cineStart(b.dataset.cinestart);
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
   if (b.dataset.shownew) return void showNew(60000);
+  if (b.dataset.waysall) { S.waysAll = !S.waysAll; return render(); }
   if (b.dataset.seethru) { S.seethru = !S.seethru; store.set('seethru', S.seethru); S.menuForce = true; return render(); }
   if (b.dataset.mapstyle) { S.mapStyle = b.dataset.mapstyle === 'tiles' ? 'tiles' : 'bubbles'; store.set('mapStyle', S.mapStyle); return render(); }
   if (b.dataset.sandbox) { S.sandbox = !S.sandbox; store.set('sandbox', S.sandbox); post({ who: 'sys', plate: 'Sandbox', dice: S.sandbox ? '[sandbox] on' : '[sandbox] off', say: S.sandbox ? 'The story waits. No chapters start while this is on. Fights, finds, jobs and people carry on as usual.' : 'The story picks up where it was.' }); return render(); }
@@ -4865,7 +4904,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>

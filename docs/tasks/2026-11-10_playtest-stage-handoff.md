@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| Folding action groups, ways out under her | `placeGrid` (groups, `pfold` buttons, the `prow shut` line; uses `S.folds` with keys `g-here`, `g-trouble`, `g-only`, `g-moves`); `freeToWalk`, `waysSpot`, `waysShown`, `waysHtml`, `renderWays`, `#ways`, `.ways.inmap` in `mapTab`, `S.waysAll`; `exitCells` is the fallback row; `stuckNow` counts the chips |
 | See-through side panels, click her to hide them | CSS under `body.seethru` (inside one `@media (hover:hover) and (min-width:1000px)` block) and `body.peek`; `S.seethru`, `S.peek`, `hudWake(side, ms)`, `peekClick`, `S.hidAt` (set in `hideNew`), the `closing` flag at the top of the click handler, `data-seethru` in Settings |
 | Tile map and sandbox (an experiment) | `TW`, `TH`, `TILE_LOOK`, `TILE_GLYPH`, `TILE_COST`, `TILE_RISK`, `tileMap(area)` (made once per area from `PLACES`, their `links` and `AREAS[area].exits`, with a seeded pattern for the ground), `tileSync`, `tileStep`, `tilePath`, `tileGo`, `tileKeyStep`, `tileSvg`, `tileKey`, `mapSwitch`, `S.mapStyle`, `S.tpos`, `S.sandbox` (read in `eventPool`), the `data-tile` click and the arrow-key listener |
 | Cinematic | `cineOpening`, `cineFight`, `cineStart`, `cineShow`, `cineClick`, `cineStop`, `S.cine`, `#cine`, `body.cine` |
@@ -358,6 +359,23 @@ How it is done, for whoever changes it:
 - `render()` puts the `awake` class back from `S.awakeL` and `S.awakeR`, because the panels are redrawn often.
 
 Choices Del has not seen yet: the amount of fade (a third), the one-second pause before fading, which parts stay solid, and that it is on by default. The chat column in the middle is left alone.
+
+### Folding action groups, and the ways out under her (v47, artifact version 40)
+
+Del: "Have Here, Trouble and Your moves be all collapsible, and put to the bottom. Forgo those three boxes, let that be somewhere else: probably under her, like three little things of where to go. Or it could be on the map on the right side."
+
+Built: the groups fold, and folded ones line up at the bottom. The ways out are under her (Del's first choice), because the map on the right already is a way to walk and a second copy there would repeat it.
+
+Two things found while testing that the next person should know:
+
+- **The old row was quietly keeping the page from ever being stuck.** With it gone, an empty Items or Social tab left nothing to press, and the page offered "Jiggle free". Now the action panel keeps its own row whenever the chips are not actually on screen (`waysShown`), and `stuckNow` counts the chips. A 900-press random walk finds no dead end.
+- **`freeToWalk` repeats the early returns of `travelGrid`.** It has to, because the side panels are drawn before the action panel. If `travelGrid` gains another state in which the place is not shown, add it to `freeToWalk` too.
+
+Also here: a thought bubble could cover the chat's "Another answer" button and swallow the click. It was always possible; the shorter action panel made it happen every time in one test. Thoughts and barks no longer take clicks.
+
+Choices Del has not seen yet: nearest first, three shown, short names taken from the map's door labels (Forest, Castle, Academy), and `m` for minutes on the chips.
+
+Tests changed: `drive24` clicks the chip instead of the old row.
 
 ## What Del asked for that is not built, in suggested order
 
