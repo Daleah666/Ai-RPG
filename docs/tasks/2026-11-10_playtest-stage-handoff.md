@@ -107,6 +107,7 @@ One script in `stage.html`. State is a single object `S`, saved to `localStorage
 | Rarity, the plate, the switcher | `RARITY`, `rarityOf`, `rareName`, `rightWho`, `whoFoot`; `pcPop`, `pcPopHtml`, `#pcBtn`, `#pcPop` |
 | Right-click a figure | `picsOf`, `figureWho`, `ctxHtml`, `ctxOpen`, `ctxClose`, `ctxAct`, the `contextmenu` listener (figures ignore the pointer, so it tests the picture's box), `S.upper`, the `upper` class, `#ctx` |
 | Folds, her menu's tabs, faces in a fight | `fold` (a button with `data-fold`; the body stays in the page with `hidden`), `S.folds`; `HTABS`, `herHtml`, `S.htab`, `data-htab`; `passiveBank`; `stillFace`, `fightStrip`, `#bWho` (filled in `renderBattleRow`; `#bTargets` is kept empty) |
+| Wandering thoughts, the flirting match | `MUSE`, `MUSE_KIND`, `muse(kind, n)`, `museTick(mins)` (called from `passTime`), `S.musing`, `S.museLast`; `DUEL_SAY`, `duelStart`, `duelAct`, `duelEnd`, `duelCells`, `S.convo.duel`, the `duel:` acts in `act()` and the extra cell in `convoCells` |
 | The Guild's front desk, jobs with a voice and a level | `DESKS`, `FRONT_SAY`, `deskAway`, `deskSay`, `deskHead`, `jobsDesk`, `renderGuild`, `S.gdesk` (set to `front` in `setView`), `data-desk`; `JOB_CARD`, `jobCard`, `jobLocked` (also checked in `takeJob`); `.gscene`, `.desks`, `.quest.job` |
 | Social group, and the tell | `socialRow` (used by `placeGrid`, fold key `g-social`); `standoffTell`, `standoffCells` (replaces the inline standoff buttons in `travelGrid`), `meetTell`; `S.standoff.why` and `S.standoff.by` (set in `startStandoff`); `.tell`, `.cell.warn` |
 | Folding action groups, ways out under her | `placeGrid` (groups, `pfold` buttons, the `prow shut` line; uses `S.folds` with keys `g-here`, `g-trouble`, `g-only`, `g-moves`); `freeToWalk`, `waysSpot`, `waysShown`, `waysHtml`, `renderWays`, `#ways`, `.ways.inmap` in `mapTab`, `S.waysAll`; `exitCells` is the fallback row; `stuckNow` counts the chips |
@@ -412,6 +413,23 @@ Choices Del has not seen yet:
 Also here: a thought bubble no longer shows on top of the Guild screen.
 
 Tests changed: `drive25` opens the jobs desk before reading the board. `drive22`'s own reset helper now clears a story event too; it was failing at random when a walk ended in one.
+
+### Wandering thoughts and a flirting match (v50, artifact version 43)
+
+Del: "have it that she has inner thoughts popping up that are lewd, and more race play dynamics, and sex Karryn-like fighting".
+
+What was built, and what was not, and why:
+
+- **Inner thoughts: built**, at innuendo and no further. This page does not carry explicit sexual text. See the README for when they appear.
+- **Race play: not built, and it should stay that way.** Nothing here makes anyone attractive, available or degraded because of what people they are, fantasy or otherwise. What was added instead is her own thoughts about what strangers assume of an elf, a half-elf, a cat girl or a sellsword. They are jokes about assumptions and have nothing to do with attraction. `RACES` already gives the Flirt approach +4 for two entries; that is older and was left as it was, and it is the first thing to remove if this is tidied.
+- **Sex combat in the manner of that game: not built.** Two reasons: it would be a copy of a specific game's signature mechanic, and that mechanic is enemies forcing sex on the heroine. What was built instead is this game's own flirting match: two people who both chose to play, composure in place of health, and either can stop.
+
+Notes for whoever changes it:
+
+- The flirting match lives inside a conversation (`S.convo.duel`), so everything that already handles a conversation handles it: she cannot walk off mid-match, hailing is blocked, and Say goodbye ends it.
+- The other person's lines say "they" throughout, because anyone who can be hailed can be challenged.
+- The thought lists are plain arrays; add lines freely. A new list for a new moment is one more key in `MUSE` and one call to `muse('key')`.
+- Nothing is balanced. The match's numbers are a first guess.
 
 ## What Del asked for that is not built, in suggested order
 

@@ -1021,6 +1021,11 @@ body.cine #tray,body.cine .toasts,body.cine #thought,body.cine #bark,body.cine #
 .bw.out{opacity:.42}
 button.bw{cursor:pointer}
 button.bw[aria-pressed="true"]{border-color:var(--crit);box-shadow:0 0 0 1px var(--crit)}
+/* v50: the two bars in a flirting match */
+.tell-n{display:grid;grid-template-columns:minmax(96px,auto) minmax(0,1fr) 2.2em;align-items:center;gap:8px}
+.tell-n .lbl{margin:0}
+.tell-n .track{height:6px}
+.tell-n b{font:600 .72rem var(--f-mono);text-align:right}
 /* v49: the Guild's front desk, and jobs with a voice */
 .gscene{position:relative;display:grid;grid-template-columns:clamp(110px,26%,190px) minmax(0,1fr);gap:14px;align-items:end;min-height:212px;padding:12px 14px 12px 0;border:1px solid var(--edge2);border-radius:16px;background-size:cover;background-position:center;overflow:hidden}
 .gscene.nobody{grid-template-columns:minmax(0,1fr);min-height:150px;padding-left:14px}
@@ -1994,6 +1999,7 @@ const openNow = (hours) => { if (!hours) return true; const h = hourNow(), [a, b
 const PHASE_ORDER = ['Morning', 'Afternoon', 'Evening', 'Night'];
 function passTime(mins) {
   if (!(mins > 0)) return;
+  museTick(mins);
   const before = phaseNow(), full = S.hero.mp >= S.hero.maxMp, hrs = mins / 60;
   const day0 = dayNow(), h0 = Math.floor(S.clock / 60); S.clock += Math.round(mins); store.set('clock', S.clock); wanderHours(h0);
   for (let day = day0 + 1; day <= dayNow(); day++) newDay(day);
@@ -2227,7 +2233,7 @@ function arrive(from, to, mins, held) {
   post({ who: 'sys', plate: first ? to.name : undefined, dice: `[${held === 'fast' ? 'fast travel' : 'travel'}] ${esc(from.name)} → <b>${esc(to.name)}</b> · ${mins} min · ${hhmm()}`, tone: 'virtue', say: first ? to.text : undefined,
     fx: [...(held === 'fast' ? ['a road she knows: no rolls'] : []), to.zone === 'safe' ? 'safe' : `${to.zone}: fight ${dangerOf(to)}%`, ...(shut ? [`shut until ${hr12(to.hours[0])}`] : []), ...(q ? ['a chapter is waiting here'] : []), ...(S.who && !S.meet ? [`${castOf(S.who).name} is here`] : []), ...ids.slice(0, 3).map((id) => `${WANDER[id].short} is passing through`)] });
   if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
-  if (!held) { arriveCheck(to); klutzMoment(); }
+  if (!held) { arriveCheck(to); klutzMoment(); if (stereoOf(areaOf(to)) >= 40 && d() <= 25) muse('kind'); }
 }
 function explore() {
   const p = placeNow(), pool = eventPool(p); passTime(30); useStam(5, 'exploring'); if (S.fallen) return;
@@ -2288,6 +2294,7 @@ function doAct(id) {
   if (id.startsWith('job:')) return doJob(+id.slice(4));
   if (id === 'meme') return memeToggle();
   if (id.startsWith('asst:')) return assist(id.slice(5));
+  if (id.startsWith('duel:')) return id === 'duel:start' ? duelStart() : duelAct(id.slice(5));
   if (id.startsWith('talk:')) return void talkPick(id.slice(5));
   if (id === 'talkleave') return convoEnd('[you say goodbye]');
   if (id === 'evleave') { S.event = null; return post({ who: 'sys', dice: '[story] You leave it be.', say: 'Whatever that was, it can be somebody else\'s afternoon.' }); }
@@ -2865,7 +2872,7 @@ function standoffAct(kind) {
       if (kind === 'strike' && cl.type && hit) { const m = cl.type === so.weak ? 1.5 : cl.type === so.tough ? 0.5 : 1; hit = Math.round(hit * m); so.known = true; typed = m > 1 ? ` · they flinch from ${TYPE_WORD[cl.type]}` : m < 1 ? ` · they shrug off ${TYPE_WORD[cl.type]}` : ''; }
       so.nerve = Math.max(0, so.nerve - hit);
       if (kind === 'strike') { conduct('mean', hasPerk('bruiser') ? 2 : 1); count('strikes', 'hitting first'); }
-      if (kind === 'sway') { conduct('lewd', 1); count('sways', 'swaying on purpose'); if (r.success) chem(4, 'swaying'); }
+      if (kind === 'sway') { conduct('lewd', 1); count('sways', 'swaying on purpose'); if (r.success) { chem(4, 'swaying'); muse('sway'); } }
       if (r.degree === 'fumble') decency(-4, `${label} fumbled`);
       post({ who: 'me', dice, tone: r.degree, say: HECKLE_SAY[kind][r.success ? 0 : 1], fx: [hit ? `their nerve −${hit}${typed}` : 'their nerve holds'] });
       if (hit) pop('f', `−${hit}`, 'var(--pink)');
@@ -3620,6 +3627,80 @@ const REACT = {
   pinned: [['Up. Get up. It is only the ground.', 'I have been down here before and got up before.'], ['They are standing over me and I cannot think straight.', 'Do not look up. Looking up makes it worse.'], ['They look like towers from down here.', 'I should be more frightened than this. Why am I not more frightened?']],
   growth: [['The breastplate was fine yesterday.', 'I should speak to the armorer. Again.'], ['It is doing it again. In public.', 'Everyone can tell. Can everyone tell?'], ['I think I like how it feels when it gets tighter.', 'Bigger. Good. Wait, why is that good?']],
 };
+/* ---------- v50: her mind wanders as time passes, and a flirting match inside a conversation ----------
+   Everything here stays at innuendo. The three rows of each list go with how composed she is: Composed, Flustered, Weak at the knees. */
+const MUSE = {
+  idle: [['Focus. Sword, boots, dignity. In that order.', 'I am not looking. I am surveying.', 'Nice shoulders. On the statue. I meant the statue.', 'Somebody here smells of fresh bread, and I have noticed it more than a knight should.'],
+    ['Is it warm, or is it me? It is me. It is always me.', 'My breastplate has opinions today.', 'Do not think about the bathhouse. I am thinking about the bathhouse.', 'Was that a wink? I am going to assume it was a wink.', 'Somebody round here is wearing very little armor, and it may be me.'],
+    ['If one more person smiles at me I am going to need a sit down.', 'I would like to be carried somewhere. By anyone. Nicely.', 'Everything is very snug. Why is everything snug?', 'Kiss someone. No! Patrol. Patrol, and then kiss someone.', 'Oh no. I am going to say something forward. I can feel it coming.']],
+  company: [['They have a nice laugh. That is a normal thing to notice.', 'Stand like a knight. Not like that. Like a knight.', 'Good posture. Theirs, I mean. I was assessing posture.'],
+    ['They are standing very close. Or I am. One of us should do something about it. Not me.', 'Do not watch their mouth while they talk. Listen to the words. What were the words?', 'I have forgotten what my hands usually do.'],
+    ['If they touch my arm I am going to tell them everything.', 'Ask them to dinner. Ask them to anything.', 'They said my name and my knees filed a complaint.']],
+  sway: [['That was tactical. Purely tactical.', 'A knight uses the tools she has.'],
+    ['It worked. I should not be this pleased that it worked.', 'They all stopped talking. I did that. With a hip.'],
+    ['They all looked. I liked that they all looked.', 'Again. I want to do that again. That is a problem for later.']],
+  duel: [['Chin up. Eyes level. This is only sparring with eyebrows.', 'I have trained for this. I have not trained for this.'],
+    ['Do not blush first. Do not blush first. Am I blushing?', 'They are good at this. Why are they good at this?'],
+    ['I am going to lose, and I am going to enjoy it.', 'If they smile like that again I am surrendering on the spot.']],
+};
+const MUSE_KIND = { // what she thinks about what strangers assume of her. Silly on purpose, and never about who is attractive.
+  Human: ['"Sellsword." I have a letter. From a guild. With a seal.', 'No, I will not fight your cousin for coin. How much coin?', 'They checked my hands for somebody else\'s purse. Again.'],
+  Elf: ['No, I do not know your grandmother\'s elf.', 'I am not looking down on you. You are simply down there.', 'They asked how old I am. Then they asked how old I really am.'],
+  'Half-elf': ['"Which half?" Every time. Which half.', 'Too tall for one tavern, too loud for the other.', 'They are trying to work out which side to be rude to.'],
+  Catfolk: ['They moved the vase when I walked in. I saw them move the vase.', 'I was not going to knock it over. I was going to look at it. Closely.', 'Somebody offered me a saucer. As a joke. I am almost sure as a joke.'],
+};
+function muse(kind, n = 1) { // one or two small thoughts drift up round her
+  if (S.musing === false || S.calm || (S.view && S.view !== 'stage') || S.battle || S.dream || S.cine || S.menu) return [];
+  const pool = kind === 'kind' ? MUSE_KIND[S.race] : MUSE[kind]?.[composure()]; if (!pool?.length) return [];
+  const last = S.museLast ?? [], fresh = pool.filter((l) => !last.includes(l)), picked = pickN(fresh.length >= n ? fresh : pool, n);
+  S.museLast = [...picked, ...last].slice(0, 8); setTimeout(() => thoughtPops(picked), 350); return picked; }
+function museTick(mins) { // as time passes: about every three quarters of an hour her mind may wander, more often the less composed she is
+  S.museMin = (S.museMin ?? 0) + mins; if (S.museMin < 45) return; S.museMin = 0; if (S.standoff || S.convo || S.meet || S.event || S.fallen) return;
+  const tier = composure(); if (d() > [14, 38, 62][tier]) return; muse(rightWho() ? 'company' : 'idle', tier === 2 ? 2 : 1); }
+const DUEL_SAY = {
+  open: ['You? Flirt? Go on, then. First to blush buys the drinks.', 'Oh, this I have to see. You first.', 'A flirting match. With me. You are braver than you look, and you look fairly brave.'],
+  tease: [['You say it lightly and look away at exactly the right moment. It lands.', 'One eyebrow, half a smile, and you let the silence do the rest.'], ['You go for a wink and the other eye joins in. It is more of a blink.', 'You had a line. It came out as a different line, about the weather.']],
+  sweet: [['You say one true, kind thing and do not dress it up. That turns out to be unfair.', 'You tell them what you actually like about them, and watch it arrive.'], ['You start a compliment, lose the end of it, and finish with "so. Yes."', 'You mean to say something sweet and say something accurate instead.']],
+  hold: [['You hold the look and do not laugh. They look away first, and then at the ceiling.', 'You do not blink. They find something very interesting about their own sleeve.'], ['You hold the look for three whole seconds, which is when you remember you have a face.', 'You stare. They stare. You sneeze.']],
+  breath: ['You take a breath, straighten the breastplate, and find your feet again.', 'You look at the floor, count to four, and come back up with your chin where you left it.'],
+  hit: ['They lean in and say your name slowly, as if they are trying it on.', 'They fix your collar. It did not need fixing.', 'They laugh, low, and do not say what at.', 'They look you up, then down, then up, and say "hm," and nothing else.'],
+  miss: ['They try a line. You have heard that line. Your eyebrow holds.', 'They lean on the wall and miss it by an inch. You are gracious about it.', 'They wink. You wink back, better.'],
+  win: ['They cover their face with one hand and wave the other. "Fine. Fine! You win. Stop looking so pleased."', 'They go pink to the ears and laugh until they have to sit down. "All right. That one was yours."'],
+  lose: ['You go red from the collar up and forget what your hands are for. They are kind enough to laugh only a little.', 'Your next line leaves without you. They pat your pauldron. "Good effort, knight."'],
+  draw: ['Neither of you blinks, somebody rings a bell for supper, and you call it honours even.', 'You both start laughing at the same moment, which the rules say is a draw.'],
+};
+function duelStart() { const c = S.convo; if (!c || c.busy || c.duel) return; const t = talker(c.id); if (!t) return;
+  c.duel = { hers: 100, theirs: 100, round: 1, max: 6 }; passTime(2);
+  post({ who: 'sys', plate: 'A flirting match', dice: `[flirting match] ${esc(t.name)} · first to blush loses · six rounds`, tone: 'virtue' });
+  post({ who: 'her', plate: t.name, say: anyOf(DUEL_SAY.open), spoken: true }); if (S.guest === c.id) S.lookR = moodLook(t, 'flirty'); muse('duel'); }
+function duelEnd(how) { const c = S.convo, du = c?.duel; if (!du) return; const t = talker(c.id), id = c.id; c.duel = null;
+  heartMove(id, how === 'draw' ? 'kind' : 'tease', how === 'win' ? 'shy' : how === 'lose' ? 'flirty' : 'warm'); store.set('heart', S.heart);
+  const fx = how === 'win' ? applyFx({ exp: 0.02, stress: -4 }, 'won a flirting match') : how === 'lose' ? applyFx({ stress: 6 }, 'lost a flirting match') : [];
+  chem(how === 'lose' ? 6 : 2, 'a flirting match'); if (S.guest === id) S.lookR = moodLook(t, how === 'win' ? 'shy' : 'warm');
+  post({ who: 'sys', plate: 'A flirting match', dice: `<b>${{ win: 'YOU WIN', lose: 'THEY WIN', draw: 'A DRAW' }[how]}</b> · ${esc(t.name)} · round ${du.round} of ${du.max}`, tone: how === 'win' ? 'virtue' : how === 'lose' ? 'crit' : 'hit', say: anyOf(DUEL_SAY[how]), fx: [...fx, how === 'win' ? 'they like you a little more for it' : how === 'lose' ? 'they enjoyed that' : 'no hard feelings'] });
+  if (how !== 'draw') muse('duel'); }
+function duelAct(kind) { const c = S.convo, du = c?.duel; if (!du) return; const t = talker(c.id), id = c.id, dc = dcFor(S.level, 'normal'), tier = composure();
+  if (kind === 'quit') return duelEnd('draw');
+  if (kind === 'breath') { du.hers = Math.min(100, du.hers + 30); post({ who: 'me', dice: '[no roll] Catch your breath', say: anyOf(DUEL_SAY.breath), fx: ['your composure +30'] }); }
+  else { const M = { tease: ['Tease', 'LCK', temptBonus(), 30, 50, 10], sweet: ['Say something sweet', 'WIL', 0, 22, 36, 0], hold: ['Hold the look', 'CON', 0, 40, 60, 30] }[kind]; if (!M) return;
+    const [label, stat, bonus, hit, crit, cost] = M, r = rollCheck({ title: `${label} · ${t.name}`, stat, dc, bonus, parts: bonus ? [`+${bonus} bust`] : [] }), dmg = r.degree === 'crit' ? crit : r.success ? hit : 0, back = r.success ? (kind === 'sweet' ? -8 : 0) : cost;
+    du.theirs = Math.max(0, du.theirs - dmg); du.hers = Math.max(0, Math.min(100, du.hers - back));
+    post({ who: 'me', dice: `[d100 ${r.roll} vs ${r.pct}: <b>${r.degree}</b>] ${label}`, tone: r.degree, say: anyOf(DUEL_SAY[kind][r.success ? 0 : 1]), fx: [dmg ? `their composure −${dmg}` : 'they keep a straight face', ...(back > 0 ? [`your composure −${back}`] : back < 0 ? [`your composure +${-back}`] : [])] });
+    if (dmg) { pop('r', `−${dmg}`, 'var(--pink)'); chem(1, 'a flirting match'); } }
+  if (du.theirs <= 0) return duelEnd('win'); if (du.hers <= 0) return duelEnd('lose');
+  // their turn: the more rattled they are the worse they aim, and the less composed she is the easier she is to hit
+  const chance = Math.max(15, Math.min(85, 45 + tier * 10 - Math.round((100 - du.theirs) / 5))), roll = d(), land = roll <= chance, loss = land ? 16 + tier * 6 : 0;
+  du.hers = Math.max(0, du.hers - loss);
+  post({ who: 'her', plate: t.name, dice: `[d100 ${roll} vs ${chance}: ${land ? 'lands' : 'misses'}] their turn`, say: anyOf(DUEL_SAY[land ? 'hit' : 'miss']), fx: [land ? `your composure −${loss}` : 'you keep a straight face'] });
+  if (land) { pop('l', `−${loss}`, 'var(--pink)'); chem(2, 'a flirting match'); }
+  if (du.hers <= 0) return duelEnd('lose');
+  if (du.round >= du.max) return duelEnd(du.theirs < du.hers ? 'win' : du.hers < du.theirs ? 'lose' : 'draw');
+  du.round += 1; if (S.guest === id) S.lookR = moodLook(t, du.theirs <= 50 ? 'shy' : 'flirty'); }
+function duelCells() { const c = S.convo, du = c.duel, t = talker(c.id), dc = dcFor(S.level, 'normal'), nm = (st) => STAT_INFO[st].name, o = (st, b = 0) => oddsOf(st, dc, b);
+  const bar = (label, v) => `<div class="tell-n"><span class="lbl">${label}</span><div class="track"><i style="--k:var(--pink);width:${v}%"></i></div><b>${v}</b></div>`;
+  return `<div class="tell soft" id="tell" role="status"><div class="tell-h"><i>flirting match</i><b>${esc(t.name)}</b><span>round ${du.round} of ${du.max} · first to blush loses · you can stop any time</span></div>${bar('Your composure', du.hers)}${bar('Their composure', du.theirs)}</div>`
+    + cell('duel:tease', 'Tease', `${nm('LCK')} · ${o('LCK', temptBonus())}% · theirs −30 · a miss costs you 10`, 'primary') + cell('duel:sweet', 'Say something sweet', `${nm('WIL')} · ${o('WIL')}% · theirs −22 · yours +8`) + cell('duel:hold', 'Hold the look', `${nm('CON')} · ${o('CON')}% · theirs −40 · a miss costs you 30`) + cell('duel:breath', 'Catch your breath', 'no roll · yours +30')
+    + `<span class="prow">Or</span>` + cell('duel:quit', 'Call it a draw', 'stop here, no hard feelings', 'go'); }
 function thoughtPops(lines) { // small thoughts appear round her head one after another, drift up and fade
   const host = $('stage'), fig = $('sprL'); if (!host || !fig || !lines?.length) return; const st = host.getBoundingClientRect(), fb = fig.getBoundingClientRect(), pic = fig.firstElementChild; let top = fb.top + fb.height * 0.4;
   if (pic) { const nw = pic.naturalWidth || pic.videoWidth, nh = pic.naturalHeight || pic.videoHeight; if (nw && nh) top = fb.bottom - Math.min(fb.height, (fb.width * nh) / nw) * (S.sprL ?? 1); }
@@ -3884,10 +3965,10 @@ function applyLay() { for (const k of [1, 2, 3]) document.body.classList.toggle(
 function setLay(k) { if (!LAYS[k]) return; S.lay = k; store.set('lay', k); applyLay(); sizeL(LAYS[k][2]); document.querySelectorAll('.toast.lay').forEach((x) => x.remove()); toast(`${k} of 3 · ${LAYS[k][0]}`, LAYS[k][1], 'gold lay'); }
 
 /* ---------- what changed: a rainbow ring round each new thing, and one numbered list ---------- */
-const NEW_VER = 'v49', NEW_UI = [
-  ['[data-view="guild"]', 'The Guild has a front desk. Tilde asks who you are here to see: work, a hunt, a bounty, or the notice board. Each one is its own scene, and every job says who pinned it and the level it needs.'],
-  ['.pfold[data-fold="g-social"]', 'Social is its own group: talk to whoever lives here, hail whoever is passing, ask Valerie, call Meme.'],
-  ['#tell', 'When someone stops you, this says who started it, that you cannot walk away, and your best line out.'],
+const NEW_VER = 'v50', NEW_UI = [
+  ['#sprL img, #sprL video', 'Her mind wanders now. Small thoughts drift up round her as time passes: more often, and cheekier, the less composed she is. Settings can turn them off.'],
+  ['.pfold[data-fold="g-social"]', 'Hail someone and the conversation has a new choice: a flirting match. First to blush loses.'],
+  ['[data-view="guild"]', 'The Guild has a front desk. Tilde asks who you are here to see.'],
   ['#ways', 'Where she can walk from here is under her: the three nearest, with the minutes.'],
 ];
 function hideNew() { clearTimeout(S.newT); const el = $('newLayer'); if (el) { el.remove(); S.hidAt = Date.now(); } }
@@ -4044,7 +4125,7 @@ const OPENING = () => [
   { who: 'sys', dice: '[prologue] Walk to a place once and she knows the road. After that she can fast travel there.' },
 ];
 function startOver() { const keep = {}; // a new game: the save goes, the lead and the layout stay, and the page loads again so the opening plays
-  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen', 'mapStyle', 'seethru']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
+  try { for (const k of ['pc', 'lay', 'sizeL', 'hudL', 'hudR', 'zoomL', 'newSeen', 'mapStyle', 'seethru', 'musing']) { const v = localStorage.getItem(`oops-${k}`); if (v !== null) keep[k] = v; }
     for (const k of Object.keys(localStorage)) if (k.startsWith('oops-')) localStorage.removeItem(k);
     for (const [k, v] of Object.entries(keep)) localStorage.setItem(`oops-${k}`, v); } catch { /* storage is off: loading the page again starts fresh anyway */ }
   location.reload(); }
@@ -4178,7 +4259,7 @@ function setView(view) {
   if (view === 'stage') renderLog();
 }
 
-Object.assign(S, { gdesk: 'front', seethru: store.get('seethru', true) !== false, peek: false, mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
+Object.assign(S, { musing: store.get('musing', true) !== false, gdesk: 'front', seethru: store.get('seethru', true) !== false, peek: false, mapStyle: store.get('mapStyle', 'bubbles') === 'tiles' ? 'tiles' : 'bubbles', sandbox: store.get('sandbox', false) === true, tpos: store.get('tpos', null), htab: store.get('htab', 'sheet'), folds: store.get('folds', {}), upper: store.get('upper', {}), heart: store.get('heart', {}), help: store.get('help', {}), chap: store.get('chap', {}), book: store.get('book', 0), walked: store.get('walked', {}), lay: [1, 2, 3].includes(store.get('lay', 2)) ? store.get('lay', 2) : 2, libTab: store.get('libTab', 'people'), libWho: '', swipe: null, news: store.get('news', []), newsUnread: 0, calm: store.get('calm', false), baddieDown: store.get('baddieDown', {}), badSeen: {}, loose: store.get('loose', 0), menu: '', lore: store.get('lore', []), newsBank: store.get('newsBank', []), autoNews: store.get('autoNews', false), newsBusy: false, newsNote: '', wander: store.get('wander', {}), wanderDown: store.get('wanderDown', {}), hailed: store.get('hailed', {}), tokShown: {}, wSeen: { place: null, ids: [] }, guest: null, townMet: store.get('townMet', {}), growFace: store.get('growFace', true), bigKey: null, turned: store.get('turned', {}), secMet: store.get('secMet', {}), viewing: null, cv: { z: 1, x: 0, y: 0, pose: 0 }, convo: null, secretKnown: store.get('secretKnown', {}), asstDay: store.get('asstDay', 0), said: [], meme: store.get('meme', false), memeAsks: store.get('memeAsks', 0), memeBusy: false, aiTalk: store.get('aiTalk', true), loopPrio: store.get('loopPrio', true), cvPlay: false, vaultAuto: store.get('vaultAuto', false), vaultAt: 0, shareCode: store.get('shareCode', ''), statPrev: {}, closeups: store.get('closeups', true), closeUntil: 0, tpRow: store.get('tpRow', false) });
 if (PC_ID === 'meme') S.meme = false; // she cannot be her own helper
 /* ---------- v28: notifications, the news of each area, big trouble that roams, and the character menu ---------- */
 function toast(title, text, tone = 'gold') { const host = $('toasts'); if (!host) return; const el = document.createElement('div'); el.className = `toast t-${tone}`; el.innerHTML = `<b>${esc(title)}</b><span>${esc(text)}</span>`; host.appendChild(el); while (host.children.length > 4) host.firstChild.remove(); setTimeout(() => el.remove(), 9000); }
@@ -4350,7 +4431,7 @@ function loreClick(key) {
   if (key === 'add') { const title = $('loreTitle')?.value.trim(), text = $('loreText')?.value.trim(), area = $('loreArea')?.value || null; if (!title || !text) { S.newsNote = 'A title and a sentence or two, please.'; return; } S.lore.push({ title: title.slice(0, 60), text: text.slice(0, 600), area: AREAS[area] ? area : null }); S.lore = S.lore.slice(-40); store.set('lore', S.lore); S.newsNote = `"${title.slice(0, 60)}" is lore now.`; return; }
   if (key.startsWith('del:')) { S.lore.splice(+key.slice(4), 1); store.set('lore', S.lore); }
 }
-function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Screen</h3><div class="crow"><button class="sm" type="button" data-full="1">Full screen</button><button class="sm${S.seethru ? '' : ' quiet'}" type="button" data-seethru="1" aria-pressed="${S.seethru}">See-through side panels: ${S.seethru ? 'on' : 'off'}</button></div><p class="more">On: a side panel you are not pointing at fades so the figures show through, and comes back when you point at it. A click on a figure hides both panels; click the scene again or press Esc to bring them back.</p></div><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
+function settingsHtml() { return `<div class="char-grid set"><div class="char-col wide">${settingsBlock()}</div><div class="char-col"><div class="over"><h3>Screen</h3><div class="crow"><button class="sm" type="button" data-full="1">Full screen</button><button class="sm${S.seethru ? '' : ' quiet'}" type="button" data-seethru="1" aria-pressed="${S.seethru}">See-through side panels: ${S.seethru ? 'on' : 'off'}</button><button class="sm${S.musing ? '' : ' quiet'}" type="button" data-musing="1" aria-pressed="${S.musing}">Her wandering thoughts: ${S.musing ? 'on' : 'off'}</button></div><p class="more">On: a side panel you are not pointing at fades so the figures show through, and comes back when you point at it. A click on a figure hides both panels; click the scene again or press Esc to bring them back.</p></div><div class="over"><h3>Export</h3><p>Her card and the rules as a SillyTavern guide.</p><div class="crow"><button class="sm" type="button" data-view="tavern">SillyTavern export</button></div></div></div></div>`; }
 function renderMenu() { const el = $('charmenu'); el.hidden = !S.menu; for (const b of document.querySelectorAll('.top [data-menu]')) b.setAttribute('aria-selected', b.dataset.menu === S.menu); if (!S.menu) { el.dataset.menu = ''; return; }
   const mkey = `${S.menu}:${S.menu === 'cast' ? S.viewing ?? '' : S.menu === 'her' ? S.htab : ''}`, same = el.dataset.menu === mkey, a = document.activeElement; if (same && a && el.contains(a) && a.matches('textarea, input[type="text"]') && !S.menuForce) return; S.menuForce = false;
   const keep = el.querySelector('.char-body')?.scrollTop ?? 0, body = S.menu === 'cast' ? (S.viewing ? viewerHtml() : castHtml()) : S.menu === 'lore' ? loreHtml() : S.menu === 'api' ? apiHtml() : S.menu === 'settings' ? settingsHtml() : herHtml();
@@ -4734,8 +4815,8 @@ function convoOptions(id) { const t = talker(id), here = placeNow(), area = area
   add('kind', 'Say something kind', 'always works a little'); add('tease', 'Tease her', 'see how she takes it'); add('help', 'Ask if she needs anything', 'she may know something');
   return out; }
 const INTENT = { intro: 'introduces herself properly, a little too formally', why: 'asks why she stopped hunting her and started tagging along', secret: 'gently asks what she has been keeping to herself. She decides to tell it now, in her own words', news: 'asks whether she has heard the news', warn: 'warns her that someone dangerous is close by', night: 'asks what she is doing out this late', place: 'asks what brings her to this part of the world', fluster: 'is visibly flustered and trying very hard to act normal', state: 'apologises for looking such a mess', kind: 'says something kind to her', tease: 'teases her', help: 'asks whether she needs anything' };
-function convoCells() { const c = S.convo, t = talker(c.id); if (!t) { S.convo = null; return ''; } const opts = convoOptions(c.id);
-  return `<span class="prow">Say to ${esc(t.name.split(' ')[0])} · ${c.max - c.turns} left</span>${opts.map(([k, label, hint], i) => cell(`talk:${k}`, label, hint, i === 0 ? 'primary' : '', Boolean(c.busy))).join('')}${Array(Math.max(0, 4 - opts.length)).fill(blank).join('')}<span class="prow">Or</span>${cell('talkleave', 'Say goodbye', 'end the conversation', 'go', Boolean(c.busy))}`; }
+function convoCells() { const c = S.convo, t = talker(c.id); if (!t) { S.convo = null; return ''; } if (c.duel) return duelCells(); const opts = convoOptions(c.id);
+  return `<span class="prow">Say to ${esc(t.name.split(' ')[0])} · ${c.max - c.turns} left</span>${opts.map(([k, label, hint], i) => cell(`talk:${k}`, label, hint, i === 0 ? 'primary' : '', Boolean(c.busy))).join('')}${Array(Math.max(0, 4 - opts.length)).fill(blank).join('')}<span class="prow">Or</span>${cell('talkleave', 'Say goodbye', 'end the conversation', 'go', Boolean(c.busy))}${cell('duel:start', 'Flirting match', 'first to blush loses · six rounds', 'spot', Boolean(c.busy))}`; }
 function convoOpen(id, greetKey) { const t = talker(id); if (!t) return; S.convo = { id, turns: 0, max: 3, used: greetKey === 'meet' ? ['intro'] : [], busy: false }; S.ctab = 'resp'; S.closeUntil = Date.now() + 600000; }
 function convoEnd(line) { const c = S.convo; if (!c) return; const t = talker(c.id); S.convo = null; S.closeUntil = Date.now() + 1500; setTimeout(render, 1600); if (t && S.guest === c.id) S.lookR = t.base; if (line) post({ who: 'sys', dice: line }); }
 function convoFallback(t, k) { const L = (text, mood) => ({ line: text, mood }), loud = S.news.find((x) => x.area === areaOf(placeNow()) && x.w >= 2);
@@ -4867,6 +4948,7 @@ document.addEventListener('click', (e) => {
   if (b.dataset.lay) { setLay(Number(b.dataset.lay)); return render(); }
   if (b.dataset.shownew) return void showNew(60000);
   if (b.dataset.waysall) { S.waysAll = !S.waysAll; return render(); }
+  if (b.dataset.musing) { S.musing = !S.musing; store.set('musing', S.musing); S.menuForce = true; return render(); }
   if (b.dataset.seethru) { S.seethru = !S.seethru; store.set('seethru', S.seethru); S.menuForce = true; return render(); }
   if (b.dataset.mapstyle) { S.mapStyle = b.dataset.mapstyle === 'tiles' ? 'tiles' : 'bubbles'; store.set('mapStyle', S.mapStyle); return render(); }
   if (b.dataset.sandbox) { S.sandbox = !S.sandbox; store.set('sandbox', S.sandbox); post({ who: 'sys', plate: 'Sandbox', dice: S.sandbox ? '[sandbox] on' : '[sandbox] off', say: S.sandbox ? 'The story waits. No chapters start while this is on. Fights, finds, jobs and people carry on as usual.' : 'The story picks up where it was.' }); return render(); }
@@ -5000,7 +5082,7 @@ S.walked[S.place] = true; if (once('opening')) playOpening();
 post({ who: 'sys', plate: 'Game Master', say: `You are ${heroName}, at ${/^The /.test(placeNow().name) ? placeNow().name : `the ${placeNow().name}`}. The map on the right is how you get around: click a bubble and you walk there, and the clock moves. Inside the walls is safe. Outside are four domains to bring to order: the Greenwood, Castle Greywatch, the Academy and the Slaver Camps. Out there every step rolls for trouble, and the roll shows up at the top. When it says COMBAT you cannot leave: fight, persuade, tempt or run.` });
 if (S.meet) post({ who: 'sys', dice: `[meeting] ${esc(castOf(S.meet).name)}, ${esc(castOf(S.meet).role)}. You have not met. Pick how to say hello.` });
 else if (S.who) post({ who: 'sys', dice: `[here] ${esc(castOf(S.who).name)}, ${esc(castOf(S.who).role)}. Talk to them if you want them.` });
-window.__stage = { JOB_CARD, DESKS, startStandoff, rivalFight, endStandoff, socialRow, freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
+window.__stage = { muse, museTick, MUSE, MUSE_KIND, duelStart, duelAct, duelEnd, composure, JOB_CARD, DESKS, startStandoff, rivalFight, endStandoff, socialRow, freeToWalk, waysSpot, renderWays, hudWake, peekClick, tileMap, tileSync, tileStep, tileGo, tilePath, TILE_COST, TW, TH, ctxOpen, ctxClose, ctxAct, figureWho, cineStart, cineStop, cineClick, rightWho, CHARS, PCS, startOver, heartOf, heartMove, heartRest, fastTo, playOpening, chapterNo, chapterList, setLay, showNew, hideNew, libAdd, sortFile, libPeople, moveAct, count, LOOPS, bark, askMeme, ASSIST, talker, convoOptions, VAULT, openViewer, SECOND, PC_ID, jumpTo, WANDER, BADDIES, wanderStep, worldEvent, toast, hail, arriveCheck, placeNow, S, post, render, heroName, setView, renderGuild, pop, bump, esc, n, $ };
 render();
 })();
 </script>
