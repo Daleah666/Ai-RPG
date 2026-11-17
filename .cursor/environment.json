@@ -1,0 +1,4 @@
+{
+  "name": "Ai-RPG docs",
+  "install": "python3 tools/check_repo.py"
+}
