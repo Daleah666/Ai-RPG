@@ -10,13 +10,16 @@
       <span class="hint">Auto mode works while this page stays open and visible. The desktop app will run it in the background.</span>
     </section>
     <section class="vedit" aria-label="Selected program">
-      <div class="vstage" id="vstage">
+      <div class="vslot" id="vslot"><div class="vstage" id="vstage">
+        <div class="vdockbar"><button class="mini" type="button" id="vd-stop">Stop</button><button class="mini" type="button" id="vd-size" title="Bigger or smaller">Size</button><button class="mini" type="button" id="vd-back">Put back</button></div>
         <div class="vlayer full" id="vlayer-a"><img alt=""><span class="vcap"></span></div>
         <div class="vlayer full" id="vlayer-b"><img alt=""><span class="vcap"></span></div>
         <div class="vempty" id="vempty">Pick a folder of images, then press play.</div>
-      </div>
+      </div></div>
       <div class="row">
         <button class="btn primary" id="v-play">Play</button>
+        <button class="btn" id="v-side" aria-pressed="false" title="Keeps flashing in a small window on the side while you use Lines, Playlist or Map">On the side</button>
+        <button class="btn" id="v-pop" title="A floating window that stays on top of your other apps">Pop out</button>
         <button class="btn" id="v-full">Full screen</button>
         <span class="hint" id="v-count" style="min-width:0;overflow-wrap:anywhere"></span>
       </div>

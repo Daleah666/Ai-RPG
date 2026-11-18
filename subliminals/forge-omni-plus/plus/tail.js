@@ -161,7 +161,8 @@ const CTOOLS = [
   { name: 'play_audio', description: 'Start the audio session.', execute: async () => (await OMNI.play()) ? 'Playing now.' : 'The browser blocked starting sound. Ask the person to press play.' },
   { name: 'stop_audio', description: 'Stop the audio session.', execute: () => { OMNI.stop(); return 'Stopped.'; } },
   { name: 'play_visuals', description: 'Start the selected visual program (images and phrases) on the Visuals view.',
-    execute: () => { showVisuals(true); if (!vPlaying) playV(false); return vPlaying ? 'Visuals playing.' : 'This program has no images or phrases yet.'; } },
+    inputSchema: { type: 'object', properties: { side: { type: 'boolean', description: 'true plays them in the small window on the side, so the person can keep using the other views' } } },
+    execute: i => { if (i && i.side) setDock(true); else showVisuals(true); if (!vPlaying) playV(false); return vPlaying ? 'Visuals playing' + (i && i.side ? ' on the side.' : '.') : 'This program has no images or phrases yet.'; } },
   { name: 'stop_visuals', description: 'Stop the visuals.', execute: () => { stopV(); return 'Visuals stopped.'; } },
   { name: 'switch_view', description: 'Show one view: lines, playlist, map or visuals.',
     inputSchema: { type: 'object', properties: { view: { type: 'string', enum: ['lines', 'playlist', 'map', 'visuals'] } }, required: ['view'] },
@@ -233,6 +234,69 @@ $('#bd-reset').addEventListener('click', () => { BD.persona = PERSONA_DEFAULT; $
 let clearArm = false;
 $('#bd-clearchat').addEventListener('click', e => { if (!clearArm) { clearArm = true; e.target.textContent = 'Tap again to clear the chat'; return; } clearArm = false; CH.turns = []; cSave(); e.target.textContent = 'Chat cleared'; renderChat(); });
 
+
+/* ---------- on the side, and popped out: keep flashing while you work ---------- */
+function ptoast(msg){ document.querySelectorAll('.toast').forEach(t => t.remove()); const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = msg; document.body.append(t); setTimeout(() => t.remove(), 4000); }
+const stage = $('#vstage'), slot = $('#vslot');
+const dock = document.createElement('div'); dock.className = 'fx'; dock.id = 'vDock'; dock.hidden = true; document.body.append(dock);
+const DOCKW = [260, 340, 460]; let dockI = +(safeGet('omniplus.dockw') || 1) % 3, docked = false;
+function setDock(on){
+  docked = on; dock.hidden = !on;
+  if (on) { dock.style.setProperty('--dockw', DOCKW[dockI] + 'px'); dock.append(stage); } else slot.append(stage);
+  $('#v-side').setAttribute('aria-pressed', String(on)); $('#v-side').textContent = on ? 'On the side ✓' : 'On the side';
+}
+$('#v-side').addEventListener('click', () => { if (docked) { setDock(false); return; } setDock(true); if (!vPlaying) playV(false); });
+$('#vd-back').addEventListener('click', () => setDock(false));
+$('#vd-stop').addEventListener('click', () => { stopV(); renderVRows(); setDock(false); });
+$('#vd-size').addEventListener('click', () => { dockI = (dockI + 1) % 3; try { localStorage.setItem('omniplus.dockw', dockI); } catch (e) {} dock.style.setProperty('--dockw', DOCKW[dockI] + 'px'); });
+
+// Pop out: a window that floats over your other apps. Document picture-in-picture where the browser allows it,
+// else a picture-in-picture video drawn from the stage, else the side window.
+let pipWin = null, pipVid = null, pipRaf = 0;
+function fitDraw(g, img, x, y, w, h){ const k = Math.min(w / img.naturalWidth, h / img.naturalHeight), dw = img.naturalWidth * k, dh = img.naturalHeight * k; g.drawImage(img, x + (w - dw) / 2, y + (h - dh) / 2, dw, dh); }
+function drawPip(cv){
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height;
+  g.globalAlpha = 1; g.fillStyle = '#07060A'; g.fillRect(0, 0, W, H);
+  for (const L of vLayers) {
+    const a = parseFloat(getComputedStyle(L).opacity) || 0; if (a <= 0.01) continue;
+    g.globalAlpha = a; const img = L.querySelector('img'), cap = L.querySelector('.vcap'), full = L.classList.contains('full');
+    const box = full ? [0, 0, W, H] : [W * 0.2, H * 0.12, W * 0.6, H * 0.6];
+    if (img && !img.hidden && img.complete && img.naturalWidth) fitDraw(g, img, ...box);
+    const text = cap && !cap.hidden ? cap.textContent : '';
+    if (text) { const fs = Math.round(H * 0.075); g.font = `${fs}px 'Young Serif', Georgia, serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.lineWidth = Math.max(3, fs / 7); g.strokeStyle = 'rgba(0,0,0,.85)'; const ty = full ? H * 0.86 : box[1] + box[3] + fs; g.strokeText(text, W / 2, ty, W * 0.92); g.fillStyle = '#fff'; g.fillText(text, W / 2, ty, W * 0.92); }
+  }
+}
+async function popOut(){
+  if (!vPlaying) playV(false);
+  if (!vPlaying) return;
+  if (window.documentPictureInPicture && window.self === window.top) {
+    try {
+      pipWin = await documentPictureInPicture.requestWindow({ width: 420, height: 260 });
+      [...document.styleSheets].forEach(ss => { try { const st = document.createElement('style'); st.textContent = [...ss.cssRules].map(r => r.cssText).join('\n'); pipWin.document.head.append(st); } catch (e) {} });
+      pipWin.document.documentElement.setAttribute('data-theme', document.documentElement.getAttribute('data-theme') || '');
+      const wrap = pipWin.document.createElement('div'); wrap.className = 'fx'; wrap.style.cssText = 'position:fixed;inset:0;margin:0';
+      pipWin.document.body.style.cssText = 'margin:0;padding:0;background:#07060A'; stage.style.height = '100%'; stage.style.borderRadius = '0';
+      wrap.append(stage); pipWin.document.body.append(wrap);
+      pipWin.addEventListener('pagehide', () => { stage.style.height = stage.style.borderRadius = ''; (docked ? dock : slot).append(stage); pipWin = null; });
+      return;
+    } catch (e) {}
+  }
+  try {
+    const cv = document.createElement('canvas'); cv.width = 640; cv.height = 360;
+    pipVid = pipVid || document.createElement('video'); pipVid.muted = true; pipVid.playsInline = true;
+    pipVid.srcObject = cv.captureStream(30);
+    const loop = () => { drawPip(cv); pipRaf = requestAnimationFrame(loop); }; cancelAnimationFrame(pipRaf); loop();
+    // keep drawing while this tab is in the background
+    clearInterval(popOut.iv); popOut.iv = setInterval(() => { if (document.hidden) drawPip(cv); }, 50);
+    await pipVid.play(); await pipVid.requestPictureInPicture();
+    pipVid.onleavepictureinpicture = () => { cancelAnimationFrame(pipRaf); clearInterval(popOut.iv); };
+  } catch (e) {
+    cancelAnimationFrame(pipRaf); clearInterval(popOut.iv);
+    setDock(true); ptoast('This window won\'t let it pop out, so it\'s playing on the side instead. Open the page in its own tab to pop it out.');
+  }
+}
+$('#v-pop').addEventListener('click', popOut);
+
 /* ---------- boot ---------- */
 renderBuddy(); renderVisual(); autoStatus();
 if (location.hash === '#visuals') showVisuals(true);
@@ -242,5 +306,5 @@ if (location.hash === '#visuals') showVisuals(true);
   $('#cw-status').textContent = sampler ? 'Ready' : 'AI is not available in this view';
   $('#ai-avail').textContent = sampler ? 'Ready. Uses your Claude account.' : 'AI is not available in this view.';
 })();
-window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); return vPlaying; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false) } });
+window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); setDock(false); return vPlaying; }, side: on => { setDock(on !== false); if (!vPlaying) playV(false); return docked; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false) } });
 })();
