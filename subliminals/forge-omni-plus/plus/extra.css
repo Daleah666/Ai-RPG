@@ -1,0 +1,7 @@
+#vView{display:flex;flex-direction:column;gap:20px;padding-block:8px 24px}
+#vView[hidden]{display:none}
+.fx .aiins summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.fx .aiins[open]{gap:12px}
+.fx .codebox{margin:0;max-height:220px;overflow:auto;padding:12px;border-radius:12px;background:var(--well);border:1px solid var(--line);font-family:var(--mono);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.fx .vlist h2{font-family:var(--display);font-weight:400}
+.fx .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
