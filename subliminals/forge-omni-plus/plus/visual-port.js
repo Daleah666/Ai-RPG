@@ -190,7 +190,7 @@ function vShow(){
   clearTimeout(vHideT);
   if(p.mode==='slideshow'){
     L.style.transition = O.style.transition = 'opacity .25s ease';
-    L.style.opacity = op; O.style.opacity = 0;
+    L.style.opacity = op; O.style.opacity = 0; const oc = O.querySelector('.vcap'); if (oc) oc.hidden = true;
   } else {
     const stay = Math.min(p.stay, Math.max(0.1, every - 0.25));
     const fade = p.mode==='flash' ? '.08s' : '.4s';
