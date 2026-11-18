@@ -1,0 +1,27 @@
+  <div class="vgrid">
+    <section class="vlist" aria-labelledby="h-progs">
+      <div class="step-h"><h2 id="h-progs">Programs</h2><button class="btn primary" id="v-new">New program</button></div>
+      <div class="panel" style="gap:8px">
+        <button class="switch" role="switch" id="v-auto" aria-checked="false"><span class="track"></span><span><b>Auto mode</b><br><span class="hint">Runs programs on their schedule</span></span></button>
+        <span class="hint" id="v-auto-status" aria-live="polite"></span>
+      </div>
+      <span class="hint" id="v-today"></span>
+      <div id="v-rows" class="vrows"></div>
+      <span class="hint">Auto mode works while this page stays open and visible. The desktop app will run it in the background.</span>
+    </section>
+    <section class="vedit" aria-label="Selected program">
+      <div class="vstage" id="vstage">
+        <div class="vlayer full" id="vlayer-a"><img alt=""><span class="vcap"></span></div>
+        <div class="vlayer full" id="vlayer-b"><img alt=""><span class="vcap"></span></div>
+        <div class="vempty" id="vempty">Pick a folder of images, then press play.</div>
+      </div>
+      <div class="row">
+        <button class="btn primary" id="v-play">Play</button>
+        <button class="btn" id="v-full">Full screen</button>
+        <span class="hint" id="v-count" style="min-width:0;overflow-wrap:anywhere"></span>
+      </div>
+      <div id="v-editor" class="vedit-body"></div>
+      <input type="file" class="sr" id="v-folder" webkitdirectory multiple aria-label="Choose a folder of images">
+      <input type="file" class="sr" id="v-files" accept="image/*" multiple aria-label="Add single images">
+    </section>
+  </div>

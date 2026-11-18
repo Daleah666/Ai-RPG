@@ -1,0 +1,43 @@
+<button class="buddy" id="buddy" aria-label="Open assistant" aria-expanded="false">
+  <img id="buddy-img" alt="" hidden>
+  <span class="buddy-ph" id="buddy-ph"><svg width="34" height="34" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 L11.8 8.2 L18 10 L11.8 11.8 L10 18 L8.2 11.8 L2 10 L8.2 8.2 Z"/></svg></span>
+  <span class="buddy-name" id="buddy-name">Nova</span>
+  <span class="buddy-dot" id="buddy-dot" hidden></span>
+</button>
+
+<section class="chatwin" id="chatwin" role="dialog" aria-labelledby="cw-name" hidden>
+  <header class="cw-h">
+    <span class="cw-av" id="cw-av"></span>
+    <div class="cw-t"><b id="cw-name">Nova</b><span id="cw-status">Ready</span></div>
+    <nav class="cw-tabs" aria-label="Assistant sections">
+      <button class="tbtn" data-cw="chat" aria-label="Chat" data-tip="Chat" aria-pressed="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5 H17 V13.5 H8 L4.5 16.5 V13.5 H3 Z"/></svg></button>
+      <button class="tbtn" data-cw="notes" aria-label="Saved for you" data-tip="Saved" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M5 2.5 H15 V17.5 L10 14 L5 17.5 Z"/></svg></button>
+      <button class="tbtn" data-cw="setup" aria-label="Companion settings" data-tip="Settings" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="2.4"/><path d="M8 1.5 V3.5 M8 12.5 V14.5 M1.5 8 H3.5 M12.5 8 H14.5 M3.4 3.4 L4.8 4.8 M11.2 11.2 L12.6 12.6 M3.4 12.6 L4.8 11.2 M11.2 4.8 L12.6 3.4"/></svg></button>
+      <button class="tbtn" id="cw-close" aria-label="Close" data-tip="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
+    </nav>
+  </header>
+  <div class="cw-body" id="cw-chat">
+    <div class="cw-log" id="cw-log" aria-live="polite"></div>
+    <form class="cw-form" id="cw-form">
+      <label class="sr" for="cw-input">Message</label>
+      <textarea id="cw-input" rows="2" placeholder="Ask anything, or say “save this for me…”"></textarea>
+      <button class="btn primary" id="cw-send" type="submit">Send</button>
+    </form>
+  </div>
+  <div class="cw-body cw-pad" id="cw-notes" hidden>
+    <form class="row" id="note-form"><label class="sr" for="note-new">New note</label><input class="field" id="note-new" placeholder="Save something…" style="flex:1 1 160px;width:auto"><button class="btn" type="submit">Save</button></form>
+    <div class="tlist" id="note-list"></div>
+  </div>
+  <div class="cw-body cw-pad" id="cw-setup" hidden>
+    <span class="label">Character image</span>
+    <div class="row"><label class="btn primary" for="bd-file">Choose image</label><input class="sr" type="file" id="bd-file" accept="image/*"><button class="btn" id="bd-clear">Remove</button></div>
+    <span class="hint">PNGs with a see-through background look best, like a cut-out render.</span>
+    <label class="label" for="bd-name">Name</label>
+    <input class="field" id="bd-name">
+    <div class="sl"><label for="bd-size">Size</label><input type="range" id="bd-size" min="64" max="220" step="4"><output id="bd-size-out" for="bd-size"></output></div>
+    <button class="switch" role="switch" id="bd-show" aria-checked="true"><span class="track"></span><span>Show companion on screen</span></button>
+    <div class="step-h"><label class="label" for="bd-persona">Personality and instructions</label><button class="mini" id="bd-reset">Reset</button></div>
+    <textarea class="field" id="bd-persona" style="height:200px;padding:12px;line-height:1.6;resize:vertical"></textarea>
+    <button class="btn" id="bd-clearchat">Clear chat history</button>
+  </div>
+</section>
