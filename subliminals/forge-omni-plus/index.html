@@ -407,6 +407,12 @@ body.mappanel .mapsvg{width:100%;height:100%;max-height:none}
         <button class="switch" role="switch" id="v-auto" aria-checked="false"><span class="track"></span><span><b>Auto mode</b><br><span class="hint">Runs programs on their schedule</span></span></button>
         <span class="hint" id="v-auto-status" aria-live="polite"></span>
       </div>
+      <div class="panel" style="gap:10px">
+        <button class="switch" role="switch" id="v-sync" aria-checked="false"><span class="track"></span><span><b>Play with the audio</b><br><span class="hint">Visuals start and stop with the big play button, on the side</span></span></button>
+        <b style="font-size:15px">One-click packs</b>
+        <span class="hint">The look, its starter lines, its sound and a matching visual program, all at once. Then press play.</span>
+        <div class="packs" id="v-packs"></div>
+      </div>
       <span class="hint" id="v-today"></span>
       <div id="v-rows" class="vrows"></div>
       <span class="hint">Auto mode works while this page stays open and visible. The desktop app will run it in the background.</span>
@@ -2409,6 +2415,12 @@ loadAudio(); bookSoon();
 .fx .btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
 @media (hover:none){#vDock .vdockbar{opacity:1}}
 
+.fx .packs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.fx .packs .btn{height:auto;min-height:44px;padding:8px 10px;white-space:normal;line-height:1.25;flex-direction:column;gap:2px}
+.fx .packs .btn small{font-size:11px;color:var(--muted)}
+.fx .buddy-ph.nova{background:none;border:0;box-shadow:none;padding:0}
+.fx .buddy-ph.nova img,.fx .cw-av img.nova{width:100%;height:100%;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+
 </style>
 <div class="fx">
 <button class="buddy" id="buddy" aria-label="Open assistant" aria-expanded="false">
@@ -2688,7 +2700,7 @@ function vShow(){
   clearTimeout(vHideT);
   if(p.mode==='slideshow'){
     L.style.transition = O.style.transition = 'opacity .25s ease';
-    L.style.opacity = op; O.style.opacity = 0;
+    L.style.opacity = op; O.style.opacity = 0; const oc = O.querySelector('.vcap'); if (oc) oc.hidden = true;
   } else {
     const stay = Math.min(p.stay, Math.max(0.1, every - 0.25));
     const fade = p.mode==='flash' ? '.08s' : '.4s';
@@ -2914,15 +2926,16 @@ let BD = bLoad(), CH = cLoad(), bdT = null, chT = null, cwCtl = null, cwBusy = f
 function bSave(){ clearTimeout(bdT); bdT = setTimeout(() => { try { localStorage.setItem('omniplus.buddy.v1', JSON.stringify(BD)); } catch (e) { $('#cw-status').textContent = 'Image too large to keep. Try a smaller one.'; } }, 300); }
 function cSave(){ clearTimeout(chT); chT = setTimeout(() => { try { CH.turns = CH.turns.slice(-40); localStorage.setItem('omniplus.assistant.v1', JSON.stringify(CH)); } catch (e) {} }, 300); }
 const buddy = $('#buddy'), chatwin = $('#chatwin');
+const NOVA_FACE = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%0A%3Cdefs%3E%0A%3CradialGradient id=%22bg%22 cx=%2250%25%22 cy=%2240%25%22 r=%2260%25%22%3E%3Cstop offset=%220%22 stop-color=%22%23ff9fd0%22/%3E%3Cstop offset=%221%22 stop-color=%22%23b0306f%22/%3E%3C/radialGradient%3E%0A%3ClinearGradient id=%22hair%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23fff3d6%22/%3E%3Cstop offset=%22.6%22 stop-color=%22%23f6d58f%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ff7ab8%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient id=%22lip%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23ff5fa8%22/%3E%3Cstop offset=%221%22 stop-color=%22%23d81b72%22/%3E%3C/linearGradient%3E%0A%3CclipPath id=%22c%22%3E%3Ccircle cx=%2260%22 cy=%2260%22 r=%2258%22/%3E%3C/clipPath%3E%0A%3C/defs%3E%0A%3Ccircle cx=%2260%22 cy=%2260%22 r=%2258%22 fill=%22url(%23bg)%22/%3E%0A%3Cg clip-path=%22url(%23c)%22%3E%0A%3Cpath d=%22M18 120 C14 70 22 30 60 24 C98 30 106 70 102 120 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M30 120 C34 100 46 94 60 94 C74 94 86 100 90 120 Z%22 fill=%22%23a8683f%22/%3E%0A%3Cpath d=%22M30 120 C36 106 48 102 60 102 C72 102 84 106 90 120 Z%22 fill=%22%23ff4fa3%22/%3E%0A%3Crect x=%2252%22 y=%2278%22 width=%2216%22 height=%2220%22 rx=%226%22 fill=%22%23a8683f%22/%3E%0A%3Cellipse cx=%2260%22 cy=%2260%22 rx=%2222%22 ry=%2226%22 fill=%22%23b87648%22/%3E%0A%3Cpath d=%22M36 52 C38 30 82 30 84 52 C78 40 66 36 58 40 C50 44 42 44 36 52 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M36 50 C33 64 34 84 30 100 C40 92 40 70 40 56 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M84 50 C87 64 86 84 90 100 C80 92 80 70 80 56 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cg fill=%22%231a0b14%22%3E%3Cellipse cx=%2251%22 cy=%2260%22 rx=%223.6%22 ry=%224.4%22/%3E%3Cellipse cx=%2269%22 cy=%2260%22 rx=%223.6%22 ry=%224.4%22/%3E%3C/g%3E%0A%3Cg fill=%22%23fff%22%3E%3Ccircle cx=%2252.2%22 cy=%2258.6%22 r=%221.2%22/%3E%3Ccircle cx=%2270.2%22 cy=%2258.6%22 r=%221.2%22/%3E%3C/g%3E%0A%3Cg stroke=%22%231a0b14%22 stroke-width=%221.8%22 stroke-linecap=%22round%22 fill=%22none%22%3E%3Cpath d=%22M45 56 Q51 52 56 55%22/%3E%3Cpath d=%22M64 55 Q69 52 75 56%22/%3E%3Cpath d=%22M45 56 l-3 -2.5M47 54.5 l-2 -3M74.5 56 l3 -2.5M73 54.5 l2 -3%22/%3E%3Cpath d=%22M46 50 Q51 47 56 49%22 stroke-width=%221.4%22/%3E%3Cpath d=%22M64 49 Q69 47 74 50%22 stroke-width=%221.4%22/%3E%3C/g%3E%0A%3Cellipse cx=%2247%22 cy=%2268%22 rx=%224%22 ry=%222.4%22 fill=%22%23ff6fae%22 opacity=%22.45%22/%3E%3Cellipse cx=%2273%22 cy=%2268%22 rx=%224%22 ry=%222.4%22 fill=%22%23ff6fae%22 opacity=%22.45%22/%3E%0A%3Cpath d=%22M60 62 q-1.5 5 0.5 6%22 stroke=%22%238a5232%22 stroke-width=%221.2%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%0A%3Cpath d=%22M52 74 Q56 71 60 72.5 Q64 71 68 74 Q64 80 60 80 Q56 80 52 74 Z%22 fill=%22url(%23lip)%22/%3E%0A%3Cpath d=%22M55 75 Q60 76.5 65 75%22 stroke=%22%238c0f48%22 stroke-width=%22.8%22 fill=%22none%22/%3E%0A%3Cellipse cx=%2257%22 cy=%2273.4%22 rx=%222.4%22 ry=%22.8%22 fill=%22%23fff%22 opacity=%22.7%22/%3E%0A%3Cpath d=%22M76 70 c0-1.6 1.6-2.6 2.4-3.6 c.8 1 2.4 2 2.4 3.6 a1.4 1.4 0 0 1-2.1 1.1 l.4 1.6 h-1.4 l.4-1.6 a1.4 1.4 0 0 1-2.1-1.1 z%22 fill=%22%23111%22/%3E%0A%3Ccircle cx=%2238.5%22 cy=%2266%22 r=%222.6%22 fill=%22none%22 stroke=%22%23ffd36b%22 stroke-width=%221.4%22/%3E%0A%3Ccircle cx=%2281.5%22 cy=%2266%22 r=%222.6%22 fill=%22none%22 stroke=%22%23ffd36b%22 stroke-width=%221.4%22/%3E%0A%3C/g%3E%0A%3Ccircle cx=%2260%22 cy=%2260%22 r=%2257%22 fill=%22none%22 stroke=%22%23ffd1e8%22 stroke-width=%222%22/%3E%0A%3C/svg%3E';
 const STAR = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 L11.8 8.2 L18 10 L11.8 11.8 L10 18 L8.2 11.8 L2 10 L8.2 8.2 Z"/></svg>';
 function renderBuddy(){
   buddy.hidden = !BD.show;
   buddy.style.setProperty('--bsize', BD.size + 'px');
   $('#buddy-img').hidden = !BD.img; if (BD.img) $('#buddy-img').src = BD.img;
-  $('#buddy-ph').hidden = !!BD.img;
+  $('#buddy-ph').hidden = !!BD.img; $('#buddy-ph').classList.add('nova'); $('#buddy-ph').innerHTML = `<img src="${NOVA_FACE}" alt="">`;
   $('#buddy-name').textContent = BD.name; $('#cw-name').textContent = BD.name;
   buddy.setAttribute('aria-label', 'Open ' + BD.name);
-  $('#cw-av').innerHTML = BD.img ? `<img src="${BD.img}" alt="">` : STAR;
+  $('#cw-av').innerHTML = `<img class="nova" src="${BD.img || NOVA_FACE}" alt="">`;
   placeBuddy();
 }
 function placeBuddy(){
@@ -2995,6 +3008,9 @@ const CTOOLS = [
   { name: 'play_visuals', description: 'Start the selected visual program (images and phrases) on the Visuals view.',
     inputSchema: { type: 'object', properties: { side: { type: 'boolean', description: 'true plays them in the small window on the side, so the person can keep using the other views' } } },
     execute: i => { if (i && i.side) setDock(true); else showVisuals(true); if (!vPlaying) playV(false); return vPlaying ? 'Visuals playing' + (i && i.side ? ' on the side.' : '.') : 'This program has no images or phrases yet.'; } },
+  { name: 'apply_pack', description: 'Load a one-click pack: the look, its starter lines, its sound and a matching visual program. Packs: feminine, bimbo, trance, submission. It replaces the current lines, so only when the person asks.',
+    inputSchema: { type: 'object', properties: { pack: { type: 'string', enum: ['feminine', 'bimbo', 'trance', 'submission'] } }, required: ['pack'] },
+    execute: i => { applyPack(String(i.pack)); return 'Pack loaded. Press play to start.'; } },
   { name: 'stop_visuals', description: 'Stop the visuals.', execute: () => { stopV(); return 'Visuals stopped.'; } },
   { name: 'switch_view', description: 'Show one view: lines, playlist, map or visuals.',
     inputSchema: { type: 'object', properties: { view: { type: 'string', enum: ['lines', 'playlist', 'map', 'visuals'] } }, required: ['view'] },
@@ -3129,8 +3145,47 @@ async function popOut(){
 }
 $('#v-pop').addEventListener('click', popOut);
 
+
+/* ---------- play with the audio ---------- */
+let syncOn = safeGet('omniplus.sync') === '1', syncStarted = false;
+function renderSync(){ $('#v-sync').setAttribute('aria-checked', String(syncOn)); }
+$('#v-sync').addEventListener('click', () => { syncOn = !syncOn; try { localStorage.setItem('omniplus.sync', syncOn ? '1' : '0'); } catch (e) {} renderSync(); });
+OMNI.on('play', () => {
+  if (!syncOn || vPlaying) return;
+  if (!hasContent(vcur())) { ptoast('Play with the audio is on, but this visual program has no images or phrases yet.'); return; }
+  if (!inVisuals) setDock(true);
+  playV(false); syncStarted = true;
+});
+OMNI.on('stop', () => { if (!syncStarted) return; syncStarted = false; if (vPlaying) stopV(); if (docked) setDock(false); renderVRows(); });
+
+/* ---------- one-click packs: look + starter lines + sound + a visual program ---------- */
+const PACKS = {
+  feminine: { label: '♀ Feminine', sub: 'soft cards', prog: { name: '♀ Soft and pretty', mode: 'cards', every: 7, stay: 4, opacity: 90, where: 'center', order: 'shuffle', captions: 'own',
+    phrases: ['Soft and pretty', 'I love being girly', 'Graceful in every move', 'My voice is soft', 'Pink suits me', 'I feel so feminine', 'Gentle, pretty, me', 'More feminine every day', 'I glow', 'Pretty is easy for me'] } },
+  bimbo: { label: '💋 Bimbo', sub: 'fast and bubbly', prog: { name: '💋 Bubbly bimbo', mode: 'cards', every: 2, stay: 1.6, opacity: 100, where: 'center', order: 'shuffle', captions: 'own',
+    phrases: ['Pretty and bubbly', 'Giggles come easy', 'Pink, pretty, perfect', 'I love being a bimbo', 'Glossy and glowing', 'Hot pink thoughts', 'Shiny, cute, confident', 'Bubbly is my vibe', 'So much fun to be me', 'Ditzy and delighted'] } },
+  trance: { label: '🌀 Trance', sub: 'slow and deep', prog: { name: '🌀 Deeper', mode: 'cards', every: 9, stay: 5, opacity: 70, where: 'center', order: 'ordered', captions: 'own',
+    phrases: ['Relax and drift', 'Deeper and deeper', 'Every breath, deeper', 'Sinking down', 'So calm, so easy', 'Let go', 'Drifting now', 'Safe and sleepy', 'Deeper each time', 'Wake up refreshed'] } },
+  submission: { label: '⛓️ Submission', sub: 'faint flashes', prog: { name: '⛓️ Devoted', mode: 'flash', every: 4, stay: 0.3, opacity: 40, where: 'random', order: 'shuffle', captions: 'own',
+    phrases: ['Calm and devoted', 'Yes feels good', 'Proud to please', 'Soft and obedient', 'Kneel and breathe', 'Good girl', 'I love to serve', 'Devoted and safe', 'My choice, my joy', 'Peaceful surrender'] } }
+};
+$('#v-packs').innerHTML = Object.entries(PACKS).map(([k, p]) => `<button class="btn" type="button" data-pack="${k}">${p.label}<small>${p.sub}</small></button>`).join('');
+function applyPack(k){
+  const pk = PACKS[k]; if (!pk) return;
+  const tb = $(`#themeSeg [data-theme="${k}"]`); if (tb && document.documentElement.getAttribute('data-theme') !== k) tb.click();
+  const st = $('#femStarter'); if (st) st.click();
+  stopV();
+  let p = V.programs.find(x => x.pack === k);
+  if (!p) { p = newProgram(pk.prog.name); p.pack = k; V.programs.push(p); }
+  Object.assign(p, JSON.parse(JSON.stringify(pk.prog)), { phrases: pk.prog.phrases.join('\n'), on: true });
+  clampP(p); V.selected = p.id; vsave(); renderVisual();
+  syncOn = true; try { localStorage.setItem('omniplus.sync', '1'); } catch (e) {} renderSync();
+  ptoast(pk.label + ' pack is in: look, starter lines, sound and visuals. Press play and the visuals come along on the side.');
+}
+$('#v-packs').addEventListener('click', e => { const b = e.target.closest('[data-pack]'); if (b) applyPack(b.dataset.pack); });
+
 /* ---------- boot ---------- */
-renderBuddy(); renderVisual(); autoStatus();
+renderBuddy(); renderVisual(); autoStatus(); renderSync();
 if (location.hash === '#visuals') showVisuals(true);
 (async () => {
   try { if (window.claude && window.claude.use) sampler = await window.claude.use('sample'); } catch (e) {}

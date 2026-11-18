@@ -5,6 +5,12 @@
         <button class="switch" role="switch" id="v-auto" aria-checked="false"><span class="track"></span><span><b>Auto mode</b><br><span class="hint">Runs programs on their schedule</span></span></button>
         <span class="hint" id="v-auto-status" aria-live="polite"></span>
       </div>
+      <div class="panel" style="gap:10px">
+        <button class="switch" role="switch" id="v-sync" aria-checked="false"><span class="track"></span><span><b>Play with the audio</b><br><span class="hint">Visuals start and stop with the big play button, on the side</span></span></button>
+        <b style="font-size:15px">One-click packs</b>
+        <span class="hint">The look, its starter lines, its sound and a matching visual program, all at once. Then press play.</span>
+        <div class="packs" id="v-packs"></div>
+      </div>
       <span class="hint" id="v-today"></span>
       <div id="v-rows" class="vrows"></div>
       <span class="hint">Auto mode works while this page stays open and visible. The desktop app will run it in the background.</span>
