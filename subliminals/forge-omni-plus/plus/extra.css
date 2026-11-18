@@ -5,3 +5,13 @@
 .fx .codebox{margin:0;max-height:220px;overflow:auto;padding:12px;border-radius:12px;background:var(--well);border:1px solid var(--line);font-family:var(--mono);font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
 .fx .vlist h2{font-family:var(--display);font-weight:400}
 .fx .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fx .vdockbar{display:none}
+#vDock{position:fixed;z-index:7;left:16px;bottom:calc(96px + env(safe-area-inset-bottom,0px));width:min(var(--dockw,340px),calc(100vw - 32px))}
+#vDock[hidden]{display:none}
+#vDock .vstage{border-radius:14px;box-shadow:0 18px 40px -12px rgba(0,0,0,.7);border-color:var(--accent)}
+#vDock .vdockbar{display:flex;gap:6px;position:absolute;top:6px;left:6px;z-index:3;opacity:0;transition:opacity .2s}
+#vDock .vstage:hover .vdockbar,#vDock .vstage:focus-within .vdockbar{opacity:1}
+#vDock .vdockbar .mini{height:28px;font-size:12px;background:color-mix(in srgb,var(--panel) 85%,transparent)}
+#vDock .vcap{font-size:clamp(14px,1.6vw,22px)}
+.fx .btn[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+@media (hover:none){#vDock .vdockbar{opacity:1}}
