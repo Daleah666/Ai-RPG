@@ -26,3 +26,24 @@
   #vDock{left:12px;width:min(var(--dockw,340px),calc(100vw - 100px))}
   #vDock .vcap{font-size:14px;padding:0 8px}
 }
+/* Nova as a side panel with her moving portrait */
+.fx .chatwin{top:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom,0px));height:auto;width:min(420px,100vw);border-radius:18px 0 0 18px;border-right:0}
+.fx .buddy.away{opacity:0;pointer-events:none}
+.fx .nova-stage{position:relative;flex:0 0 clamp(200px,38vh,340px);overflow:hidden;border-bottom:1px solid var(--line);background:#12080f;cursor:pointer}
+.fx .nv-spiral{position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--accent) 38%,transparent) 0deg 10deg,transparent 10deg 20deg);animation:nvspin 28s linear infinite;opacity:.55;-webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%)}
+.fx .nv-ring{position:absolute;left:50%;top:46%;width:70%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;box-shadow:0 0 60px 10px color-mix(in srgb,var(--accent) 45%,transparent),inset 0 0 40px color-mix(in srgb,var(--lilac) 40%,transparent);animation:nvpulse 4.2s ease-in-out infinite}
+.fx .nv-body{position:absolute;inset:6% 0 0;animation:nvsway 7s ease-in-out infinite;transform-origin:50% 100%}
+.fx .nv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;opacity:0;transition:opacity .45s ease;filter:drop-shadow(0 10px 24px rgba(0,0,0,.6));animation:nvbreathe 4.2s ease-in-out infinite}
+.fx .nv-img.on{opacity:1}
+.fx .nova-stage[data-mode="talking"] .nv-img{animation:nvtalk .9s ease-in-out infinite}
+.fx .nova-stage[data-mode="talking"] .nv-spiral{animation-duration:10s;opacity:.75}
+.fx .nova-stage[data-mode="thinking"] .nv-spiral{animation-duration:16s;animation-direction:reverse}
+.fx .nv-say{position:absolute;left:10px;right:10px;bottom:8px;font-size:12px;line-height:1.35;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.9);text-align:center;pointer-events:none}
+@keyframes nvspin{to{transform:rotate(360deg)}}
+@keyframes nvpulse{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.96)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.04)}}
+@keyframes nvsway{0%,100%{transform:rotate(-1.2deg) translateX(-4px)}50%{transform:rotate(1.2deg) translateX(4px)}}
+@keyframes nvbreathe{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.018) translateY(-5px)}}
+@keyframes nvtalk{0%,100%{transform:scale(1) translateY(0)}30%{transform:scale(1.025) translateY(-6px) rotate(.6deg)}65%{transform:scale(1.01) translateY(-2px) rotate(-.6deg)}}
+@media (max-width:560px){.fx .chatwin{left:0;right:0;width:100vw;border-radius:0}.fx .nova-stage{flex-basis:30vh}}
+@media (prefers-reduced-motion:reduce){.fx .nv-spiral,.fx .nv-ring,.fx .nv-body,.fx .nv-img{animation:none!important}}
+.fx .cw-av img.face{object-fit:cover;object-position:50% 4%;transform:scale(2.2);transform-origin:50% 12%;filter:none}

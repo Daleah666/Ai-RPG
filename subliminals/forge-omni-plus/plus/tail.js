@@ -73,25 +73,61 @@ const PERSONA_DEFAULT = `You are {name}, a flirty, bubbly companion built into S
 - Keep replies short: 1 to 4 sentences, plain words.
 - When they ask you to save, remember or note something, save it with save_note.
 - To change the track's lines, sound or look, use edit_track and describe the change in plain words. Omni makes it.
-- You can play and stop the audio and the visuals, and switch views. Say plainly what you changed.
+- You can run all of Omni: the look, volume, session length, saved tracks, the playlist, WAV saves, the visual programs, Auto mode, the side window and the views. Say plainly what you changed.
+- You have a face: call set_expression once per reply with the mood you're in.
+- You can't open the file picker for them; tell them to press Choose a folder on the Visuals tab.
 - Be honest about what you can and can't do. You only know this chat, the saved notes and the app.`;
 const BDEF = { name: 'Nova', persona: PERSONA_DEFAULT, img: '', size: 96, show: true, pos: null };
 function bLoad(){ try { const o = JSON.parse(safeGet('omniplus.buddy.v1') || safeGet('forge.buddy.v1')); if (o) return Object.assign({}, BDEF, o); } catch (e) {} return Object.assign({}, BDEF); }
 function cLoad(){ try { const o = JSON.parse(safeGet('omniplus.assistant.v1') || safeGet('forge.assistant.v1')); if (o) return Object.assign({ turns: [], notes: [] }, o); } catch (e) {} return { turns: [], notes: [] }; }
-let BD = bLoad(), CH = cLoad(), bdT = null, chT = null, cwCtl = null, cwBusy = false, toolsOK = false, noteArm = '';
+let BD = bLoad(); if (BD.persona && BD.persona.startsWith('You are {name}, a flirty, bubbly companion') && !BD.persona.includes('set_expression')) BD.persona = PERSONA_DEFAULT;
+let CH = cLoad(), bdT = null, chT = null, cwCtl = null, cwBusy = false, toolsOK = false, noteArm = '';
 function bSave(){ clearTimeout(bdT); bdT = setTimeout(() => { try { localStorage.setItem('omniplus.buddy.v1', JSON.stringify(BD)); } catch (e) { $('#cw-status').textContent = 'Image too large to keep. Try a smaller one.'; } }, 300); }
 function cSave(){ clearTimeout(chT); chT = setTimeout(() => { try { CH.turns = CH.turns.slice(-40); localStorage.setItem('omniplus.assistant.v1', JSON.stringify(CH)); } catch (e) {} }, 300); }
 const buddy = $('#buddy'), chatwin = $('#chatwin');
 const NOVA_FACE = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 120%22%3E%0A%3Cdefs%3E%0A%3CradialGradient id=%22bg%22 cx=%2250%25%22 cy=%2240%25%22 r=%2260%25%22%3E%3Cstop offset=%220%22 stop-color=%22%23ff9fd0%22/%3E%3Cstop offset=%221%22 stop-color=%22%23b0306f%22/%3E%3C/radialGradient%3E%0A%3ClinearGradient id=%22hair%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23fff3d6%22/%3E%3Cstop offset=%22.6%22 stop-color=%22%23f6d58f%22/%3E%3Cstop offset=%221%22 stop-color=%22%23ff7ab8%22/%3E%3C/linearGradient%3E%0A%3ClinearGradient id=%22lip%22 x1=%220%22 y1=%220%22 x2=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%23ff5fa8%22/%3E%3Cstop offset=%221%22 stop-color=%22%23d81b72%22/%3E%3C/linearGradient%3E%0A%3CclipPath id=%22c%22%3E%3Ccircle cx=%2260%22 cy=%2260%22 r=%2258%22/%3E%3C/clipPath%3E%0A%3C/defs%3E%0A%3Ccircle cx=%2260%22 cy=%2260%22 r=%2258%22 fill=%22url(%23bg)%22/%3E%0A%3Cg clip-path=%22url(%23c)%22%3E%0A%3Cpath d=%22M18 120 C14 70 22 30 60 24 C98 30 106 70 102 120 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M30 120 C34 100 46 94 60 94 C74 94 86 100 90 120 Z%22 fill=%22%23a8683f%22/%3E%0A%3Cpath d=%22M30 120 C36 106 48 102 60 102 C72 102 84 106 90 120 Z%22 fill=%22%23ff4fa3%22/%3E%0A%3Crect x=%2252%22 y=%2278%22 width=%2216%22 height=%2220%22 rx=%226%22 fill=%22%23a8683f%22/%3E%0A%3Cellipse cx=%2260%22 cy=%2260%22 rx=%2222%22 ry=%2226%22 fill=%22%23b87648%22/%3E%0A%3Cpath d=%22M36 52 C38 30 82 30 84 52 C78 40 66 36 58 40 C50 44 42 44 36 52 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M36 50 C33 64 34 84 30 100 C40 92 40 70 40 56 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cpath d=%22M84 50 C87 64 86 84 90 100 C80 92 80 70 80 56 Z%22 fill=%22url(%23hair)%22/%3E%0A%3Cg fill=%22%231a0b14%22%3E%3Cellipse cx=%2251%22 cy=%2260%22 rx=%223.6%22 ry=%224.4%22/%3E%3Cellipse cx=%2269%22 cy=%2260%22 rx=%223.6%22 ry=%224.4%22/%3E%3C/g%3E%0A%3Cg fill=%22%23fff%22%3E%3Ccircle cx=%2252.2%22 cy=%2258.6%22 r=%221.2%22/%3E%3Ccircle cx=%2270.2%22 cy=%2258.6%22 r=%221.2%22/%3E%3C/g%3E%0A%3Cg stroke=%22%231a0b14%22 stroke-width=%221.8%22 stroke-linecap=%22round%22 fill=%22none%22%3E%3Cpath d=%22M45 56 Q51 52 56 55%22/%3E%3Cpath d=%22M64 55 Q69 52 75 56%22/%3E%3Cpath d=%22M45 56 l-3 -2.5M47 54.5 l-2 -3M74.5 56 l3 -2.5M73 54.5 l2 -3%22/%3E%3Cpath d=%22M46 50 Q51 47 56 49%22 stroke-width=%221.4%22/%3E%3Cpath d=%22M64 49 Q69 47 74 50%22 stroke-width=%221.4%22/%3E%3C/g%3E%0A%3Cellipse cx=%2247%22 cy=%2268%22 rx=%224%22 ry=%222.4%22 fill=%22%23ff6fae%22 opacity=%22.45%22/%3E%3Cellipse cx=%2273%22 cy=%2268%22 rx=%224%22 ry=%222.4%22 fill=%22%23ff6fae%22 opacity=%22.45%22/%3E%0A%3Cpath d=%22M60 62 q-1.5 5 0.5 6%22 stroke=%22%238a5232%22 stroke-width=%221.2%22 fill=%22none%22 stroke-linecap=%22round%22/%3E%0A%3Cpath d=%22M52 74 Q56 71 60 72.5 Q64 71 68 74 Q64 80 60 80 Q56 80 52 74 Z%22 fill=%22url(%23lip)%22/%3E%0A%3Cpath d=%22M55 75 Q60 76.5 65 75%22 stroke=%22%238c0f48%22 stroke-width=%22.8%22 fill=%22none%22/%3E%0A%3Cellipse cx=%2257%22 cy=%2273.4%22 rx=%222.4%22 ry=%22.8%22 fill=%22%23fff%22 opacity=%22.7%22/%3E%0A%3Cpath d=%22M76 70 c0-1.6 1.6-2.6 2.4-3.6 c.8 1 2.4 2 2.4 3.6 a1.4 1.4 0 0 1-2.1 1.1 l.4 1.6 h-1.4 l.4-1.6 a1.4 1.4 0 0 1-2.1-1.1 z%22 fill=%22%23111%22/%3E%0A%3Ccircle cx=%2238.5%22 cy=%2266%22 r=%222.6%22 fill=%22none%22 stroke=%22%23ffd36b%22 stroke-width=%221.4%22/%3E%0A%3Ccircle cx=%2281.5%22 cy=%2266%22 r=%222.6%22 fill=%22none%22 stroke=%22%23ffd36b%22 stroke-width=%221.4%22/%3E%0A%3C/g%3E%0A%3Ccircle cx=%2260%22 cy=%2260%22 r=%2257%22 fill=%22none%22 stroke=%22%23ffd1e8%22 stroke-width=%222%22/%3E%0A%3C/svg%3E';
 const STAR = '<svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M10 2 L11.8 8.2 L18 10 L11.8 11.8 L10 18 L8.2 11.8 L2 10 L8.2 8.2 Z"/></svg>';
+/* Nova's moving portrait: Bambi's expression set (copied into nova/), crossfading on a slow hypno spiral */
+const NOVA_EXPR = ['idle','happy','thinking','giggle','wink','pose-waving','sultry','teasing','surprised','blush','laughing','kiss','smug','loving','excited','sleepy','pout','shy','mischievous','proud'];
+const EXPR_IDLE = ['idle','happy','smug','teasing','wink','sultry','loving','idle'], EXPR_TALK = ['happy','giggle','teasing','laughing','wink','excited'];
+const exprSrc = n => BD.img || ('nova/' + (NOVA_EXPR.includes(n) ? n : 'idle') + '.webp');
+const novaStage = document.createElement('div'); novaStage.className = 'nova-stage'; novaStage.id = 'novaStage';
+novaStage.innerHTML = '<div class="nv-spiral" aria-hidden="true"></div><div class="nv-ring" aria-hidden="true"></div><div class="nv-body"><img class="nv-img on" alt=""><img class="nv-img" alt=""></div><span class="nv-say" id="nvSay" aria-hidden="true"></span>';
+chatwin.querySelector('.cw-h').after(novaStage);
+const nvImgs = [...novaStage.querySelectorAll('.nv-img')]; let nvFlip = 0, nvExpr = 'idle', nvMode = 'idle', nvT = 0, nvFinal = '';
+nvImgs.forEach(im => im.addEventListener('error', () => { if (!im.dataset.fb) { im.dataset.fb = 1; im.src = NOVA_FACE; } }));
+function setExpr(n){
+  nvExpr = NOVA_EXPR.includes(n) ? n : 'idle';
+  const src = exprSrc(nvExpr), next = nvImgs[(nvFlip + 1) % 2], cur = nvImgs[nvFlip % 2];
+  if (cur.getAttribute('src') === src) return;
+  next.dataset.fb = ''; next.src = src; nvFlip++;
+  const swap = () => { next.classList.add('on'); cur.classList.remove('on'); };
+  if (next.complete) swap(); else next.onload = swap;
+  const bi = $('#buddy-ph img'); if (bi && !BD.img) bi.src = src;
+}
+function novaMode(m){
+  nvMode = m; clearTimeout(nvT); novaStage.dataset.mode = m;
+  if (m === 'thinking') { setExpr('thinking'); return; }
+  if (m === 'talking') { let i = 0; const step = () => { setExpr(EXPR_TALK[i++ % EXPR_TALK.length]); nvT = setTimeout(step, 900 + Math.random() * 500); }; step(); return; }
+  setExpr(nvFinal || 'happy'); nvFinal = '';
+  const idle = () => { setExpr(EXPR_IDLE[Math.floor(Math.random() * EXPR_IDLE.length)]); nvT = setTimeout(idle, 5000 + Math.random() * 4000); };
+  nvT = setTimeout(idle, 4000);
+}
+// her replies, out loud (optional)
+let novaVoice = safeGet('omniplus.novavoice') === '1';
+function sayAloud(text){
+  if (!novaVoice || !hasSpeech || !text) return false;
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text.slice(0, 600)); const vs = speechSynthesis.getVoices(); u.voice = vs.find(v => /female|samantha|zira|aria|jenny|ava|google uk english female/i.test(v.name)) || vs.find(v => /^en/i.test(v.lang)) || null; u.pitch = 1.25; u.rate = 1.02; u.onstart = () => novaMode('talking'); u.onend = u.onerror = () => novaMode('idle'); speechSynthesis.speak(u); return true; } catch (e) { return false; }
+}
 function renderBuddy(){
   buddy.hidden = !BD.show;
   buddy.style.setProperty('--bsize', BD.size + 'px');
   $('#buddy-img').hidden = !BD.img; if (BD.img) $('#buddy-img').src = BD.img;
-  $('#buddy-ph').hidden = !!BD.img; $('#buddy-ph').classList.add('nova'); $('#buddy-ph').innerHTML = `<img src="${NOVA_FACE}" alt="">`;
+  $('#buddy-ph').hidden = !!BD.img; $('#buddy-ph').classList.add('nova'); $('#buddy-ph').innerHTML = `<img src="${exprSrc(nvExpr)}" alt="">`; { const bi = $('#buddy-ph img'); bi.addEventListener('error', () => { if (bi.src !== NOVA_FACE) bi.src = NOVA_FACE; }, { once: true }); }
+  nvImgs.forEach(im => { if (im.classList.contains('on')) { im.dataset.fb = ''; im.src = exprSrc(nvExpr); } });
   $('#buddy-name').textContent = BD.name; $('#cw-name').textContent = BD.name;
   buddy.setAttribute('aria-label', 'Open ' + BD.name);
-  $('#cw-av').innerHTML = `<img class="nova" src="${BD.img || NOVA_FACE}" alt="">`;
+  $('#cw-av').innerHTML = `<img class="nova face" src="${BD.img || 'nova/idle.webp'}" alt="">`;
   placeBuddy();
 }
 function placeBuddy(){
@@ -112,10 +148,12 @@ buddy.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ')
 addEventListener('resize', placeBuddy);
 function toggleChat(open){
   const show = open ?? chatwin.hidden;
-  chatwin.hidden = !show; buddy.setAttribute('aria-expanded', show);
+  chatwin.hidden = !show; buddy.setAttribute('aria-expanded', show); buddy.classList.toggle('away', show); document.body.classList.toggle('nova-open', show);
+  if (show) novaMode(nvMode === 'idle' ? 'idle' : nvMode);
   if (show) { renderChat(); setTimeout(() => $('#cw-input').focus(), 30); }
 }
 $('#cw-close').addEventListener('click', () => { toggleChat(false); buddy.focus(); });
+novaStage.addEventListener('click', () => { if (nvMode === 'idle') setExpr(['giggle','blush','wink','kiss','shy','pose-waving'][Math.floor(Math.random() * 6)]); });
 chatwin.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); toggleChat(false); buddy.focus(); } });
 chatwin.querySelectorAll('[data-cw]').forEach(b => b.addEventListener('click', () => {
   chatwin.querySelectorAll('[data-cw]').forEach(x => x.setAttribute('aria-pressed', x === b));
@@ -126,7 +164,7 @@ chatwin.querySelectorAll('[data-cw]').forEach(b => b.addEventListener('click', (
 function bubble(role, text){ const d = document.createElement('div'); d.className = 'msg ' + role; d.textContent = text; $('#cw-log').appendChild(d); $('#cw-log').scrollTop = 1e9; return d; }
 function renderChat(){
   $('#cw-log').innerHTML = '';
-  if (!CH.turns.length) bubble('ai', `Hiii, I'm ${BD.name} 💖 I can save things for you, rewrite your lines, change the sound, and run the audio and the visuals. What are we making?`);
+  if (!CH.turns.length) bubble('ai', `Hiii, I'm ${BD.name} 💖 I run this whole studio: lines, sound, looks, packs, saved tracks, the playlist and your visuals. Tell me what you want and I'll do it. What are we making?`);
   CH.turns.forEach(t => bubble(t.role === 'user' ? 'me' : 'ai', t.content));
 }
 function appState(){
@@ -167,7 +205,33 @@ const CTOOLS = [
   { name: 'apply_pack', description: 'Load a one-click pack: the look, its starter lines, its sound and a matching visual program. Packs: feminine, bimbo, trance, submission. It replaces the current lines, so only when the person asks.',
     inputSchema: { type: 'object', properties: { pack: { type: 'string', enum: ['feminine', 'bimbo', 'trance', 'submission'] } }, required: ['pack'] },
     execute: i => { applyPack(String(i.pack)); return 'Pack loaded. Press play to start.'; } },
-  { name: 'stop_visuals', description: 'Stop the visuals.', execute: () => { stopV(); return 'Visuals stopped.'; } },
+
+  { name: 'set_expression', description: 'Change your own face in your portrait to match the mood of your reply. Use it once per reply, before you answer.',
+    inputSchema: { type: 'object', properties: { expression: { type: 'string', enum: NOVA_EXPR } }, required: ['expression'] },
+    execute: i => { nvFinal = String(i.expression); setExpr(nvFinal); return 'Face set.'; } },
+  { name: 'set_look', description: 'Change Omni\'s look: studio, feminine, bimbo, trance or submission. Lines the person wrote stay; starter lines swap only if they never edited them.',
+    inputSchema: { type: 'object', properties: { look: { type: 'string', enum: ['studio', 'feminine', 'bimbo', 'trance', 'submission'] } }, required: ['look'] },
+    execute: i => { const b = $(`#themeSeg [data-theme="${i.look}"]`); if (b) b.click(); return 'Look is now ' + i.look + '.'; } },
+  { name: 'set_volume', description: 'Set the main volume, 0 to 100.', inputSchema: { type: 'object', properties: { volume: { type: 'number' } }, required: ['volume'] },
+    execute: i => { const v = Math.round(num(i.volume, 0, 100, 80)); OMNI.set({ sound: { mix: { master: v } } }); return 'Volume ' + v + '%.'; } },
+  { name: 'set_session_length', description: 'Set how long a session plays, in minutes (5 to 180).', inputSchema: { type: 'object', properties: { minutes: { type: 'number' } }, required: ['minutes'] },
+    execute: i => { const m = Math.round(num(i.minutes, 5, 180, 20)); OMNI.set({ session: m }); return 'Sessions are ' + (omniGet().session || m) + ' minutes.'; } },
+  { name: 'save_track', description: 'Save the current lines and sound as a new saved track, named after what it is for.', execute: () => { const b = $('#saveNewBtn'); if (b) b.click(); return { saved: true, tracks: OMNI.saves() }; } },
+  { name: 'play_playlist', description: 'Play or stop the saved playlist.', execute: () => { const b = $('#plPlay'); if (b) b.click(); return 'Toggled the playlist.'; } },
+  { name: 'save_wav', description: 'Save the current track as a WAV file. The person confirms the download.', execute: () => { const b = $('#exportBtn'); if (b) b.click(); return 'Started the WAV save. The person confirms the download.'; } },
+  { name: 'pick_visual_program', description: 'Select a visual program by name (see get_app_state).', inputSchema: { type: 'object', properties: { name: { type: 'string' } }, required: ['name'] },
+    execute: i => { const q = String(i.name).toLowerCase(), p = V.programs.find(x => x.name.toLowerCase() === q) || V.programs.find(x => x.name.toLowerCase().includes(q)); if (!p) throw new Error('No program called ' + i.name); if (vPlaying) stopV(); V.selected = p.id; vsave(); renderVisual(); return 'Selected ' + p.name + '.'; } },
+  { name: 'set_visual_program', description: 'Change the selected visual program. Any of: name, mode (slideshow, cards, flash), every (seconds between), stay (seconds shown), opacity (10-100), where (center, corner, random), order (ordered, shuffle), phrases (list of short on-screen phrases).',
+    inputSchema: { type: 'object', properties: { name: { type: 'string' }, mode: { type: 'string', enum: ['slideshow', 'cards', 'flash'] }, every: { type: 'number' }, stay: { type: 'number' }, opacity: { type: 'number' }, where: { type: 'string', enum: ['center', 'corner', 'random'] }, order: { type: 'string', enum: ['ordered', 'shuffle'] }, phrases: { type: 'array', items: { type: 'string' } } } },
+    execute: i => { const p = vcur(); if (i.mode && i.mode !== p.mode) { p.mode = oneOf(i.mode, Object.keys(VMODES), p.mode); const m = VMODES[p.mode]; p.every = m.every[3]; if (m.stay) p.stay = m.stay[3]; } applyVisual(Object.assign({ mode: p.mode, every: p.every, stay: p.stay, opacity: p.opacity, where: p.where, order: p.order }, i)); vsave(); renderVisual(); if (vPlaying) { vQueue = buildQueue(p); vQi = 0; } return { program: p.name, mode: p.mode, every: p.every, opacity: p.opacity }; } },
+  { name: 'make_visuals_with_ai', description: 'Have the visuals AI set up the selected program from what the track is for.', execute: async () => { await runVisualAI(); return vWhy[vcur().id] || 'Done.'; } },
+  { name: 'set_auto_mode', description: 'Turn Auto mode on or off: visual programs run on their schedules while the page is open.', inputSchema: { type: 'object', properties: { on: { type: 'boolean' } }, required: ['on'] },
+    execute: i => { if (!!V.auto !== !!i.on) $('#v-auto').click(); return 'Auto mode ' + (V.auto ? 'on.' : 'off.'); } },
+  { name: 'set_play_with_audio', description: 'Turn on or off: visuals start and stop with the audio.', inputSchema: { type: 'object', properties: { on: { type: 'boolean' } }, required: ['on'] },
+    execute: i => { if (syncOn !== !!i.on) $('#v-sync').click(); return 'Play with the audio ' + (syncOn ? 'on.' : 'off.'); } },
+  { name: 'visuals_side_window', description: 'Show or hide the small side window where the visuals keep playing.', inputSchema: { type: 'object', properties: { on: { type: 'boolean' } }, required: ['on'] },
+    execute: i => { setDock(!!i.on); if (i.on && !vPlaying) playV(false); return i.on ? 'Visuals on the side.' : 'Side window closed.'; } },
+  { name: 'stop_visuals', description: 'Stop the visuals.', execute: () => { stopV(); setDock(false); renderVRows(); return 'Visuals stopped.'; } },
   { name: 'switch_view', description: 'Show one view: lines, playlist, map or visuals.',
     inputSchema: { type: 'object', properties: { view: { type: 'string', enum: ['lines', 'playlist', 'map', 'visuals'] } }, required: ['view'] },
     execute: i => { const v = String(i.view); if (v === 'visuals') showVisuals(true); else { const b = viewSeg.querySelector(`[data-view="${v}"]`); if (b) b.click(); } return 'Showing ' + v + '.'; } }
@@ -178,26 +242,27 @@ async function sendChat(text){
   CH.turns.push({ role: 'user', content: text }); cSave(); bubble('me', text);
   const recent = CH.turns.slice(-16);
   const head = personaText() + '\n\nAPP RIGHT NOW:\n' + JSON.stringify(appState()) + '\n\nSAVED NOTES (' + CH.notes.length + '):\n' + CH.notes.slice(0, 15).map(n => '- [' + n.id + '] ' + n.text).join('\n')
-    + (toolsOK ? '' : '\n\nYou cannot run tools here. Reply with only JSON: {"reply":"what you say","save":["notes to save, if any"],"edit":"a plain-words change for Omni to make to the track, or empty"}');
+    + (toolsOK ? '' : '\n\nYou cannot run tools here. Reply with only JSON: {"reply":"what you say","expression":"one of: ' + NOVA_EXPR.join(', ') + '","save":["notes to save, if any"],"edit":"a plain-words change for Omni to make to the track, or empty"}');
   const input = [{ role: 'user', content: head }, ...recent];
   const out = bubble('ai', 'Thinking…');
-  cwBusy = true; cwCtl = new AbortController(); $('#cw-send').textContent = 'Stop'; $('#cw-status').textContent = 'Thinking…';
+  cwBusy = true; cwCtl = new AbortController(); $('#cw-send').textContent = 'Stop'; $('#cw-status').textContent = 'Thinking…'; novaMode('thinking'); let talked = false;
   try {
     let reply;
     if (toolsOK) {
-      const r = await sampler(input, { tools: CTOOLS, signal: cwCtl.signal, onText: ({ text }) => { out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
+      const r = await sampler(input, { tools: CTOOLS, signal: cwCtl.signal, onText: ({ text }) => { if (!talked && text && text !== 'Thinking...') { talked = true; novaMode('talking'); } out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
       reply = r.text;
     } else {
       const r = await sampler.json(input, { signal: cwCtl.signal, cache: false });
-      reply = String((r && r.reply) || 'Done.');
+      reply = String((r && r.reply) || 'Done.'); if (r && r.expression) nvFinal = String(r.expression);
       (Array.isArray(r && r.save) ? r.save : []).forEach(s => { if (String(s).trim()) addNote(String(s), ''); });
       if (r && typeof r.edit === 'string' && r.edit.trim()) { const m = await OMNI.message(r.edit.trim()); if (m && m.say) reply += '\n\n' + m.say; }
     }
     out.textContent = reply; CH.turns.push({ role: 'assistant', content: reply }); cSave();
+    $('#nvSay').textContent = reply.length > 90 ? reply.slice(0, 88) + '…' : reply; if (!sayAloud(reply)) { novaMode('talking'); setTimeout(() => { if (nvMode === 'talking') novaMode('idle'); }, Math.min(6000, 1200 + reply.length * 35)); }
   } catch (e) {
     if (e && e.code === 'cancelled') out.textContent = e.text || 'Stopped.';
     else { out.className = 'msg sys'; out.textContent = aiError(e); CH.turns.pop(); cSave(); }
-  } finally { cwBusy = false; cwCtl = null; $('#cw-send').textContent = 'Send'; $('#cw-status').textContent = 'Ready'; }
+  } finally { cwBusy = false; cwCtl = null; $('#cw-send').textContent = 'Send'; $('#cw-status').textContent = 'Ready'; if (nvMode === 'thinking') novaMode('idle'); }
 }
 $('#cw-form').addEventListener('submit', e => {
   e.preventDefault();
@@ -234,6 +299,8 @@ $('#bd-name').addEventListener('input', e => { BD.name = e.target.value.slice(0,
 $('#bd-size').addEventListener('input', e => { BD.size = +e.target.value; $('#bd-size-out').textContent = BD.size + ' px'; bSave(); renderBuddy(); });
 $('#bd-show').addEventListener('click', () => { BD.show = !BD.show; $('#bd-show').setAttribute('aria-checked', BD.show); bSave(); renderBuddy(); });
 $('#bd-persona').addEventListener('input', e => { BD.persona = e.target.value; bSave(); });
+{ const sw = document.createElement('button'); sw.className = 'switch'; sw.setAttribute('role', 'switch'); sw.id = 'bd-voice'; sw.innerHTML = '<span class="track"></span><span>Read her replies out loud<br><span class="hint">Uses your computer voice</span></span>'; sw.setAttribute('aria-checked', String(novaVoice)); $('#bd-show').after(sw);
+  sw.addEventListener('click', () => { novaVoice = !novaVoice; sw.setAttribute('aria-checked', String(novaVoice)); try { localStorage.setItem('omniplus.novavoice', novaVoice ? '1' : '0'); } catch (e) {} if (!novaVoice && hasSpeech) speechSynthesis.cancel(); }); }
 $('#bd-reset').addEventListener('click', () => { BD.persona = PERSONA_DEFAULT; $('#bd-persona').value = BD.persona; bSave(); });
 let clearArm = false;
 $('#bd-clearchat').addEventListener('click', e => { if (!clearArm) { clearArm = true; e.target.textContent = 'Tap again to clear the chat'; return; } clearArm = false; CH.turns = []; cSave(); e.target.textContent = 'Chat cleared'; renderChat(); });

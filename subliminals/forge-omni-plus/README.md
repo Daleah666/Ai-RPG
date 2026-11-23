@@ -18,6 +18,14 @@ Subliminal Forge (Oct) and Subliminal Forge Omni (Nov) merged into one page.
 - **Images are remembered** on this computer (IndexedDB), so folders survive a reload.
 - **Keys**: V visuals on/off, S side window, F full screen; Omni's own keys still work.
 
+## Nova
+
+- Her portrait is Bambi's expression set from desktop-companion (`characters/companion/`), copied and shrunk to `nova/*.webp`. The originals are untouched.
+- She sits in a side panel on a slow hypno spiral: breathing and swaying at rest, cycling expressions while she talks, a thinking face while she waits. Tap her for a reaction.
+- Optional: "Read her replies out loud" in her settings.
+- Her tools reach the whole studio: lines (via Omni's AI), look, volume, session length, packs, saved tracks, playlist, WAV save, visual programs, Auto mode, play-with-audio, the side window and the views. She picks her own face with `set_expression`.
+- Publish the `nova/` folder with the page (`files`), next to `index.html`.
+
 ## Files
 
 - `originals/forge.html`, `originals/omni.html`: the two source artifacts as published.
