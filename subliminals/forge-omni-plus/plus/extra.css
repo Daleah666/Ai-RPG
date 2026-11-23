@@ -21,3 +21,8 @@
 .fx .packs .btn small{font-size:11px;color:var(--muted)}
 .fx .buddy-ph.nova{background:none;border:0;box-shadow:none;padding:0}
 .fx .buddy-ph.nova img,.fx .cw-av img.nova{width:100%;height:100%;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+@media (max-width:560px){
+  .fx .buddy{width:min(var(--bsize,96px),64px);height:min(var(--bsize,96px),64px);right:12px}
+  #vDock{left:12px;width:min(var(--dockw,340px),calc(100vw - 100px))}
+  #vDock .vcap{font-size:14px;padding:0 8px}
+}

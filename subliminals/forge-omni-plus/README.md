@@ -11,6 +11,13 @@ Subliminal Forge (Oct) and Subliminal Forge Omni (Nov) merged into one page.
 - **Visuals tab (from Forge):** image-folder programs as slideshow, cards or quick flash, captions from your Omni lines or your own list, a weekly or by-date schedule, "now and then" bursts, Auto mode, full screen, an optional spoken phrase now and then, and an editable "AI instructions for visuals" with Make AI do it.
 - **Nova (from Forge):** a draggable companion with chat, saved notes and a custom image and persona. Nova's tools call Omni's API, so she can edit the track (through Omni's own AI), add lines, play and stop the audio and the visuals, and switch views.
 
+## Also
+
+- **On the side / Pop out**: visuals keep flashing in a small corner window, or a floating window over other apps.
+- **Play with the audio** and **one-click packs** (Feminine, Bimbo, Trance, Submission).
+- **Images are remembered** on this computer (IndexedDB), so folders survive a reload.
+- **Keys**: V visuals on/off, S side window, F full screen; Omni's own keys still work.
+
 ## Files
 
 - `originals/forge.html`, `originals/omni.html`: the two source artifacts as published.
