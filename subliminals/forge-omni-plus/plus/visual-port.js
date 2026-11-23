@@ -125,9 +125,9 @@ function renderVEditor(){
     <div class="panel">
       <div class="step-h"><b style="font-size:17px">Images</b><span class="hint">${n} loaded</span></div>
       <div class="fchips">${p.folders.length ? p.folders.map(f=>`<span class="fchip">${esc(f.name)} <b>${f.count}</b><button class="x" data-vrm="${esc(f.name)}" aria-label="Remove ${esc(f.name)}">${xIcon}</button></span>`).join('') : '<span class="hint">No images yet.</span>'}</div>
-      ${stale.length ? `<span class="hint" style="color:var(--warn)">Pick ${stale.map(f=>esc(f.name)).join(', ')} again to load ${stale.length>1?'them':'it'}. Browsers forget folders when the page reloads.</span>` : ''}
+      ${stale.length ? `<span class="hint" style="color:var(--warn)">Pick ${stale.map(f=>esc(f.name)).join(', ')} again to load ${stale.length>1?'them':'it'}. They weren't saved on this computer last time.</span>` : ''}
       <div class="row"><label class="btn primary" for="v-folder">Choose a folder</label><label class="btn" for="v-files">Add single images</label></div>
-      <span class="hint">Pick a folder on your G: drive, like the one in FlipFlip. Your browser asks you to confirm. Nothing leaves your computer.</span>
+      <span class="hint">Pick a folder on your G: drive, like the one in FlipFlip. Your browser asks you to confirm. Nothing leaves your computer. Images are remembered here, so you only pick them once.</span>
       ${seg('Order', 'v-order-l', [['ordered','In order'],['shuffle','Shuffle']], p.order, 'vorder')}
     </div>
     <div class="panel">
@@ -240,6 +240,7 @@ function addFiles(list, isFolder){
   vFiles[p.id] = vFiles[p.id] || [];
   for(const [name, arr] of Object.entries(groups)){
     const keep = isFolder ? vFiles[p.id].filter(x=>x.folder!==name) : vFiles[p.id];
+    (isFolder ? imgStore.removeFolder(p.id, name) : Promise.resolve()).then(() => imgStore.put(p.id, arr));
     vFiles[p.id] = keep.concat(arr);
     const count = vFiles[p.id].filter(x=>x.folder===name).length;
     const i = p.folders.findIndex(x=>x.name===name);
@@ -309,10 +310,10 @@ $('#vView').addEventListener('click', e=>{
   else if(d.vmode){ p.mode = d.vmode; const m = VMODES[p.mode]; p.every = m.every[3]; if(m.stay) p.stay = m.stay[3]; p.opacity = p.mode==='flash' ? 35 : 100; if(p.mode==='flash') p.where = 'random'; }
   else if(d.vwhere){ p.where = d.vwhere; }
   else if(d.vcap){ p.captions = d.vcap; }
-  else if(d.vrm){ vFiles[p.id] = (vFiles[p.id]||[]).filter(x=>x.folder!==d.vrm); p.folders = p.folders.filter(f=>f.name!==d.vrm); if(vPlaying){ vQueue = buildQueue(p); vQi = 0; } }
+  else if(d.vrm){ imgStore.removeFolder(p.id, d.vrm); vFiles[p.id] = (vFiles[p.id]||[]).filter(x=>x.folder!==d.vrm); p.folders = p.folders.filter(f=>f.name!==d.vrm); if(vPlaying){ vQueue = buildQueue(p); vQi = 0; } }
   else if(d.vdel){
     if(!vDelArm){ vDelArm = true; renderVEditor(); return; }
-    stopV(); delete vFiles[p.id]; V.programs = V.programs.filter(x=>x.id!==p.id);
+    stopV(); imgStore.removeProgram(p.id); delete vFiles[p.id]; V.programs = V.programs.filter(x=>x.id!==p.id);
     if(!V.programs.length) V.programs.push(newProgram('My image folder'));
     V.selected = V.programs[0].id; vDelArm = false;
   }

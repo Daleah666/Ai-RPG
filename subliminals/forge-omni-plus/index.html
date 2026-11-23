@@ -416,6 +416,7 @@ body.mappanel .mapsvg{width:100%;height:100%;max-height:none}
       <span class="hint" id="v-today"></span>
       <div id="v-rows" class="vrows"></div>
       <span class="hint">Auto mode works while this page stays open and visible. The desktop app will run it in the background.</span>
+      <span class="hint">Keys: <b>V</b> plays or stops the visuals, <b>S</b> puts them on the side, <b>F</b> full screen. Space still plays the audio.</span>
     </section>
     <section class="vedit" aria-label="Selected program">
       <div class="vslot" id="vslot"><div class="vstage" id="vstage">
@@ -2420,6 +2421,11 @@ loadAudio(); bookSoon();
 .fx .packs .btn small{font-size:11px;color:var(--muted)}
 .fx .buddy-ph.nova{background:none;border:0;box-shadow:none;padding:0}
 .fx .buddy-ph.nova img,.fx .cw-av img.nova{width:100%;height:100%;filter:drop-shadow(0 8px 18px rgba(0,0,0,.5))}
+@media (max-width:560px){
+  .fx .buddy{width:min(var(--bsize,96px),64px);height:min(var(--bsize,96px),64px);right:12px}
+  #vDock{left:12px;width:min(var(--dockw,340px),calc(100vw - 100px))}
+  #vDock .vcap{font-size:14px;padding:0 8px}
+}
 
 </style>
 <div class="fx">
@@ -2507,6 +2513,23 @@ viewSeg.addEventListener('click', e => {
   }
 }, true);
 OMNI.on('view', () => { if (inVisuals) showVisuals(false); });
+
+/* ---------- images remembered on this computer (IndexedDB), so folders survive a reload ---------- */
+const imgStore = (() => {
+  let dbp = null;
+  const open = () => dbp || (dbp = new Promise((res, rej) => {
+    try { const r = indexedDB.open('omniplus-images', 1); r.onupgradeneeded = () => { const s = r.result.createObjectStore('imgs', { keyPath: 'key' }); s.createIndex('pid', 'pid'); }; r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); }
+  }));
+  const tx = async (mode, fn) => { const db = await open(); return new Promise((res, rej) => { const t = db.transaction('imgs', mode), s = t.objectStore('imgs'); const out = fn(s); t.oncomplete = () => res(out && out.result !== undefined ? out.result : out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); };
+  const each = (s, pid, test, act) => { const c = s.index('pid').openCursor(IDBKeyRange.only(pid)); c.onsuccess = () => { const k = c.result; if (!k) return; if (test(k.value)) act(k); k.continue(); }; };
+  return {
+    put: (pid, items) => tx('readwrite', s => items.forEach(x => s.put({ key: pid + '|' + x.folder + '|' + x.path, pid, path: x.path, folder: x.folder, file: x.file }))).catch(() => { ptoastSoon('Your browser is out of room to remember these images. They play now, but pick them again after a reload.'); }),
+    removeFolder: (pid, folder) => tx('readwrite', s => each(s, pid, v => v.folder === folder, k => k.delete())).catch(() => {}),
+    removeProgram: pid => tx('readwrite', s => each(s, pid, () => true, k => k.delete())).catch(() => {}),
+    loadAll: () => tx('readonly', s => s.getAll()).catch(() => [])
+  };
+})();
+let ptoastSoon = msg => { try { console.warn(msg); } catch (e) {} };
 
 /* ---------- visual programs ---------- */
 const DAYN = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -2635,9 +2658,9 @@ function renderVEditor(){
     <div class="panel">
       <div class="step-h"><b style="font-size:17px">Images</b><span class="hint">${n} loaded</span></div>
       <div class="fchips">${p.folders.length ? p.folders.map(f=>`<span class="fchip">${esc(f.name)} <b>${f.count}</b><button class="x" data-vrm="${esc(f.name)}" aria-label="Remove ${esc(f.name)}">${xIcon}</button></span>`).join('') : '<span class="hint">No images yet.</span>'}</div>
-      ${stale.length ? `<span class="hint" style="color:var(--warn)">Pick ${stale.map(f=>esc(f.name)).join(', ')} again to load ${stale.length>1?'them':'it'}. Browsers forget folders when the page reloads.</span>` : ''}
+      ${stale.length ? `<span class="hint" style="color:var(--warn)">Pick ${stale.map(f=>esc(f.name)).join(', ')} again to load ${stale.length>1?'them':'it'}. They weren't saved on this computer last time.</span>` : ''}
       <div class="row"><label class="btn primary" for="v-folder">Choose a folder</label><label class="btn" for="v-files">Add single images</label></div>
-      <span class="hint">Pick a folder on your G: drive, like the one in FlipFlip. Your browser asks you to confirm. Nothing leaves your computer.</span>
+      <span class="hint">Pick a folder on your G: drive, like the one in FlipFlip. Your browser asks you to confirm. Nothing leaves your computer. Images are remembered here, so you only pick them once.</span>
       ${seg('Order', 'v-order-l', [['ordered','In order'],['shuffle','Shuffle']], p.order, 'vorder')}
     </div>
     <div class="panel">
@@ -2750,6 +2773,7 @@ function addFiles(list, isFolder){
   vFiles[p.id] = vFiles[p.id] || [];
   for(const [name, arr] of Object.entries(groups)){
     const keep = isFolder ? vFiles[p.id].filter(x=>x.folder!==name) : vFiles[p.id];
+    (isFolder ? imgStore.removeFolder(p.id, name) : Promise.resolve()).then(() => imgStore.put(p.id, arr));
     vFiles[p.id] = keep.concat(arr);
     const count = vFiles[p.id].filter(x=>x.folder===name).length;
     const i = p.folders.findIndex(x=>x.name===name);
@@ -2819,10 +2843,10 @@ $('#vView').addEventListener('click', e=>{
   else if(d.vmode){ p.mode = d.vmode; const m = VMODES[p.mode]; p.every = m.every[3]; if(m.stay) p.stay = m.stay[3]; p.opacity = p.mode==='flash' ? 35 : 100; if(p.mode==='flash') p.where = 'random'; }
   else if(d.vwhere){ p.where = d.vwhere; }
   else if(d.vcap){ p.captions = d.vcap; }
-  else if(d.vrm){ vFiles[p.id] = (vFiles[p.id]||[]).filter(x=>x.folder!==d.vrm); p.folders = p.folders.filter(f=>f.name!==d.vrm); if(vPlaying){ vQueue = buildQueue(p); vQi = 0; } }
+  else if(d.vrm){ imgStore.removeFolder(p.id, d.vrm); vFiles[p.id] = (vFiles[p.id]||[]).filter(x=>x.folder!==d.vrm); p.folders = p.folders.filter(f=>f.name!==d.vrm); if(vPlaying){ vQueue = buildQueue(p); vQi = 0; } }
   else if(d.vdel){
     if(!vDelArm){ vDelArm = true; renderVEditor(); return; }
-    stopV(); delete vFiles[p.id]; V.programs = V.programs.filter(x=>x.id!==p.id);
+    stopV(); imgStore.removeProgram(p.id); delete vFiles[p.id]; V.programs = V.programs.filter(x=>x.id!==p.id);
     if(!V.programs.length) V.programs.push(newProgram('My image folder'));
     V.selected = V.programs[0].id; vDelArm = false;
   }
@@ -3184,8 +3208,24 @@ function applyPack(k){
 }
 $('#v-packs').addEventListener('click', e => { const b = e.target.closest('[data-pack]'); if (b) applyPack(b.dataset.pack); });
 
+
+/* ---------- keys: V plays or stops the visuals, S puts them on the side, F full screen ---------- */
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea,select,[contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'v') { if (vPlaying) { stopV(); renderVRows(); if (docked) setDock(false); } else { if (!inVisuals) setDock(true); playV(false); } }
+  else if (k === 's') { if (docked) setDock(false); else { setDock(true); if (!vPlaying) playV(false); } }
+  else if (k === 'f' && (inVisuals || docked) && vPlaying) { try { const r = stage.requestFullscreen && stage.requestFullscreen(); r && r.catch && r.catch(() => {}); } catch (err) {} }
+});
+
 /* ---------- boot ---------- */
 renderBuddy(); renderVisual(); autoStatus(); renderSync();
+ptoastSoon = ptoast;
+imgStore.loadAll().then(rows => {
+  if (!rows || !rows.length) return;
+  for (const r of rows) { if (!V.programs.some(p => p.id === r.pid) || !r.file) continue; (vFiles[r.pid] = vFiles[r.pid] || []).push({ file: r.file, path: r.path, folder: r.folder }); }
+  renderVisual();
+});
 if (location.hash === '#visuals') showVisuals(true);
 (async () => {
   try { if (window.claude && window.claude.use) sampler = await window.claude.use('sample'); } catch (e) {}

@@ -340,8 +340,24 @@ function applyPack(k){
 }
 $('#v-packs').addEventListener('click', e => { const b = e.target.closest('[data-pack]'); if (b) applyPack(b.dataset.pack); });
 
+
+/* ---------- keys: V plays or stops the visuals, S puts them on the side, F full screen ---------- */
+document.addEventListener('keydown', e => {
+  if (e.target.closest('input,textarea,select,[contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 'v') { if (vPlaying) { stopV(); renderVRows(); if (docked) setDock(false); } else { if (!inVisuals) setDock(true); playV(false); } }
+  else if (k === 's') { if (docked) setDock(false); else { setDock(true); if (!vPlaying) playV(false); } }
+  else if (k === 'f' && (inVisuals || docked) && vPlaying) { try { const r = stage.requestFullscreen && stage.requestFullscreen(); r && r.catch && r.catch(() => {}); } catch (err) {} }
+});
+
 /* ---------- boot ---------- */
 renderBuddy(); renderVisual(); autoStatus(); renderSync();
+ptoastSoon = ptoast;
+imgStore.loadAll().then(rows => {
+  if (!rows || !rows.length) return;
+  for (const r of rows) { if (!V.programs.some(p => p.id === r.pid) || !r.file) continue; (vFiles[r.pid] = vFiles[r.pid] || []).push({ file: r.file, path: r.path, folder: r.folder }); }
+  renderVisual();
+});
 if (location.hash === '#visuals') showVisuals(true);
 (async () => {
   try { if (window.claude && window.claude.use) sampler = await window.claude.use('sample'); } catch (e) {}
