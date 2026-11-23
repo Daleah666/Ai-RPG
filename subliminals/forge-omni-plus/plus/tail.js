@@ -51,7 +51,8 @@ async function runVisualAI(){
   if (!sampler) { setWhy('AI is not available in this view.', 'err'); return; }
   const p = vcur(), goal = omniGoal() || 'Feel confident and focused';
   const ctx = { program: { name: p.name, mode: p.mode, every: p.every, stay: p.stay, opacity: p.opacity, where: p.where, order: p.order, images: imgCount(p), phrases: vPhrases(p).slice(0, 15) }, track_lines: omniLines().slice(0, 20), look: omniGet().theme };
-  const prompt = `${AI.ins}\n\nWHAT IT'S FOR:\n${goal}\n\nCURRENT PROGRAM:\n${JSON.stringify(ctx, null, 1)}\n\nTASK:\n${VTASK.task}\n\nReply with only one JSON object shaped like this example, with your own values:\n${VTASK.shape}`;
+  const brief = brainBrief();
+  const prompt = `${AI.ins}\n\nWHAT IT'S FOR:\n${goal}${brief ? '\n\nWHAT WORKS FOR THEM (learned):\n' + brief : ''}\n\nCURRENT PROGRAM:\n${JSON.stringify(ctx, null, 1)}\n\nTASK:\n${VTASK.task}\n\nReply with only one JSON object shaped like this example, with your own values:\n${VTASK.shape}`;
   $('#ai-last-prompt').textContent = prompt; $('#ai-last-reply').textContent = 'Waiting for the reply…';
   aiBusy = true; aiCtl = new AbortController();
   setWhy('Thinking about this program. This can take up to a minute.', 'busy');
@@ -157,7 +158,8 @@ novaStage.addEventListener('click', () => { if (nvMode === 'idle') setExpr(['gig
 chatwin.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); toggleChat(false); buddy.focus(); } });
 chatwin.querySelectorAll('[data-cw]').forEach(b => b.addEventListener('click', () => {
   chatwin.querySelectorAll('[data-cw]').forEach(x => x.setAttribute('aria-pressed', x === b));
-  ['chat', 'notes', 'setup'].forEach(v => $('#cw-' + v).hidden = v !== b.dataset.cw);
+  ['chat', 'notes', 'brain', 'setup'].forEach(v => { const el = $('#cw-' + v); if (el) el.hidden = v !== b.dataset.cw; });
+  if (b.dataset.cw === 'brain') renderBrain();
   if (b.dataset.cw === 'notes') renderNotes();
   if (b.dataset.cw === 'setup') renderSetup();
 }));
@@ -242,23 +244,24 @@ async function sendChat(text){
   if (!sampler) { bubble('sys', 'AI is not available in this view.'); return; }
   CH.turns.push({ role: 'user', content: text }); cSave(); bubble('me', text);
   const recent = CH.turns.slice(-16);
-  const head = personaText() + '\n\nAPP RIGHT NOW:\n' + JSON.stringify(appState()) + '\n\nSAVED NOTES (' + CH.notes.length + '):\n' + CH.notes.slice(0, 15).map(n => '- [' + n.id + '] ' + n.text).join('\n')
-    + (toolsOK ? '' : '\n\nYou cannot run tools here. Reply with only JSON: {"reply":"what you say","expression":"one of: ' + NOVA_EXPR.join(', ') + '","save":["notes to save, if any"],"edit":"a plain-words change for Omni to make to the track, or empty"}');
+  const head = personaText() + BRAIN_RULES + '\n\nAPP RIGHT NOW:\n' + JSON.stringify(appState()) + '\n\nSAVED NOTES (' + CH.notes.length + '):\n' + CH.notes.slice(0, 15).map(n => '- [' + n.id + '] ' + n.text).join('\n') + '\n\nWHAT YOU KNOW ABOUT THEM:\n' + brainText()
+    + (toolsOK ? '' : '\n\nYou cannot run tools here. Reply with only JSON: {"reply":"what you say","expression":"one of: ' + NOVA_EXPR.join(', ') + '","save":["notes to save, if any"],"remember":["short facts about them worth keeping, if any"],"edit":"a plain-words change for Omni to make to the track, or empty"}');
   const input = [{ role: 'user', content: head }, ...recent];
   const out = bubble('ai', 'Thinking…');
   cwBusy = true; cwCtl = new AbortController(); $('#cw-send').textContent = 'Stop'; $('#cw-status').textContent = 'Thinking…'; novaMode('thinking'); let talked = false;
   try {
     let reply;
     if (toolsOK) {
-      const r = await sampler(input, { tools: CTOOLS, signal: cwCtl.signal, onText: ({ text }) => { if (!talked && text && text !== 'Thinking...') { talked = true; novaMode('talking'); } out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
+      const r = await sampler(input, { tools: [...CTOOLS, ...BTOOLS, ...filesTools], signal: cwCtl.signal, onText: ({ text }) => { if (!talked && text && text !== 'Thinking...') { talked = true; novaMode('talking'); } out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
       reply = r.text;
     } else {
       const r = await sampler.json(input, { signal: cwCtl.signal, cache: false });
       reply = String((r && r.reply) || 'Done.'); if (r && r.expression) nvFinal = String(r.expression);
       (Array.isArray(r && r.save) ? r.save : []).forEach(s => { if (String(s).trim()) addNote(String(s), ''); });
+      (Array.isArray(r && r.remember) ? r.remember : []).forEach(s => learn(String(s), 'Nova'));
       if (r && typeof r.edit === 'string' && r.edit.trim()) { const m = await OMNI.message(r.edit.trim()); if (m && m.say) reply += '\n\n' + m.say; }
     }
-    out.textContent = reply; CH.turns.push({ role: 'assistant', content: reply }); cSave();
+    out.textContent = reply; CH.turns.push({ role: 'assistant', content: reply }); cSave(); brainAfterChat();
     $('#nvSay').textContent = reply.length > 90 ? reply.slice(0, 88) + '…' : reply; if (!sayAloud(reply)) { novaMode('talking'); setTimeout(() => { if (nvMode === 'talking') novaMode('idle'); }, Math.min(6000, 1200 + reply.length * 35)); }
   } catch (e) {
     if (e && e.code === 'cancelled') out.textContent = e.text || 'Stopped.';
@@ -399,10 +402,11 @@ PACKS.bimboMax = { label: '💋💥 Bimbo Max', sub: 'detailed lines, all silent
     phrases: ["Pretty and bubbly", "Giggles come easy", "Pink, pretty, perfect", "I love being a bimbo", "Glossy and glowing", "Hot pink thoughts", "Light and happy", "Think pink", "Bimbo is me", "Lip gloss on", "Heels and giggles", "So pretty", "Curvy and confident", "Bubbly brain", "Sweet and flirty", "Sparkle", "Giggle", "Airhead and happy", "Soft and silly", "Prettier every day", "Pink thoughts only", "Blow a kiss", "Hair flip", "Good bimbo", "Ditzy and delighted"] } };
 // Max strength: every layer silent (high-pitched voices you can't make out), the most stacked copies Omni allows, reversed copies on
 const MAX_SOUND = { delivery: { foundation: 'silent', current: 'silent', surface: 'silent' }, sound: { layers: 20, repeat: 3, speed: 2, reverse: true, spread: true, silentHz: 17500, mix: { hidden: 90 } } };
-function maxStrength(){ OMNI.set(JSON.parse(JSON.stringify(MAX_SOUND))); try { const st = OMNI.status(); return st.perMinute; } catch (e) { return 0; } }
+function maxStrength(){ tasteNote('max'); OMNI.set(JSON.parse(JSON.stringify(MAX_SOUND))); try { const st = OMNI.status(); return st.perMinute; } catch (e) { return 0; } }
 $('#v-packs').innerHTML = Object.entries(PACKS).map(([k, p]) => `<button class="btn" type="button" data-pack="${k}">${p.label}<small>${p.sub}</small></button>`).join('');
 function applyPack(k){
   const pk = PACKS[k]; if (!pk) return;
+  tasteNote('pack', k);
   const th = pk.theme || k, tb = $(`#themeSeg [data-theme="${th}"]`); if (tb && document.documentElement.getAttribute('data-theme') !== th) tb.click();
   const st = $('#femStarter'); if (st) st.click();
   if (pk.lines) OMNI.set({ lines: Object.fromEntries(Object.entries(pk.lines).map(([l, a]) => [l, a.map(x => ({ t: x, f: '' }))])) });
@@ -438,11 +442,13 @@ imgStore.loadAll().then(rows => {
   renderVisual();
 });
 if (location.hash === '#visuals') showVisuals(true);
-(async () => {
+const aiReady = (async () => {
   try { if (window.claude && window.claude.use) sampler = await window.claude.use('sample'); } catch (e) {}
   if (sampler) { try { const lim = await sampler.limits(); toolsOK = !!(lim && lim.tools); } catch (e) {} }
   $('#cw-status').textContent = sampler ? 'Ready' : 'AI is not available in this view';
-  $('#ai-avail').textContent = sampler ? 'Ready. Uses your Claude account.' : 'AI is not available in this view.';
+  $('#ai-avail').textContent = sampler ? (window.__omniHub ? 'Ready. Uses the brain Front Stage is set to.' : 'Ready. Uses your Claude account.') : 'AI is not available in this view.';
+  renderBrain();
 })();
-window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); setDock(false); return vPlaying; }, side: on => { setDock(on !== false); if (!vPlaying) playV(false); return docked; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false) } });
+brainBoot();
+window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); setDock(false); return vPlaying; }, side: on => { setDock(on !== false); if (!vPlaying) playV(false); return docked; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false), say: t => sendChat(String(t || '')) }, make: async goal => { await aiReady; return makeFromGoal(goal); }, ready: () => aiReady.then(() => !!sampler), brain: { learn: (t, src) => !!learn(t, src || 'outside'), facts: () => BR.facts.map(f => ({ text: f.text, src: f.src })), pull: () => pullAgents('click') } });
 })();

@@ -26,10 +26,29 @@ Subliminal Forge (Oct) and Subliminal Forge Omni (Nov) merged into one page.
 - Her tools reach the whole studio: lines (via Omni's AI), look, volume, session length, packs, saved tracks, playlist, WAV save, visual programs, Auto mode, play-with-audio, the side window and the views. She picks her own face with `set_expression`.
 - Publish the `nova/` folder with the page (`files`), next to `index.html`.
 
+## Nova's brain (she keeps getting better)
+
+The 🧠 tab in Nova's window holds what she knows about you. It lives in this browser.
+
+- **She learns as you chat.** Tell her a preference, a goal or a word you love or hate, and she keeps it with `remember`. Nothing to set up.
+- **She learns from what you do.** She counts the packs you pick, when and how long you play, the visual programs you run and when you turn on max strength.
+- **She reads your other agents.**
+  - *Front Stage*: open the studio from the 🌀 Forge tab on your new tab and she reads the girl on stage there (her card, her memories, and your plans if you let her see them). She can `ask_agent` her a question and `tell_agent` her a note, which lands in that girl's memories.
+  - *Project notes*: on the claude.ai page, press **Read** and she reads the `forge-brain/` folder of the "subliminal" project. Any Claude thread can leave her a note there. Her chat also gets the project file tools.
+  - *Anything else*: paste what Grok, ChatGPT or Cursor said into **Absorb** and she keeps only what's about you.
+- **She thinks it over.** **Reflect now** rewrites her summary of you and drops repeats. She also does it by herself after a chat once 8 new things have piled up. The visuals AI reads that summary too.
+
+You can pin, forget or teach her facts by hand on the same tab.
+
+## Inside Front Stage
+
+`python3 build.py --ext ../../../desktop-companion/front-stage/forge` writes a copy for the Front Stage extension. Chrome extension pages can't run inline scripts or load from a CDN, so that copy splits each script into its own file and takes sam-js from `vendor/`. Front Stage hands the studio its brain through `window.__hubClaude`, the same line My Hub uses, so Omni needed no changes.
+
 ## Files
 
 - `originals/forge.html`, `originals/omni.html`: the two source artifacts as published.
-- `plus/`: the add-on (head.js, visual-port.js, tail.js, the markup and the CSS).
+- `plus/`: the add-on (head.js, visual-port.js, brain.js, tail.js, the markup and the CSS).
+- `vendor/samjs.min.js`: sam-js 0.3.1 from npm, for the extension copy only.
 - `build.py`: writes `index.html` = Omni + the add-on. Omni's own code is never edited.
 
 Rebuild with `python3 build.py`, then republish `index.html` to the artifact URL above.

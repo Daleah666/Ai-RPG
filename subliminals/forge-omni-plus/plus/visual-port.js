@@ -221,7 +221,7 @@ let vAutoStarted = false;
 function playV(fromAuto){
   const p = vcur();
   if(!hasContent(p)){ vEmptyMsg('Add images or phrases to this program first.'); return; }
-  vPlaying = true; vAutoStarted = !!fromAuto; vQueue = buildQueue(p); vQi = 0; vPi = 0;
+  vPlaying = true; vAutoStarted = !!fromAuto; if (!fromAuto) tasteNote('visuals', p.name); vQueue = buildQueue(p); vQi = 0; vPi = 0;
   $('#vempty').hidden = true; $('#v-play').textContent = 'Stop';
   vShow(); scheduleTalk(true);
 }
