@@ -202,8 +202,8 @@ const CTOOLS = [
   { name: 'play_visuals', description: 'Start the selected visual program (images and phrases) on the Visuals view.',
     inputSchema: { type: 'object', properties: { side: { type: 'boolean', description: 'true plays them in the small window on the side, so the person can keep using the other views' } } },
     execute: i => { if (i && i.side) setDock(true); else showVisuals(true); if (!vPlaying) playV(false); return vPlaying ? 'Visuals playing' + (i && i.side ? ' on the side.' : '.') : 'This program has no images or phrases yet.'; } },
-  { name: 'apply_pack', description: 'Load a one-click pack: the look, its starter lines, its sound and a matching visual program. Packs: feminine, bimbo, trance, submission. It replaces the current lines, so only when the person asks.',
-    inputSchema: { type: 'object', properties: { pack: { type: 'string', enum: ['feminine', 'bimbo', 'trance', 'submission'] } }, required: ['pack'] },
+  { name: 'apply_pack', description: 'Load a one-click pack: the look, its starter lines, its sound and a matching visual program. Packs: feminine, bimbo, bimboMax (the detailed bimbo set at max strength), trance, submission. It replaces the current lines, so only when the person asks.',
+    inputSchema: { type: 'object', properties: { pack: { type: 'string', enum: ['feminine', 'bimbo', 'bimboMax', 'trance', 'submission'] } }, required: ['pack'] },
     execute: i => { applyPack(String(i.pack)); return 'Pack loaded. Press play to start.'; } },
 
   { name: 'set_expression', description: 'Change your own face in your portrait to match the mood of your reply. Use it once per reply, before you answer.',
@@ -231,6 +231,7 @@ const CTOOLS = [
     execute: i => { if (syncOn !== !!i.on) $('#v-sync').click(); return 'Play with the audio ' + (syncOn ? 'on.' : 'off.'); } },
   { name: 'visuals_side_window', description: 'Show or hide the small side window where the visuals keep playing.', inputSchema: { type: 'object', properties: { on: { type: 'boolean' } }, required: ['on'] },
     execute: i => { setDock(!!i.on); if (i.on && !vPlaying) playV(false); return i.on ? 'Visuals on the side.' : 'Side window closed.'; } },
+  { name: 'max_strength', description: 'Turn the current track up to max strength: every layer silent, 20 stacked copies, reversed copies on. The lines stay.', execute: () => { const n = maxStrength(); return 'Max strength on' + (n ? ', about ' + n + ' affirmations a minute.' : '.'); } },
   { name: 'stop_visuals', description: 'Stop the visuals.', execute: () => { stopV(); setDock(false); renderVRows(); return 'Visuals stopped.'; } },
   { name: 'switch_view', description: 'Show one view: lines, playlist, map or visuals.',
     inputSchema: { type: 'object', properties: { view: { type: 'string', enum: ['lines', 'playlist', 'map', 'visuals'] } }, required: ['view'] },
@@ -392,11 +393,20 @@ const PACKS = {
   submission: { label: '⛓️ Submission', sub: 'faint flashes', prog: { name: '⛓️ Devoted', mode: 'flash', every: 4, stay: 0.3, opacity: 40, where: 'random', order: 'shuffle', captions: 'own',
     phrases: ['Calm and devoted', 'Yes feels good', 'Proud to please', 'Soft and obedient', 'Kneel and breathe', 'Good girl', 'I love to serve', 'Devoted and safe', 'My choice, my joy', 'Peaceful surrender'] } }
 };
+PACKS.bimboMax = { label: '💋💥 Bimbo Max', sub: 'detailed lines, all silent, max layers', theme: 'bimbo', max: true,
+  lines: {"foundation": ["When I wake up, I smile, stretch and think pink, pretty thoughts first.", "When I look in the mirror, I giggle and love the bimbo looking back.", "When I do my makeup, every swipe of gloss makes me softer and happier.", "When I put on heels, I stand tall, sway my hips and feel gorgeous.", "When I pick an outfit, I pick the tightest, pinkest, cutest thing I own.", "When a thought gets too heavy, I let it float away and giggle instead.", "When someone compliments me, I beam, say thank you and soak it up.", "When I catch my reflection, I fix my hair and blow myself a kiss.", "When I feel unsure, I flip my hair, smile wide and feel bubbly again.", "When I talk, my voice goes light, sweet and a little breathy.", "When I get dressed up, I feel like the prettiest girl in the room.", "When I paint my nails, I choose long, glossy and pink.", "When I laugh, I let it be a big, happy giggle.", "When I'm bored, I play with my hair and think about cute outfits.", "When someone flirts with me, I flirt right back and enjoy it.", "When a session ends, I feel lighter, sillier and so pretty."], "current": ["Being bubbly makes me so happy.", "Pretty feels good, so I choose pretty every day.", "I love how light my head feels when I let thoughts go.", "Giggling is my favorite feeling.", "I love being looked at.", "My curves make me feel confident and sexy.", "Pink makes me feel like me.", "Being a bimbo is my choice, and I love it.", "Fun matters more to me than overthinking.", "Glossy lips and long nails make me feel powerful.", "Attention makes me sparkle.", "Being soft and sweet feels natural.", "I love taking care of how I look.", "Every day as a bimbo is a good day."], "surface": ["I am a happy, bubbly bimbo.", "I am pretty, pink and perfect.", "I am a giggly airhead and I love it.", "I am glossy, curvy and confident.", "My head is light and full of pink.", "I am sweet, flirty and fun.", "I love my body exactly as it is.", "I am always dressed cute.", "I am the prettiest version of me.", "I think pretty thoughts.", "I am soft, silly and sparkly.", "My smile is my favorite accessory.", "I am a total bimbo.", "I love being girly.", "Bimbo is who I am.", "I get bubblier every day.", "I am safe, happy and free.", "When I miss a day, I just giggle and start again."]},
+  prog: { name: '💋💥 Bimbo Max', mode: 'cards', every: 2, stay: 1.6, opacity: 100, where: 'random', order: 'shuffle', captions: 'own',
+    phrases: ["Pretty and bubbly", "Giggles come easy", "Pink, pretty, perfect", "I love being a bimbo", "Glossy and glowing", "Hot pink thoughts", "Light and happy", "Think pink", "Bimbo is me", "Lip gloss on", "Heels and giggles", "So pretty", "Curvy and confident", "Bubbly brain", "Sweet and flirty", "Sparkle", "Giggle", "Airhead and happy", "Soft and silly", "Prettier every day", "Pink thoughts only", "Blow a kiss", "Hair flip", "Good bimbo", "Ditzy and delighted"] } };
+// Max strength: every layer silent (high-pitched voices you can't make out), the most stacked copies Omni allows, reversed copies on
+const MAX_SOUND = { delivery: { foundation: 'silent', current: 'silent', surface: 'silent' }, sound: { layers: 20, repeat: 3, speed: 2, reverse: true, spread: true, silentHz: 17500, mix: { hidden: 90 } } };
+function maxStrength(){ OMNI.set(JSON.parse(JSON.stringify(MAX_SOUND))); try { const st = OMNI.status(); return st.perMinute; } catch (e) { return 0; } }
 $('#v-packs').innerHTML = Object.entries(PACKS).map(([k, p]) => `<button class="btn" type="button" data-pack="${k}">${p.label}<small>${p.sub}</small></button>`).join('');
 function applyPack(k){
   const pk = PACKS[k]; if (!pk) return;
-  const tb = $(`#themeSeg [data-theme="${k}"]`); if (tb && document.documentElement.getAttribute('data-theme') !== k) tb.click();
+  const th = pk.theme || k, tb = $(`#themeSeg [data-theme="${th}"]`); if (tb && document.documentElement.getAttribute('data-theme') !== th) tb.click();
   const st = $('#femStarter'); if (st) st.click();
+  if (pk.lines) OMNI.set({ lines: Object.fromEntries(Object.entries(pk.lines).map(([l, a]) => [l, a.map(x => ({ t: x, f: '' }))])) });
+  if (pk.max) maxStrength();
   stopV();
   let p = V.programs.find(x => x.pack === k);
   if (!p) { p = newProgram(pk.prog.name); p.pack = k; V.programs.push(p); }
@@ -406,6 +416,8 @@ function applyPack(k){
   ptoast(pk.label + ' pack is in: look, starter lines, sound and visuals. Press play and the visuals come along on the side.');
 }
 $('#v-packs').addEventListener('click', e => { const b = e.target.closest('[data-pack]'); if (b) applyPack(b.dataset.pack); });
+{ const mb = document.createElement('button'); mb.className = 'btn'; mb.type = 'button'; mb.id = 'v-max'; mb.innerHTML = '💥 Max strength<small>your lines stay; all layers silent, 20 stacked copies</small>'; mb.style.gridColumn = '1 / -1';
+  $('#v-packs').append(mb); mb.addEventListener('click', () => { const n = maxStrength(); ptoast('Max strength: every layer is silent now, 20 stacked copies with reversed ones' + (n ? ', about ' + n + ' affirmations a minute' : '') + '. Your lines stay as they are.'); }); }
 
 
 /* ---------- keys: V plays or stops the visuals, S puts them on the side, F full screen ---------- */
