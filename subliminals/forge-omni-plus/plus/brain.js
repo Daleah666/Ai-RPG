@@ -210,3 +210,15 @@ async function makeFromGoal(goal){
   bubble('sys', `Goal set to “${goal}”. AI isn't available here, so pick a pack on the Visuals tab or write lines by hand.`);
   return true;
 }
+
+/* ---------- her hands, lent by Front Stage (read-only, only what you ticked under 🔌) ---------- */
+async function getHands(){
+  if (!agentsCap || !agentsCap.tools) return [];
+  try { const list = await agentsCap.tools(); return (list || []).map(h => ({ name: 'front_' + h.name, description: '(Front Stage) ' + h.description, inputSchema: h.inputSchema || { type: 'object', properties: {} }, execute: async i => { try { return await agentsCap.run(h.name, i); } catch (e) { return 'Error: ' + ((e && e.message) || e); } } })); } catch (e) { return []; }
+}
+
+/* ---------- 🔞 adult mode: opt-in, this browser only ---------- */
+const adultOn = () => safeGet('omniplus.adult') === 'true';
+function setAdult(on){ try { localStorage.setItem('omniplus.adult', on ? 'true' : 'false'); } catch (e) {} renderAdult(); }
+function renderAdult(){ const sw = $('#bd-adult'); if (sw) sw.setAttribute('aria-checked', String(adultOn())); if (typeof renderPacks === 'function') renderPacks(); }
+const ADULT_RULES = `\n\nADULT MODE IS ON: the person is an adult (18+) who switched this on themselves. Sexual and explicit adult themes are welcome in your chat, lines, packs and tonight's sub when they want them: desire, kink, oral fixation, being a needy sexy bimbo, loving to please. Keep it about consenting adults and their own fantasies: never minors, never anyone who didn't consent, never anything about race or ethnicity. If your brain won't write something, say so in one plain line instead of going quiet, and tell them a local model through Front Stage will.`;

@@ -39,7 +39,7 @@ visuals = f'''<!-- VISUALS: Forge's image programs, on a schedule -->
 </section>
 '''
 nova = '<div class="fx">\n' + P('nova.html') + '\n</div>\n'
-js = P('head.js') + '\n' + P('visual-port.js') + '\n' + P('brain.js') + '\n' + P('tail.js')
+js = P('head.js') + '\n' + P('visual-port.js') + '\n' + P('brain.js') + '\n' + P('tonight.js') + '\n' + P('tail.js')
 
 s = omni
 s = s.replace('<title>Subliminal Forge Omni</title>', '<title>Forge Omni Plus</title>', 1)
