@@ -38,12 +38,14 @@ function applyVisual(r){
 }
 function aiError(e){
   const c = e && e.code;
-  return c === 'not_granted' ? 'Claude was not allowed to run here. You can still edit everything by hand.'
+  return c === 'not_granted' ? ((e && e.message) || 'Claude was not allowed to run here. Allow it from the page\'s Permissions menu, or edit everything by hand.')
     : c === 'rate_limited' ? 'Too many AI requests right now. Wait a minute, then try again.'
-    : c === 'refused' ? 'The AI declined this request. Try describing it differently.'
+    : c === 'refused' ? 'The AI declined this request.' + (adultOn() ? ' Its brain may not do adult content: a local model through Front Stage usually will.' : ' Try describing it differently.')
     : c === 'invalid_json' ? 'The AI answered in the wrong format. Press the button again.'
     : c === 'session_expired' ? 'Your Claude sign-in expired. Sign in again, then retry.'
-    : 'Something went wrong reaching the AI. Press the button again.';
+    : (e && e.message) ? String(e.message).slice(0, 300)
+    : (e && typeof e === 'string') ? e.slice(0, 300)
+    : 'Something went wrong reaching the AI' + (c ? ' (' + c + ')' : '') + '. Press the button again.';
 }
 function setWhy(text, kind){ vWhy[vcur().id] = { text, err: kind === 'err', busy: kind === 'busy' }; renderVEditor(); }
 async function runVisualAI(){
@@ -151,15 +153,16 @@ function toggleChat(open){
   const show = open ?? chatwin.hidden;
   chatwin.hidden = !show; buddy.setAttribute('aria-expanded', show); buddy.classList.toggle('away', show); document.body.classList.toggle('nova-open', show);
   if (show) novaMode(nvMode === 'idle' ? 'idle' : nvMode);
-  if (show) { renderChat(); setTimeout(() => $('#cw-input').focus(), 30); }
+  if (show) { renderChat(); tonightGreet(); setTimeout(() => $('#cw-input').focus(), 30); }
 }
 $('#cw-close').addEventListener('click', () => { toggleChat(false); buddy.focus(); });
 novaStage.addEventListener('click', () => { if (nvMode === 'idle') setExpr(['giggle','blush','wink','kiss','shy','pose-waving'][Math.floor(Math.random() * 6)]); });
 chatwin.addEventListener('keydown', e => { if (e.key === 'Escape') { e.stopPropagation(); toggleChat(false); buddy.focus(); } });
 chatwin.querySelectorAll('[data-cw]').forEach(b => b.addEventListener('click', () => {
   chatwin.querySelectorAll('[data-cw]').forEach(x => x.setAttribute('aria-pressed', x === b));
-  ['chat', 'notes', 'brain', 'setup'].forEach(v => { const el = $('#cw-' + v); if (el) el.hidden = v !== b.dataset.cw; });
+  ['chat', 'notes', 'tonight', 'brain', 'setup'].forEach(v => { const el = $('#cw-' + v); if (el) el.hidden = v !== b.dataset.cw; });
   if (b.dataset.cw === 'brain') renderBrain();
+  if (b.dataset.cw === 'tonight') renderTonight();
   if (b.dataset.cw === 'notes') renderNotes();
   if (b.dataset.cw === 'setup') renderSetup();
 }));
@@ -244,7 +247,7 @@ async function sendChat(text){
   if (!sampler) { bubble('sys', 'AI is not available in this view.'); return; }
   CH.turns.push({ role: 'user', content: text }); cSave(); bubble('me', text);
   const recent = CH.turns.slice(-16);
-  const head = personaText() + BRAIN_RULES + '\n\nAPP RIGHT NOW:\n' + JSON.stringify(appState()) + '\n\nSAVED NOTES (' + CH.notes.length + '):\n' + CH.notes.slice(0, 15).map(n => '- [' + n.id + '] ' + n.text).join('\n') + '\n\nWHAT YOU KNOW ABOUT THEM:\n' + brainText()
+  const head = personaText() + BRAIN_RULES + (adultOn() ? ADULT_RULES : '') + '\n\nAPP RIGHT NOW:\n' + JSON.stringify({ ...appState(), tonight: tonightState() }) + '\n\nSAVED NOTES (' + CH.notes.length + '):\n' + CH.notes.slice(0, 15).map(n => '- [' + n.id + '] ' + n.text).join('\n') + '\n\nWHAT YOU KNOW ABOUT THEM:\n' + brainText()
     + (toolsOK ? '' : '\n\nYou cannot run tools here. Reply with only JSON: {"reply":"what you say","expression":"one of: ' + NOVA_EXPR.join(', ') + '","save":["notes to save, if any"],"remember":["short facts about them worth keeping, if any"],"edit":"a plain-words change for Omni to make to the track, or empty"}');
   const input = [{ role: 'user', content: head }, ...recent];
   const out = bubble('ai', 'Thinking…');
@@ -252,8 +255,9 @@ async function sendChat(text){
   try {
     let reply;
     if (toolsOK) {
-      const r = await sampler(input, { tools: [...CTOOLS, ...BTOOLS, ...filesTools], signal: cwCtl.signal, onText: ({ text }) => { if (!talked && text && text !== 'Thinking...') { talked = true; novaMode('talking'); } out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
-      reply = r.text;
+      const hands = await getHands();
+      const r = await sampler(input, { tools: [...CTOOLS, ...BTOOLS, ...TTOOLS, ...filesTools, ...hands], signal: cwCtl.signal, onText: ({ text }) => { if (!talked && text && text !== 'Thinking...') { talked = true; novaMode('talking'); } out.textContent = text; $('#cw-log').scrollTop = 1e9; } });
+      reply = String(r.text || '').trim() || '(No words came back from my brain. Try again, or pick another brain under 🔌 on the Forge sheet.)';
     } else {
       const r = await sampler.json(input, { signal: cwCtl.signal, cache: false });
       reply = String((r && r.reply) || 'Done.'); if (r && r.expression) nvFinal = String(r.expression);
@@ -299,6 +303,7 @@ $('#bd-file').addEventListener('change', e => {
   img.src = url; e.target.value = '';
 });
 $('#bd-clear').addEventListener('click', () => { BD.img = ''; bSave(); renderBuddy(); });
+$('#bd-adult').addEventListener('click', () => { setAdult(!adultOn()); ptoast(adultOn() ? '🔞 Adult mode is on. The 🔞 Adult pack is on the Visuals tab.' : 'Adult mode is off.'); });
 $('#bd-name').addEventListener('input', e => { BD.name = e.target.value.slice(0, 30) || 'Nova'; bSave(); renderBuddy(); });
 $('#bd-size').addEventListener('input', e => { BD.size = +e.target.value; $('#bd-size-out').textContent = BD.size + ' px'; bSave(); renderBuddy(); });
 $('#bd-show').addEventListener('click', () => { BD.show = !BD.show; $('#bd-show').setAttribute('aria-checked', BD.show); bSave(); renderBuddy(); });
@@ -400,10 +405,24 @@ PACKS.bimboMax = { label: '💋💥 Bimbo Max', sub: 'detailed lines, all silent
   lines: {"foundation": ["When I wake up, I smile, stretch and think pink, pretty thoughts first.", "When I look in the mirror, I giggle and love the bimbo looking back.", "When I do my makeup, every swipe of gloss makes me softer and happier.", "When I put on heels, I stand tall, sway my hips and feel gorgeous.", "When I pick an outfit, I pick the tightest, pinkest, cutest thing I own.", "When a thought gets too heavy, I let it float away and giggle instead.", "When someone compliments me, I beam, say thank you and soak it up.", "When I catch my reflection, I fix my hair and blow myself a kiss.", "When I feel unsure, I flip my hair, smile wide and feel bubbly again.", "When I talk, my voice goes light, sweet and a little breathy.", "When I get dressed up, I feel like the prettiest girl in the room.", "When I paint my nails, I choose long, glossy and pink.", "When I laugh, I let it be a big, happy giggle.", "When I'm bored, I play with my hair and think about cute outfits.", "When someone flirts with me, I flirt right back and enjoy it.", "When a session ends, I feel lighter, sillier and so pretty."], "current": ["Being bubbly makes me so happy.", "Pretty feels good, so I choose pretty every day.", "I love how light my head feels when I let thoughts go.", "Giggling is my favorite feeling.", "I love being looked at.", "My curves make me feel confident and sexy.", "Pink makes me feel like me.", "Being a bimbo is my choice, and I love it.", "Fun matters more to me than overthinking.", "Glossy lips and long nails make me feel powerful.", "Attention makes me sparkle.", "Being soft and sweet feels natural.", "I love taking care of how I look.", "Every day as a bimbo is a good day."], "surface": ["I am a happy, bubbly bimbo.", "I am pretty, pink and perfect.", "I am a giggly airhead and I love it.", "I am glossy, curvy and confident.", "My head is light and full of pink.", "I am sweet, flirty and fun.", "I love my body exactly as it is.", "I am always dressed cute.", "I am the prettiest version of me.", "I think pretty thoughts.", "I am soft, silly and sparkly.", "My smile is my favorite accessory.", "I am a total bimbo.", "I love being girly.", "Bimbo is who I am.", "I get bubblier every day.", "I am safe, happy and free.", "When I miss a day, I just giggle and start again."]},
   prog: { name: '💋💥 Bimbo Max', mode: 'cards', every: 2, stay: 1.6, opacity: 100, where: 'random', order: 'shuffle', captions: 'own',
     phrases: ["Pretty and bubbly", "Giggles come easy", "Pink, pretty, perfect", "I love being a bimbo", "Glossy and glowing", "Hot pink thoughts", "Light and happy", "Think pink", "Bimbo is me", "Lip gloss on", "Heels and giggles", "So pretty", "Curvy and confident", "Bubbly brain", "Sweet and flirty", "Sparkle", "Giggle", "Airhead and happy", "Soft and silly", "Prettier every day", "Pink thoughts only", "Blow a kiss", "Hair flip", "Good bimbo", "Ditzy and delighted"] } };
+// 🔞 Adult: only listed when adult mode is on (they're 18+ and switched it on themselves)
+PACKS.adult = { label: '🔞 Adult', sub: 'needy, glossy, made to please', theme: 'bimbo', adult: true,
+  lines: {
+    foundation: ['I am a sexy, confident woman', 'I love feeling wanted', 'Pleasure comes easily to me', 'My body is made for enjoying', 'I love being a good girl', 'Being desired makes me glow', 'I say yes to what I want', 'My desire is safe and mine'],
+    current: ['My lips love to stay busy', 'I crave pleasing', 'I melt when I am praised', 'Kneeling feels natural and hot', 'Every day I get needier and happier', 'Pleasing with my mouth is my favorite hobby', 'I think about pleasing all day', 'Being used for pleasure makes me proud'],
+    surface: ['Glossy lips, empty head', 'Needy and pretty', 'Hot and happy to please', 'Good girls love to serve', 'My mouth waters for it', 'So hungry, so happy', 'Pretty, wet and willing', 'Pleasure is my purpose']
+  },
+  prog: { name: '🔞 Made to please', mode: 'cards', every: 3, stay: 2, opacity: 100, where: 'center', order: 'shuffle', captions: 'own',
+    phrases: ['Good girl', 'Needy and pretty', 'Glossy lips', 'Made to please', 'So hungry', 'Kneel and smile', 'Pleasure is easy', 'Hot pink thoughts', 'Always wanting', 'Lips first'] } };
 // Max strength: every layer silent (high-pitched voices you can't make out), the most stacked copies Omni allows, reversed copies on
 const MAX_SOUND = { delivery: { foundation: 'silent', current: 'silent', surface: 'silent' }, sound: { layers: 20, repeat: 3, speed: 2, reverse: true, spread: true, silentHz: 17500, mix: { hidden: 90 } } };
 function maxStrength(){ tasteNote('max'); OMNI.set(JSON.parse(JSON.stringify(MAX_SOUND))); try { const st = OMNI.status(); return st.perMinute; } catch (e) { return 0; } }
-$('#v-packs').innerHTML = Object.entries(PACKS).map(([k, p]) => `<button class="btn" type="button" data-pack="${k}">${p.label}<small>${p.sub}</small></button>`).join('');
+function renderPacks(){
+  const keep = $('#v-max');
+  $('#v-packs').innerHTML = Object.entries(PACKS).filter(([, p]) => !p.adult || adultOn()).map(([k, p]) => `<button class="btn" type="button" data-pack="${k}">${p.label}<small>${p.sub}</small></button>`).join('');
+  if (keep) $('#v-packs').append(keep);
+}
+renderPacks();
 function applyPack(k){
   const pk = PACKS[k]; if (!pk) return;
   tasteNote('pack', k);
@@ -449,6 +468,6 @@ const aiReady = (async () => {
   $('#ai-avail').textContent = sampler ? (window.__omniHub ? 'Ready. Uses the brain Front Stage is set to.' : 'Ready. Uses your Claude account.') : 'AI is not available in this view.';
   renderBrain();
 })();
-brainBoot();
-window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); setDock(false); return vPlaying; }, side: on => { setDock(on !== false); if (!vPlaying) playV(false); return docked; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false), say: t => sendChat(String(t || '')) }, make: async goal => { await aiReady; return makeFromGoal(goal); }, ready: () => aiReady.then(() => !!sampler), brain: { learn: (t, src) => !!learn(t, src || 'outside'), facts: () => BR.facts.map(f => ({ text: f.text, src: f.src })), pull: () => pullAgents('click') } });
+brainBoot(); tonightBoot(); renderAdult();
+window.SubliminalOmniPlus = Object.freeze({ visuals: { play: () => { showVisuals(true); playV(false); return vPlaying; }, stop: () => { stopV(); setDock(false); return vPlaying; }, side: on => { setDock(on !== false); if (!vPlaying) playV(false); return docked; }, programs: () => V.programs.map(p => ({ name: p.name, on: p.on, images: imgCount(p) })) }, nova: { open: () => toggleChat(true), close: () => toggleChat(false), say: t => sendChat(String(t || '')) }, make: async goal => { await aiReady; return makeFromGoal(goal); }, tonight: { ensure: () => ensureTonight(), open: () => { toggleChat(true); openTonightTab(); }, play: () => playTonight(), state: () => tonightState() }, adult: on => { setAdult(!!on); return adultOn(); }, ready: () => aiReady.then(() => !!sampler), brain: { learn: (t, src) => !!learn(t, src || 'outside'), facts: () => BR.facts.map(f => ({ text: f.text, src: f.src })), pull: () => pullAgents('click') } });
 })();

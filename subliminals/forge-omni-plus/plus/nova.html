@@ -12,6 +12,7 @@
     <nav class="cw-tabs" aria-label="Assistant sections">
       <button class="tbtn" data-cw="chat" aria-label="Chat" data-tip="Chat" aria-pressed="true"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 4.5 H17 V13.5 H8 L4.5 16.5 V13.5 H3 Z"/></svg></button>
       <button class="tbtn" data-cw="notes" aria-label="Saved for you" data-tip="Saved" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M5 2.5 H15 V17.5 L10 14 L5 17.5 Z"/></svg></button>
+      <button class="tbtn" data-cw="tonight" aria-label="Tonight's sub" data-tip="Tonight" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 12.6 A6.5 6.5 0 1 1 8.2 3.4 A5.2 5.2 0 0 0 15.5 12.6 Z"/><path d="M14 3.5 L14.5 4.8 L15.8 5.3 L14.5 5.8 L14 7.1 L13.5 5.8 L12.2 5.3 L13.5 4.8 Z"/></svg></button>
       <button class="tbtn" data-cw="brain" aria-label="What she knows" data-tip="Brain" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M8 3.5 C5.6 3.5 4 5 4 7 C2.8 7.6 2.5 9.6 3.6 10.6 C2.9 12.4 4.2 14.4 6.2 14.3 C6.7 15.9 8.6 16.6 10 15.6 C11.4 16.6 13.3 15.9 13.8 14.3 C15.8 14.4 17.1 12.4 16.4 10.6 C17.5 9.6 17.2 7.6 16 7 C16 5 14.4 3.5 12 3.5 C11.2 3.5 10.5 3.8 10 4.3 C9.5 3.8 8.8 3.5 8 3.5 Z M10 4.3 V15.6"/></svg></button>
       <button class="tbtn" data-cw="setup" aria-label="Companion settings" data-tip="Settings" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="2.4"/><path d="M8 1.5 V3.5 M8 12.5 V14.5 M1.5 8 H3.5 M12.5 8 H14.5 M3.4 3.4 L4.8 4.8 M11.2 11.2 L12.6 12.6 M3.4 12.6 L4.8 11.2 M11.2 4.8 L12.6 3.4"/></svg></button>
       <button class="tbtn" id="cw-close" aria-label="Close" data-tip="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 3 L13 13 M13 3 L3 13"/></svg></button>
@@ -28,6 +29,17 @@
   <div class="cw-body cw-pad" id="cw-notes" hidden>
     <form class="row" id="note-form"><label class="sr" for="note-new">New note</label><input class="field" id="note-new" placeholder="Save something…" style="flex:1 1 160px;width:auto"><button class="btn" type="submit">Save</button></form>
     <div class="tlist" id="note-list"></div>
+  </div>
+  <div class="cw-body cw-pad" id="cw-tonight" hidden>
+    <div class="tn-streak" id="tn-streak"></div>
+    <div class="tn-card" id="tn-card"></div>
+    <div class="row"><button class="btn primary" id="tn-play" type="button">▶ Play tonight</button><button class="btn" id="tn-trance" type="button" title="Hands-free: Nova talks you down, runs the whole session and wakes you up">🌀 Trance with Nova</button><button class="btn" id="tn-load" type="button">Load only</button></div>
+    <div class="row"><button class="btn" id="tn-like" type="button" aria-pressed="false">💖 More like this</button><button class="btn" id="tn-dislike" type="button" aria-pressed="false">🙅 Less like this</button><button class="btn" id="tn-make" type="button">🎲 Make another</button></div>
+    <span class="label">Every evening</span>
+    <div class="row"><button class="switch" role="switch" id="tn-auto" aria-checked="true" type="button"><span class="track"></span><span>She makes one by herself after</span></button><label class="sr" for="tn-hour">Time</label><select class="field" id="tn-hour" style="width:auto"></select></div>
+    <span class="hint">Play it for a few minutes to keep your 🔥 streak. Nights in a row give more XP.</span>
+    <span class="label">Past nights</span>
+    <div class="tlist" id="tn-hist"></div>
   </div>
   <div class="cw-body cw-pad" id="cw-brain" hidden>
     <p class="hint" id="br-sum"></p>
@@ -53,6 +65,8 @@
     <button class="switch" role="switch" id="bd-show" aria-checked="true"><span class="track"></span><span>Show companion on screen</span></button>
     <div class="step-h"><label class="label" for="bd-persona">Personality and instructions</label><button class="mini" id="bd-reset">Reset</button></div>
     <textarea class="field" id="bd-persona" style="height:200px;padding:12px;line-height:1.6;resize:vertical"></textarea>
+    <button class="switch" role="switch" id="bd-adult" aria-checked="false" type="button"><span class="track"></span><span>🔞 Adult mode: I'm 18+, let her go explicit</span></button>
+    <span class="hint">Off by default, this browser only. Explicit lines depend on her brain: Claude often says no, a local model through Front Stage usually won't.</span>
     <button class="btn" id="bd-clearchat">Clear chat history</button>
   </div>
 </section>

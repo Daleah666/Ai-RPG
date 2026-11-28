@@ -40,6 +40,25 @@ The 🧠 tab in Nova's window holds what she knows about you. It lives in this b
 
 You can pin, forget or teach her facts by hand on the same tab.
 
+## 🌙 Tonight's sub
+
+The moon tab in Nova's window. Every evening (after 19:00 by default, you can change the hour) Nova makes a sub just for tonight from her brain: a name, why she picked it, the look, the length, lines for all three layers, phrases for the visuals and a short spoken script.
+
+- **▶ Play tonight** loads it into the studio and plays it. **Load only** loads without playing.
+- **🌀 Trance with Nova** is hands-free: a full-screen spiral, Nova's voice talks you down (induction and deepener), the sub plays underneath, she says an affirmation about every 45 seconds, and she wakes you up at the end. Esc, Space or **Wake me up** brings you out any time.
+- **💖 More like this** teaches her your taste and makes a sister sub right away. **🙅 Less like this** steers her away.
+- **🔥 Streak and XP.** Playing tonight's sub for a few minutes keeps your streak. Nights in a row give more XP, and XP levels you up.
+
+On Front Stage the 🌀 Forge tab glows gold and says *Tonight's sub* when one is waiting.
+
+## 🔞 Adult mode
+
+Off by default, a switch in Nova's ⚙ settings (or 🔌 on Front Stage). For adults only. When it's on, the 🔞 Adult pack shows up and Nova and tonight's sub may write explicit lines between consenting adults. Nothing about race or ethnicity, ever. How far it goes depends on the brain: Claude often declines explicit lines, and Nova says so in one plain line instead of going quiet. A local model through Front Stage (Ollama, LM Studio or your own server) usually won't decline.
+
+## When something fails
+
+Nova and every AI button now show the actual reason (a bad key, a timeout, Claude declining, a server that's down) instead of going silent.
+
 ## Inside Front Stage
 
 `python3 build.py --ext ../../../desktop-companion/front-stage/forge` writes a copy for the Front Stage extension. Chrome extension pages can't run inline scripts or load from a CDN, so that copy splits each script into its own file and takes sam-js from `vendor/`. Front Stage hands the studio its brain through `window.__hubClaude`, the same line My Hub uses, so Omni needed no changes.
@@ -47,7 +66,7 @@ You can pin, forget or teach her facts by hand on the same tab.
 ## Files
 
 - `originals/forge.html`, `originals/omni.html`: the two source artifacts as published.
-- `plus/`: the add-on (head.js, visual-port.js, brain.js, tail.js, the markup and the CSS).
+- `plus/`: the add-on (head.js, visual-port.js, brain.js, tonight.js, tail.js, the markup and the CSS).
 - `vendor/samjs.min.js`: sam-js 0.3.1 from npm, for the extension copy only.
 - `build.py`: writes `index.html` = Omni + the add-on. Omni's own code is never edited.
 
